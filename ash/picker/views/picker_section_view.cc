@@ -120,6 +120,20 @@ void PickerSectionView::SetMaximumWidth(int maximum_width) {
   maximum_width_ = maximum_width;
 }
 
+void PickerSectionView::AddItem(std::unique_ptr<PickerItemView> item_view) {
+  switch (item_view->item_type()) {
+    case PickerItemView::ItemType::kSmallGridItem:
+      AddSmallGridItem(std::move(item_view));
+      break;
+    case PickerItemView::ItemType::kLargeGridItem:
+      AddLargeGridItem(std::move(item_view));
+      break;
+    case PickerItemView::ItemType::kListItem:
+      AddListItem(std::move(item_view));
+      break;
+  }
+}
+
 void PickerSectionView::AddSmallGridItem(
     std::unique_ptr<PickerItemView> item_view) {
   if (small_grid_items_container_ == nullptr) {

@@ -18,13 +18,25 @@ class View;
 
 namespace ash {
 
-// View for a Picker list item with text or an image as its primary contents.
-// Can optionally have other parts such as a leading icon and secondary text.
+// View for a Picker item with text or an image as its primary contents. Can
+// optionally have other parts such as a leading icon and secondary text.
 class ASH_EXPORT PickerItemView : public views::Button {
   METADATA_HEADER(PickerItemView, views::Button)
 
  public:
-  explicit PickerItemView(views::Button::PressedCallback callback);
+  // Determines layout and styling of the item.
+  enum class ItemType {
+    // Used for items with small primary contents, e.g. an emoji or symbol.
+    kSmallGridItem,
+    // Used for items with large primary contents, e.g. a gif.
+    kLargeGridItem,
+    // Used for items with primary contents along with other optional details,
+    // e.g. a url with an icon.
+    kListItem,
+  };
+
+  explicit PickerItemView(views::Button::PressedCallback callback,
+                          ItemType item_type);
   PickerItemView(const PickerItemView&) = delete;
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
@@ -38,6 +50,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
   void SetSecondaryText(const std::u16string& secondary_text);
 
+  ItemType item_type() const { return item_type_; }
+
   const views::View* leading_container_for_testing() const {
     return leading_container_;
   }
@@ -46,6 +60,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
   }
 
  private:
+  ItemType item_type_;
+
   // Contains the item's leading icon if it has been set.
   raw_ptr<views::View> leading_container_ = nullptr;
 

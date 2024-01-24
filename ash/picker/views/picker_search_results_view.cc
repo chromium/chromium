@@ -53,7 +53,7 @@ void PickerSearchResultsView::SetSearchResults(
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));
     for (const auto& result : section.results()) {
-      section_view->AddListItem(CreateItemView(result));
+      section_view->AddItem(CreateItemView(result));
     }
     section_views_.push_back(section_view);
   }
@@ -73,7 +73,8 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
           [&, this](const PickerSearchResult::TextData& data) {
             auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result));
+                               base::Unretained(this), result),
+                PickerItemView::ItemType::kListItem);
             item_view->SetPrimaryText(data.text);
             item_view->SetLeadingIcon(kPlaceholderIcon);
             return item_view;
@@ -81,9 +82,10 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
           [&, this](const PickerSearchResult::GifData& data) {
             auto item_view = std::make_unique<PickerItemView>(
                 base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
-                               base::Unretained(this), result));
+                               base::Unretained(this), result),
+                PickerItemView::ItemType::kLargeGridItem);
             // TODO: b/316936418 - Get gif dimensions to determine size.
-            constexpr gfx::Size kPlaceholderGifSize(200, 200);
+            constexpr gfx::Size kPlaceholderGifSize(140, 140);
             // `base::Unretained` is safe here because `this` owns the item
             // views and `asset_fetcher_` outlives `this`.
             item_view->SetPrimaryImage(std::make_unique<PickerGifView>(

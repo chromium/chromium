@@ -15,7 +15,9 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -29,15 +31,39 @@
 namespace ash {
 namespace {
 
-constexpr auto kPickerItemMargins = gfx::Insets::TLBR(8, 16, 8, 8);
+constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 8);
+
+constexpr auto kPickerGridItemCornerRadius = gfx::RoundedCornersF(8);
 
 constexpr int kIconSizeDip = 20;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 
+gfx::Insets GetBorderInsetsForItemType(PickerItemView::ItemType item_type) {
+  switch (item_type) {
+    case PickerItemView::ItemType::kSmallGridItem:
+    case PickerItemView::ItemType::kLargeGridItem:
+      return gfx::Insets();
+    case PickerItemView::ItemType::kListItem:
+      return kPickerListItemBorderInsets;
+  }
+}
+
+gfx::RoundedCornersF GetRoundedCornersForItemType(
+    PickerItemView::ItemType item_type) {
+  switch (item_type) {
+    case PickerItemView::ItemType::kSmallGridItem:
+    case PickerItemView::ItemType::kLargeGridItem:
+      return kPickerGridItemCornerRadius;
+    case PickerItemView::ItemType::kListItem:
+      return gfx::RoundedCornersF();
+  }
+}
+
 }  // namespace
 
-PickerItemView::PickerItemView(views::Button::PressedCallback callback)
-    : views::Button(std::move(callback)) {
+PickerItemView::PickerItemView(views::Button::PressedCallback callback,
+                               ItemType item_type)
+    : views::Button(std::move(callback)), item_type_(item_type) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto* item_contents =
       AddChildView(views::Builder<views::FlexLayoutView>()
@@ -61,7 +87,14 @@ PickerItemView::PickerItemView(views::Button::PressedCallback callback)
   secondary_container_ =
       main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
 
-  SetBorder(views::CreateEmptyBorder(kPickerItemMargins));
+  SetBorder(views::CreateEmptyBorder(GetBorderInsetsForItemType(item_type_)));
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetMasksToBounds(true);
+
+  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
+      this, GetRoundedCornersForItemType(item_type_));
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
                                    /*highlight_on_focus=*/true);

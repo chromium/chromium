@@ -35,17 +35,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // Sets the maximum width available for laying out section items.
   void SetMaximumWidth(int maximum_width);
 
-  // Adds a small grid item. These are displayed in rows. If there may be more
-  // than one row, `maximum_width_` should be set before adding small grid items
-  // to ensure the rows are laid out correctly.
-  void AddSmallGridItem(std::unique_ptr<PickerItemView> small_grid_item);
-
-  // Adds a large grid item. These are displayed in columns.
-  void AddLargeGridItem(std::unique_ptr<PickerItemView> large_grid_item);
-
-  // Adds a list item. These are displayed in a vertical list, each item
-  // spanning the width of the section.
-  void AddListItem(std::unique_ptr<PickerItemView> list_item);
+  // Adds an item to the section.
+  void AddItem(std::unique_ptr<PickerItemView> item_view);
 
   const views::Label* title_for_testing() const { return title_; }
 
@@ -61,6 +52,18 @@ class ASH_EXPORT PickerSectionView : public views::View {
   }
 
  private:
+  // Adds a small grid item. These are displayed in rows. If there may be more
+  // than one row, `maximum_width_` should be set before adding small grid items
+  // to ensure the rows are laid out correctly.
+  void AddSmallGridItem(std::unique_ptr<PickerItemView> small_grid_item);
+
+  // Adds a large grid item. These are displayed in columns.
+  void AddLargeGridItem(std::unique_ptr<PickerItemView> large_grid_item);
+
+  // Adds a list item. These are displayed in a vertical list, each item
+  // spanning the width of the section.
+  void AddListItem(std::unique_ptr<PickerItemView> list_item);
+
   // Maximum width available for laying out section items. If not set, we assume
   // the available width is unbounded during layout, so small grid items will be
   // laid out in a single row.

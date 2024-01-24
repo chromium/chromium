@@ -15,7 +15,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/test/test_layout_provider.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -28,7 +27,8 @@ using ::testing::SizeIs;
 using PickerItemViewTest = AshTestBase;
 
 TEST_F(PickerItemViewTest, SetsPrimaryText) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+  PickerItemView item_view(views::Button::PressedCallback(),
+                           PickerItemView::ItemType::kListItem);
 
   const std::u16string kPrimaryText = u"Item";
   item_view.SetPrimaryText(kPrimaryText);
@@ -42,7 +42,8 @@ TEST_F(PickerItemViewTest, SetsPrimaryText) {
 }
 
 TEST_F(PickerItemViewTest, SetsPrimaryImage) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+  PickerItemView item_view(views::Button::PressedCallback(),
+                           PickerItemView::ItemType::kListItem);
 
   item_view.SetPrimaryImage(std::make_unique<views::ImageView>());
 
@@ -52,7 +53,8 @@ TEST_F(PickerItemViewTest, SetsPrimaryImage) {
 }
 
 TEST_F(PickerItemViewTest, SetsLeadingIcon) {
-  PickerItemView item_view{views::Button::PressedCallback()};
+  PickerItemView item_view(views::Button::PressedCallback(),
+                           PickerItemView::ItemType::kListItem);
 
   item_view.SetLeadingIcon(kImeMenuEmoticonIcon);
 
