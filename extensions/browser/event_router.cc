@@ -257,47 +257,50 @@ void EventRouter::DispatchEventToSender(
     extension = registry->enabled_extensions().GetByID(host_id.id);
   }
 
+  if (!extension) {
+    ObserveProcess(rph);
+    DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
+                             event_id, event_name, std::move(event_args),
+                             UserGestureState::USER_GESTURE_UNKNOWN,
+                             std::move(info), base::DoNothing());
+    // In this case, we won't log the metric for dispatch_start_time. But this
+    // means we aren't dispatching an event to an extension so the metric
+    // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
+    return;
+  }
+
+  IncrementInFlightEvents(
+      browser_context, rph, extension, event_id, event_name,
+      // Currently this arg is not used for metrics recording since we do not
+      // include events from EventDispatchSource::kDispatchEventToSender.
+      /*dispatch_start_time=*/base::TimeTicks::Now(), service_worker_version_id,
+      EventDispatchSource::kDispatchEventToSender,
+      // Background script is active/started at this point.
+      /*lazy_background_active_on_dispatch=*/true);
+  ReportEvent(histogram_value, extension,
+              /*did_enqueue=*/false);
   mojom::EventDispatcher::DispatchEventCallback callback;
-  // If this is ever false, we won't log the metric for dispatch_start_time. But
-  // this means we aren't dispatching an event to an extension so the metric
-  // wouldn't be relevant anyways (e.g. would go to a web page or webUI).
-  if (extension) {
-    IncrementInFlightEvents(
-        browser_context, rph, extension, event_id, event_name,
-        // Currently this arg is not used for metrics recording since we do not
-        // include events from EventDispatchSource::kDispatchEventToSender.
-        /*dispatch_start_time=*/base::TimeTicks::Now(),
-        service_worker_version_id, EventDispatchSource::kDispatchEventToSender,
-        // Background script is active/started at this point.
-        /*lazy_background_active_on_dispatch=*/true);
-    ReportEvent(histogram_value, extension,
-                /*did_enqueue=*/false);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    callback = base::DoNothing();
+  callback = base::DoNothing();
 #else
-    if (worker_thread_id == kMainThreadId) {
-      // TODO(crbug.com/1441221): When creating dispatch time metrics for the
-      // DispatchEventToSender event flow, ensure this also handles persistent
-      // background pages.
-      if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
-        callback = base::BindOnce(
-            &EventRouter::DecrementInFlightEventsForRenderFrameHost,
-            weak_factory_.GetWeakPtr(), rph->GetID(), host_id.id, event_id);
-      } else {
-        callback = base::DoNothing();
-      }
-    } else {
-      callback = base::BindOnce(
-          &EventRouter::DecrementInFlightEventsForServiceWorker,
-          weak_factory_.GetWeakPtr(),
-          WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
-                   service_worker_version_id, worker_thread_id},
-          event_id);
-    }
-#endif
+  if (worker_thread_id != kMainThreadId) {
+    callback = base::BindOnce(
+        &EventRouter::DecrementInFlightEventsForServiceWorker,
+        weak_factory_.GetWeakPtr(),
+        WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
+                 service_worker_version_id, worker_thread_id},
+        event_id);
+  } else if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    // TODO(crbug.com/1441221): When creating dispatch time metrics for the
+    // DispatchEventToSender event flow, ensure this also handles persistent
+    // background pages.
+    callback = base::BindOnce(
+        &EventRouter::DecrementInFlightEventsForRenderFrameHost,
+        weak_factory_.GetWeakPtr(), rph->GetID(), host_id.id, event_id);
   } else {
     callback = base::DoNothing();
   }
+#endif
   ObserveProcess(rph);
   DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                            event_id, event_name, std::move(event_args),
@@ -1188,24 +1191,19 @@ void EventRouter::DispatchEventToProcess(
   callback = base::DoNothing();
 #else
   // This mirrors the IncrementInFlightEvents below.
-  if (extension) {
-    if (worker_thread_id == kMainThreadId) {
-      if (BackgroundInfo::HasBackgroundPage(extension)) {
-        callback = base::BindOnce(
-            &EventRouter::DecrementInFlightEventsForRenderFrameHost,
-            weak_factory_.GetWeakPtr(), process->GetID(), extension_id,
-            event_id);
-      } else {
-        callback = base::DoNothing();
-      }
-    } else {
-      callback =
-          base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
-                         weak_factory_.GetWeakPtr(),
-                         WorkerId{extension_id, process->GetID(),
-                                  service_worker_version_id, worker_thread_id},
-                         event_id);
-    }
+  if (!extension) {
+    callback = base::DoNothing();
+  } else if (worker_thread_id != kMainThreadId) {
+    callback =
+        base::BindOnce(&EventRouter::DecrementInFlightEventsForServiceWorker,
+                       weak_factory_.GetWeakPtr(),
+                       WorkerId{extension_id, process->GetID(),
+                                service_worker_version_id, worker_thread_id},
+                       event_id);
+  } else if (BackgroundInfo::HasBackgroundPage(extension)) {
+    callback = base::BindOnce(
+        &EventRouter::DecrementInFlightEventsForRenderFrameHost,
+        weak_factory_.GetWeakPtr(), process->GetID(), extension_id, event_id);
   } else {
     callback = base::DoNothing();
   }
