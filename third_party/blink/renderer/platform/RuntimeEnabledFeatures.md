@@ -5,9 +5,12 @@ Runtime flags enable Blink to control access to new features. Features that are 
 ## Adding A Runtime Enabled Feature
 Runtime Enabled Features are defined in runtime_enabled_features.json5 in alphabetical order. Add your feature's flag to [runtime_enabled_features.json5] and the rest will be generated for you automatically.
 
+Please add a descriptive comment, including a link to the spec or the chromestatus.com entry if either one is available. This allows readers to easily find more context about the feature.
+
 Example:
 ```js
 {
+  // Amazing new feature! https://chromestatus.com/feature/123
   name: "AmazingNewFeature",
   status: "experimental",
 }
