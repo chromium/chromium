@@ -102,22 +102,20 @@ void AddressDataCleaner::ApplyAddressFixesAndCleanups() {
   is_profile_cleanup_pending_ = false;
 }
 
-bool AddressDataCleaner::ApplyAddressDedupingRoutine() {
+void AddressDataCleaner::ApplyAddressDedupingRoutine() {
   // Check if de-duplication has already been performed on this major version.
   if (!is_autofill_profile_dedupe_pending_) {
-    return false;
+    return;
   }
 
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfiles();
-
-  // No need to de-duplicate if there are less than two profiles.
+  // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.size() < 2) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               CHROME_VERSION_MAJOR);
-    return false;
+    return;
   }
-
   std::unordered_set<std::string> profiles_to_delete;
   profiles_to_delete.reserve(profiles.size());
 
@@ -129,7 +127,7 @@ bool AddressDataCleaner::ApplyAddressDedupingRoutine() {
     new_profiles.push_back(std::make_unique<AutofillProfile>(*profile));
   }
 
-  DedupeProfiles(&new_profiles, &profiles_to_delete);
+  DedupeProfiles(new_profiles, profiles_to_delete);
 
   // Apply the profile changes to the database.
   for (const auto& profile : new_profiles) {
@@ -146,15 +144,13 @@ bool AddressDataCleaner::ApplyAddressDedupingRoutine() {
   // Set the pref to the current major version.
   pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                             CHROME_VERSION_MAJOR);
-
-  return true;
 }
 
 void AddressDataCleaner::DedupeProfiles(
-    std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
-    std::unordered_set<std::string>* profiles_to_delete) const {
+    std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
+    std::unordered_set<std::string>& profiles_to_delete) const {
   AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
-      existing_profiles->size());
+      existing_profiles.size());
 
   // Sort the profiles by ranking score. That way the most relevant profiles
   // will get merged into the less relevant profiles, which keeps the syntax of
@@ -165,9 +161,9 @@ void AddressDataCleaner::DedupeProfiles(
   // the other way around.
   // TODO(crbug.com/1411114): Remove code duplication for sorting profiles.
   base::ranges::sort(
-      *existing_profiles, [comparison_time = AutofillClock::Now()](
-                              const std::unique_ptr<AutofillProfile>& a,
-                              const std::unique_ptr<AutofillProfile>& b) {
+      existing_profiles, [comparison_time = AutofillClock::Now()](
+                             const std::unique_ptr<AutofillProfile>& a,
+                             const std::unique_ptr<AutofillProfile>& b) {
         if (a->source() != b->source()) {
           return a->source() == AutofillProfile::Source::kLocalOrSyncable;
         }
@@ -175,13 +171,12 @@ void AddressDataCleaner::DedupeProfiles(
       });
 
   AutofillProfileComparator comparator(personal_data_manager_->app_locale());
-  for (auto i = existing_profiles->begin(); i != existing_profiles->end();
-       i++) {
+  for (auto i = existing_profiles.begin(); i != existing_profiles.end(); ++i) {
     AutofillProfile* profile_to_merge = i->get();
 
     // If the profile was set to be deleted, skip it. This can happen because
     // the loop below reassigns `profile_to_merge` to (effectively) `j->get()`.
-    if (profiles_to_delete->contains(profile_to_merge->guid())) {
+    if (profiles_to_delete.contains(profile_to_merge->guid())) {
       continue;
     }
 
@@ -191,12 +186,12 @@ void AddressDataCleaner::DedupeProfiles(
     }
 
     // Try to merge `profile_to_merge` with a less relevant `existing_profiles`.
-    for (auto j = i + 1; j < existing_profiles->end(); j++) {
+    for (auto j = i + 1; j < existing_profiles.end(); ++j) {
       AutofillProfile& existing_profile = **j;
 
       // Don't try to merge a profile that was already set for deletion or that
       // cannot be merged.
-      if (profiles_to_delete->contains(existing_profile.guid()) ||
+      if (profiles_to_delete.contains(existing_profile.guid()) ||
           !comparator.AreMergeable(existing_profile, *profile_to_merge)) {
         continue;
       }
@@ -215,7 +210,7 @@ void AddressDataCleaner::DedupeProfiles(
       // and will not accept updates from `profile_to_merge`.
       if (existing_profile.SaveAdditionalInfo(
               *profile_to_merge, personal_data_manager_->app_locale())) {
-        profiles_to_delete->insert(profile_to_merge->guid());
+        profiles_to_delete.insert(profile_to_merge->guid());
 
         // Account profiles track from which service they originate. This allows
         // Autofill to distinguish between Chrome and non-Chrome account
@@ -244,19 +239,17 @@ void AddressDataCleaner::DedupeProfiles(
     }
   }
   AutofillMetrics::LogNumberOfProfilesRemovedDuringDedupe(
-      profiles_to_delete->size());
+      profiles_to_delete.size());
 }
 
-bool AddressDataCleaner::DeleteDisusedAddresses() {
+void AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);
-
-  // Early exit when there are no profiles.
+  // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {
-    return true;
+    return;
   }
-
   // Don't call `PDM::RemoveByGUID()` directly, since this can invalidate the
   // pointers in `profiles`.
   std::vector<std::string> guids_to_delete;
@@ -265,16 +258,10 @@ bool AddressDataCleaner::DeleteDisusedAddresses() {
       guids_to_delete.push_back(profile->guid());
     }
   }
-
-  size_t num_deleted_addresses = guids_to_delete.size();
-
-  for (auto const& guid : guids_to_delete) {
+  for (const std::string& guid : guids_to_delete) {
     personal_data_manager_->RemoveByGUID(guid);
   }
-
-  AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(num_deleted_addresses);
-
-  return true;
+  AutofillMetrics::LogNumberOfAddressesDeletedForDisuse(guids_to_delete.size());
 }
 
 }  // namespace autofill

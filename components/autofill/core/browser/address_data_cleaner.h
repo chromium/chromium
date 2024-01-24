@@ -48,7 +48,7 @@ class AddressDataCleaner {
   // with the content of `PersonalDataManager::GetProfiles()` as a parameter.
   // Removes the profiles to delete from the database and updates the others.
   // Returns true if the routine was run.
-  bool ApplyAddressDedupingRoutine();
+  void ApplyAddressDedupingRoutine();
 
   // Goes through all the `existing_profiles` and merges all similar profiles
   // together. All the profiles except the results of the merges will be
@@ -58,11 +58,11 @@ class AddressDataCleaner {
   // This method should only be called by ApplyDedupingRoutine(). It is split
   // for testing purposes.
   void DedupeProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
-      std::unordered_set<std::string>* profile_guids_to_delete) const;
+      std::vector<std::unique_ptr<AutofillProfile>>& existing_profiles,
+      std::unordered_set<std::string>& profile_guids_to_delete) const;
 
   // Tries to delete disused addresses on startup.
-  bool DeleteDisusedAddresses();
+  void DeleteDisusedAddresses();
 
   // True if autofill profile dedupe needs to be performed.
   bool is_autofill_profile_dedupe_pending_ = true;
