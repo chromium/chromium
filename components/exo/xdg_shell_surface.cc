@@ -32,8 +32,12 @@ void XdgShellSurface::OverrideInitParams(views::Widget::InitParams* params) {
   // window property.
   bool auto_maximize_enabled = params->init_properties_container.GetProperty(
       chromeos::kAutoMaximizeXdgShellEnabled);
-  if (auto_maximize_enabled && ShouldAutoMaximize())
+  if (auto_maximize_enabled && ShouldAutoMaximize()) {
     params->show_state = ui::SHOW_STATE_MAXIMIZED;
+  }
+  if (!frame_enabled() && !has_frame_colors()) {
+    params->layer_type = ui::LAYER_NOT_DRAWN;
+  }
 }
 
 bool XdgShellSurface::ShouldAutoMaximize() {
