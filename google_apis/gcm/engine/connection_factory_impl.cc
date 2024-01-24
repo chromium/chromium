@@ -167,7 +167,7 @@ void ConnectionFactoryImpl::ConnectWithBackoff() {
   // otherwise it's possible to hit a use-after-free in the connection handler.
   // crbug.com/462319
   CloseSocket();
-  ConnectImpl();
+  ConnectImpl(/*ignore_connection_failure=*/false);
 }
 
 bool ConnectionFactoryImpl::IsEndpointReachable() const {
@@ -245,8 +245,10 @@ void ConnectionFactoryImpl::SignalConnectionReset(
 
   if (reason == NETWORK_CHANGE) {
     // Canary attempts bypass backoff without resetting it. These will have no
-    // effect if we're already in the process of connecting.
-    ConnectImpl();
+    // effect if we're already in the process of connecting. Connection attempt
+    // failure also does not affect backoff delay to avoid piling up delays
+    // within a short period in case of many network changes.
+    ConnectImpl(/*ignore_connection_failure=*/true);
     return;
   } else if (handshake_in_progress_) {
     // Failures prior to handshake completion reuse the existing backoff entry.
@@ -307,14 +309,13 @@ GURL ConnectionFactoryImpl::GetCurrentEndpoint() const {
   return mcs_endpoints_[next_endpoint_];
 }
 
-void ConnectionFactoryImpl::ConnectImpl() {
+void ConnectionFactoryImpl::ConnectImpl(bool ignore_connection_failure) {
   event_tracker_.StartConnectionAttempt();
-  StartConnection();
+  StartConnection(ignore_connection_failure);
 }
 
-void ConnectionFactoryImpl::StartConnection() {
+void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
   DCHECK(!IsEndpointReachable());
-  // TODO(zea): Make this a dcheck again. crbug.com/462319
   CHECK(!socket_);
 
   // TODO(zea): if the network is offline, don't attempt to connect.
@@ -377,7 +378,7 @@ void ConnectionFactoryImpl::StartConnection() {
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,
-                     base::Unretained(this)));
+                     base::Unretained(this), ignore_connection_failure));
 }
 
 void ConnectionFactoryImpl::InitHandler(
@@ -416,6 +417,7 @@ base::TimeTicks ConnectionFactoryImpl::NowTicks() {
 }
 
 void ConnectionFactoryImpl::OnConnectDone(
+    bool ignore_connection_failure,
     int result,
     const std::optional<net::IPEndPoint>& local_addr,
     const std::optional<net::IPEndPoint>& peer_addr,
@@ -434,7 +436,12 @@ void ConnectionFactoryImpl::OnConnectDone(
     LOG(ERROR) << "Failed to connect to MCS endpoint with error " << result;
     recorder_->RecordConnectionFailure(result);
     CloseSocket();
-    backoff_entry_->InformOfRequest(false);
+    if (!ignore_connection_failure ||
+        !base::FeatureList::IsEnabled(
+            gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange)) {
+      // Do not inform of a failed request when `ignore_connection_failure`.
+      backoff_entry_->InformOfRequest(false);
+    }
 
     event_tracker_.ConnectionAttemptFailed(result);
     event_tracker_.EndConnectionAttempt();

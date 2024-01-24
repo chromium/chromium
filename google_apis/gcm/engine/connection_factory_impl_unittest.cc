@@ -71,8 +71,8 @@ const net::BackoffEntry::Policy kTestBackoffPolicy = {
 
 std::vector<GURL> BuildEndpoints() {
   std::vector<GURL> endpoints;
-  endpoints.push_back(GURL(kMCSEndpoint));
-  endpoints.push_back(GURL(kMCSEndpoint2));
+  endpoints.emplace_back(GURL(kMCSEndpoint));
+  endpoints.emplace_back(GURL(kMCSEndpoint2));
   return endpoints;
 }
 
@@ -105,7 +105,7 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
   void InitializeFactory();
 
   // Overridden stubs.
-  void StartConnection() override;
+  void StartConnection(bool ignore_connection_failure) override;
   void InitHandler(mojo::ScopedDataPipeConsumerHandle receive_stream,
                    mojo::ScopedDataPipeProducerHandle send_stream) override;
   std::unique_ptr<net::BackoffEntry> CreateBackoffEntry(
@@ -135,14 +135,14 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
   // Clock for controlling delay.
   base::SimpleTestTickClock tick_clock_;
   // The result to return on the next connect attempt.
-  int connect_result_;
+  int connect_result_ = net::ERR_UNEXPECTED;
   // The number of expected connection attempts;
-  int num_expected_attempts_;
+  int num_expected_attempts_ = 0;
   // Whether all expected connection attempts have been fulfilled since an
   // expectation was last set.
-  bool connections_fulfilled_;
+  bool connections_fulfilled_ = true;
   // Whether to delay a login handshake completion or not.
-  bool delay_login_;
+  bool delay_login_ = false;
   // Callback to invoke when all connection attempts have been made.
   base::RepeatingClosure finished_callback_;
   // A temporary scoped pointer to make sure we don't leak the handler in the
@@ -169,11 +169,7 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           &dummy_recorder_,
           network::TestNetworkConnectionTracker::GetInstance()),
-      connect_result_(net::ERR_UNEXPECTED),
-      num_expected_attempts_(0),
-      connections_fulfilled_(true),
-      delay_login_(false),
-      finished_callback_(finished_callback),
+      finished_callback_(std::move(finished_callback)),
       scoped_handler_(std::make_unique<FakeConnectionHandler>(
           base::BindRepeating(&ReadContinuation),
           base::BindRepeating(&WriteContinuation))),
@@ -193,14 +189,15 @@ TestConnectionFactoryImpl::~TestConnectionFactoryImpl() {
   EXPECT_EQ(0, num_expected_attempts_);
 }
 
-void TestConnectionFactoryImpl::StartConnection() {
+void TestConnectionFactoryImpl::StartConnection(
+    bool ignore_connection_failure) {
   ASSERT_GT(num_expected_attempts_, 0);
   ASSERT_FALSE(GetConnectionHandler()->CanSendMessage());
   std::unique_ptr<mcs_proto::LoginRequest> request(BuildLoginRequest(0, 0, ""));
   GetConnectionHandler()->Init(*request, std::move(receive_pipe_consumer_),
                                std::move(send_pipe_producer_));
-  OnConnectDone(connect_result_, net::IPEndPoint(), net::IPEndPoint(),
-                mojo::ScopedDataPipeConsumerHandle(),
+  OnConnectDone(ignore_connection_failure, connect_result_, net::IPEndPoint(),
+                net::IPEndPoint(), mojo::ScopedDataPipeConsumerHandle(),
                 mojo::ScopedDataPipeProducerHandle());
   if (!NextRetryAttempt().is_null()) {
     // Advance the time to the next retry time.
@@ -604,9 +601,62 @@ TEST_F(ConnectionFactoryImplTest, SignalResetRestoresBackoff) {
   EXPECT_FALSE(connected_server().is_valid());
 }
 
+TEST_F(ConnectionFactoryImplTest,
+       ShouldNotIncreaseBackoffDelayOnNetworkChange) {
+  base::test::ScopedFeatureList feature_override(
+      gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange);
+
+  factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
+  factory()->Connect();
+  WaitForConnections();
+  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  ASSERT_FALSE(retry_time.is_null());
+
+  // Mimic a network change with `ERR_NAME_NOT_RESOLVED` error.
+  factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
+  factory()->OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_4G);
+  WaitForConnections();
+  ASSERT_FALSE(factory()->IsEndpointReachable());
+
+  // Verify that the next retry time hasn't changed despite error.
+  EXPECT_EQ(retry_time, factory()->NextRetryAttempt());
+}
+
+// Tests that if there are a lot of network changes resulting in net error
+// (could happen in some cases with VPN connection), backoff delay does not
+// increase. This is needed to avoid huge delays while there is no network
+// connection.
+TEST_F(ConnectionFactoryImplTest,
+       ShouldRetryWithSmallDelayAfterManyNetworkChanges) {
+  base::test::ScopedFeatureList feature_override(
+      gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange);
+
+  factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
+  base::TimeTicks connect_time = factory()->tick_clock()->NowTicks();
+  factory()->Connect();
+  WaitForConnections();
+  ASSERT_FALSE(factory()->NextRetryAttempt().is_null());
+
+  // Mimic several network changes with `ERR_NAME_NOT_RESOLVED` error.
+  const size_t kNumAttempts = 10;
+  for (size_t i = 0; i < kNumAttempts; ++i) {
+    factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
+    factory()->OnConnectionChanged(
+        network::mojom::ConnectionType::CONNECTION_4G);
+    WaitForConnections();
+    ASSERT_FALSE(factory()->IsEndpointReachable());
+  }
+
+  // There must be at most 1 failed attempt affecting backoff policy (others are
+  // ignored due to network changes). Calculate backoff for 2 attempts to avoid
+  // flakiness.
+  base::TimeTicks retry_time = factory()->NextRetryAttempt();
+  EXPECT_LE((retry_time - connect_time).InMilliseconds(),
+            CalculateBackoff(/*num_attempts=*/2));
+}
+
 // When the network is disconnected, close the socket and suppress further
 // connection attempts until the network returns.
-// Disabled while crbug.com/396687 is being investigated.
 TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(
