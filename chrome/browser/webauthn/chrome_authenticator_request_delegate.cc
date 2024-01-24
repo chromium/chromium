@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -49,6 +51,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -484,15 +487,18 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
 
 bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
     content::BrowserContext* browser_context) {
-  // `browser_context` is currently unused but will be needed to look up
-  // whether the current profile/device is registered with the authenticator.
 #if BUILDFLAG(IS_CHROMEOS)
-  // Enclave service authenticators are not needed for Chrome OS.
+  // Enclave service authenticators are not needed for Chrome OS's primary
+  // profile. They will be used for secondary profiles in the future, but
+  // that is not implemented yet.
   return false;
 #else
-  // TODO(https://crbug.com/1459620): This also has to be conditional on device
-  // registration with the enclave, when implemented.
-  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+    return false;
+  }
+  auto* const identity_manager = IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 #endif
 }
 
@@ -721,14 +727,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
 
-  is_enclave_authenticator_available_ = is_enclave_authenticator_available;
-  dialog_model_->set_is_enclave_authenticator_available(
-      is_enclave_authenticator_available);
-
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
   if (disable_ui_) {
     return;
+  }
+
+  if (is_enclave_authenticator_available && !IsVirtualEnvironmentEnabled()) {
+    enclave_manager_ = EnclaveManagerFactory::GetForProfile(
+        Profile::FromBrowserContext(GetBrowserContext()));
+    enclave_manager_->Start();
+    dialog_model_->set_is_enclave_authenticator_available(true);
   }
 
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
@@ -844,7 +853,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (non_extension_cablev2_enabled || cablev2_extension_provided ||
-      is_enclave_authenticator_available_) {
+      enclave_manager_) {
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
@@ -891,8 +900,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
-  if (is_enclave_authenticator_available_ &&
-      request_type == device::FidoRequestType::kGetAssertion) {
+  if (enclave_manager_) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
 
@@ -986,7 +994,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      (can_use_synced_phone_passkeys_ || is_enclave_authenticator_available_) &&
+      (can_use_synced_phone_passkeys_ || enclave_manager_) &&
       !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
@@ -1017,11 +1025,16 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  dialog_model_->StartFlow(std::move(data), is_conditional_);
-
-  if (g_observer) {
-    g_observer->UIShown(this);
+  if (enclave_manager_ && !enclave_manager_->is_loaded()) {
+    // Delay showing UI until the enclave state is loaded. This avoids some
+    // complexity later that would other come from dealing with this case.
+    pending_transport_availability_info_ = std::make_unique<
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo>(
+        std::move(data));
+    return;
   }
+
+  ShowUI(std::move(data));
 }
 
 bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
@@ -1142,6 +1155,28 @@ void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
   pass_empty_usb_device_manager_ = value;
 }
 
+class ChromeAuthenticatorRequestDelegate::EnclaveManagerObserver
+    : public EnclaveManager::Observer {
+ public:
+  EnclaveManagerObserver(ChromeAuthenticatorRequestDelegate* delegate,
+                         EnclaveManager* manager)
+      : delegate_(delegate), manager_(manager) {
+    manager_->AddObserver(this);
+  }
+
+  ~EnclaveManagerObserver() override { manager_->RemoveObserver(this); }
+
+  // EnclaveManager::Observer:
+  void OnEnclaveManagerIdle() override {
+    // `delegate_` owns this object and so `delegate_` must be valid.
+    delegate_->OnEnclaveManagerIdle();
+  }
+
+ private:
+  const raw_ptr<ChromeAuthenticatorRequestDelegate> delegate_;
+  const raw_ptr<EnclaveManager> manager_;
+};
+
 content::RenderFrameHost*
 ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
   content::RenderFrameHost* ret =
@@ -1153,6 +1188,25 @@ ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
 content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
     const {
   return GetRenderFrameHost()->GetBrowserContext();
+}
+
+void ChromeAuthenticatorRequestDelegate::ShowUI(
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
+  dialog_model_->StartFlow(std::move(data), is_conditional_);
+
+  if (g_observer) {
+    g_observer->UIShown(this);
+  }
+}
+
+void ChromeAuthenticatorRequestDelegate::OnEnclaveManagerIdle() {
+  if (pending_transport_availability_info_ && enclave_manager_->is_loaded()) {
+    auto pending_transport_availability_info =
+        std::move(pending_transport_availability_info_);
+    pending_transport_availability_info_.reset();
+
+    ShowUI(std::move(*pending_transport_availability_info));
+  }
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
@@ -1204,7 +1258,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
-  device::AuthenticatorType type = is_enclave_authenticator_available_
+  device::AuthenticatorType type = enclave_manager_
                                        ? device::AuthenticatorType::kEnclave
                                        : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
