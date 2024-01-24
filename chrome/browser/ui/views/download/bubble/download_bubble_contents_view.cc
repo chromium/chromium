@@ -117,7 +117,6 @@ void DownloadBubbleContentsView::ShowSecurityPage(const ContentId& id) {
   primary_view_->SetVisible(false);
   page_ = Page::kSecurity;
   InitializeSecurityView(id);
-  security_view_->UpdateAccessibilityTextAndFocus();
   security_view_->SetVisible(true);
 }
 

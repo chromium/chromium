@@ -792,6 +792,7 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
       return;
     }
     UpdateViews();
+    UpdateAccessibilityTextAndFocus();
   }
 }
 
