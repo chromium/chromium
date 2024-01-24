@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_OPENER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_OPENER_H_
 
+#import "base/memory/raw_ptr.h"
+
 namespace web {
 class WebState;
 }
@@ -13,7 +15,7 @@ class WebState;
 struct WebStateOpener {
   // WebState responsible for the creation of the new WebState. May be null if
   // the WebState has no opener.
-  web::WebState* opener;
+  raw_ptr<web::WebState> opener;
 
   // Recorded value of the `opener` last committed navigation index when the
   // WebState was open. Value is undefined if `opener` is null.

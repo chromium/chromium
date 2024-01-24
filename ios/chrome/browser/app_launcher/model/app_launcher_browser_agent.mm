@@ -251,8 +251,8 @@ AppLauncherBrowserAgent::TabHelperDelegate::GetQueueForAppLaunchDialog(
   if (!web_state->GetNavigationItemCount() && web_state->HasOpener()) {
     WebStateList* web_state_list = browser_->GetWebStateList();
     const int index = web_state_list->GetIndexOfWebState(web_state);
-    queue_web_state =
-        web_state_list->GetOpenerOfWebStateAt(index).opener ?: queue_web_state;
+    queue_web_state = web_state_list->GetOpenerOfWebStateAt(index).opener.get()
+                          ?: queue_web_state;
   }
   return OverlayRequestQueue::FromWebState(queue_web_state,
                                            OverlayModality::kWebContentArea);

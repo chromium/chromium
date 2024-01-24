@@ -10,6 +10,7 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
@@ -85,7 +86,7 @@ class WebStateList::DetachParams {
   const bool is_closing_;
   const bool is_user_action_;
   const bool should_use_old_active_web_state_;
-  web::WebState* old_active_web_state_;
+  raw_ptr<web::WebState> old_active_web_state_;
 };
 
 WebStateList::DetachParams::DetachParams(bool is_closing,
