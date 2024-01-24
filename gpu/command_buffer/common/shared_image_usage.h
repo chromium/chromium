@@ -53,9 +53,11 @@ enum SharedImageUsage : uint32_t {
   // Image will be used in RasterInterface with RawDraw.
   SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 14,
   // Image will be used in RasterInterface for DelegatedCompositing.
-  // TODO(crbug.com/1254033): this usage shall be removed after cc is able to
-  // set a single (duplicated) fence for bunch of tiles instead of having the SI
-  // framework creating fences for each single message when write access ends.
+  // This is intended to avoid the overhead of a GPU fence per tile.
+  // TODO(crbug.com/1519911): In order to delegate buffers we need all buffer
+  // allocations to be set as SCANOUT. This will cause a fence per rastered
+  // tiled. A new buffer concept that avoids scanout but allows delegation might
+  // enable us to remove this usage.
   SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 15,
   // Image will be created on the high performance GPU if supported.
   SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 16,
