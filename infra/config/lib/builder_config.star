@@ -88,11 +88,11 @@ _target_platform = _enum(
 def _chromium_config(
         *,
         config,
+        target_platform,
         apply_configs = None,
         build_config = None,
         target_arch = None,
         target_bits = None,
-        target_platform = None,
         target_cros_boards = None,
         cros_boards_with_qemu_images = None):
     """The details for configuring chromium recipe module.
@@ -101,11 +101,11 @@ def _chromium_config(
 
     Args:
         config: (str) The name of the recipe module config item to use.
+        target_platform: (target_platform) The target platform to build for.
         apply_configs: (list[str]|str) Additional configs to apply.
         build_config: (build_config) The build config value to use.
         target_arch: (target_arch) The target architecture to build for.
         target_bits: (int) The target bit count to build for.
-        target_platform: (target_platform) The target platform to build for.
         target_cros_boards: (list[str]|str) The CROS boards to target, SDKs will
             be downloaded for each board. Can only be specified if
             `target_platform` is `target_platform.CHROMEOS`.
@@ -126,7 +126,7 @@ def _chromium_config(
         fail("unknown target_arch: {}".format(target_arch))
     if target_bits != None and target_bits not in (32, 64):
         fail("unknown target_bits: {}".format(target_bits))
-    if target_platform != None and target_platform not in _target_platform._values:
+    if target_platform not in _target_platform._values:
         fail("unknown target_platform: {}".format(target_platform))
     if ((target_cros_boards or cros_boards_with_qemu_images) and
         target_platform != _target_platform.CHROMEOS):

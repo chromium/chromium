@@ -171,6 +171,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = "try/linux-rel",
@@ -200,6 +201,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = {
@@ -229,6 +231,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = "try/win-rel",
@@ -258,6 +261,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = {
@@ -290,6 +294,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
     gn_args = "try/linux-chromeos-rel",
@@ -320,6 +325,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
     gn_args = {
@@ -466,6 +472,7 @@ This builder measures build performance for Linux developer builds, by simulatin
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = {
@@ -498,6 +505,7 @@ This builder measures build performance for Windows developer builds, by simulat
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = {
@@ -530,6 +538,7 @@ This builder measures build performance for Mac developer builds, by simulating 
             apply_configs = [
                 "mb",
             ],
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     gn_args = {

@@ -248,6 +248,7 @@ goma_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     gn_args = gn_args.config(
@@ -270,6 +271,7 @@ goma_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
@@ -325,6 +327,7 @@ goma_windows_builder(
                 "goma_failfast",
             ],
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     gn_args = gn_args.config(
