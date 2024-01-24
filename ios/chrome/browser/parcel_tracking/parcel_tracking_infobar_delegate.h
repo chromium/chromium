@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -57,7 +58,7 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
   NSArray<CustomTextCheckingResult*>* parcel_list_;
   id<ApplicationCommands> application_commands_handler_;
   id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler_;
-  commerce::ShoppingService* shopping_service_ = nullptr;
+  raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_PARCEL_TRACKING_PARCEL_TRACKING_INFOBAR_DELEGATE_H_
