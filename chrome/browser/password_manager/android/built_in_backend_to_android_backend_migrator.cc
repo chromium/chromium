@@ -227,9 +227,14 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
                : MigrationType::kNonSyncableToBuiltInBackend;
   }
 
-  // Once the local storage is supported, the migration to ensure the
-  // consistency of the two backends is needed.
-  if (upm_for_local_active) {
+  // Once the local storage is supported, the initial migration is needed.
+  bool upm_migration_for_local_needed =
+      prefs_->GetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores) ==
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending);
+  if (upm_migration_for_local_needed) {
     return MigrationType::kForLocalUsers;
   }
 

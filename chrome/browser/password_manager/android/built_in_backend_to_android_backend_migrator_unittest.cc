@@ -4,19 +4,16 @@
 
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -86,6 +83,10 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kTimesReenrolledToGoogleMobileServices, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -111,7 +112,6 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
   PasswordStoreBackend& built_in_backend() { return built_in_backend_; }
   PasswordStoreBackend& android_backend() { return android_backend_; }
 
-  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
   TestingPrefServiceSimple* prefs() { return &prefs_; }
   BuiltInBackendToAndroidBackendMigrator* migrator() { return migrator_.get(); }
 
@@ -121,7 +121,6 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   syncer::TestSyncService sync_service_;
   FakePasswordStoreBackend built_in_backend_;
@@ -165,9 +164,13 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        AllPrefsAreUpdatedWhenMigrationIsNeeded_SyncOff) {
-  feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
   Init();
+
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
@@ -213,24 +216,6 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
   EXPECT_EQ(0, prefs()->GetDouble(
                    password_manager::prefs::kTimeOfLastMigrationAttempt));
-}
-
-TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       LastAttemptUpdatedInPrefsWhenRollingMigrationEnabled) {
-  // Setup the pref to indicate that the initial migration has happened already.
-  feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-  Init(/*current_migration_version=*/1);
-
-  migrator()->StartMigrationIfNecessary(
-      /*should_attempt_upm_reenrollment=*/false);
-  RunUntilIdle();
-
-  EXPECT_EQ(1, prefs()->GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  EXPECT_EQ(
-      base::Time::Now().InSecondsFSinceUnixEpoch(),
-      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
@@ -313,7 +298,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 // Tests that migration removes blocklisted entries with non-empty username or
 // values from the built in backlend before writing to the Android backend.
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       MigrationClearsBlocklistedCredentials) {
+       MigrationClearsBlocklistedCredentials_SyncOn) {
   Init();
   InitSyncService(/*is_password_sync_enabled=*/true);
 
@@ -344,7 +329,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 // Tests that migration does not affect username and password for
 // non-blocklisted entries.
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       MigrationDoesNotClearNonBlocklistedCredentials) {
+       MigrationDoesNotClearNonBlocklistedCredentials_SyncOn) {
   Init();
   InitSyncService(/*is_password_sync_enabled=*/true);
 
@@ -512,7 +497,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
 // Tests the initial migration result.
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
-       MigrationAfterEnrollingIntoTheExperiment) {
+       LocalPwdMigrationAfterEnrollingIntoTheExperiment) {
   // Set current_migration_version to 0 to imitate a user enrolling into the
   // experiment.
   BuiltInBackendToAndroidBackendMigratorTest::Init(
@@ -520,8 +505,11 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
   InitSyncService(/*is_password_sync_enabled=*/false);
 
-  feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
 
   const MigrationParam& p = GetParam();
 
@@ -548,13 +536,17 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 }
 
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
-       RollingMigration) {
+       LocalPwdMigrationDoesNotRepeatAfterInitialEnrollment) {
   // Setup the pref to indicate that the initial migration has happened already.
-  // This implies that rolling migration will take place!
-  feature_list().InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
   BuiltInBackendToAndroidBackendMigratorTest::Init(
       /*current_migration_version=*/1);
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   const MigrationParam& p = GetParam();
 
@@ -570,14 +562,59 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       /*should_attempt_upm_reenrollment=*/false);
   RunUntilIdle();
 
-  for (auto* const backend : {&android_backend(), &built_in_backend()}) {
-    base::MockCallback<LoginsOrErrorReply> mock_reply;
-    EXPECT_CALL(
-        mock_reply,
-        Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetAndroidLogins()))));
-    backend->GetAllLoginsAsync(mock_reply.Get());
-    RunUntilIdle();
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetAndroidLogins()))));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
+  built_in_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+}
+
+TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
+       LocalPwdMigrationDoesNotStartBeforeStoreSplit) {
+  // Setup the pref to indicate that the store split is not active.
+  BuiltInBackendToAndroidBackendMigratorTest::Init(
+      /*current_migration_version=*/0);
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+
+  const MigrationParam& p = GetParam();
+
+  for (const auto& login : p.GetBuiltInLogins()) {
+    built_in_backend().AddLoginAsync(login, base::DoNothing());
   }
+  for (const auto& login : p.GetAndroidLogins()) {
+    android_backend().AddLoginAsync(login, base::DoNothing());
+  }
+  RunUntilIdle();
+
+  migrator()->StartMigrationIfNecessary(
+      /*should_attempt_upm_reenrollment=*/false);
+  RunUntilIdle();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetAndroidLogins()))));
+  android_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
+  built_in_backend().GetAllLoginsAsync(mock_reply.Get());
+  RunUntilIdle();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -798,6 +835,10 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
                                             0.0);
     prefs()->registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
+    prefs()->registry()->RegisterIntegerPref(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
     CreateMigrator(&built_in_backend_, &android_backend_, prefs());
   }
@@ -843,9 +884,11 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
        DoesNotCompleteMigrationWhenWritingToAndroidBackendFails_SyncOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
 
   // Sync state doesn't affect this test, run it arbitrarily for non-sync'ing
   // users.
@@ -886,7 +929,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
-       SecondMigrationCannotStartWhileTheFirstOneHasNotCompleted) {
+       SecondMigrationCannotStartWhileTheFirstOneHasNotCompleted_SyncOn) {
   InitSyncService(/*is_password_sync_enabled=*/true);
 
   // Add a form to the built-in backend to have something to migrate.
