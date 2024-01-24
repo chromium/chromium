@@ -461,8 +461,9 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 }
 
 void SSLManager::NotifyDidChangeVisibleSSLState() {
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(controller_->DeprecatedGetWebContents());
+  RenderFrameHostImpl* main_frame = controller_->frame_tree().GetMainFrame();
+  WebContentsImpl* contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(main_frame));
   contents->DidChangeVisibleSecurityState();
 }
 
