@@ -32,6 +32,7 @@
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/presentation_feedback.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -113,8 +114,8 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
     DCHECK(sk_surface);
     auto queue_index =
         context_provider_->GetDeviceQueue()->GetVulkanQueueIndex();
-    skgpu::MutableTextureState state(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                                     queue_index);
+    skgpu::MutableTextureState state = skgpu::MutableTextureStates::MakeVulkan(
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, queue_index);
     if (GrDirectContext* direct_context =
             GrAsDirectContext(sk_surface->recordingContext())) {
       direct_context->flush(sk_surface.get(), {}, &state);
