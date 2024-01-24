@@ -1239,7 +1239,11 @@ void Navigator::RecordNavigationMetrics(
   DCHECK(site_instance->HasProcess());
 
   if (!details.is_main_frame || !metrics_data_ ||
-      metrics_data_->url_ != original_request_url) {
+      metrics_data_->url_ != original_request_url ||
+      metrics_data_->ukm_source_id_ == ukm::kInvalidSourceId) {
+    // The source ID will be invalid for prerendered pages. See
+    // `GetPageUkmSourceId()`.
+    metrics_data_.reset();
     return;
   }
 

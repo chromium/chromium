@@ -26411,7 +26411,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Unload" singular="True">
-  <owner>kdillon@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Metrics associated with a unloading in preparation for a navigation.
   </summary>
