@@ -15,9 +15,4 @@ rust_executable("cloud_authenticator_test_service") {
     "//third_party/rust/hex/v0_4:lib",
   ]
   testonly = true
-
-  # This is needed because `enclave_manager_unittest.cc` uses this target in
-  # `data_deps`. Without this, it won't be built when needed. This is specific
-  # to Rust binaries.
-  is_data_dep = true
 }
