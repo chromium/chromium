@@ -15,6 +15,7 @@ WITH
         AND JSON_VALUE(b.input.properties, '$.cq') = 'required'
         AND JSON_QUERY(b.output.properties, '$.rts_was_used') IS NULL
         AND b.status = 'SUCCESS'
+        AND b.builder.project = 'chromium'
     ),
     # Get all the triggered swarming test tasks for each build
     deduped_tasks AS (
