@@ -5368,8 +5368,12 @@ void RenderFrameImpl::BeginNavigation(
 
   if (frame_->IsOutermostMainFrame() && url.is_valid() &&
       url.SchemeIsHTTPOrHTTPS() &&
-      base::FeatureList::IsEnabled(
-          features::kSpeculativeServiceWorkerStartup)) {
+      (base::FeatureList::IsEnabled(
+           blink::features::kHttpDiskCachePrewarming) ||
+       base::FeatureList::IsEnabled(
+           blink::features::kSpeculativeServiceWorkerWarmUp) ||
+       base::FeatureList::IsEnabled(
+           features::kSpeculativeServiceWorkerStartup))) {
     frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 

@@ -5766,8 +5766,11 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
       !blink::features::kSpeculativeServiceWorkerWarmUpDryRun.Get();
+  const bool kHttpDiskCachePrewarmingEnabled =
+      base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
+      !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
 
-  if (!kStartupEnabled && !kWarmUpEnabled) {
+  if (!kStartupEnabled && !kWarmUpEnabled && !kHttpDiskCachePrewarmingEnabled) {
     return;
   }
 
@@ -5794,6 +5797,11 @@ void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     if (GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url) ==
         RenderProcessHost::FilterURLResult::kBlocked) {
       continue;
+    }
+
+    if (filtered_url.SchemeIsHTTPOrHTTPS()) {
+      GetContentClient()->browser()->MaybePrewarmHttpDiskCache(
+          *GetBrowserContext(), filtered_url);
     }
 
     if (!OriginCanAccessServiceWorkers(filtered_url)) {
