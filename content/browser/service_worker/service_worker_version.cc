@@ -662,13 +662,6 @@ bool ServiceWorkerVersion::OnRequestTermination() {
     }
   }
 
-  will_warm_up_on_stopped_ =
-      will_be_terminated &&
-      base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp) &&
-      blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.Get() &&
-      scope_.SchemeIsHTTPOrHTTPS();
-
   if (will_be_terminated) {
     embedded_worker_->Stop();
   } else {
@@ -2042,7 +2035,8 @@ void ServiceWorkerVersion::OpenWindow(
 }
 
 bool ServiceWorkerVersion::HasWorkInBrowser() const {
-  return !inflight_requests_.IsEmpty() || !start_callbacks_.empty();
+  return !inflight_requests_.IsEmpty() || !start_callbacks_.empty() ||
+         !warm_up_callbacks_.empty();
 }
 
 void ServiceWorkerVersion::OnSimpleEventFinished(
@@ -2819,11 +2813,6 @@ void ServiceWorkerVersion::OnStoppedInternal(
   } else if (!HasWorkInBrowser()) {
     OnNoWorkInBrowser();
   }
-
-  if (!should_restart && will_warm_up_on_stopped_ && context_) {
-    context_->wrapper()->WarmUpServiceWorker(scope_, key_, base::DoNothing());
-  }
-  will_warm_up_on_stopped_ = false;
 }
 
 void ServiceWorkerVersion::FinishStartWorker(
@@ -2834,12 +2823,6 @@ void ServiceWorkerVersion::FinishStartWorker(
   for (auto& callback : callbacks)
     std::move(callback).Run(status);
   is_running_start_callbacks_ = false;
-
-  std::vector<StatusCallback> warm_up_callbacks;
-  warm_up_callbacks.swap(warm_up_callbacks_);
-  for (auto& callback : warm_up_callbacks) {
-    std::move(callback).Run(status);
-  }
 }
 
 void ServiceWorkerVersion::CleanUpExternalRequest(
