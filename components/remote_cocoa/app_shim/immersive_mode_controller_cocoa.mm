@@ -13,63 +13,9 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
-
 // Workaround for https://crbug.com/1369643
 const double kMinHeight = 0.5;
-
-NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
-  for (NSView* view in window.contentView.subviews) {
-    if ([view isKindOfClass:NSClassFromString(@"NSTitlebarContainerView")]) {
-      return view;
-    }
-  }
-  return nil;
-}
-
 }  // namespace
-
-@interface ImmersiveModeTitlebarObserver () {
-  base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa> _controller;
-  NSView* __weak _titlebarContainerView;
-}
-@end
-
-@implementation ImmersiveModeTitlebarObserver
-
-- (instancetype)initWithController:
-                    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
-                        controller
-             titlebarContainerView:(NSView*)titlebarContainerView {
-  self = [super init];
-  if (self) {
-    _controller = std::move(controller);
-    _titlebarContainerView = titlebarContainerView;
-    [_titlebarContainerView addObserver:self
-                             forKeyPath:@"frame"
-                                options:NSKeyValueObservingOptionInitial |
-                                        NSKeyValueObservingOptionNew
-                                context:nullptr];
-  }
-  return self;
-}
-
-- (void)dealloc {
-  [_titlebarContainerView removeObserver:self forKeyPath:@"frame"];
-}
-
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary<NSKeyValueChangeKey, id>*)change
-                       context:(void*)context {
-  if (!_controller || ![keyPath isEqualToString:@"frame"]) {
-    return;
-  }
-
-  NSRect frame = [change[@"new"] rectValue];
-  _controller->OnTitlebarFrameDidChange(frame);
-}
-
-@end
 
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
 // NSWindow to the overlay view widget's NSWindow. The delegate will be used to
@@ -262,9 +208,6 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
 }
 
 ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
-  // Remove the titlebar observer before moving the view.
-  immersive_mode_titlebar_observer_ = nil;
-
   overlay_window_.commandDispatchParentOverride = nil;
   StopObservingChildWindows(overlay_window_);
 
@@ -511,6 +454,7 @@ bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {
 }
 
 void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
+  Reanchor();
   bool is_toolbar_revealed = IsToolbarRevealed();
   if (is_toolbar_revealed_ != is_toolbar_revealed) {
     is_toolbar_revealed_ = is_toolbar_revealed;
@@ -519,6 +463,7 @@ void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
 }
 
 void ImmersiveModeControllerCocoa::OnMenuBarRevealChanged() {
+  Reanchor();
   if (NativeWidgetNSWindowBridge* bridge =
           NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenMenuBarRevealChanged(
@@ -548,19 +493,7 @@ void ImmersiveModeControllerCocoa::ImmersiveModeViewWillMoveToWindow(
     // causes odd behavior.
     [browser_window_ removeChildWindow:overlay_window()];
     [window addChildWindow:overlay_window() ordered:NSWindowAbove];
-
-    NSView* view = GetNSTitlebarContainerViewFromWindow(window);
-    DCHECK(view);
-    // Create the titlebar observer. Observing can only start once the view has
-    // been fully re-parented into the AppKit fullscreen window.
-    immersive_mode_titlebar_observer_ = [[ImmersiveModeTitlebarObserver alloc]
-           initWithController:weak_ptr_factory_.GetWeakPtr()
-        titlebarContainerView:view];
   }
-}
-
-void ImmersiveModeControllerCocoa::OnTitlebarFrameDidChange(NSRect frame) {
-  LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
 }
 
 bool ImmersiveModeControllerCocoa::IsTabbed() {
@@ -632,6 +565,10 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
   }
 
   [window setFrameOrigin:point_on_screen];
+}
+
+void ImmersiveModeControllerCocoa::Reanchor() {
+  LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
 }
 
 }  // namespace remote_cocoa

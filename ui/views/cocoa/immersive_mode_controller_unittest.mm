@@ -31,7 +31,6 @@ constexpr float kTabOverlayViewHeight = 50;
 constexpr float kTabOverlayViewWidth = kBrowserWidth;
 constexpr float kPopupHeight = 100;
 constexpr float kPopupWidth = kPopupHeight;
-constexpr float kTitlebarHeight = 28;
 
 NativeWidgetMacNSWindow* CreateNativeWidgetMacNSWindow(
     CGFloat width,
@@ -162,84 +161,6 @@ TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
       browser()
           .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
       1);
-}
-
-// Test KVO on ImmersiveModeController titlebar container view's frame.
-TEST_F(CocoaImmersiveModeControllerTest, TitlebarContainerViewObserver) {
-  // Create a fake NSToolbarFullScreenWindow and associated views.
-  NSView* titlebar_container_view = [[NSView alloc]
-      initWithFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
-                               kOverlayViewHeight)];
-
-  NSWindow* fullscreen_window = [[NSWindow alloc]
-      initWithContentRect:NSMakeRect(0, 0, kOverlayViewWidth, kBrowserHeight)
-                styleMask:NSWindowStyleMaskBorderless
-                  backing:NSBackingStoreBuffered
-                    defer:NO];
-  fullscreen_window.releasedWhenClosed = NO;
-  [fullscreen_window.contentView addSubview:titlebar_container_view];
-  [fullscreen_window orderBack:nil];
-
-  auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
-  base::WeakPtrFactory<ImmersiveModeControllerCocoa> weak_ptr_factory(
-      immersive_mode_controller.get());
-
-  // Grab the content view from the controller and add it to the test
-  // `titlebar_container_view`.
-  BridgedContentView* overlay_view =
-      immersive_mode_controller->overlay_content_view();
-  [titlebar_container_view addSubview:overlay_view];
-  overlay_view.frame = NSMakeRect(0, 0, kOverlayViewWidth, kOverlayViewHeight);
-
-  // Create a titlebar observer. This is the class under test.
-  [[maybe_unused]] ImmersiveModeTitlebarObserver* titlebar_observer =
-      [[ImmersiveModeTitlebarObserver alloc]
-             initWithController:weak_ptr_factory.GetWeakPtr()
-          titlebarContainerView:titlebar_container_view];
-
-  // Make sure that the overlay view moves along the y axis as the titlebar
-  // container view moves. This simulates the titlebar reveal when top chrome is
-  // always visible. Down.
-  for (int i = 0; i < kTitlebarHeight + 1; ++i) {
-    [titlebar_container_view
-        setFrame:NSMakeRect(0, kOverlayViewHeight - i, kOverlayViewWidth,
-                            kOverlayViewHeight)];
-    EXPECT_EQ(overlay().frame.origin.y, 100 - i);
-  }
-
-  // And back up.
-  for (int i = 1; i <= kTitlebarHeight; ++i) {
-    [titlebar_container_view
-        setFrame:NSMakeRect(0, (kOverlayViewHeight - kTitlebarHeight) + i,
-                            kOverlayViewWidth, kOverlayViewHeight)];
-    EXPECT_EQ(overlay().frame.origin.y,
-              (kOverlayViewHeight - kTitlebarHeight) + i);
-  }
-
-  // Clip the overlay view and make sure the overlay window moves off screen.
-  // This simulates top chrome auto hiding.
-  if (@available(macOS 11.0, *)) {
-    [titlebar_container_view
-        setFrame:NSMakeRect(0, kOverlayViewHeight + 1, kOverlayViewWidth,
-                            kOverlayViewHeight)];
-    if (@available(macOS 12.0, *)) {
-      EXPECT_EQ(overlay().frame.origin.y,
-                browser().screen.frame.size.height +
-                    browser().screen.safeAreaInsets.top);
-    } else {
-      EXPECT_EQ(overlay().frame.origin.y, browser().screen.frame.size.height);
-    }
-
-    // Remove the clip and make sure the overlay window moves back.
-    [titlebar_container_view
-        setFrame:NSMakeRect(0, kOverlayViewHeight, kOverlayViewWidth,
-                            kOverlayViewHeight)];
-    EXPECT_EQ(overlay().frame.origin.y, kOverlayViewHeight);
-  }
-
-  [fullscreen_window close];
-  fullscreen_window = nil;
 }
 
 // Test that IsReveal() reflects the toolbar visibility.

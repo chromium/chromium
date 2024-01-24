@@ -191,9 +191,8 @@ void ImmersiveModeTabbedControllerCocoa::TitlebarHide() {
   browser_window().toolbar.visible = NO;
 }
 
-void ImmersiveModeTabbedControllerCocoa::OnTitlebarFrameDidChange(
-    NSRect frame) {
-  ImmersiveModeControllerCocoa::OnTitlebarFrameDidChange(frame);
+void ImmersiveModeTabbedControllerCocoa::Reanchor() {
+  ImmersiveModeControllerCocoa::Reanchor();
   LayoutWindowWithAnchorView(tab_window_, tab_content_view_);
 }
 
