@@ -99,6 +99,10 @@ void ScriptedAnimationController::ScheduleVideoFrameCallbacksExecution(
 
 ScriptedAnimationController::CallbackId
 ScriptedAnimationController::RegisterFrameCallback(FrameCallback* callback) {
+  // If we no longer have a context, there is no need to register the callback.
+  if (!GetExecutionContext()) {
+    return 0;
+  }
   CallbackId id = callback_collection_.RegisterFrameCallback(callback);
   ScheduleAnimationIfNeeded();
   return id;
