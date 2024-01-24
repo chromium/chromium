@@ -435,10 +435,6 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
   return output;
 }
 
-std::u16string Iban::GetStrippedValue() const {
-  return value_;
-}
-
 bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
   // Unlike the `Compare()` function, which seeks an exact match between
   // `prefix_`, `suffix_`, and `length_`, the comparison performed here involves

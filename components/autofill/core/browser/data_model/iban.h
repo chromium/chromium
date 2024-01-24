@@ -148,11 +148,6 @@ class Iban : public AutofillDataModel {
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
-  // Returns a version of |value_| which does not have any separator characters
-  // (e.g., '-' and ' ').
-  // TODO(crbug.com/1422672): Cleanup and use value().
-  std::u16string GetStrippedValue() const;
-
   // Returns true if the `prefix_`, `suffix_` and `length_` of the given `iban`
   // matches this IBAN.
   bool MatchesPrefixSuffixAndLength(const Iban& iban) const;
