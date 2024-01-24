@@ -197,7 +197,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       const headerElement = $$(moduleElement, 'ntp-module-header');
       assertTrue(!!headerElement);
       const showAllButton =
-          headerElement.querySelector('#showAllButton') as HTMLElement;
+          headerElement.querySelector<HTMLElement>('#showAllButton');
       assertTrue(!!showAllButton);
 
       const waitForUsageEvent = eventToPromise('usage', moduleElement);

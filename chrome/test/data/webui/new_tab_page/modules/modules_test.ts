@@ -393,8 +393,9 @@ suite('NewTabPageModulesModulesTest', () => {
     // Act.
     await waitAfterNextRender(modulesElement);
     const undoRemoveModuleButton =
-        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-        HTMLElement;
+        modulesElement.shadowRoot!.querySelector<HTMLElement>(
+            '#undoRemoveModuleButton');
+    assertTrue(!!undoRemoveModuleButton);
     undoRemoveModuleButton.click();
 
     // Assert.
@@ -467,8 +468,9 @@ suite('NewTabPageModulesModulesTest', () => {
     // Act.
     await waitAfterNextRender(modulesElement);
     const undoRemoveModuleButton =
-        modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-        HTMLElement;
+        modulesElement.shadowRoot!.querySelector<HTMLElement>(
+            '#undoRemoveModuleButton');
+    assertTrue(!!undoRemoveModuleButton);
     undoRemoveModuleButton.click();
 
     // Assert.
@@ -826,8 +828,9 @@ suite('NewTabPageModulesModulesTest', () => {
       // // Act.
       await waitAfterNextRender(modulesElement);
       const undoRemoveModuleButton =
-          modulesElement.shadowRoot!.querySelector('#undoRemoveModuleButton') as
-          HTMLElement;
+          modulesElement.shadowRoot!.querySelector<HTMLElement>(
+              '#undoRemoveModuleButton');
+      assertTrue(!!undoRemoveModuleButton);
       undoRemoveModuleButton.click();
 
       // Assert.

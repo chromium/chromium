@@ -538,7 +538,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private focusBookmark_(id: string) {
     const bookmarkElement =
-        this.shadowRoot!.querySelector(`#bookmark-${id}`) as HTMLElement;
+        this.shadowRoot!.querySelector<HTMLElement>(`#bookmark-${id}`);
     if (bookmarkElement) {
       bookmarkElement.focus();
     }

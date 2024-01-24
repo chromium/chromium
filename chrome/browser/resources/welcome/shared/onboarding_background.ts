@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './icons.html.js';
 import '../strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -54,8 +55,9 @@ export class OnboardingBackgroundElement extends PolymerElement {
       ['yellow-line', 49],
     ];
     details.forEach(([id, width]) => {
-      this.createLineAnimation_(
-          (this.shadowRoot!.querySelector(`#${id}`) as HTMLElement), width);
+      const element = this.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
+      assert(element);
+      this.createLineAnimation_(element, width);
     });
   }
 

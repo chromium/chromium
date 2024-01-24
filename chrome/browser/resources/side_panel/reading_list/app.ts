@@ -168,7 +168,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     this.$.unreadItemsList.addEventListener(
         'rendered-item-count-changed', () => {
           const firstUnreadItem =
-              this.root!.querySelector('.unread-item') as HTMLElement | null;
+              this.root!.querySelector<HTMLElement>('.unread-item');
           if (firstUnreadItem) {
             this.registerHelpBubble(
                 READING_LIST_UNREAD_ELEMENT_ID, firstUnreadItem);

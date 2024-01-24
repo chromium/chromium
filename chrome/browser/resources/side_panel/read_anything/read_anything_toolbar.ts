@@ -103,7 +103,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // callback which doesn't have access to "this"
   static maybeUpdateMoreOptions(toolbar: HTMLElement) {
     // Hide the more options button first to calculate if we need it
-    const moreOptionsButton = toolbar.querySelector('#more') as HTMLElement;
+    const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
     assert(moreOptionsButton);
     ReadAnythingToolbarElement.hideElement(moreOptionsButton, false);
 
@@ -773,7 +773,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
 
     // Allow focusing the more options menu if it's visible.
-    const moreOptionsButton = toolbar.querySelector('#more') as HTMLElement;
+    const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
     assert(moreOptionsButton);
     if (moreOptionsButton.style.display &&
         (moreOptionsButton.style.display !== 'none')) {

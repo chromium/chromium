@@ -30,7 +30,7 @@ suite('PrinterSetupInfoTest', function() {
   function getShadowElement<T extends HTMLElement>(
       parentElement: PolymerElement, selector: string): T {
     assertTrue(!!parentElement);
-    const element = parentElement.shadowRoot!.querySelector(selector) as T;
+    const element = parentElement.shadowRoot!.querySelector<T>(selector);
     assertTrue(!!element);
     return element;
   }

@@ -249,9 +249,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private getIdleLoad_(): Promise<Element> {
-    return (this.shadowRoot!.querySelector('#advancedPageTemplate') as
-            SettingsIdleLoadElement)
-        .get();
+    const idleLoad = this.shadowRoot!.querySelector<SettingsIdleLoadElement>(
+        '#advancedPageTemplate');
+    assert(idleLoad);
+    return idleLoad.get();
   }
 
   private updatePrivacyGuidePromoVisibility_() {

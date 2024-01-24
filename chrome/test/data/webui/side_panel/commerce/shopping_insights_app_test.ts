@@ -184,7 +184,7 @@ suite('ShoppingInsightsAppTest', () => {
         comment.textContent!.trim());
 
     const feedbackButton =
-        commentRow.shadowRoot!.querySelector('.link') as HTMLElement;
+        commentRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!feedbackButton);
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
@@ -257,7 +257,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertFalse(
         isVisible(attributesRow.shadowRoot!.querySelector('.attributes')));
     const buyOption =
-        attributesRow.shadowRoot!.querySelector('.link') as HTMLElement;
+        attributesRow.shadowRoot!.querySelector<HTMLElement>('.link');
     assertTrue(!!buyOption);
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
@@ -338,10 +338,12 @@ suite('ShoppingInsightsAppTest', () => {
           'getPriceTrackingStatusForCurrentUrl');
       await flushTasks();
 
-      const section = shoppingInsightsApp.shadowRoot!.querySelector(
-                          '#priceTrackingSection') as PriceTrackingSection;
+      const section =
+          shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+              '#priceTrackingSection');
       assertEquals(isVisible(section), eligible);
       if (eligible) {
+        assertTrue(!!section);
         assertEquals(section.priceInsightsInfo, priceInsights1);
         assertEquals(section.productInfo, productInfo);
       }
@@ -370,8 +372,9 @@ suite('ShoppingInsightsAppTest', () => {
     await shoppingServiceApi.whenCalled('isShoppingListEligible');
     await flushTasks();
 
-    const section = shoppingInsightsApp.shadowRoot!.querySelector(
-                        '#priceTrackingSection') as PriceTrackingSection;
+    const section =
+        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+            '#priceTrackingSection');
     assertFalse(isVisible(section));
   });
 });

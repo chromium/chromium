@@ -157,7 +157,7 @@ suite('SettingsSectionTest', function() {
 
     const biometricAuthenticationToggle =
         settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
-            '#biometricAuthenticationToggle') as PrefToggleButtonElement;
+            '#biometricAuthenticationToggle');
     assertTrue(!!biometricAuthenticationToggle);
     assertFalse(biometricAuthenticationToggle.checked);
     assertFalse(
@@ -432,8 +432,8 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await passkeysProxy.whenCalled('passkeysHasPasskeys');
     flush();
-    const managePasskeysRow = settings.shadowRoot!.querySelector<HTMLElement>(
-                                  '#managePasskeysRow') as HTMLElement;
+    const managePasskeysRow =
+        settings.shadowRoot!.querySelector<HTMLElement>('#managePasskeysRow');
     assertTrue(!!managePasskeysRow);
 
     managePasskeysRow.click();
@@ -447,7 +447,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     flush();
     const element = settings.shadowRoot!.querySelector<HTMLElement>(
-                        '#createPasskeysInICloudKeychainRow') as HTMLElement;
+        '#createPasskeysInICloudKeychainRow');
 
     // <if expr="not is_macosx">
     assertFalse(!!element);

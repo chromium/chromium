@@ -4,7 +4,6 @@
 
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
@@ -18,15 +17,15 @@ suite(`SigninSyncConfirmationTest`, function() {
 
   function testButtonClick(buttonSelector: string) {
     const allButtons =
-        Array.from(app.shadowRoot!.querySelectorAll('cr-button')) as
-        CrButtonElement[];
+        Array.from(app.shadowRoot!.querySelectorAll('cr-button'));
     const actionButton =
-        app.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+        app.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
     const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
 
     allButtons.forEach(button => assertFalse(button.disabled));
     assertFalse(spinner!.active);
 
+    assertTrue(!!actionButton);
     actionButton.click();
 
     allButtons.forEach(button => assertTrue(button.disabled));

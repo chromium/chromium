@@ -89,7 +89,7 @@ suite('Lens search', () => {
 
     // Assert
     const lensButton =
-        realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
     assertTrue(!!lensButton);
   });
 
@@ -117,7 +117,8 @@ suite('Lens search', () => {
 
     // Act.
     const lensButton =
-        realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+    assertTrue(!!lensButton);
     lensButton.click();
 
     // Assert.
@@ -142,7 +143,8 @@ suite('Lens search', () => {
 
     // Act.
     const lensButton =
-        realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+    assertTrue(!!lensButton);
     lensButton.click();
 
     // Assert.
