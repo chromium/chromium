@@ -953,12 +953,7 @@
   {
     "name": "bottom-omnibox-default-setting",
     "owners": [ "christianxu@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 122
-  },
-  {
-    "name": "bottom-omnibox-device-switcher-results",
-    "owners": [ "christianxu@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "bottom-omnibox-promo-app-launch",
@@ -979,11 +974,6 @@
     "name": "bottom-omnibox-promo-region-filter",
     "owners": [ "christianxu@google.com", "bling-flags@google.com"],
     "expiry_milestone": 127
-  },
-  {
-    "name": "bottom-omnibox-steady-state",
-    "owners": [ "stkhapugin@chromium.org", "christianxu@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 122
   },
   {
     "name": "bounce-tracking-mitigations",

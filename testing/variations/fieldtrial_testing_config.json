@@ -2822,24 +2822,6 @@
             ]
         }
     ],
-    "BottomOmniboxSteadyStateIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_ForSafariSwitcher",
-                    "params": {
-                        "BottomOmniboxDefaultSettingParam": "BottomSafariSwitcher"
-                    },
-                    "enable_features": [
-                        "BottomOmniboxDefaultSetting"
-                    ]
-                }
-            ]
-        }
-    ],
     "BoundaryEventDispatchTracksNodeRemoval": [
         {
             "platforms": [

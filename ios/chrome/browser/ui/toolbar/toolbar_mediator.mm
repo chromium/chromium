@@ -276,8 +276,7 @@ BOOL ShouldSwitchOmniboxToBottom(
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   _isNTP = NTPHelper && NTPHelper->IsActive();
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    if (_shouldCheckSafariSwitcherOnFRE &&
-        IsBottomOmniboxDeviceSwitcherResultsEnabled()) {
+    if (_shouldCheckSafariSwitcherOnFRE) {
       [self checkSafariSwitcherOnFRE];
     }
     [self updateOmniboxPosition];
@@ -431,8 +430,7 @@ BOOL ShouldSwitchOmniboxToBottom(
 
   // Call `isSafariSwitcherAtStartup` in all cases to collect metrics on the
   // device switcher result availability.
-  if (IsBottomOmniboxDeviceSwitcherResultsEnabled() &&
-      [self isSafariSwitcherAtStartup:bottomOmniboxEnabledByDefault] &&
+  if ([self isSafariSwitcherAtStartup:bottomOmniboxEnabledByDefault] &&
       featureParam == kBottomOmniboxDefaultSettingParamSafariSwitcher) {
     bottomOmniboxEnabledByDefault = YES;
   }

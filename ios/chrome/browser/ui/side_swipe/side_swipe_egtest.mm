@@ -71,19 +71,13 @@
 
 @end
 
-#pragma mark - Bottom omnibox enabled tests
+#pragma mark - Bottom omnibox tests
 
 // SideSwipeTestCase with a bottom default omnibox position.
 @interface SideSwipeBottomOmniboxTestCase : SideSwipeTestCase
 @end
 
 @implementation SideSwipeBottomOmniboxTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kBottomOmniboxSteadyState);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

@@ -462,19 +462,13 @@ void WaitforPDFExtensionView() {
 
 @end
 
-#pragma mark - Bottom omnibox enabled Tests
+#pragma mark - Bottom omnibox Tests
 
 // Fullscreens tests for Chrome with bottom omnibox enabled by default.
 @interface FullscreenBottomOmniboxTestCase : ZZZFullscreenTestCase
 @end
 
 @implementation FullscreenBottomOmniboxTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kBottomOmniboxSteadyState);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

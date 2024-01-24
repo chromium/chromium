@@ -124,11 +124,6 @@ extern const char kAutofillUseTwoDotsForLastFourDigitsDescription[];
 extern const char kBottomOmniboxDefaultSettingName[];
 extern const char kBottomOmniboxDefaultSettingDescription[];
 
-// Title and description for the flag that retrieves device switcher result for
-// the default omnibox position.
-extern const char kBottomOmniboxDeviceSwitcherResultsName[];
-extern const char kBottomOmniboxDeviceSwitcherResultsDescription[];
-
 // Title and description for the flag that enables the app-launch promo of
 // bottom omnibox.
 extern const char kBottomOmniboxPromoAppLaunchName[];
@@ -148,11 +143,6 @@ extern const char kBottomOmniboxPromoFREDescription[];
 // position promos.
 extern const char kBottomOmniboxPromoRegionFilterName[];
 extern const char kBottomOmniboxPromoRegionFilterDescription[];
-
-// Title and description for the flag that moves the omnibox to the bottom in
-// the steady state.
-extern const char kBottomOmniboxSteadyStateName[];
-extern const char kBottomOmniboxSteadyStateDescription[];
 
 // Title and description for the flag that enables donation of new intents.
 extern const char kSpotlightDonateNewIntentsName[];
