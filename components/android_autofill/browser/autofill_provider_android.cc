@@ -375,6 +375,11 @@ void AutofillProviderAndroid::OnShowBottomSheetResult(
           ? PrefillRequestState::
                 kRequestSentStructureProvidedBottomSheetNotShown
           : PrefillRequestState::kRequestSentStructureNotProvided);
+  if (!provided_autofill_structure && cached_data_.has_value()) {
+    base::UmaHistogramTimes(
+        kPrefillRequestBottomsheetNoViewStructureDelayUma,
+        base::TimeTicks::Now() - cached_data_->prefill_request_creation_time);
+  }
 }
 
 void AutofillProviderAndroid::OnTextFieldDidChange(
@@ -707,6 +712,7 @@ void AutofillProviderAndroid::MaybeSendPrefillRequest(
   }
 
   cached_data_.emplace();
+  cached_data_->prefill_request_creation_time = base::TimeTicks::Now();
   cached_data_->cached_form = std::make_unique<FormDataAndroid>(
       form_structure->ToFormData(), CreateSessionId());
   cached_data_->cached_form->UpdateFieldTypes(*form_structure);

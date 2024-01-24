@@ -1138,6 +1138,10 @@ TEST_P(AutofillProviderAndroidPrefillRequestTest,
   histogram_tester.ExpectUniqueSample(
       AutofillProviderAndroid::kPrefillRequestStateUma,
       PrefillRequestState::kRequestSentStructureNotProvided, 1);
+  histogram_tester.ExpectTotalCount(
+      AutofillProviderAndroid::
+          kPrefillRequestBottomsheetNoViewStructureDelayUma,
+      1);
 }
 
 // Tests that the correct metrics are emitted when the bottom sheet is not shown

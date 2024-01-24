@@ -5705,6 +5705,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.WebView.BottomsheetNoViewStructureDelay" units="ms"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>jihadghanna@google.com</owner>
+  <owner>elabadysayed@google.com</owner>
+  <summary>
+    Records the time it took between sending a prefill request to the Android
+    Autofill framework and the bottom sheet failing to show because no Autofill
+    ViewStructure was ever requested by the framework. Emitted whenever a user
+    focuses a field for which a prefill request was sent and the missing
+    ViewStructure is the reason that we record for not having shown the bottom
+    sheet.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.CreatedByActivityContext"
     enum="BooleanEnabled" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

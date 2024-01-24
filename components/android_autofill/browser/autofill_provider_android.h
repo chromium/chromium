@@ -64,6 +64,8 @@ class AutofillProviderAndroid : public AutofillProvider,
       "Autofill.WebView.PrefillRequestState";
   // The name of the UMA that is emitted when a form similarity check between a
   // cached form and the interacted form fails.
+  static constexpr char kPrefillRequestBottomsheetNoViewStructureDelayUma[] =
+      "Autofill.WebView.BottomsheetNoViewStructureDelay";
   static constexpr char kSimilarityCheckCacheRequestUma[] =
       "Autofill.WebView.FormSimilarityCheck.CachedForm";
   // The name of the UMA that is emitted when a form similarity check is run in
@@ -282,6 +284,8 @@ class AutofillProviderAndroid : public AutofillProvider,
 
     std::unique_ptr<FormDataAndroid> cached_form;
     PasswordParserOverrides password_parser_overrides;
+    // The time when the prefill request was sent - used for metrics only.
+    base::TimeTicks prefill_request_creation_time;
   };
   std::optional<CachedData> cached_data_;
 
