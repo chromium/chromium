@@ -1418,14 +1418,14 @@ void CanvasResourceProvider::RecordingCleared() {
   printing_fallback_reason_ = FlushReason::kNone;
 }
 
-MemoryManagedPaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
+MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas(bool needs_will_draw) {
   // TODO(https://crbug.com/1211912): Video frames don't work without
   // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
   // with it. There should be a better way to solve this.
   if (needs_will_draw)
     WillDrawIfNeeded();
 
-  return &recorder_->getRecordingCanvas();
+  return recorder_->getRecordingCanvas();
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {
@@ -1435,8 +1435,7 @@ void CanvasResourceProvider::OnContextDestroyed() {
 }
 
 void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
-  MemoryManagedPaintCanvas* canvas = Canvas();
-  if (canvas && canvas->IsCachingImage(content_id)) {
+  if (Canvas().IsCachingImage(content_id)) {
     FlushCanvas(FlushReason::kSourceImageWillChange);
   }
 }
@@ -1632,9 +1631,9 @@ void CanvasResourceProvider::Clear() {
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
   if (info_.alphaType() == kOpaque_SkAlphaType)
-    Canvas()->clear(SkColors::kBlack);
+    Canvas().clear(SkColors::kBlack);
   else
-    Canvas()->clear(SkColors::kTransparent);
+    Canvas().clear(SkColors::kTransparent);
 
   FlushCanvas(FlushReason::kClear);
 }

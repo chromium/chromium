@@ -160,7 +160,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  MemoryManagedPaintCanvas* Canvas(bool needs_will_draw = false);
+  MemoryManagedPaintCanvas& Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.

@@ -259,7 +259,7 @@ cc::PaintCanvas* Canvas2DLayerBridge::GetPaintCanvas() {
   // does not need to be valid here since only the recording canvas is used.
   if (!ResourceProvider() && !GetOrCreateResourceProvider())
     return nullptr;
-  return ResourceProvider()->Canvas();
+  return &ResourceProvider()->Canvas();
 }
 
 void Canvas2DLayerBridge::PageVisibilityChanged() {

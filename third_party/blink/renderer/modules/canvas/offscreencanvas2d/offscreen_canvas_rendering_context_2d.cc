@@ -320,7 +320,7 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   if (UNLIKELY(provider == nullptr)) {
     return nullptr;
   }
-  return provider->Canvas();
+  return &provider->Canvas();
 }
 
 MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder() {
@@ -436,7 +436,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     // to true, it means context is forced to be lost for testing purpose.
     // Restore the context.
     CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-    if (provider && provider->Canvas()) {
+    if (provider) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -452,7 +452,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     canvas->SetRestoringGpuContext(true);
     CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
     canvas->SetRestoringGpuContext(false);
-    if (provider && provider->Canvas()) {
+    if (provider) {
       try_restore_context_event_timer_.Stop();
       DispatchContextRestoredEvent(nullptr);
       return;
@@ -467,7 +467,7 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     }
     try_restore_context_event_timer_.Stop();
     if (CanvasResourceProvider* provider = GetOrCreateCanvasResourceProvider();
-        provider && provider->Canvas()) {
+        provider) {
       DispatchContextRestoredEvent(nullptr);
     }
   }
