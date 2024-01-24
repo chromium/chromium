@@ -73,7 +73,9 @@ void UsbServiceAndroid::DevicePermissionRequestComplete(
     jint device_id,
     jboolean granted) {
   const auto it = devices_by_id_.find(device_id);
-  DCHECK(it != devices_by_id_.end());
+  if (it == devices_by_id_.end()) {
+    return;
+  }
   it->second->PermissionGranted(env, granted);
 }
 
