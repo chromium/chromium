@@ -17,6 +17,7 @@ size_t g_dictionary_size_limit = kDictionarySizeLimit;
 }  // namespace
 
 const char kSecAvailableDictionaryHeaderName[] = "sec-available-dictionary";
+const char kAvailableDictionaryHeaderName[] = "available-dictionary";
 
 const char kUseAsDictionaryHeaderName[] = "use-as-dictionary";
 

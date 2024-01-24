@@ -35,8 +35,13 @@ base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
 
 // The header name of "sec-available-dictionary".
+// This will not be used when V2 backend is enabled.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kSecAvailableDictionaryHeaderName[];
+
+// The header name of "available-dictionary".
+COMPONENT_EXPORT(NETWORK_SERVICE)
+extern const char kAvailableDictionaryHeaderName[];
 
 // The header name of "use-as-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)

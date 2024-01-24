@@ -211,7 +211,9 @@ construction to catch up the following spec changes:
 - Added the dictionary hash to the compressed response
   - Stauts: Not yet implemented.
 - Dictionary hashes changed to sf-binary
-  - Stauts: Not yet implemented.
+  - Stauts: Implemented by https://crrev.com/c/5224886.
+- Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
+  - Stauts: Implemented by https://crrev.com/c/5224886.
 
 You can try the experimental V2 implementation by selecting
 "Enabled experimental V2" in

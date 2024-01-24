@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <tuple>
 
 #include "base/base_paths.h"
@@ -76,7 +77,7 @@ namespace {
 //  Signature (Base64):
 //      rQhlXQ0eRMV/mXUd7hJ3M+kVYMcsH4YKt2Tk6aNuUwKLooNKKLi0cQLrGnTB6sVPV/pryxXV
 //      DNJ9HZ1z8KNzCw==
-constexpr base::StringPiece kOriginTrialToken =
+constexpr std::string_view kOriginTrialToken =
     "A60IZV0NHkTFf5l1He4SdzPpFWDHLB+GCrdk5OmjblMCi6KDSii4tHEC6xp0werFT1f6a8sV1Q"
     "zSfR2dc/CjcwsAAABzeyJvcmlnaW4iOiAiaHR0cHM6Ly9zaGFyZWQtZGljdGlvbmFyeS50ZXN0"
     "OjQ0MyIsICJmZWF0dXJlIjogIkNvbXByZXNzaW9uRGljdGlvbmFyeVRyYW5zcG9ydCIsICJleH"
@@ -97,7 +98,7 @@ constexpr base::StringPiece kOriginTrialToken =
 //  Signature (Base64):
 //      GP48EUfMJUvXnjpwy0X6PvJbH+HsWn4Sjq9CTegd5nTAtUAnNPveYqgsCjmUa4IoT6j6VilH
 //      TofPeOmajQY3Ag==
-constexpr base::StringPiece kThirdPartyOriginTrialToken =
+constexpr std::string_view kThirdPartyOriginTrialToken =
     "Axj+PBFHzCVL1546cMtF+j7yWx/"
     "h7Fp+Eo6vQk3oHeZ0wLVAJzT73mKoLAo5lGuCKE+o+"
     "lYpR06Hz3jpmo0GNwIAAACJeyJvcmlnaW4iOiAiaHR0cHM6Ly9zaGFyZWQtZGljdGlvbmFyeS5"
@@ -106,20 +107,34 @@ constexpr base::StringPiece kThirdPartyOriginTrialToken =
 
 // The SHA256 hash of dictionary
 // (content/test/data/shared_dictionary/test.dict and test_dict.html).
-constexpr base::StringPiece kExpectedDictionaryHash =
+constexpr std::string_view kExpectedDictionaryHash =
     "53969bcf5e960e0edbf0a4bdde6b0b3e9381e156de7f5b91ce8391624270f416";
+// The Structured Field sf-binary hash of sha256 of dictionary.
+constexpr std::string_view kExpectedDictionaryHashBase64 =
+    ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:";
 constexpr net::SHA256HashValue kExpectedDictionaryHashValue = {
     {0x53, 0x96, 0x9b, 0xcf, 0x5e, 0x96, 0x0e, 0x0e, 0xdb, 0xf0, 0xa4,
      0xbd, 0xde, 0x6b, 0x0b, 0x3e, 0x93, 0x81, 0xe1, 0x56, 0xde, 0x7f,
      0x5b, 0x91, 0xce, 0x83, 0x91, 0x62, 0x42, 0x70, 0xf4, 0x16}};
-constexpr base::StringPiece kUncompressedDataString =
+
+std::string_view GetExpectedDictionaryHashString() {
+  switch (
+      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1:
+      return kExpectedDictionaryHash;
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2:
+      return kExpectedDictionaryHashBase64;
+  }
+}
+
+constexpr std::string_view kUncompressedDataString =
     "test(\"This is uncompressed.\");";
-constexpr base::StringPiece kErrorInvalidHashString =
+constexpr std::string_view kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
-constexpr base::StringPiece kErrorNoSharedDictionaryAcceptEncodingString =
+constexpr std::string_view kErrorNoSharedDictionaryAcceptEncodingString =
     "test(\"sbr or zstd-d is not set in accept-encoding header.\");";
 
-constexpr base::StringPiece kCompressedDataOriginalString =
+constexpr std::string_view kCompressedDataOriginalString =
     "test(\"This is compressed test data using a test dictionary\");";
 
 // kBrotliCompressedData is generated using the following commands:
@@ -153,12 +168,12 @@ const std::string kZstdCompressedDataString =
     std::string(reinterpret_cast<const char*>(kZstdCompressedData),
                 sizeof(kZstdCompressedData));
 
-constexpr base::StringPiece kUncompressedDataResultString =
+constexpr std::string_view kUncompressedDataResultString =
     "This is uncompressed.";
-constexpr base::StringPiece kCompressedDataResultString =
+constexpr std::string_view kCompressedDataResultString =
     "This is compressed test data using a test dictionary";
 
-constexpr base::StringPiece kHttpAuthPath = "/shared_dictionary/path/http_auth";
+constexpr std::string_view kHttpAuthPath = "/shared_dictionary/path/http_auth";
 const std::string kTestPath = "/shared_dictionary/path/test";
 
 class SharedDictionaryAccessObserver : public WebContentsObserver {
@@ -400,13 +415,21 @@ std::string IframeLoadScript(const GURL& url) {
                   )",
                    url);
 }
-std::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  auto it = headers.find("sec-available-dictionary");
-  if (it == headers.end()) {
-    return std::nullopt;
+  switch (
+      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
+      auto it = headers.find("sec-available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
+      auto it = headers.find("available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
   }
-  return it->second;
 }
 
 bool HasSharedDictionaryAcceptEncoding(
@@ -768,9 +791,9 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
                                 request.headers.at("origin"));
     }
     std::optional<std::string> dict_hash =
-        GetSecAvailableDictionary(request.headers);
+        GetAvailableDictionary(request.headers);
     if (dict_hash) {
-      if (*dict_hash == kExpectedDictionaryHash) {
+      if (*dict_hash == GetExpectedDictionaryHashString()) {
         if (HasSharedDictionaryAcceptEncoding(request.headers, version_)) {
           if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
             response->AddCustomHeader(
@@ -912,7 +935,7 @@ class SharedDictionaryFeatureStateBrowserTest
                                const std::string& fetch_dictionary_js_content,
                                URLLoaderInterceptor::RequestParams* params) {
     // Find the appropriate origin trial token.
-    base::StringPiece origin_trial_token;
+    std::string_view origin_trial_token;
     std::string origin_trial_query_param;
     if (net::GetValueForKeyInQuery(params->url_request.url, "ot",
                                    &origin_trial_query_param)) {
@@ -941,7 +964,7 @@ class SharedDictionaryFeatureStateBrowserTest
 
   static void InterceptBlankPageRequest(
       URLLoaderInterceptor::RequestParams* params,
-      base::StringPiece origin_trial_token,
+      std::string_view origin_trial_token,
       const std::string& content) {
     // Construct and send the response.
     std::string headers =
@@ -957,7 +980,7 @@ class SharedDictionaryFeatureStateBrowserTest
 
   static void InterceptFetchDictionaryScriptRequest(
       URLLoaderInterceptor::RequestParams* params,
-      base::StringPiece origin_trial_token,
+      std::string_view origin_trial_token,
       const std::string& content) {
     // Construct and send the response.
     std::string headers =
@@ -974,7 +997,7 @@ class SharedDictionaryFeatureStateBrowserTest
 
   static void InterceptAddMetaOriginTrialScriptRequest(
       URLLoaderInterceptor::RequestParams* params,
-      base::StringPiece origin_trial_token) {
+      std::string_view origin_trial_token) {
     // Construct and send the response.
     std::string headers =
         "HTTP/1.1 200 OK\nContent-Type: application/javascript; "
@@ -1377,14 +1400,13 @@ class SharedDictionaryBrowserTest
         expect_success);
   }
 
-  GURL GetURL(base::StringPiece relative_url) const {
+  GURL GetURL(std::string_view relative_url) const {
     return embedded_test_server()->GetURL(relative_url);
   }
-  GURL GetURL(base::StringPiece hostname,
-              base::StringPiece relative_url) const {
+  GURL GetURL(std::string_view hostname, std::string_view relative_url) const {
     return embedded_test_server()->GetURL(hostname, relative_url);
   }
-  GURL GetCrossOriginURL(base::StringPiece relative_url) const {
+  GURL GetCrossOriginURL(std::string_view relative_url) const {
     return cross_origin_server()->GetURL(relative_url);
   }
 
@@ -1456,9 +1478,9 @@ class SharedDictionaryBrowserTest
     if (base::Contains(request.headers, "Authorization")) {
       response->set_code(net::HTTP_OK);
       std::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+          GetAvailableDictionary(request.headers);
       if (dict_hash) {
-        if (*dict_hash == kExpectedDictionaryHash) {
+        if (*dict_hash == GetExpectedDictionaryHashString()) {
           if (HasSharedDictionaryAcceptEncoding(request.headers,
                                                 GetVersion())) {
             switch (GetVersion()) {

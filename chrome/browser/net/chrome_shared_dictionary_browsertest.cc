@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -33,9 +34,9 @@
 
 namespace {
 
-constexpr base::StringPiece kTestDictionaryString = "A dictionary";
+constexpr std::string_view kTestDictionaryString = "A dictionary";
 
-constexpr base::StringPiece kCompressedDataOriginalString =
+constexpr std::string_view kCompressedDataOriginalString =
     "This is compressed test data using a test dictionary";
 
 // kBrotliCompressedData is generated using the following commands:
@@ -102,13 +103,21 @@ class SharedDictionaryAccessObserver : public content::WebContentsObserver {
   network::mojom::SharedDictionaryAccessDetailsPtr details_;
 };
 
-std::optional<std::string> GetSecAvailableDictionary(
+std::optional<std::string> GetAvailableDictionary(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  auto it = headers.find("sec-available-dictionary");
-  if (it == headers.end()) {
-    return std::nullopt;
+  switch (
+      network::features::kCompressionDictionaryTransportBackendVersion.Get()) {
+    case network::features::CompressionDictionaryTransportBackendVersion::kV1: {
+      auto it = headers.find("sec-available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
+    case network::features::CompressionDictionaryTransportBackendVersion::kV2: {
+      auto it = headers.find("available-dictionary");
+      return it == headers.end() ? std::nullopt
+                                 : std::make_optional(it->second);
+    }
   }
-  return it->second;
 }
 
 void CheckSharedDictionaryUseCounter(
@@ -330,7 +339,7 @@ class ChromeSharedDictionaryBrowserTest
     } else if (request.relative_url == "/path/check_header") {
       response->set_content_type("text/plain");
       std::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
@@ -338,19 +347,19 @@ class ChromeSharedDictionaryBrowserTest
                request.relative_url == "/path/check_header2.html") {
       response->set_content_type("text/html");
       std::optional<std::string> dict_hash =
-          GetSecAvailableDictionary(request.headers);
+          GetAvailableDictionary(request.headers);
       response->set_content(dict_hash ? "Dictionary header available"
                                       : "Dictionary header not available");
       return response;
     } else if (request.relative_url == "/path/brotli_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
       response->AddCustomHeader("content-encoding",
                                 network::GetSharedBrotliContentEncodingName());
       response->set_content(kBrotliCompressedDataString);
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
-      CHECK(GetSecAvailableDictionary(request.headers));
+      CHECK(GetAvailableDictionary(request.headers));
       response->set_content_type("text/html");
       response->AddCustomHeader("content-encoding",
                                 network::GetSharedZstdContentEncodingName());

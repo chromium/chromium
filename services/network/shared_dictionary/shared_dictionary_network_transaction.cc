@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -213,12 +214,21 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     return;
   }
 
-  request_headers->SetHeader(
-      network::shared_dictionary::kSecAvailableDictionaryHeaderName,
-      base::ToLowerASCII(
-          base::HexEncode(shared_dictionary_->hash().data,
-                          sizeof(shared_dictionary_->hash().data))));
-
+  switch (features::kCompressionDictionaryTransportBackendVersion.Get()) {
+    case features::CompressionDictionaryTransportBackendVersion::kV1:
+      request_headers->SetHeader(
+          network::shared_dictionary::kSecAvailableDictionaryHeaderName,
+          base::ToLowerASCII(
+              base::HexEncode(shared_dictionary_->hash().data,
+                              sizeof(shared_dictionary_->hash().data))));
+      break;
+    case features::CompressionDictionaryTransportBackendVersion::kV2:
+      request_headers->SetHeader(
+          network::shared_dictionary::kAvailableDictionaryHeaderName,
+          base::StrCat(
+              {":", base::Base64Encode(shared_dictionary_->hash().data), ":"}));
+      break;
+  }
   if (base::FeatureList::IsEnabled(network::features::kSharedZstd)) {
     AddAcceptEncoding(request_headers,
                       base::StrCat({GetSharedBrotliContentEncodingName(), ", ",
