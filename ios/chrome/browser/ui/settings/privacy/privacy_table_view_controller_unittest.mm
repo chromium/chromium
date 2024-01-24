@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/content_settings/core/common/features.h"
@@ -159,7 +160,7 @@ class PrivacyTableViewControllerTest
   std::unique_ptr<Browser> browser_;
   NSString* initialValueForSpdyProxyEnabled_;
   base::test::ScopedFeatureList feature_list_;
-  feature_engagement::test::MockTracker* mock_tracker_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 // Tests PrivacyTableViewController is set up with all appropriate items
