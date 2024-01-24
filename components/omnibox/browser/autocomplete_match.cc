@@ -1051,19 +1051,42 @@ void AutocompleteMatch::LogSearchEngineUsed(
   DCHECK(template_url_service);
 
   TemplateURL* template_url = match.GetTemplateURL(template_url_service, false);
-  if (template_url) {
-    SearchEngineType search_engine_type =
-        match.destination_url.is_valid()
-            ? SearchEngineUtils::GetEngineType(match.destination_url)
-            : SEARCH_ENGINE_OTHER;
-    UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
-                              SEARCH_ENGINE_MAX);
-    if (template_url->created_by_policy() ==
-        TemplateURLData::CreatedByPolicy::kDefaultSearchProvider) {
+  if (!template_url) {
+    return;
+  }
+
+  SearchEngineType search_engine_type =
+      match.destination_url.is_valid()
+          ? SearchEngineUtils::GetEngineType(match.destination_url)
+          : SEARCH_ENGINE_OTHER;
+  UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType", search_engine_type,
+                            SEARCH_ENGINE_MAX);
+
+  if (template_url->created_by_policy() ==
+      TemplateURLData::CreatedByPolicy::kNoPolicy) {
+    return;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchEngineType.SetByEnterprisePolicy",
+                            search_engine_type, SEARCH_ENGINE_MAX);
+
+  switch (template_url->created_by_policy()) {
+    case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
       UMA_HISTOGRAM_ENUMERATION(
-          "Omnibox.SearchEngineType.SetByEnterprisePolicy", search_engine_type,
-          SEARCH_ENGINE_MAX);
-    }
+          "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+          "DefaultSearchProvider",
+          search_engine_type, SEARCH_ENGINE_MAX);
+      break;
+
+    case TemplateURLData::CreatedByPolicy::kSiteSearch:
+      UMA_HISTOGRAM_ENUMERATION(
+          "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+          "SiteSearchSettings",
+          search_engine_type, SEARCH_ENGINE_MAX);
+      break;
+
+    default:
+      NOTREACHED();
   }
 }
 
