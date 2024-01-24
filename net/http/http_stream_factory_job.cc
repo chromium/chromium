@@ -814,9 +814,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
   }
 
-  SSLConfig server_ssl_config;
-  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
-
   // Check first if there is a pushed stream matching the request, or an HTTP/2
   // connection this request can pool to.  If so, then go straight to using
   // that.
@@ -891,7 +888,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
@@ -905,14 +902,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config, request_info_.privacy_mode,
+        proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key, net_log_, connection_.get(),
         io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config, request_info_.privacy_mode,
+      allowed_bad_certs_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);

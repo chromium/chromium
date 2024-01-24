@@ -1774,12 +1774,9 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   for (size_t i = 0; i < kNumIdleSockets; i++) {
     auto connection = std::make_unique<ClientSocketHandle>();
     TestCompletionCallback callback;
-
-    auto ssl_config_for_origin = std::make_unique<SSLConfig>();
-    ssl_config_for_origin->alpn_protos = session->GetAlpnProtos();
     scoped_refptr<ClientSocketPool::SocketParams> socket_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
-            std::move(ssl_config_for_origin));
+            /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     ClientSocketPool::GroupId group_id(
         destination, PrivacyMode::PRIVACY_MODE_DISABLED,
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,

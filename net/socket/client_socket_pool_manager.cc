@@ -5,6 +5,7 @@
 #include "net/socket/client_socket_pool_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -75,10 +76,10 @@ static_assert(std::size(g_max_sockets_per_proxy_chain) ==
 // entirely.
 scoped_refptr<ClientSocketPool::SocketParams> CreateSocketParams(
     const ClientSocketPool::GroupId& group_id,
-    const SSLConfig& ssl_config_for_origin) {
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs) {
   bool using_ssl = GURL::SchemeIsCryptographic(group_id.destination().scheme());
   return base::MakeRefCounted<ClientSocketPool::SocketParams>(
-      using_ssl ? std::make_unique<SSLConfig>(ssl_config_for_origin) : nullptr);
+      using_ssl ? allowed_bad_certs : std::vector<SSLConfig::CertAndStatus>());
 }
 
 int InitSocketPoolHelper(
@@ -87,7 +88,7 @@ int InitSocketPoolHelper(
     RequestPriority request_priority,
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
-    const SSLConfig& ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
@@ -115,7 +116,7 @@ int InitSocketPoolHelper(
       std::move(endpoint), privacy_mode, std::move(network_anonymization_key),
       secure_dns_policy, disable_cert_network_fetches);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
-      CreateSocketParams(connection_group, ssl_config_for_origin);
+      CreateSocketParams(connection_group, allowed_bad_certs);
 
   ClientSocketPool* pool =
       session->GetSocketPool(socket_pool_type, proxy_info.proxy_chain());
@@ -221,7 +222,7 @@ int InitSocketHandleForHttpRequest(
     RequestPriority request_priority,
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
-    const SSLConfig& ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
@@ -233,7 +234,7 @@ int InitSocketHandleForHttpRequest(
   DCHECK(socket_handle);
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
-      proxy_info, ssl_config_for_origin, privacy_mode,
+      proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, socket_tag,
       net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
       std::move(callback), proxy_auth_callback);
@@ -245,7 +246,7 @@ int InitSocketHandleForWebSocketRequest(
     RequestPriority request_priority,
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
-    const SSLConfig& ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
@@ -264,7 +265,7 @@ int InitSocketHandleForWebSocketRequest(
 
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
-      proxy_info, ssl_config_for_origin, privacy_mode,
+      proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
       SocketTag(), net_log, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
@@ -277,7 +278,7 @@ int PreconnectSocketsForHttpRequest(
     RequestPriority request_priority,
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
-    const SSLConfig& ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
@@ -294,7 +295,7 @@ int PreconnectSocketsForHttpRequest(
 
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
-      proxy_info, ssl_config_for_origin, privacy_mode,
+      proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
       net_log, num_preconnect_streams, nullptr,
       HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),

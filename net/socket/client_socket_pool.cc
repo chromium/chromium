@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -24,6 +25,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "net/ssl/ssl_config.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -60,15 +62,15 @@ OnHostResolutionCallbackResult OnHostResolution(
 }  // namespace
 
 ClientSocketPool::SocketParams::SocketParams(
-    std::unique_ptr<SSLConfig> ssl_config_for_origin)
-    : ssl_config_for_origin_(std::move(ssl_config_for_origin)) {}
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs)
+    : allowed_bad_certs_(allowed_bad_certs) {}
 
 ClientSocketPool::SocketParams::~SocketParams() = default;
 
 scoped_refptr<ClientSocketPool::SocketParams>
 ClientSocketPool::SocketParams::CreateForHttpForTesting() {
   return base::MakeRefCounted<SocketParams>(
-      /*ssl_config_for_origin=*/nullptr);
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
 }
 
 ClientSocketPool::GroupId::GroupId()
@@ -215,7 +217,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
 
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
-      socket_params->ssl_config_for_origin(), alpn_mode, force_tunnel,
+      socket_params->allowed_bad_certs(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),

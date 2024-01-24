@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -172,7 +173,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     url::SchemeHostPort endpoint,
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-    const SSLConfig* ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,
     PrivacyMode privacy_mode,
@@ -186,7 +187,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     ConnectJob::Delegate* delegate) const {
   return CreateConnectJob(
       Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
-      ssl_config_for_origin, alpn_mode, force_tunnel, privacy_mode,
+      allowed_bad_certs, alpn_mode, force_tunnel, privacy_mode,
       resolution_callback, request_priority, socket_tag,
       network_anonymization_key, secure_dns_policy,
       disable_cert_network_fetches, common_connect_job_params, delegate);
@@ -197,7 +198,6 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     HostPortPair endpoint,
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-    const SSLConfig* ssl_config_for_origin,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -210,7 +210,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
   return CreateConnectJob(
       std::move(schemeless_endpoint), proxy_chain, proxy_annotation_tag,
-      ssl_config_for_origin, ConnectJobFactory::AlpnMode::kDisabled,
+      /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kDisabled,
       force_tunnel, privacy_mode, resolution_callback, request_priority,
       socket_tag, network_anonymization_key, secure_dns_policy,
       /*disable_cert_network_fetches=*/false, common_connect_job_params,
@@ -221,7 +221,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     Endpoint endpoint,
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-    const SSLConfig* ssl_config_for_origin,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,
     PrivacyMode privacy_mode,
@@ -349,10 +349,10 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
 
   // Deal with SSL - which layers on top of any given proxy.
   if (UsingSsl(endpoint)) {
-    DCHECK(ssl_config_for_origin);
     scoped_refptr<TransportSocketParams> ssl_tcp_params;
 
-    SSLConfig ssl_config = *ssl_config_for_origin;
+    SSLConfig ssl_config;
+    ssl_config.allowed_bad_certs = allowed_bad_certs;
 
     ConfigureAlpn(endpoint, alpn_mode, network_anonymization_key,
                   *common_connect_job_params, ssl_config,
