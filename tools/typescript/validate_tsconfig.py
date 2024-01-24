@@ -196,7 +196,29 @@ def isInAshFolder(path):
   return any(path.startswith(folder) for folder in ash_folders)
 
 
+# Check if the path is in an Ash WebUI folder that has been migrated to use the
+# Ash fork of cr_elements at ash/webui/common/resources/cr_elements/. Any such
+# path shouldn't add a dependency on Browser cr_elements, or the UI will end up
+# with 2 versions of cr_elements at once, which can cause runtime errors. See
+# https://crbug.com/1512231
+def isMigratedAshFolder(path):
+  migrated_ash_folders = [
+      "ash/webui/scanning",
+      "chrome/browser/resources/chromeos/cloud_upload",
+      "chrome/browser/resources/chromeos/enterprise_reporting",
+      "chrome/browser/resources/chromeos/healthd_internals",
+  ]
+  return any(path.startswith(folder) for folder in migrated_ash_folders)
+
+
+def isBrowserOnlyDep(dep):
+  return dep == '//ui/webui/resources/cr_elements'
+
 def isDependencyAllowed(is_ash_target, raw_dep, target_path):
+  if isMigratedAshFolder(target_path) and \
+          raw_dep.startswith('//ui/webui/resources/cr_elements'):
+    return False
+
   is_ash_dep = isInAshFolder(raw_dep[2:])
   if not is_ash_dep or is_ash_target:
     return True

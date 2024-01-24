@@ -171,8 +171,9 @@ def main(argv):
         args.platform)
 
     for dep in args.raw_deps:
+      dependencyType = 'Browser-only' if is_ash_target else 'Ash-only'
       assert isDependencyAllowed(is_ash_target, dep, target_path), \
-          f'{target_path} should not use Ash-only dependency {dep}.'
+          f'{target_path} should not use {dependencyType} dependency {dep}.'
 
       if dep not in dep_to_path_mappings:
         assert not dep.startswith("//ui/webui/resources"), \
