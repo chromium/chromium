@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/gtest_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -136,10 +137,10 @@ class SetUpListTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  AuthenticationService* auth_service_;
+  raw_ptr<AuthenticationService> auth_service_;
   SetUpList* set_up_list_;
 };
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
@@ -103,7 +104,7 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 
 @implementation SetUpList {
   // Local state prefs that store item state.
-  PrefService* _localState;
+  raw_ptr<PrefService> _localState;
   // Bridge to listen to pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
