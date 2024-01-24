@@ -11,13 +11,15 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"
     android:id="@+id/price_change_module_layout"
+    android:layout_marginEnd="@dimen/mvt_container_lateral_margin_polish"
+    android:layout_marginStart="@dimen/mvt_container_lateral_margin_polish"
+    android:layout_marginTop="@dimen/price_change_module_margin_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
         android:gravity="center_vertical|start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/price_change_module_margin"
         android:orientation="vertical"
         android:background="@drawable/home_surface_ui_background">
         <TextView
