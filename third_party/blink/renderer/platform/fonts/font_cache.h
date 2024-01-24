@@ -86,9 +86,9 @@ enum class AlternateFontName {
   kLastResort
 };
 
-typedef HashMap<FallbackListCompositeKey,
-                std::unique_ptr<ShapeCache>,
-                FallbackListCompositeKeyTraits>
+typedef HeapHashMap<FallbackListCompositeKey,
+                    Member<ShapeCache>,
+                    FallbackListCompositeKeyTraits>
     FallbackListShaperCache;
 
 // "und-Zsye", the special locale for retrieving the color emoji font defined

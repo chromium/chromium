@@ -1372,17 +1372,17 @@ LineBreaker::BreakResult LineBreaker::BreakText(
    public:
     ShapingLineBreakerImpl(LineBreaker* line_breaker,
                            const InlineItem* item,
-                           scoped_refptr<const ShapeResult> result)
-        : ShapingLineBreaker(std::move(result),
+                           const ShapeResult* result)
+        : ShapingLineBreaker(result,
                              &line_breaker->break_iterator_,
                              line_breaker->hyphenation_),
           line_breaker_(line_breaker),
           item_(item) {}
 
    protected:
-    scoped_refptr<ShapeResult> Shape(unsigned start,
-                                     unsigned end,
-                                     ShapeOptions options) final {
+    const ShapeResult* Shape(unsigned start,
+                             unsigned end,
+                             ShapeOptions options) final {
       return line_breaker_->ShapeText(*item_, start, end, options);
     }
 
@@ -1733,11 +1733,11 @@ void LineBreaker::HandleEmptyText(const InlineItem& item, LineInfo* line_info) {
 }
 
 // Re-shape the specified range of |InlineItem|.
-scoped_refptr<ShapeResult> LineBreaker::ShapeText(const InlineItem& item,
-                                                  unsigned start,
-                                                  unsigned end,
-                                                  ShapeOptions options) {
-  scoped_refptr<ShapeResult> shape_result;
+const ShapeResult* LineBreaker::ShapeText(const InlineItem& item,
+                                          unsigned start,
+                                          unsigned end,
+                                          ShapeOptions options) {
+  ShapeResult* shape_result = nullptr;
   if (!items_data_.segments) {
     RunSegmenter::RunSegmenterRange segment_range =
         InlineItemSegment::UnpackSegmentData(start, end, item.SegmentData());
@@ -1776,6 +1776,9 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
 
   DCHECK(item.TextShapeResult());
   struct ShapeResultWrapper {
+    STACK_ALLOCATED();
+
+   public:
     explicit ShapeResultWrapper(const ShapeResult* shape_result)
         : shape_result(shape_result),
           shape_result_start_index(shape_result->StartIndex()),
@@ -1977,7 +1980,7 @@ void LineBreaker::AppendCandidates(const InlineItemResult& item_result,
       } else {
         DCHECK_LT(end_safe_offset, end_offset);
         end_position = shape_result.PositionForOffset(end_safe_offset);
-        scoped_refptr<ShapeResult> end_shape_result =
+        const ShapeResult* end_shape_result =
             ShapeText(item, end_safe_offset, end_offset);
         end_position += end_shape_result->Width();
       }
@@ -2074,12 +2077,12 @@ const ShapeResultView* LineBreaker::TruncateLineEndResult(
     return ShapeResultView::Create(source_result, start_offset, end_offset);
   }
 
-  scoped_refptr<ShapeResult> end_result =
+  const ShapeResult* end_result =
       ShapeText(item, std::max(last_safe, start_offset), end_offset);
   DCHECK_EQ(end_result->Direction(), source_result->Direction());
   ShapeResultView::Segment segments[2];
   segments[0] = {source_result, start_offset, last_safe};
-  segments[1] = {end_result.get(), 0, end_offset};
+  segments[1] = {end_result, 0, end_offset};
   return ShapeResultView::Create(segments);
 }
 
@@ -2454,7 +2457,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
         HandleEmptyText(item, line_info);
         return;
       }
-      scoped_refptr<const ShapeResult> shape_result =
+      const ShapeResult* shape_result =
           ShapeResult::CreateForTabulationCharacters(
               &style.GetFont(), item.Direction(), style.GetTabSize(), position_,
               item.StartOffset(), item.Length());

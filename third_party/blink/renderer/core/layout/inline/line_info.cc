@@ -308,7 +308,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
         // TODO(kojii): This does not compute correctly for RTL. Need to re-work
         // when we support UAX#9 L1.
         // TODO(kojii): Compute this without |CreateShapeResult|.
-        scoped_refptr<ShapeResult> shape_result =
+        ShapeResult* shape_result =
             item_result.shape_result->CreateShapeResult();
         float end_position = shape_result->PositionForOffset(
             end_offset - shape_result->StartIndex());

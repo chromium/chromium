@@ -468,15 +468,14 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     unsigned word_offset = run_info.run.length();
     for (unsigned j = 0; j < results.size(); j++) {
       unsigned resolved_index = results.size() - 1 - j;
-      const scoped_refptr<const ShapeResult>& word_result =
-          results[resolved_index];
+      const Member<const ShapeResult>& word_result = results[resolved_index];
       unsigned word_characters = word_result->NumCharacters();
       word_offset -= word_characters;
       DVLOG(4) << " FillGlyphs RTL run from: " << run_info.from
                << " to: " << run_info.to << " offset: " << word_offset
                << " length: " << word_characters;
       advance =
-          FillGlyphsForResult(word_result.get(), run_info.run.ToStringView(),
+          FillGlyphsForResult(word_result.Get(), run_info.run.ToStringView(),
                               run_info.from, run_info.to, advance, word_offset);
     }
   } else {
@@ -487,7 +486,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
                << " to: " << run_info.to << " offset: " << word_offset
                << " length: " << word_characters;
       advance =
-          FillGlyphsForResult(word_result.get(), run_info.run.ToStringView(),
+          FillGlyphsForResult(word_result.Get(), run_info.run.ToStringView(),
                               run_info.from, run_info.to, advance, word_offset);
       word_offset += word_characters;
     }
@@ -557,8 +556,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
     unsigned word_offset = run_info.run.length();
     for (unsigned j = 0; j < results.size(); j++) {
       unsigned resolved_index = results.size() - 1 - j;
-      const scoped_refptr<const ShapeResult>& word_result =
-          results[resolved_index];
+      const Member<const ShapeResult>& word_result = results[resolved_index];
       word_offset -= word_result->NumCharacters();
       StringView text = run_info.run.ToStringView();
       ClusterCallbackContext context = {this, text, emphasis, glyph_center};
@@ -630,7 +628,7 @@ float ShapeResultBloberizer::FillFastHorizontalGlyphs(
   for (unsigned i = 0; i < results.size(); ++i) {
     const auto& word_result =
         IsLtr(text_direction) ? results[i] : results[results.size() - 1 - i];
-    advance = FillFastHorizontalGlyphs(word_result.get(), advance);
+    advance = FillFastHorizontalGlyphs(word_result.Get(), advance);
   }
 
   return advance;

@@ -282,10 +282,10 @@ ShapeResultView::~ShapeResultView() {
     part.~RunInfoPart();
 }
 
-scoped_refptr<ShapeResult> ShapeResultView::CreateShapeResult() const {
-  ShapeResult* new_result =
-      new ShapeResult(primary_font_, start_index_ + char_index_offset_,
-                      num_characters_, Direction());
+ShapeResult* ShapeResultView::CreateShapeResult() const {
+  ShapeResult* new_result = MakeGarbageCollected<ShapeResult>(
+      primary_font_, start_index_ + char_index_offset_, num_characters_,
+      Direction());
   new_result->runs_.reserve(num_parts_);
   for (const auto& part : RunsOrParts()) {
     auto new_run = ShapeResult::RunInfo::Create(
@@ -310,7 +310,7 @@ scoped_refptr<ShapeResult> ShapeResultView::CreateShapeResult() const {
   new_result->has_vertical_offsets_ = has_vertical_offsets_;
   new_result->width_ = width_;
 
-  return base::AdoptRef(new_result);
+  return new_result;
 }
 
 template <class ShapeResultType>
