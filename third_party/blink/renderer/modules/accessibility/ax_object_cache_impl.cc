@@ -813,7 +813,7 @@ void AXObjectCacheImpl::Dispose() {
   }
 
   // Destroy any pending task to serialize the tree.
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
+  weak_factory_for_serialization_pipeline_.Invalidate();
 }
 
 void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
@@ -3182,20 +3182,21 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     const auto& delay_until_next_serialization =
         delay_between_serializations - elapsed_since_last_serialization;
     if (delay_until_next_serialization.is_positive()) {
-      if (!weak_factory_for_serialization_pipeline_.HasWeakPtrs()) {
+      if (!weak_factory_for_serialization_pipeline_.HasWeakCells()) {
         document.GetTaskRunner(blink::TaskType::kInternalDefault)
             ->PostDelayedTask(
                 FROM_HERE,
                 WTF::BindOnce(
                     &AXObjectCacheImpl::ScheduleAXUpdate,
-                    weak_factory_for_serialization_pipeline_.GetWeakPtr()),
+                    WrapPersistent(weak_factory_for_serialization_pipeline_
+                                       .GetWeakCell())),
                 delay_until_next_serialization);
       }
       return;  // No serialization needed yet.
     }
   }
 
-  weak_factory_for_serialization_pipeline_.InvalidateWeakPtrs();
+  weak_factory_for_serialization_pipeline_.Invalidate();
 
   // ------------------------ Freeze and serialize ---------------------------
   {
@@ -5662,6 +5663,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(dirty_objects_);
   visitor->Trace(aria_notifications_);
   visitor->Trace(node_to_parse_before_more_tree_updates_);
+  visitor->Trace(weak_factory_for_serialization_pipeline_);
 
   AXObjectCache::Trace(visitor);
 }

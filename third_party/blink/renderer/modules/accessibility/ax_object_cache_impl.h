@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -1141,7 +1142,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // So we can ensure the serialization pipeline never stalls with dirty objects
   // remaining to be serialized.
-  base::WeakPtrFactory<AXObjectCacheImpl>
+  blink::WeakCellFactory<AXObjectCacheImpl>
       weak_factory_for_serialization_pipeline_{this};
 };
 
