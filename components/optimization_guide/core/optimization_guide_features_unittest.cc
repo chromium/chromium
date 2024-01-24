@@ -99,36 +99,40 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
 
   scoped_feature_list.InitAndEnableFeature(features::kModelQualityLogging);
 
-  // By default compose feature should be disabled.
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
 
-  // Both wallpaper search and tab organization should be enabled by default.
+  // Compose, wallpaper search and tab organization should be enabled by
+  // default whereas test feature should be disabled.
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
   EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
 }
 
-TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingEnabled) {
+TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kModelQualityLogging,
-      {{"model_execution_feature_compose", "true"},
+      {{"model_execution_feature_compose", "false"},
        {"model_execution_feature_wallpaper_search", "false"},
        {"model_execution_feature_tab_organization", "false"}});
 
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
-  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
 
-  // Both wallpaper search and tab organization should be disabled.
+  // All features should be disabled for logging.
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
 }
 
 TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
@@ -144,6 +148,8 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
       proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
       proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
+      proto::MODEL_EXECUTION_FEATURE_TEST));
 }
 
 TEST(OptimizationGuideFeaturesTest,
