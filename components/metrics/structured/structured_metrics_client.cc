@@ -21,7 +21,12 @@ StructuredMetricsClient* StructuredMetricsClient::Get() {
   return client.get();
 }
 
+// static
 void StructuredMetricsClient::Record(Event&& event) {
+  StructuredMetricsClient::Get()->RecordEvent(std::move(event));
+}
+
+void StructuredMetricsClient::RecordEvent(Event&& event) {
   // Records uptime if event sequence type and it has not been explicitly set.
   if (event.IsEventSequenceType() && !event.has_system_uptime()) {
     event.SetRecordedTimeSinceBoot(base::SysInfo::Uptime());

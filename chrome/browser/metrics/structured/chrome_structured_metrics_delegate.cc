@@ -5,9 +5,11 @@
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 
 #include <stdint.h>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "components/metrics/structured/recorder.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
@@ -42,9 +44,9 @@ enum class StructuredMetricsPlatform {
 // Logs initialization of Structured Metrics as a record.
 void LogInitializationInChromeOSStructuredMetrics(
     StructuredMetricsPlatform platform) {
-  events::v2::structured_metrics::Initialization()
-      .SetPlatform(static_cast<int64_t>(platform))
-      .Record();
+  StructuredMetricsClient::Record(
+      std::move(events::v2::structured_metrics::Initialization().SetPlatform(
+          static_cast<int64_t>(platform))));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

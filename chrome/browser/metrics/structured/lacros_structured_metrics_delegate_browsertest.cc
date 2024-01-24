@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_delegate.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,8 +63,9 @@ class LacrosStructuredMetricsDelegateTest : public InProcessBrowserTest {
   };
 
   void TearDownInProcessBrowserTestFixture() override {
-    if (observer_)
+    if (observer_) {
       recorder_->RemoveObserver(observer_.get());
+    }
 
     StructuredMetricsClient::Get()->UnsetDelegate();
     InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
@@ -102,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsDelegateTest,
 
   events::v2::test_project_one::TestEventOne test_event;
   test_event.SetTestMetricOne("hash").SetTestMetricTwo(1);
-  test_event.Record();
+  StructuredMetricsClient::Record(std::move(test_event));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsDelegateTest,
@@ -119,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(LacrosStructuredMetricsDelegateTest,
   recorder()->SetSequence(nullptr);
 
   // Record before sequence is set.
-  test_event.Record();
+  StructuredMetricsClient::Record(std::move(test_event));
 
   // SUCCESS() if callback not triggered.
 }

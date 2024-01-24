@@ -85,7 +85,7 @@ Event Event::Clone() const {
 }
 
 void Event::Record() {
-  StructuredMetricsClient::Get()->Record(std::move(*this));
+  StructuredMetricsClient::Get()->RecordEvent(std::move(*this));
 }
 
 const Event::EventSequenceMetadata& Event::event_sequence_metadata() const {

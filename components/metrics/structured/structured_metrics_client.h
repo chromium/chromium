@@ -39,8 +39,13 @@ class StructuredMetricsClient {
   // metrics. This is typically used in the codegen.
   static StructuredMetricsClient* Get();
 
+  // Records |event| using singleton from Get().
+  static void Record(Event&& event);
+
   // Forwards to |delegate_|. If no delegate has been set, then no-op.
-  void Record(Event&& event);
+  //
+  // TODO(b/322037443): Move this to private once all calls have been migrated.
+  void RecordEvent(Event&& event);
 
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes

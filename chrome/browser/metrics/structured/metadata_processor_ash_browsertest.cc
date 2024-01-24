@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/structured/metadata_processor_ash.h"
 
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -33,6 +34,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -417,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(MetadataProcessorTest, DISABLED_UserMetadata) {
 
   ASSERT_TRUE(structured_metrics_mixin_.GetRecorder()->CanProvideMetrics());
 
-  NoMetricsEvent().Record();
+  StructuredMetricsClient::Record(std::move(NoMetricsEvent()));
 
   Wait();
 

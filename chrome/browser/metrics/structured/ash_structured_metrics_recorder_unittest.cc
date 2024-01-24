@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -16,6 +18,7 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -258,13 +261,13 @@ TEST_F(AshStructuredMetricsRecorderTest, EventMetricsProvideSystemProfile) {
 
   Wait();
 
-  events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne(kValueOne)
-      .SetTestMetricTwo(12345)
-      .Record();
-  events::v2::test_project_two::TestEventTwo()
-      .SetTestMetricThree(kValueTwo)
-      .Record();
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne(kValueOne)
+                    .SetTestMetricTwo(12345)));
+  StructuredMetricsClient::Record(
+      std::move(events::v2::test_project_two::TestEventTwo().SetTestMetricThree(
+          kValueTwo)));
 
   const auto uma_proto = GetUmaProto();
   CHECK(uma_proto.has_system_profile());
@@ -331,9 +334,9 @@ TEST_F(AshStructuredMetricsRecorderTest,
   // keys set by WriteTestingDeviceKeys. In this case the expected key is
   // "ddd...d", which we observe by checking the ID and HMAC have the correct
   // value given that key.
-  events::v2::test_project_four::TestEventFive()
-      .SetTestMetricFive("value")
-      .Record();
+  StructuredMetricsClient::Record(std::move(
+      events::v2::test_project_four::TestEventFive().SetTestMetricFive(
+          "value")));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -401,7 +404,8 @@ TEST_F(AshStructuredMetricsRecorderTest, EventSequenceLogging) {
   EXPECT_TRUE(test_event.IsEventSequenceType());
   test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
   test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
-  test_event.SetMetric1(test_metric).Record();
+  StructuredMetricsClient::Record(
+      std::move(test_event.SetMetric1(test_metric)));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -441,7 +445,7 @@ TEST_F(AshStructuredMetricsRecorderTest, CorrectClientAge) {
 
   events::v2::cr_os_events::NoMetricsEvent test_event;
   test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
-  test_event.Record();
+  StructuredMetricsClient::Record(std::move(test_event));
 
   const auto data = GetEventMetrics();
   ASSERT_EQ(data.events_size(), 1);
