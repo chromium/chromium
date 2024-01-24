@@ -10,6 +10,8 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/scoped_observation.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -429,6 +431,9 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
     } else {
       web_navigation_util::GoForward(webState);
     }
+    CHECK(self.engagementTracker);
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSSwipeBackForwardUsed);
   }
   __weak SideSwipeMediator* weakSelf = self;
   // Checking -IsLoading() is likely incorrect, but to narrow the scope of

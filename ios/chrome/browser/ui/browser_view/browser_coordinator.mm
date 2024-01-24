@@ -974,6 +974,7 @@ enum class ToolbarKind {
                       webStateList:self.browser->GetWebStateList()];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
+  _sideSwipeMediator.engagementTracker = engagementTracker;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       !base::FeatureList::IsEnabled(kModernTabStrip)) {
     [_sideSwipeMediator setTabStripDelegate:_legacyTabStripCoordinator];

@@ -599,6 +599,9 @@ BASE_FEATURE(kIPHiOSPromoMadeForIOSFeature,
 BASE_FEATURE(kIPHiOSPromoStaySafeFeature,
              "IPH_iOSPromoStaySafe",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSSwipeBackForwardFeature,
+             "IPH_iOSSwipeBackForward",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

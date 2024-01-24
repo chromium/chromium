@@ -261,6 +261,9 @@ chromium-metrics-reviews@google.com.
       summary="account row in settings page"/>
   <variant name="IPH_iOSShareToolbarItemFeature"
       summary="the share tool bar item (bottom on iPhone, top on iPad)"/>
+  <variant name="IPH_iOSSwipeBackForward"
+      summary="the full screen IPH for edge swipe on page to go backward or
+               forward"/>
   <variant name="IPH_iOSTabGridSwipeLeftForIncognito"
       summary="the full screen IPH for left swipe on regular tab grid to
                browse in incognito"/>

@@ -20,8 +20,8 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
-// A browser agent that serves a central manager for all IPHs that should be
-// triggered by tab and/or tab list changes.
+// A browser agent that serves a central manager for all IPHs features that
+// should be triggered by tab and/or tab list changes.
 class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
                                 public BrowserObserver,
                                 public UrlLoadingObserver,
@@ -32,14 +32,17 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
 
   ~TabBasedIPHBrowserAgent() override;
 
+#pragma mark - Public methods
+
   // Notifies the browser agent that the user has performed a multi-gesture tab
   // refresh, so that the related in-product help would be attempted.
   void NotifyMultiGestureRefreshEvent();
 
- private:
-  friend class BrowserUserData<TabBasedIPHBrowserAgent>;
+  // Notifies that the user has tapped the back/forward button in the toolbar,
+  // so that the related in-product help would be attempted.
+  void NotifyBackForwardButtonTap();
 
-  explicit TabBasedIPHBrowserAgent(Browser* browser);
+#pragma mark - Observer headers
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
@@ -56,9 +59,16 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // If the multi gesture refresh has occurred, resets it. Also it removes
-  // existing IPH related to multi-gesture refresh.
-  void ResetMultiGestureRefreshStateAndRemoveIPH();
+#pragma mark - Private methods
+
+ private:
+  friend class BrowserUserData<TabBasedIPHBrowserAgent>;
+
+  explicit TabBasedIPHBrowserAgent(Browser* browser);
+
+  // For all IPH features managed by this class, resets their tracker variables
+  // to `false`, and remove currently displaying IPH views from the view.
+  void ResetFeatureStatesAndRemoveIPHViews();
 
   // Command handler for help commands.
   id<HelpCommands> HelpHandler();
@@ -68,6 +78,8 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   std::unique_ptr<ActiveWebStateObservationForwarder>
       active_web_state_observer_;
 
+#pragma mark - Observers variables
+
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.
@@ -75,8 +87,13 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // Records events for the use of in-product help.
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
 
+#pragma mark - IPH feature invocation tracking variables
+
   // Whether a multi-gesture refresh is currently happening.
   bool multi_gesture_refresh_ = false;
+  // Whether the user has just tapped back/forward button in the toolbar; will
+  // be reset to `false` after the navigation has completed.
+  bool back_forward_button_tapped_ = false;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

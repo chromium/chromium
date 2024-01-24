@@ -11,6 +11,11 @@
 // Dismisses all bubbles.
 - (void)hideAllHelpBubbles;
 
+// If any gesture IPH visible, remove it; does nothing otherwise. The presenter
+// of any gesture IPH should make sure it's called when the user leaves the
+// refreshed website, especially while the IPH is still visible.
+- (void)hideAllGestureInProductHelpViews;
+
 // Shows a help bubble for the share button, if eligible.
 // The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.
@@ -40,11 +45,14 @@
 // is shown.
 - (void)presentPullToRefreshGestureInProductHelp;
 
-// Removes the IPH shown by `presentPullToRefreshGestureInProductHelp` if it
-// exists, but does nothing otherwise. The presenter of the pull-to-refresh IPH
-// should make sure it's called when the user leaves the refreshed website,
-// especially while the IPH is still visible.
-- (void)removePullToRefreshGestureInProductHelp;
+// Optionally presents a full screen IPH associated with the swipe to navigate
+// back/forward feature. If the feature engagement tracker determines this tip
+// should be shown, then it initializes `backForwardSwipeGestureIPH` and
+// presents a GestureInProductHelpView, otherwise it sets
+// `backForwardSwipeGestureIPH` to `nil` and no gestural tip is shown.
+// TODO(crbug.com/1467873): Rewrite comment; the displayed IPH might NOT be a
+// GestureInProductHelpView.
+- (void)presentBackForwardSwipeGestureInProductHelp;
 
 @end
 

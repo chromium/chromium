@@ -21,6 +21,7 @@ source_set("side_swipe") {
   deps = [
     "resources:side_swipe_navigation_back",
     "//base",
+    "//components/feature_engagement/public",
     "//components/reading_list/core",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/ntp/model:util",

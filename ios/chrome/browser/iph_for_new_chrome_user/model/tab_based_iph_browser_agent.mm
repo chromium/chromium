@@ -37,6 +37,12 @@ void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
   multi_gesture_refresh_ = true;
 }
 
+void TabBasedIPHBrowserAgent::NotifyBackForwardButtonTap() {
+  engagement_tracker_->NotifyEvent(
+      feature_engagement::events::kIOSBackForwardButtonTapped);
+  back_forward_button_tapped_ = true;
+}
+
 #pragma mark - BrowserObserver
 
 void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
@@ -54,7 +60,7 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
 void TabBasedIPHBrowserAgent::TabDidLoadUrl(
     const GURL& url,
     ui::PageTransition transition_type) {
-  ResetMultiGestureRefreshStateAndRemoveIPH();
+  ResetFeatureStatesAndRemoveIPHViews();
   web::WebState* currentWebState = web_state_list_->GetActiveWebState();
   if (currentWebState) {
     if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
@@ -92,37 +98,50 @@ void TabBasedIPHBrowserAgent::DidStartNavigation(
   // here. In case the user navigates away when `multi_gesture_refresh_` is
   // called, it would be handled by `DidStopLoading`.
   if (!multi_gesture_refresh_) {
-    [HelpHandler() removePullToRefreshGestureInProductHelp];
+    [HelpHandler() hideAllGestureInProductHelpViews];
   }
 }
 
 void TabBasedIPHBrowserAgent::DidStopLoading(web::WebState* web_state) {
-  if (multi_gesture_refresh_) {
-    if (web_state->GetLoadingProgress() == 1) {
+  if (web_state->GetLoadingProgress() == 1) {
+    if (multi_gesture_refresh_) {
       [HelpHandler() presentPullToRefreshGestureInProductHelp];
       multi_gesture_refresh_ = false;
-      return;
+    } else if (back_forward_button_tapped_) {
+      [HelpHandler() presentBackForwardSwipeGestureInProductHelp];
+      back_forward_button_tapped_ = false;
     }
-    // User navigates away before loading completes.
-    ResetMultiGestureRefreshStateAndRemoveIPH();
+    return;
   }
+  // User navigates away before loading completes.
+  // In case of multi-gesture refresh, `DidStopLoading` would be called BEFORE
+  // the refresh attempt, instead of AFTER, so any invocations of this observer
+  // that doesn't satisfy GetLoadingProgress() == 1 means user navigates away
+  // from the current page before loading completes.
+  multi_gesture_refresh_ = false;
+
+  // If the user taps the back/forward button when the current page is still
+  // loading, it is expected that `DidStopLoading` would be called with
+  // `GetLoadingProgress() < 1` AFTER, as a result of the user performing the
+  // tap. Therefore, the state should NOT be reset.
 }
 
 void TabBasedIPHBrowserAgent::WasHidden(web::WebState* web_state) {
   // User either goes to the tab grid or switches tab with a swipe on the bottom
   // tab grid; remove the IPH from view.
-  ResetMultiGestureRefreshStateAndRemoveIPH();
+  ResetFeatureStatesAndRemoveIPHViews();
 }
 
 void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  ResetMultiGestureRefreshStateAndRemoveIPH();
+  ResetFeatureStatesAndRemoveIPHViews();
 }
 
 #pragma mark - Private
 
-void TabBasedIPHBrowserAgent::ResetMultiGestureRefreshStateAndRemoveIPH() {
+void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;
-  [HelpHandler() removePullToRefreshGestureInProductHelp];
+  back_forward_button_tapped_ = false;
+  [HelpHandler() hideAllGestureInProductHelpViews];
 }
 
 id<HelpCommands> TabBasedIPHBrowserAgent::HelpHandler() {

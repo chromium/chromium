@@ -163,6 +163,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [self.parcelTrackingTipBubblePresenter dismissAnimated:NO];
+  [self hideAllGestureInProductHelpViews];
+}
+
+- (void)hideAllGestureInProductHelpViews {
+  // TODO(crbug.com/1467873):
+  // - 1. Add a new reason type and use that.
+  // - 2. Remove the fugure `self.backForwardSwipeGestureIPH`.
   [self.pullToRefreshGesturalIPH
       dismissWithReason:IPHDismissalReasonType::kUnknown];
 }
@@ -573,10 +580,8 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                           toGuide:guide];
 }
 
-- (void)removePullToRefreshGestureInProductHelp {
-  // TODO(crbug.com/1467873): Add a new reason type and use that.
-  [self.pullToRefreshGesturalIPH
-      dismissWithReason:IPHDismissalReasonType::kUnknown];
+- (void)presentBackForwardSwipeGestureInProductHelp {
+  // TODO(crbug.com/1467873): Draw and display bubble.
 }
 
 #pragma mark - Private
@@ -738,6 +743,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   return nil;
 }
 
+// Present a screen-covering side swipe bubble associated with an in-product
+// help promotion if it is valid to show the promotion, and return the view.
+// `feature` is the base::Feature object associated with the given promotion.
+// `direction` is the direction the bubble's arrow is pointing. `text` is the
+// text displayed by the bubble. `dismissAction` is the callback function
+// invoked when the IPH is dismissed, and `guide` is used for the initial
+// positioning of the side swipe bubble.
 //
 // TODO(crbug.com/1450600): Once kContentAreaGuide is moved to
 // LayoutGuideCenter, replace the parameter `guide` with a string `guideName`.

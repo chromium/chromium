@@ -14,6 +14,10 @@ class SnapshotBrowserAgent;
 @protocol TabStripHighlighting;
 class WebStateList;
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 // Notification sent when the user starts a side swipe (on tablet).
 extern NSString* const kSideSwipeWillStartNotification;
 // Notification sent when the user finishes a side swipe (on tablet).
@@ -60,6 +64,8 @@ extern NSString* const kSideSwipeDidStopNotification;
 @property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
 @property(nonatomic, assign) FullscreenController* fullscreenController;
+
+@property(nonatomic) feature_engagement::Tracker* engagementTracker;
 
 // Initializer.
 - (instancetype)
