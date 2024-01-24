@@ -1,13 +1,13 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] inbound-rtp's framesRendered
   assert_true: Is framesRendered present expected true got false
 [FAIL] inbound-rtp's fecBytesReceived
   assert_true: Is fecBytesReceived present expected true got false
 [FAIL] inbound-rtp's estimatedPlayoutTimestamp
   assert_true: Is estimatedPlayoutTimestamp present expected true got false
-[FAIL] inbound-rtp's fecSsrc
-  assert_true: Is fecSsrc present expected true got false
+[PRECONDITION_FAILED] inbound-rtp's fecSsrc
+  inbound-rtp.fecSsrc marked as not testable.
 [PRECONDITION_FAILED] outbound-rtp's rid
   outbound-rtp.rid marked as not testable.
 [FAIL] remote-inbound-rtp's packetsReceived
