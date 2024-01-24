@@ -7,11 +7,15 @@ var internalAPI = getInternalApi('platformKeysInternal');
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
-// Returns the normalized parameters of |importParams|. Any unknown parameters
-// will be ignored.
+// Returns the normalized parameters of |importParams|, which can be used to
+// import asymmetric keys. Unknown parameters will be ignored.
 function normalizeImportParams(importParams) {
   if (!importParams.name || typeof importParams.name !== 'string') {
     throw $Error.self('Algorithm: name: Missing or not a String');
+  }
+
+  if (importParams.name === 'ECDSA' && importParams.namedCurve !== 'P-256') {
+    throw $Error.self('Only P-256 named curve is supported.');
   }
 
   var filteredParams = {
@@ -29,10 +33,6 @@ function normalizeImportParams(importParams) {
     } else {
       filteredParams.hash = { name: importParams.hash.name }
     }
-  }
-
-  if (importParams.name === 'ECDSA' && importParams.namedCurve !== 'P-256') {
-    throw $Error.self('Only P-256 named curve is supported.');
   }
 
   // Apply WebCrypto's algorithm normalization.
@@ -56,6 +56,7 @@ function combineAlgorithms(algorithm, importParams) {
   if (importParams.hash) {
     algorithm.hash = importParams.hash;
   }
+
   return algorithm;
 }
 

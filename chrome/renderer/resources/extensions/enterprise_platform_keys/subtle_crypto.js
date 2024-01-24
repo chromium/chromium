@@ -7,16 +7,12 @@ var internalAPI = getInternalApi('enterprise.platformKeysInternal');
 var intersect = require('platformKeys.utils').intersect;
 var subtleCryptoModule = require('platformKeys.SubtleCrypto');
 var SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;
+var catchInvalidTokenError = subtleCryptoModule.catchInvalidTokenError;
 var KeyPair = require('enterprise.platformKeys.KeyPair').KeyPair;
 var KeyUsage = require('platformKeys.Key').KeyUsage;
 
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
-
-// This error is thrown by the internal and public API's token functions and
-// must be re-thrown by this custom binding. Keep this in sync with the C++ part
-// of this API.
-var errorInvalidToken = 'The token is not valid.';
 
 // The following errors are specified in WebCrypto.
 // TODO(pneubeck): These should be DOMExceptions.
@@ -34,17 +30,6 @@ function CreateSyntaxError() {
 
 function CreateOperationError() {
   return new Error('The operation failed for an operation-specific reason');
-}
-
-// Catches an |internalErrorInvalidToken|. If so, forwards it to |reject| and
-// returns true.
-function catchInvalidTokenError(reject) {
-  if (chrome.runtime.lastError &&
-      chrome.runtime.lastError.message === errorInvalidToken) {
-    reject(chrome.runtime.lastError);
-    return true;
-  }
-  return false;
 }
 
 // Returns true if the |normalizedAlgorithm| returned by normalizeAlgorithm() is
@@ -134,8 +119,9 @@ EnterpriseSubtleCryptoImpl.prototype.generateKey =
     internalAPI.generateKey(
         subtleCrypto.tokenId, normalizedAlgorithmParameters,
         subtleCrypto.softwareBacked, function(spki) {
-          if (catchInvalidTokenError(reject))
+          if (catchInvalidTokenError(reject)) {
             return;
+          }
           if (chrome.runtime.lastError) {
             reject(CreateOperationError());
             return;
@@ -152,7 +138,7 @@ utils.expose(SubtleCrypto, EnterpriseSubtleCryptoImpl, {
   superclass: subtleCryptoModule.SubtleCrypto,
   functions: [
     'generateKey',
-    // 'sign', 'exportKey' are exposed by the base class.
+    // 'sign' and 'exportKey' are exposed by the base class.
   ],
 });
 

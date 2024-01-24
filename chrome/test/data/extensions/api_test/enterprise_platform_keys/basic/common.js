@@ -7,6 +7,7 @@
 'use strict';
 
 var assertEq = chrome.test.assertEq;
+var assertFalse = chrome.test.assertFalse;
 var assertTrue = chrome.test.assertTrue;
 var assertThrows = chrome.test.assertThrows;
 var fail = chrome.test.fail;
@@ -309,17 +310,17 @@ function beforeInUserSessionTests(systemTokenEnabled, callback) {
 
   getTokens(function(userToken, systemToken) {
     if (!userToken)
-      fail('no user token');
+      fail('No user token');
     assertEq('user', userToken.id);
 
     if (systemTokenEnabled) {
       if (!systemToken)
-        fail('no system token');
+        fail('No system token');
       assertEq('system', systemToken.id);
     } else {
       assertEq(
           null, systemToken,
-          'system token is disabled, but found the token nonetheless.');
+          'System token is disabled, but found the token nonetheless.');
     }
 
     callback(userToken, systemToken);
@@ -335,11 +336,11 @@ function beforeLoginScreenTests(callback) {
 
   getTokens(function(userToken, systemToken) {
     if (userToken) {
-      fail('a user token is found on the login screen.');
+      fail('A user token is found on the login screen.');
     }
 
     if (!systemToken) {
-      fail('no system token found.');
+      fail('No system token found.');
     }
 
     assertEq('system', systemToken.id);
@@ -388,14 +389,14 @@ function checkRsaKeyPairCommonFormat(keyPair) {
   checkPropertyIsReadOnly(keyPair, 'privateKey');
   var privateKey = keyPair.privateKey;
   assertEq('private', privateKey.type);
-  assertEq(false, privateKey.extractable);
+  assertFalse(privateKey.extractable);
   checkPropertyIsReadOnly(privateKey, 'algorithm');
   checkRsaAlgorithmIsCopiedOnRead(privateKey);
 
   checkPropertyIsReadOnly(keyPair, 'publicKey');
   var publicKey = keyPair.publicKey;
   assertEq('public', publicKey.type);
-  assertEq(true, publicKey.extractable);
+  assertTrue(publicKey.extractable);
   checkPropertyIsReadOnly(publicKey, 'algorithm');
   checkRsaAlgorithmIsCopiedOnRead(publicKey);
 }
@@ -404,28 +405,33 @@ function checkEcKeyPairCommonFormat(keyPair) {
   checkPropertyIsReadOnly(keyPair, 'privateKey');
   var privateKey = keyPair.privateKey;
   assertEq('private', privateKey.type);
-  assertEq(false, privateKey.extractable);
+  assertFalse(privateKey.extractable);
   checkPropertyIsReadOnly(privateKey, 'algorithm');
   checkEcAlgorithmIsCopiedOnRead(privateKey);
 
   checkPropertyIsReadOnly(keyPair, 'publicKey');
   var publicKey = keyPair.publicKey;
   assertEq('public', publicKey.type);
-  assertEq(true, publicKey.extractable);
+  assertTrue(publicKey.extractable);
   checkPropertyIsReadOnly(publicKey, 'algorithm');
   checkEcAlgorithmIsCopiedOnRead(publicKey);
 }
+
+// An example of a dictionary that is specified on a RSA |sign| operation.
+const RSA_SIGN_ALGORITHM = {
+  name: 'RSASSA-PKCS1-v1_5'
+};
 
 // Verifies that signing data with RSA |keyPair| works. Error messages will be
 // prefixed with |debugMessage|. Returns an array with the first element as the
 // generated key pair and the second element as the SubjectPublicKeyInfo.
 async function verifyRsaKeySign(
     subtleCrypto, algorithm, keyPair, spki, debugMessage) {
-  const SIGN_PARAMS = {name: 'RSASSA-PKCS1-v1_5'};
 
   let signature;
   try {
-    signature = await subtleCrypto.sign(SIGN_PARAMS, keyPair.privateKey, DATA);
+    signature =
+        await subtleCrypto.sign(RSA_SIGN_ALGORITHM, keyPair.privateKey, DATA);
   } catch (error) {
     fail(debugMessage + ': Sign failed: ' + error);
   }
@@ -605,7 +611,7 @@ function testHasSubtleCryptoMethods(subtleCrypto) {
 // parameters are defined by WebCrypto as the RsaHashedKeyGenParameters. For
 // more information about RSA key generation parameters, please refer to:
 // https://www.w3.org/TR/WebCryptoAPI/#RsaHashedKeyGenParams-dictionary
-const RSA_ALGORITHM = {
+const RSA_GEN_ALGORITHM = {
   name: 'RSASSA-PKCS1-v1_5',
   modulusLength: 512,
   // Equivalent to 65537.
@@ -619,14 +625,13 @@ const RSA_ALGORITHM = {
 // using WebCrypto. Verifies also that a second sign operation fails.
 async function testGenerateRsaKeyAndSignAllowedOnce(subtleCrypto) {
   const [keyPair, spki] =
-      await generateRsaKeyAndVerify(subtleCrypto, RSA_ALGORITHM);
+      await generateRsaKeyAndVerify(subtleCrypto, RSA_GEN_ALGORITHM);
 
   // Try to sign data with the same key a second time, which must fail.
-  var signParams = {name: 'RSASSA-PKCS1-v1_5'};
-
   let signature;
   try {
-    signature = await subtleCrypto.sign(signParams, keyPair.privateKey, DATA);
+    signature =
+        await subtleCrypto.sign(RSA_SIGN_ALGORITHM, keyPair.privateKey, DATA);
     fail('Second sign call was expected to fail.');
   } catch (error) {
     assertTrue(error instanceof Error);
@@ -640,11 +645,11 @@ async function testGenerateRsaKeyAndSignAllowedOnce(subtleCrypto) {
 // using WebCrypto. Verifies also that a second sign operation succeeds.
 async function testGenerateRsaKeyAndSignAllowedMultipleTimes(subtleCrypto) {
   const [keyPair, spki] =
-      await generateRsaKeyAndVerify(subtleCrypto, RSA_ALGORITHM);
+      await generateRsaKeyAndVerify(subtleCrypto, RSA_GEN_ALGORITHM);
 
   // Try to sign data with the same key a second time, which must succeed.
   await verifyRsaKeySign(
-      subtleCrypto, RSA_ALGORITHM, keyPair, spki,
+      subtleCrypto, RSA_GEN_ALGORITHM, keyPair, spki,
       /*debugMessage=*/ 'Second signing attempt');
   succeed();
 }
@@ -1023,8 +1028,7 @@ chrome.test.getConfig(function(config) {
   systemTokenEnabled = args.systemTokenEnabled;
 
   if (isUserSessionTest) {
-    beforeInUserSessionTests(
-        /*systemTokenEnabled=*/ systemTokenEnabled, runInUserSessionTests);
+    beforeInUserSessionTests(systemTokenEnabled, runInUserSessionTests);
     return;
   }
 
