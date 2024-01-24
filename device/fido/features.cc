@@ -169,4 +169,9 @@ BASE_FEATURE(kWebAuthnAndroidFidoJson,
              "WebAuthenticationAndroidFidoJson",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default enabled in M123. Remove in or after M126.
+BASE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator,
+             "WebAuthenticationPreferVirtualPlatformAuthenticator",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

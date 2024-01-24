@@ -2315,6 +2315,34 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+// Tests that a transport = internal virtual authenticator can be dispatched to
+// on Mac.
+// Regression test for crbug.com/1520898.
+TEST_F(AuthenticatorRequestDialogModelTest, PlatformVirtualAuthenticator) {
+  AuthenticatorRequestDialogModel model(main_rfh());
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
+  model.SetAccountPreselectedCallback(base::DoNothing());
+  base::RunLoop run_loop;
+  model.SetRequestCallback(
+      base::BindLambdaForTesting([&](const std::string& authenticator_id) {
+        EXPECT_EQ(authenticator_id, "virtual-authenticator");
+        run_loop.Quit();
+      }));
+  TransportAvailabilityInfo transports_info;
+  transports_info.user_verification_requirement =
+      device::UserVerificationRequirement::kRequired;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.has_empty_allow_list = false;
+  transports_info.recognized_credentials = {kCred2};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
   for (const bool has_empty_allow_list : {false, true}) {
     SCOPED_TRACE(::testing::Message()
@@ -2346,8 +2374,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
     transports_info.available_transports = kAllTransports;
     transports_info.has_empty_allow_list = has_empty_allow_list;
+#if BUILDFLAG(IS_MAC)
+    // The TouchID authenticator will be immediately dispatched to if the device
+    // has biometrics configured. Simulate a lack of biometrics to align with
+    // other platforms.
+    model.set_local_biometrics_override_for_testing(false);
+#endif  // BUILDFLAG(IS_MAC)
     transports_info.user_verification_requirement =
-        device::UserVerificationRequirement::kRequired;
+        device::UserVerificationRequirement::kPreferred;
     transports_info.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
     transports_info.recognized_credentials = {kCred1FromICloudKeychain, kCred2};
@@ -2357,11 +2391,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
     if (has_empty_allow_list) {
       EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
     } else {
-#if BUILDFLAG(IS_MAC)
-      EXPECT_EQ(model.current_step(), Step::kNotStarted);
-#else
       EXPECT_EQ(model.current_step(), Step::kPreSelectSingleAccount);
-#endif
     }
 #else
     if (has_empty_allow_list) {
