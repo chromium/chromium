@@ -12,8 +12,8 @@
 
 namespace blink {
 
-// MediaStreamSink is the base interface for MediaStreamAudioSink and
-// MediaStreamVideoSink. It allows an implementation to receive notifications
+// WebMediaStreamSink is the base interface for WebMediaStreamAudioSink and
+// WebMediaStreamVideoSink. It allows an implementation to receive notifications
 // about state changes on a WebMediaStreamSource object or such an
 // object underlying a WebMediaStreamTrack.
 class BLINK_PLATFORM_EXPORT WebMediaStreamSink {
