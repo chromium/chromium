@@ -1016,6 +1016,7 @@ void InjectNTP(Browser* browser) {
       initWithBrowserProviderInterface:self.browserViewWrangler];
   [sceneState.scene.screenshotService setDelegate:self.screenshotDelegate];
 
+  [self activateBVCAndMakeCurrentBVCPrimary];
   [self.browserViewWrangler loadSession];
   [self createInitialUI:[self initialUIMode]];
 
