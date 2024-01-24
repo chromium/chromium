@@ -2153,6 +2153,15 @@
     "expires": "Jul 1, 2025"
   },
   {
+    "prefix": "fedcm-authz",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-authz/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmAuthz"],
+    "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
+    "expires": "May 1, 2025"
+  },
+  {
     "prefix": "fedcm-login-status",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/credential-management/fedcm-login-status/"],
