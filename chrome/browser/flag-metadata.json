@@ -1318,8 +1318,8 @@
   },
   {
     "name": "content-push-notifications",
-    "owners": [ "sczs@chromium.org", "guiperez@chromium.org", "chrome-sherlock@google.com"],
-    "expiry_milestone": 123
+    "owners": [ "sczs@chromium.org", "guiperez@google.com", "chrome-sherlock@google.com"],
+    "expiry_milestone": 128
   },
   {
     "name": "content-settings-partitioning",
