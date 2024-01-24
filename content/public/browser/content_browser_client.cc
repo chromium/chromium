@@ -1158,8 +1158,7 @@ FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate(
-    BrowserContext* browser_context) {
+SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate() {
   return nullptr;
 }
 #endif

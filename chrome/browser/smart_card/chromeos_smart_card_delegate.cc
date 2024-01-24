@@ -20,6 +20,20 @@ ChromeOsSmartCardDelegate::GetSmartCardContextFactory(
   return ::GetSmartCardContextFactory(browser_context);
 }
 
+bool ChromeOsSmartCardDelegate::IsPermissionBlocked(
+    content::RenderFrameHost& render_frame_host) {
+  auto& profile = CHECK_DEREF(
+      Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
+
+  auto& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(profile);
+
+  const url::Origin& origin =
+      render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
+
+  return !permission_context.CanRequestObjectPermission(origin);
+}
+
 bool ChromeOsSmartCardDelegate::HasReaderPermission(
     content::RenderFrameHost& render_frame_host,
     const std::string& reader_name) {

@@ -2080,8 +2080,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to provide an implementation of the Web Smart Card API.
-  virtual SmartCardDelegate* GetSmartCardDelegate(
-      BrowserContext* browser_context);
+  virtual SmartCardDelegate* GetSmartCardDelegate();
 #endif
 
   // Attempt to open the Payment Handler window inside its corresponding

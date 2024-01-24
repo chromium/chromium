@@ -16,7 +16,14 @@
 namespace content {
 
 using device::mojom::SmartCardConnectResult;
+using device::mojom::SmartCardCreateContextResult;
 using device::mojom::SmartCardError;
+
+namespace {
+SmartCardDelegate& GetSmartCardDelegate() {
+  return CHECK_DEREF(GetContentClient()->browser()->GetSmartCardDelegate());
+}
+}  // namespace
 
 SmartCardService::SmartCardService(
     RenderFrameHost& render_frame_host,
@@ -58,7 +65,7 @@ void SmartCardService::Create(
   }
 
   SmartCardDelegate* delegate =
-      GetContentClient()->browser()->GetSmartCardDelegate(browser_context);
+      GetContentClient()->browser()->GetSmartCardDelegate();
   if (!delegate) {
     mojo::ReportBadMessage("Browser has no Smart Card delegate.");
     return;
@@ -69,6 +76,12 @@ void SmartCardService::Create(
 }
 
 void SmartCardService::CreateContext(CreateContextCallback callback) {
+  if (GetSmartCardDelegate().IsPermissionBlocked(render_frame_host())) {
+    std::move(callback).Run(SmartCardCreateContextResult::NewError(
+        SmartCardError::kPermissionDenied));
+    return;
+  }
+
   context_factory_->CreateContext(
       base::BindOnce(&SmartCardService::OnContextCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -115,10 +128,7 @@ void SmartCardService::Connect(
     device::mojom::SmartCardShareMode share_mode,
     device::mojom::SmartCardProtocolsPtr preferred_protocols,
     ConnectCallback callback) {
-  BrowserContext* browser_context = render_frame_host().GetBrowserContext();
-
-  SmartCardDelegate& delegate = CHECK_DEREF(
-      GetContentClient()->browser()->GetSmartCardDelegate(browser_context));
+  SmartCardDelegate& delegate = GetSmartCardDelegate();
 
   mojo::ReceiverId context_wrapper_id =
       context_wrapper_receivers_.current_receiver();

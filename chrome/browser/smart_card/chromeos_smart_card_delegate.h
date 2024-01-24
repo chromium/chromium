@@ -16,6 +16,8 @@ class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
   // `content::SmartCardDelegate` overrides:
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(content::BrowserContext& browser_context) override;
+  bool IsPermissionBlocked(
+      content::RenderFrameHost& render_frame_host) override;
   bool HasReaderPermission(content::RenderFrameHost& render_frame_host,
                            const std::string& reader_name) override;
   void RequestReaderPermission(

@@ -6825,8 +6825,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate(
-    content::BrowserContext* browser_context) {
+content::SmartCardDelegate* ChromeContentBrowserClient::GetSmartCardDelegate() {
   if (!smart_card_delegate_) {
     smart_card_delegate_ = std::make_unique<ChromeOsSmartCardDelegate>();
   }

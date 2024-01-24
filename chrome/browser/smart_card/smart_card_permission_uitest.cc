@@ -75,7 +75,7 @@ class SmartCardPermissionUiTest : public InteractiveBrowserTest {
   content::SmartCardDelegate* GetSmartCardDelegate() {
     return content::GetContentClientForTesting()
         ->browser()
-        ->GetSmartCardDelegate(browser()->profile());
+        ->GetSmartCardDelegate();
   }
 
   content::RenderFrameHost& GetMainFrameHost() {

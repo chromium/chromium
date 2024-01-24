@@ -28,13 +28,22 @@ class CONTENT_EXPORT SmartCardDelegate {
   virtual mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(BrowserContext& browser_context) = 0;
 
+  // Returns whether the origin is blocked from connecting to smart card
+  // readers.
+  virtual bool IsPermissionBlocked(RenderFrameHost& render_frame_host) = 0;
+
   // Returns whether `origin` has permission to connect to the smart card reader
   // names `reader_name`.
+  //
+  // Will always return false if the frame's origin IsPermissionBlocked().
   virtual bool HasReaderPermission(RenderFrameHost& render_frame_host,
                                    const std::string& reader_name) = 0;
 
   // Shows a prompt to the user requesting permission to connect to the smart
   // card reader named `reader_name`.
+  //
+  // If the frame's origin IsPermissionBlocked(), `callback` will immediately
+  // receive false.
   virtual void RequestReaderPermission(
       RenderFrameHost& render_frame_host,
       const std::string& reader_name,

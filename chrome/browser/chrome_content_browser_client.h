@@ -709,8 +709,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver)
       override;
 #if BUILDFLAG(IS_CHROMEOS)
-  content::SmartCardDelegate* GetSmartCardDelegate(
-      content::BrowserContext* browser_context) override;
+  content::SmartCardDelegate* GetSmartCardDelegate() override;
 #endif
   bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,
