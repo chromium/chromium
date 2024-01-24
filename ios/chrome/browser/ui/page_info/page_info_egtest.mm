@@ -319,7 +319,8 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 }
 
 // Tests the security section by checking that the correct connection label is
-// displayed and that no security footer is displayed.
+// displayed, that no security footer is displayed and that clicking on the
+// security row leads to the security subpage.
 - (void)testSecuritySection {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -339,6 +340,17 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       selectElementWithMatcher:
           grey_accessibilityID(kPageInfoSecurityFooterAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
+
+  // Check that tapping on the security row leads to the security subpage.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE))]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoSecurityViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
+#import "ios/chrome/browser/ui/page_info/page_info_security_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_view_controller.h"
@@ -27,7 +28,10 @@
 
 @end
 
-@implementation PageInfoCoordinator
+@implementation PageInfoCoordinator {
+  // Coordinator for the security screen.
+  PageInfoSecurityCoordinator* _securityCoordinator;
+}
 
 @synthesize presentationProvider = _presentationProvider;
 
@@ -79,7 +83,10 @@
 #pragma mark - PageInfoPresentationCommands
 
 - (void)showSecurityPage {
-  // TODO(crbug.com/1512580): Call future security coordinator.
+  _securityCoordinator = [[PageInfoSecurityCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:self.browser];
+  [_securityCoordinator start];
 }
 
 @end

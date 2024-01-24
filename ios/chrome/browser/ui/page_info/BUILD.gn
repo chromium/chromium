@@ -5,6 +5,8 @@
 source_set("page_info") {
   sources = [
     "page_info_presentation_commands.h",
+    "page_info_security_view_controller.h",
+    "page_info_security_view_controller.mm",
     "page_info_site_security_description.h",
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
@@ -64,6 +66,8 @@ source_set("coordinator") {
     "page_info_coordinator.mm",
     "page_info_permissions_mediator.h",
     "page_info_permissions_mediator.mm",
+    "page_info_security_coordinator.h",
+    "page_info_security_coordinator.mm",
     "page_info_site_security_mediator.h",
     "page_info_site_security_mediator.mm",
   ]
