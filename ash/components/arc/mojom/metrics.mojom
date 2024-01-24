@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 32
+// Next MinVersion: 33
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -389,7 +389,7 @@ enum ArcKeyMintError {
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
 // Deprecated method IDs: 25, 26, 27, 28, 29
-// Next method ID: 36
+// Next method ID: 37
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -519,6 +519,10 @@ interface MetricsHost {
 
   // Reports select error codes on select KeyMint calls (on ARC T+ only).
   [MinVersion=31] ReportArcKeyMintError@35(ArcKeyMintError error);
+
+  // Reports window drag resize latency.
+  [MinVersion=32] ReportDragResizeLatency@36(
+      array<mojo_base.mojom.TimeDelta> durations);
 };
 
 // Deprecated method IDs: 0

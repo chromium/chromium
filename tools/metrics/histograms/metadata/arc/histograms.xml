@@ -2581,6 +2581,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.WM.WindowDragResizeTime" units="ms"
+    expires_after="2024-04-23">
+  <owner>lingyufeng@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the time of handling each bounds changing request of drag resizing
+    operation. The data is collected when ARC window drag resizing operation
+    happens. Note that this metric might be recorded multiple times for a single
+    drag operation if multiple bounds changing requests occur in one drag
+    operation.
+  </summary>
+</histogram>
+
 <histogram name="Arc.WM.WindowEnterTabletModeDelayTimeV2.{ChromeOSAppType}"
     units="ms" expires_after="2024-11-30">
   <owner>lingyufeng@google.com</owner>

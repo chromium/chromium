@@ -842,6 +842,16 @@ void ArcMetricsService::ReportArcKeyMintError(mojom::ArcKeyMintError error) {
   base::UmaHistogramEnumeration("Arc.KeyMint.KeyMintError", error);
 }
 
+void ArcMetricsService::ReportDragResizeLatency(
+    const std::vector<base::TimeDelta>& durations) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto duration : durations) {
+    base::UmaHistogramCustomTimes("Arc.WM.WindowDragResizeTime", duration,
+                                  /*minimum=*/base::Milliseconds(1),
+                                  /*maximum=*/base::Seconds(3), 100);
+  }
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
