@@ -749,17 +749,6 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 #endif
 );
 
-// Enables reporting Event Timing with matching presentation promise index only.
-BASE_FEATURE(kEventTimingMatchPresentationIndex,
-             "EventTimingMatchPresentationIndex",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables reporting Event Timing entries with a smaller presentation index on
-// resolved painted presentation.
-BASE_FEATURE(kEventTimingReportAllEarlyEntriesOnPaintedPresentation,
-             "EventTimingReportAllEarlyEntriesOnPaintedPresentation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables unload handler deprecation via Permissions-Policy.
 // https://crbug.com/1324111
 BASE_FEATURE(kDeprecateUnload,

@@ -65,34 +65,30 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   class EventData : public GarbageCollected<EventData> {
    public:
     EventData(PerformanceEventTiming* event_timing,
-              uint64_t frame,
               uint64_t presentation_index,
               base::TimeTicks event_timestamp,
               absl::optional<int> key_code,
               absl::optional<PointerId> pointer_id)
         : event_timing_(event_timing),
-          frame_(frame),
           presentation_index_(presentation_index),
           event_timestamp_(event_timestamp),
           key_code_(key_code),
           pointer_id_(pointer_id) {}
 
     static EventData* Create(PerformanceEventTiming* event_timing,
-                             uint64_t frame,
                              uint64_t presentation_index,
                              base::TimeTicks event_timestamp,
                              absl::optional<int> key_code,
                              absl::optional<PointerId> pointer_id) {
-      return MakeGarbageCollected<EventData>(
-          event_timing, frame, presentation_index, event_timestamp, key_code,
-          pointer_id);
+      return MakeGarbageCollected<EventData>(event_timing, presentation_index,
+                                             event_timestamp, key_code,
+                                             pointer_id);
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
     PerformanceEventTiming* GetEventTiming() const {
       return event_timing_.Get();
     }
-    uint64_t GetFrameIndex() const { return frame_; }
     uint64_t GetPresentationIndex() const { return presentation_index_; }
     base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
     absl::optional<int> GetKeyCode() const { return key_code_; }
@@ -103,8 +99,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     // yet: the event dispatch has been completed but the presentation promise
     // used to determine |duration| has not yet been resolved.
     Member<PerformanceEventTiming> event_timing_;
-    // Frame index in which the entry in |event_timing_| were added.
-    uint64_t frame_;
     // Presentation promise index in which the entry in |event_timing_| was
     // added.
     uint64_t presentation_index_;
@@ -211,11 +205,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Report buffered events with presentation time following their registered
   // order; stop as soon as seeing an event with pending presentation promise.
   void ReportEventTimings();
-  // Method called once presentation promise for a frame is resolved. It will
-  // add all event timings that have not been added since the last presentation
-  // promise.
-  void ReportEventTimingsWithFrameIndex(uint64_t frame_index,
-                                        base::TimeTicks presentation_timestamp);
   void ReportEvent(InteractiveDetector* interactive_detector,
                    Member<EventData> event_data,
                    base::TimeTicks presentation_timestamp);
@@ -238,31 +227,18 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;
 
-  // Counter of the current frame index, based on calls to OnPaintFinished().
-  uint64_t frame_index_ = 1;
-  // Monotonically increasing value with the last frame index on which a
-  // presentation promise was queued;
-  uint64_t last_registered_frame_index_ = 0;
-  // Number of pending presentation promises.
-  uint16_t pending_presentation_promise_count_ = 0;
-
   // Controls if we register a new presentation promise upon events arrival.
   bool need_new_promise_for_event_presentation_time_ = true;
   // Counts the total number of presentation promises we've registered for
   // events' presentation feedback since the beginning.
   uint64_t event_presentation_promise_count_ = 0;
-  // Record presentation promise index when a painted one got resolved. We
-  // believe painted presentation promise should always resolve follow their
-  // creation order. Thus, any unresolved promise with a smaller index should be
-  // reported without waiting for their callback.
-  uint64_t last_resolved_painted_event_presentation_promise_index_ = 0;
   // Map from presentation promise index to pending event presentation
   // timestamp. It gets emptied consistently once corresponding entries are
   // reported.
   HashMap<uint64_t, base::TimeTicks> pending_event_presentation_time_map_;
   // Store all event timing and latency related data, including
-  // PerformanceEventTiming, frame_index, presentation_index, keycode and
-  // pointerId. We use the data to calculate events latencies.
+  // PerformanceEventTiming, presentation_index, keycode and pointerId.
+  // We use the data to calculate events latencies.
   HeapDeque<Member<EventData>> events_data_;
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;

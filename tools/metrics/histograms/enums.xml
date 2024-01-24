@@ -10928,7 +10928,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4559"
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial"/>
   <int value="4560"
-      label="EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
+      label="OBSOLETE_EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
   <int value="4561" label="LinkRelPreloadAsFont"/>
   <int value="4562" label="CrossWindowAccessToBrowserGeneratedDocument"/>
   <int value="4563" label="SpeculationRulesNoVarySearchHint"/>
@@ -10965,7 +10965,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4594" label="OBSOLETE_TextWrapPretty"/>
   <int value="4595" label="OBSOLETE_TextWrapPrettyFail"/>
   <int value="4596" label="ContainerQueryEvalUnknown"/>
-  <int value="4597" label="EventTimingPresentationPromiseResolvedAfterReport"/>
+  <int value="4597"
+      label="OBSOLETE_EventTimingPresentationPromiseResolvedAfterReport"/>
   <int value="4598" label="GetCoalescedEventsInInsecureContext"/>
   <int value="4599" label="CSPEESameOriginBlanketEnforcement"/>
   <int value="4601" label="SharedDictionaryUsed"/>

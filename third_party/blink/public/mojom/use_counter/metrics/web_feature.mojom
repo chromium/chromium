@@ -3908,7 +3908,7 @@ enum WebFeature {
   kCSSValueAppearanceSliderthumbHorizontal = 4557,
   kCSSValueAppearanceSliderthumbVertical = 4558,
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial = 4559,
-  kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
+  kOBSOLETE_EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
   kLinkRelPreloadAsFont = 4561,
   kCrossWindowAccessToBrowserGeneratedDocument = 4562,
   kSpeculationRulesNoVarySearchHint = 4563,
@@ -3947,7 +3947,7 @@ enum WebFeature {
   kOBSOLETE_TextWrapPretty = 4594,
   kOBSOLETE_TextWrapPrettyFail = 4595,
   kContainerQueryEvalUnknown = 4596,
-  kEventTimingPresentationPromiseResolvedAfterReport = 4597,
+  kOBSOLETE_EventTimingPresentationPromiseResolvedAfterReport = 4597,
   kGetCoalescedEventsInInsecureContext = 4598,
   kCSPEESameOriginBlanketEnforcement = 4599,
   // The items above roughly this point are available in the M116 branch.

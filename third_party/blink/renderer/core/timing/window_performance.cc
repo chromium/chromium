@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -93,9 +92,6 @@ static constexpr base::TimeDelta kLongTaskObserverThreshold =
 namespace blink {
 
 namespace {
-
-const char kEventTimingPendingPresentationPromiseCount[] =
-    "PageLoad.Internal.EventTiming.PendingPresentationPromiseCount";
 
 AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
                                const QualifiedName& attr_name) {
@@ -417,39 +413,13 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   }
   eventCounts()->Add(event_type);
 
-  if (base::FeatureList::IsEnabled(
-          features::kEventTimingMatchPresentationIndex)) {
-    if (need_new_promise_for_event_presentation_time_) {
-      DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
-          *DomWindow()->GetFrame(),
-          CrossThreadBindOnce(&WindowPerformance::OnPresentationPromiseResolved,
-                              WrapCrossThreadWeakPersistent(this),
-                              ++event_presentation_promise_count_));
-      need_new_promise_for_event_presentation_time_ = false;
-    }
-  } else {
-    bool should_queue_presentation_promise = false;
-    // If there are no pending presentation promises, we should queue one. This
-    // ensures that |event_timings_| are processed even if the Blink lifecycle
-    // does not occur due to no DOM updates.
-    if (pending_presentation_promise_count_ == 0u) {
-      should_queue_presentation_promise = true;
-    } else {
-      // There are pending presentation promises, so only queue one if the event
-      // corresponds to a later frame than the one of the latest queued
-      // presentation promise.
-      should_queue_presentation_promise =
-          frame_index_ > last_registered_frame_index_;
-    }
-    if (should_queue_presentation_promise) {
-      DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
-          *DomWindow()->GetFrame(),
-          CrossThreadBindOnce(
-              &WindowPerformance::ReportEventTimingsWithFrameIndex,
-              WrapCrossThreadWeakPersistent(this), frame_index_));
-      last_registered_frame_index_ = frame_index_;
-      ++pending_presentation_promise_count_;
-    }
+  if (need_new_promise_for_event_presentation_time_) {
+    DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
+        *DomWindow()->GetFrame(),
+        CrossThreadBindOnce(&WindowPerformance::OnPresentationPromiseResolved,
+                            WrapCrossThreadWeakPersistent(this),
+                            ++event_presentation_promise_count_));
+    need_new_promise_for_event_presentation_time_ = false;
   }
 
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
@@ -469,7 +439,7 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   }
   // Add |entry| to the end of the queue along with the presentation promise
   // index in order to match with corresponding presentation feedback later.
-  events_data_.push_back(EventData::Create(entry, frame_index_,
+  events_data_.push_back(EventData::Create(entry,
                                            event_presentation_promise_count_,
                                            start_time, key_code, pointer_id));
   SetCurrentEventTimingEvent(nullptr);
@@ -486,42 +456,6 @@ void WindowPerformance::OnPresentationPromiseResolved(
     base::TimeTicks presentation_timestamp) {
   if (!DomWindow() || !DomWindow()->document()) {
     return;
-  }
-  if (events_data_.empty()) {
-    // Counts when a presentation promise got resolved after its related entries
-    // being reported.
-    UseCounter::Count(
-        GetExecutionContext(),
-        WebFeature::kEventTimingPresentationPromiseResolvedAfterReport);
-
-    return;
-  }
-
-  const bool is_painted_presentation_promise =
-      presentation_index < event_presentation_promise_count_ ||
-      need_new_promise_for_event_presentation_time_;
-  if (is_painted_presentation_promise &&
-      events_data_.front()->GetPresentationIndex() < presentation_index) {
-    // Counts when a painted presentation promise got resolved but an earlier
-    // one is still pending.
-    UseCounter::Count(
-        GetExecutionContext(),
-        WebFeature::
-            kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved);
-
-    if (last_resolved_painted_event_presentation_promise_index_ <
-        presentation_index) {
-      last_resolved_painted_event_presentation_promise_index_ =
-          presentation_index;
-    }
-  } else if (is_painted_presentation_promise &&
-             events_data_.front()->GetPresentationIndex() >
-                 presentation_index) {
-    // Counts when a presentation promise got resolved after its related entries
-    // being reported.
-    UseCounter::Count(
-        GetExecutionContext(),
-        WebFeature::kEventTimingPresentationPromiseResolvedAfterReport);
   }
 
   // If the resolved presentation promise is the latest one we registered, then
@@ -540,43 +474,22 @@ void WindowPerformance::OnPresentationPromiseResolved(
   DOMHighResTimeStamp end_time =
       MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
   responsiveness_metrics_->FlushExpiredKeydown(end_time);
-
-  // Record histogram for pending presentation promise count.
-  UMA_HISTOGRAM_COUNTS_1000(
-      kEventTimingPendingPresentationPromiseCount,
-      events_data_.empty()
-          ? 0
-          : static_cast<int>(event_presentation_promise_count_ -
-                             events_data_.front()->GetPresentationIndex() + 1));
 }
 
 void WindowPerformance::ReportEventTimings() {
   CHECK(DomWindow() && DomWindow()->document());
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
-  bool report_all_early_entries = base::FeatureList::IsEnabled(
-      features::kEventTimingReportAllEarlyEntriesOnPaintedPresentation);
   CHECK(!events_data_.empty());
 
   for (uint64_t presentation_index_to_report =
            events_data_.front()->GetPresentationIndex();
-       ; ++presentation_index_to_report) {
-    const bool is_resolved_promise =
-        pending_event_presentation_time_map_.Contains(
-            presentation_index_to_report);
-    const bool is_early_entry =
-        presentation_index_to_report <
-        last_resolved_painted_event_presentation_promise_index_;
-    if (!is_resolved_promise && !(is_early_entry && report_all_early_entries)) {
-      return;
-    }
-
-    base::TimeTicks presentation_timestamp = base::TimeTicks();
-    if (is_resolved_promise) {
-      presentation_timestamp =
-          pending_event_presentation_time_map_.at(presentation_index_to_report);
-      pending_event_presentation_time_map_.erase(presentation_index_to_report);
-    }
+       pending_event_presentation_time_map_.Contains(
+           presentation_index_to_report);
+       ++presentation_index_to_report) {
+    base::TimeTicks presentation_timestamp =
+        pending_event_presentation_time_map_.at(presentation_index_to_report);
+    pending_event_presentation_time_map_.erase(presentation_index_to_report);
 
     while (!events_data_.empty() &&
            events_data_.front()->GetPresentationIndex() ==
@@ -606,11 +519,10 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                       WebFeature::kEventTimingArtificialPointerupOrClick);
   }
 
-  // The page visibility was changed, or the entry's related presentation
-  // promise didn't resolve, or this is an artificial event. We fallback entry's
-  // end time to its processingEnd (as if there was no next paint needed).
+  // The page visibility was changed, or this is an artificial event. We
+  // fallback entry's end time to its processingEnd (as if there was no next
+  // paint needed).
   const bool fallback_end_time_to_processing_end =
-      presentation_timestamp == base::TimeTicks() ||
       (last_visibility_change_timestamp_ > event_timestamp &&
        last_visibility_change_timestamp_ < presentation_timestamp)
 #if BUILDFLAG(IS_MAC)
@@ -687,40 +599,6 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
           PerformanceEventTiming::CreateFirstInputTiming(entry));
     }
   }
-}
-
-void WindowPerformance::ReportEventTimingsWithFrameIndex(
-    uint64_t frame_index,
-    base::TimeTicks presentation_timestamp) {
-  DCHECK(pending_presentation_promise_count_);
-  --pending_presentation_promise_count_;
-  if (events_data_.empty()) {
-    return;
-  }
-
-  if (!DomWindow() || !DomWindow()->document()) {
-    return;
-  }
-  InteractiveDetector* interactive_detector =
-      InteractiveDetector::From(*(DomWindow()->document()));
-  DOMHighResTimeStamp end_time =
-      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
-  while (!events_data_.empty()) {
-    auto event_data = events_data_.front();
-    uint64_t entry_frame_index = event_data->GetFrameIndex();
-    // If the entry was queued at a frame index that is larger than
-    // |frame_index|, then we've reached the end of the entries that we can
-    // process during this callback.
-    if (entry_frame_index > frame_index) {
-      break;
-    }
-
-    ReportEvent(interactive_detector, event_data, presentation_timestamp);
-    events_data_.pop_front();
-  }
-
-  // Use |end_time| as a proxy for the current time to flush expired keydowns.
-  responsiveness_metrics_->FlushExpiredKeydown(end_time);
 }
 
 void WindowPerformance::NotifyAndAddEventTimingBuffer(
@@ -931,8 +809,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 }
 
 void WindowPerformance::OnPaintFinished() {
-  ++frame_index_;
-
   // The event processed after a paint will have different presentation time
   // than previous ones, so we need to register a new presentation promise for
   // it.

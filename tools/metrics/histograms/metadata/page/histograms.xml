@@ -2474,22 +2474,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.EventTiming.PendingPresentationPromiseCount"
-    units="count" expires_after="2024-06-30">
-  <owner>zuoaoyuan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Records the number of unique presentation times that Event Timing has queued
-    up, waiting to assign to Event Timing entries and dispatch to performance
-    timeline. Recorded once every time a presentation promise resolves. The
-    queue grows whenever a new presentation promise gets queued, and shrinks
-    when it gets reported. Note that when a newer presentation promise gets
-    resolved before an older one, we would delay reporting it so timings are
-    reported in order. This should only happen whenever a newer presentation
-    promise is not actually measuring to Next Paint.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.PageLoadTimingStatus{Condition}"
     enum="PageLoadTimingStatus" expires_after="2024-06-30">
   <owner>toyoshim@chromium.org</owner>
