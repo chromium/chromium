@@ -3158,9 +3158,17 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
+// TODO(crbug.com/1521229) flaky on win-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
+  DISABLED_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms \
+  DynamicFormFill_FirstElementDisappearsMultipleBadNameForms
+#endif
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
-    DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
+    MAYBE_DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com",
