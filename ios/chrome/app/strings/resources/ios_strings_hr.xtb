@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Zadani prikaz web-lokacije možete promijeniti u prikaz na računalu u odjeljku Postavke, pod Postavke sadržaja</translation>
 <translation id="1054745118061919935">Nastavkom upotrebe prihvaćate <ph name="BEGIN_LINK" />uvjete pružanja usluge<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Upravljanje sinkronizacijom</translation>
+<translation id="1066101356081285416">Chrome će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Broj za praćenje pošiljke i naziv web-lokacije poslat će se Googleu radi pružanja te značajke i poboljšanja značajki Google Shoppinga za sve korisnike. To uvijek možete ažurirati u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Zaporka već postoji</translation>
 <translation id="1076421457278169141">Kod skeniran</translation>
 <translation id="1076785341346483463">Sinkronizacija s upravljanim računom</translation>
@@ -1135,7 +1136,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6869389390665537774">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
 <translation id="687135068089457384">Prikaži postavke</translation>
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
-<translation id="687586529977635009">Chrome će otkriti evidencijske brojeve na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Vaši će se podaci podijeliti s Googleom radi pružanja te značajke i poboljšanja Shoppinga za sve korisnike. To možete promijeniti u <ph name="BEGIN_LINK" />postavkama praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasna.</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>

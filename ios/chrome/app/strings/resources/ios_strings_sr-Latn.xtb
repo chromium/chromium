@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Možete da promenite podrazumevani prikaz sajta na računar u odeljku Podešavanja, pa Podešavanja sadržaja</translation>
 <translation id="1054745118061919935">Ako nastavite, prihvatate <ph name="BEGIN_LINK" />Uslove korišćenja usluge<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
+<translation id="1066101356081285416">Chrome otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta se šalju Google-u radi pružanja ove funkcije i poboljšanja funkcija Google kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Lozinka već postoji</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1076785341346483463">Sinhronizacija sa upravljanim nalogom</translation>
@@ -1135,7 +1136,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6869389390665537774">Možete da vidite stranice koje ste posetili ili da ih obrišete iz istorije</translation>
 <translation id="687135068089457384">Prikazuje podešavanja</translation>
 <translation id="6873263987691478642">Podeljeni prikaz</translation>
-<translation id="687586529977635009">Chrome otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Podaci će se deliti sa Google-om radi pružanja ove funkcije i poboljšanja Kupovine za sve. To možete da promenite u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni.</translation>
 <translation id="6888009575607455378">Želite li stvarno da odbacite promene?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>

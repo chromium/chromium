@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Możesz zmienić domyślny widok witryny na wersję na komputery po kliknięciu opcji Ustawienia, a następnie Ustawienia treści</translation>
 <translation id="1054745118061919935">Przechodząc dalej, akceptujesz <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Zarządzanie synchronizacją</translation>
+<translation id="1066101356081285416">Chrome będzie wykrywać numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetlać aktualne informacje o przesyłkach na stronie Nowa karta. Numery śledzenia przesyłek i nazwy witryn będą wysyłane do Google i używane do obsługi tej funkcji oraz do ogólnego ulepszania funkcji zakupów. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Hasło już istnieje</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1076785341346483463">Synchronizacja z kontem zarządzanym</translation>
@@ -1135,7 +1136,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6869389390665537774">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="687135068089457384">Pokaż ustawienia</translation>
 <translation id="6873263987691478642">Widok dzielony</translation>
-<translation id="687586529977635009">Chrome wykryje numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetli aktualne informacje o przesyłkach na stronie Nowa karta. Aby ta funkcja mogła działać, Twoje dane będą udostępniane Google. Pozwoli to też na ulepszanie Zakupów Google. Możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="6888009575607455378">Czy na pewno chcesz odrzucić zmiany?</translation>
 <translation id="6896758677409633944">Kopiuj</translation>

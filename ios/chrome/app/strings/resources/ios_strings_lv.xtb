@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Sadaļā Iestatījumi &gt; Satura iestatījumi varat mainīt noklusējuma vietnes skatu uz datoriem paredzēto skatu.</translation>
 <translation id="1054745118061919935">Turpinot jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Sinhronizācijas pārvaldība</translation>
+<translation id="1066101356081285416">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un jaunas cilnes lapā tiks parādīti jaunumi par sūtījumiem. Pakas izsekošanas numurs un vietnes nosaukums tiks nosūtīts uzņēmumam Google, lai nodrošinātu šo funkciju un uzlabotu Google iepirkšanās funkcijas visiem lietotājiem. Šo informāciju varat jebkurā laikā atjaunināt <ph name="BEGIN_LINK" />pakas izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Parole jau pastāv</translation>
 <translation id="1076421457278169141">Kods ir skenēts</translation>
 <translation id="1076785341346483463">Sinhronizācija ar pārvaldītu kontu</translation>
@@ -1135,7 +1136,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6869389390665537774">Varat skatīt apmeklētās lapas vai noņemt tās no vēstures.</translation>
 <translation id="687135068089457384">Rādīt iestatījumus</translation>
 <translation id="6873263987691478642">Dalītais skats</translation>
-<translation id="687586529977635009">Pārlūkā Chrome jūsu apmeklētajās vietnēs tiks noteikti izsekošanas numuri un lapā Jauna cilne tiks parādīti jaunumi par sūtījumiem. Jūsu dati tiks kopīgoti ar uzņēmumu Google, lai nodrošinātu šo funkciju un visiem lietotājiem uzlabotu pakalpojumu Pirkumi. Varat to mainīt <ph name="BEGIN_LINK" />sūtījumu izsekošanas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standarta aizsardzība pret zināmām bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="6888009575607455378">Vai tiešām vēlaties atmest veiktās izmaiņas?</translation>
 <translation id="6896758677409633944">Kopēt</translation>

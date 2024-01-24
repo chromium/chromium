@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">[設定] の [コンテンツの設定] で、デフォルトのサイトビューをデスクトップに変更できます</translation>
 <translation id="1054745118061919935">続行すると、<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />に同意したことになります。</translation>
 <translation id="1066060668811609597">同期の管理</translation>
+<translation id="1066101356081285416">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。荷物追跡番号とウェブサイト名は、この機能の提供と Google ショッピング機能の改善を目的として、Google に送信されます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />でいつでも変更できます。</translation>
 <translation id="1069154182096085577">このパスワードはすでに存在します</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1076785341346483463">管理対象アカウントとの同期</translation>
@@ -1135,7 +1136,6 @@
 <translation id="6869389390665537774">アクセスしたページを確認したり履歴から消去したりできます</translation>
 <translation id="687135068089457384">設定を表示</translation>
 <translation id="6873263987691478642">分割表示</translation>
-<translation id="687586529977635009">Chrome はアクセスしたサイトで追跡番号を検出し、新しいタブページに最新情報を表示します。データは Google と共有され、この機能の提供と、すべてのユーザーに対するショッピングの利便性向上に役立てられます。この設定は<ph name="BEGIN_LINK" />荷物追跡設定<ph name="END_LINK" />で変更できます。</translation>
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="6888009575607455378">変更を破棄してもよろしいですか？</translation>
 <translation id="6896758677409633944">コピー</translation>

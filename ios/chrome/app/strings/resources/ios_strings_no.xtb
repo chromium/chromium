@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Du kan endre standard nettstedsvisning til datamaskin i Innstillinger og deretter Innholdsinnstillinger</translation>
 <translation id="1054745118061919935">Ved å fortsette godtar du <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Administrer synkronisering</translation>
+<translation id="1066101356081285416">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Google, slik at Google kan levere denne funksjonen og gjøre Google Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Passordet finnes allerede</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1076785341346483463">Synkroniser med administrert konto</translation>
@@ -1135,7 +1136,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="687135068089457384">Vis Innstillinger</translation>
 <translation id="6873263987691478642">Delt visning</translation>
-<translation id="687586529977635009">Chrome registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Dataene dine blir delt med Google, slik at vi kan tilby denne funksjonen og gjøre Shopping enda bedre for alle. Du kan endre dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
 <translation id="6896758677409633944">Kopiér</translation>

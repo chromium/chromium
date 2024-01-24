@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Puedes cambiar la vista predeterminada de los sitios a la vista como ordenador en Configuración y, después, Configuración de contenido.</translation>
 <translation id="1054745118061919935">Si continúas, confirmas que aceptas los <ph name="BEGIN_LINK" />Términos del Servicio<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gestionar sincronización</translation>
+<translation id="1066101356081285416">Chrome detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. El número de seguimiento del envío y el nombre del sitio web se enviarán a Google para ofrecer esta función y mejorar las funciones de compra de Google para todos. Puedes actualizar esta información en cualquier momento en la <ph name="BEGIN_LINK" />configuración de Seguimiento de envíos<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">La contraseña ya existe</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1076785341346483463">Sincronizar con cuenta gestionada</translation>
@@ -1135,7 +1136,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="6869389390665537774">Puedes ver las páginas que has visitado o borrarlas de tu historial</translation>
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
-<translation id="687586529977635009">Chrome detectará los números de seguimiento de los sitios que visites y te mostrará novedades sobre los envíos en la página Nueva pestaña. Tus datos se compartirán con Google para ofrecerte esta función y mejorar Shopping para todos. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración del seguimiento de envíos<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
 <translation id="6888009575607455378">¿Seguro que quieres descartar los cambios?</translation>
 <translation id="6896758677409633944">Copiar</translation>

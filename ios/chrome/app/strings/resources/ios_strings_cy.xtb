@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Gallwch newid y wedd gwefan ddiofyn i fwrdd gwaith yn y Gosodiadau yna Gosodiadau Cynnwys.</translation>
 <translation id="1054745118061919935">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_LINK" />Telerau Gwasanaeth<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Rheoli Cysoni</translation>
+<translation id="1066101356081285416">Bydd Chrome yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar dudalen y Tab Newydd. Bydd y rhif olrhain pecyn ac enw'r wefan yn cael eu hanfon i Google i ddarparu'r nodwedd hon ac i wella nodweddion siopa Google i bawb. Gallwch ddiweddaru hwn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecyn<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Cyfrinair sydd Eisoes yn Bodoli</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
 <translation id="1076785341346483463">Cysoni Gyda Chyfrif a Reolir</translation>
@@ -1135,7 +1136,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6869389390665537774">Gallwch weld y tudalennau rydych wedi ymweld â nhw neu gallwch eu clirio o'ch hanes</translation>
 <translation id="687135068089457384">Dangos y Gosodiadau</translation>
 <translation id="6873263987691478642">Gwedd Hollt</translation>
-<translation id="687586529977635009">Bydd Chrome yn canfod rhifau olrhain ar wefannau rydych chi'n ymweld â nhw ac yn dangos diweddariadau pecyn ar dudalen y Tab Newydd. Bydd eich data yn cael eu rhannu gyda Google i ddarparu'r nodwedd hon ac i wella Siopa i bawb. Gallwch newid hwn yn y <ph name="BEGIN_LINK" />Gosodiadau Olrhain Pecynnau<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Amddiffyniad safonol yn erbyn gwefannau, lawrlwythiadau, ac estyniadau y gwyddys eu bod yn beryglus.</translation>
 <translation id="6888009575607455378">Ydych chi'n siŵr eich bod am gael gwared ar eich newidiadau?</translation>
 <translation id="6896758677409633944">Copïo</translation>

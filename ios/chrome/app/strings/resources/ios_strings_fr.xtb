@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Vous pouvez remplacer le mode d'affichage par défaut du site par le mode ordinateur de bureau dans Paramètres &gt; Paramètres de contenu.</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
+<translation id="1066101356081285416">Chrome détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications de colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Google afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping Google pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Ce mot de passe existe déjà</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
@@ -1135,7 +1136,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6869389390665537774">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="687135068089457384">Afficher les paramètres</translation>
 <translation id="6873263987691478642">Vue fractionnée</translation>
-<translation id="687586529977635009">Chrome détectera le numéro de suivi sur les sites que vous consultez et vous présentera les notifications de colis sur la page "Nouvel onglet". Vos données seront partagées avec Google afin d'assurer cette fonctionnalité et d'améliorer l'expérience d'achat pour tous les utilisateurs. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications ?</translation>
 <translation id="6896758677409633944">Copier</translation>

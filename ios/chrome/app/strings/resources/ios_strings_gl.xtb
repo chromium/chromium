@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder a Configuración e, logo, seleccionar Configuración de contido</translation>
 <translation id="1054745118061919935">Ao continuar, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Xestionar sincronización</translation>
+<translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">O contrasinal xa existe</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1076785341346483463">Sincronizar cunha conta xestionada</translation>
@@ -1135,7 +1136,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6869389390665537774">Podes ver as páxinas que visitaches ou borralas do teu historial</translation>
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
-<translation id="687586529977635009">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada na páxina Nova pestana. Os teus datos compartiranse con Google para poder fornecer esta función e mellorar a experiencia de compra para todo o mundo. Podes cambiar esta opción na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="6888009575607455378">Seguro que queres descartar os cambios que fixeches?</translation>
 <translation id="6896758677409633944">Copiar</translation>

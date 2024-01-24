@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Você pode mudar a visualização padrão do site para computador em Configurações &gt; Configurações de conteúdo</translation>
 <translation id="1054745118061919935">Ao continuar, você concorda com os <ph name="BEGIN_LINK" />Termos de Serviço<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gerenciar sincronização</translation>
+<translation id="1066101356081285416">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrar atualizações de pacotes na página "Nova guia". O número de rastreamento do pacote e o nome do site serão enviados ao Google para fornecer esse recurso e melhorar os recursos de compras para todos. É possível atualizar essa opção a qualquer momento nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">A senha já existe</translation>
 <translation id="1076421457278169141">Código lido</translation>
 <translation id="1076785341346483463">Sincronizar com a conta gerenciada</translation>
@@ -1135,7 +1136,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6869389390665537774">Você pode ver as páginas visitadas ou apagá-las do histórico</translation>
 <translation id="687135068089457384">Mostrar configurações</translation>
 <translation id="6873263987691478642">Visualização dividida</translation>
-<translation id="687586529977635009">O Chrome vai detectar números de rastreamento nos sites que você visitar e mostrará atualizações de pacotes na página "Nova guia". Seus dados serão compartilhados com o Google para fornecer este recurso e melhorar o Shopping para todos. Isso pode ser modificado nas <ph name="BEGIN_LINK" />Configurações de rastreamento de pacote<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Proteção padrão contra sites, downloads e extensões perigosos.</translation>
 <translation id="6888009575607455378">Tem certeza de que quer descartar suas alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>

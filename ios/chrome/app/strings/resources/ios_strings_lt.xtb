@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Galite pakeisti numatytąjį svetainės rodinį į stalinį kompiuterį skiltyje „Nustatymai“, „Turinio nustatymai“</translation>
 <translation id="1054745118061919935">Tęsdami sutinkate su <ph name="BEGIN_LINK" />paslaugų teikimo sąlygomis<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Sinchronizavimo tvarkymas</translation>
+<translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Slaptažodis jau yra</translation>
 <translation id="1076421457278169141">Kodas nuskaitytas</translation>
 <translation id="1076785341346483463">Sinchronizavimas su valdoma paskyra</translation>
@@ -1135,7 +1136,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="687135068089457384">Rodyti nustatymus</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
-<translation id="687586529977635009">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems. Tai galite pakeisti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>

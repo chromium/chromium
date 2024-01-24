@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">如要將預設的網站檢視模式變更為桌面模式，請前往 [設定]，然後前往 [內容設定]</translation>
 <translation id="1054745118061919935">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
+<translation id="1066101356081285416">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。為提供此功能，系統會將包裹追蹤編號和網站名稱傳送給 Google，為所有人改善購物功能。你可隨時在「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」進行更新。</translation>
 <translation id="1069154182096085577">密碼已存在</translation>
 <translation id="1076421457278169141">已掃描編碼</translation>
 <translation id="1076785341346483463">與受管帳戶同步</translation>
@@ -1135,7 +1136,6 @@
 <translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
-<translation id="687586529977635009">當你瀏覽網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在「新分頁」顯示包裹最新消息。系統將與 Google 分享你的資料，以提供此功能，並為所有使用者改善「購物」功能。你可前往「<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />」中作出變更。</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>

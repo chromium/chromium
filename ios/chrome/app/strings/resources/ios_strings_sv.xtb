@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Du kan ändra till datorvyn som standardvy för webbplatsen under Inställningar och sedan under Innehållsinställningar</translation>
 <translation id="1054745118061919935">Genom att fortsätta godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Hantera synkronisering</translation>
+<translation id="1066101356081285416">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Paketets spårningsnummer och webbplatsens namn skickas till Google för att tillhandahålla den här funktionen och förbättra shoppingfunktioner för alla. Du kan uppdatera detta när du vill i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Lösenordet finns redan</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
 <translation id="1076785341346483463">Synkronisera med ett hanterat konto</translation>
@@ -1135,7 +1136,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6869389390665537774">Du kan se sidor som du har besökt eller ta bort dem från historiken</translation>
 <translation id="687135068089457384">Visa inställningar</translation>
 <translation id="6873263987691478642">Delad vy</translation>
-<translation id="687586529977635009">Chrome identifierar spårningsnummer på webbplatser du besöker och visar uppdateringar om försändelser på sidan Ny flik. Din data delas med Google för att tillhandahålla den här funktionen och förbättra Shopping för alla. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna för spårning av försändelser<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="6888009575607455378">Vill du ignorera ändringarna?</translation>
 <translation id="6896758677409633944">Kopiera</translation>

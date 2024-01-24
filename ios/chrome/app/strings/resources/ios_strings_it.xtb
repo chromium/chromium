@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Puoi cambiare la visualizzazione predefinita del sito in Desktop andando in Impostazioni, quindi in Impostazioni dei contenuti</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gestisci la sincronizzazione</translation>
+<translation id="1066101356081285416">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero per il monitoraggio della spedizione e il nome del sito web verranno inviati a Google per fornire questa funzionalità e migliorare le funzionalità di Google Shopping per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Password già esistente</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1076785341346483463">Sincronizza con account gestito</translation>
@@ -1135,7 +1136,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6869389390665537774">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="687135068089457384">Mostra impostazioni</translation>
 <translation id="6873263987691478642">Visualizzazione divisa</translation>
-<translation id="687586529977635009">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. I tuoi dati verranno condivisi con Google per fornire questa funzionalità e migliorare Shopping per tutti. Puoi modificare questa impostazione nelle <ph name="BEGIN_LINK" />impostazioni di monitoraggio della spedizione<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6888009575607455378">Vuoi annullare le modifiche apportate?</translation>
 <translation id="6896758677409633944">Copia</translation>

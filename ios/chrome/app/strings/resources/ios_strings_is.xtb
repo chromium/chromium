@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Þú getur breytt sjálfgefinni birtingu vefsvæðis í skjáborðsútgáfu í „Stillingar“ og svo „Efnisstillingar"</translation>
 <translation id="1054745118061919935">Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK" />þjónustuskilmálana<ph name="END_LINK" /></translation>
 <translation id="1066060668811609597">Stjórna samstillingu</translation>
+<translation id="1066101356081285416">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Rakningarnúmer pakkans og heiti vefsvæðisins verða send til Google í því skyni að veita þennan eiginleika og bæta verslunareiginleika Google fyrir alla. Þú getur uppfært þetta hvenær sem er í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Aðgangsorðið er þegar til</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
 <translation id="1076785341346483463">Samstilla við stýrðan reikning</translation>
@@ -1135,7 +1136,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="6869389390665537774">Þú getur séð síðurnar sem þú hefur opnað eða hreinsað þær úr ferlinum</translation>
 <translation id="687135068089457384">Sýna stillingar</translation>
 <translation id="6873263987691478642">Tvískiptur skjár</translation>
-<translation id="687586529977635009">Chrome mun greina rakningarnúmer á vefsvæðum sem þú opnar og birta þér fréttir af pökkum á síðu nýrra flipa. Gögnunum verður deilt með Google til að veita þennan eiginleika og til að bæta Shopping hjá öllum. Hægt er að breyta þessu í <ph name="BEGIN_LINK" />stillingum pakkarakningar<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
 <translation id="6888009575607455378">Ertu viss um að þú viljir fleygja breytingunum?</translation>
 <translation id="6896758677409633944">Afrita</translation>

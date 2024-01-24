@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Du kannst in den Einstellungen unter „Inhaltseinstellungen“ die Desktopansicht als Standardeinstellung festlegen</translation>
 <translation id="1054745118061919935">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Synchronisierung verwalten</translation>
+<translation id="1066101356081285416">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Google gesendet, um diese Funktion bereitzustellen und die Google Shopping-Funktionen für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
 <translation id="1069154182096085577">Passwort bereits vorhanden</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
 <translation id="1076785341346483463">Mit verwaltetem Konto synchronisieren</translation>
@@ -1135,7 +1136,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6869389390665537774">Du kannst die von dir besuchten Seiten ansehen oder sie aus dem Verlauf löschen</translation>
 <translation id="687135068089457384">Einstellungen anzeigen</translation>
 <translation id="6873263987691478642">Geteilte Ansicht</translation>
-<translation id="687586529977635009">Chrome erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Deine Daten werden mit Google geteilt, um diese Funktion bereitzustellen und das Onlineshopping für alle zu verbessern. Du kannst dies in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> ändern.</translation>
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6888009575607455378">Möchtest du die Änderungen wirklich verwerfen?</translation>
 <translation id="6896758677409633944">Kopieren</translation>

@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Vous pouvez changer l'affichage du site par défaut pour le mode Bureau dans Paramètres, puis Paramètres de contenu</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
+<translation id="1066101356081285416">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Le numéro de suivi du colis et le nom du site Web seront envoyés à Google pour fournir cette fonctionnalité et améliorer les fonctionnalités de Google Shopping pour tous. Vous pouvez mettre à jour cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Le mot de passe existe déjà</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
 <translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
@@ -1135,7 +1136,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6869389390665537774">Vous pouvez voir les pages que vous avez visitées ou les effacer de votre historique</translation>
 <translation id="687135068089457384">Afficher les paramètres</translation>
 <translation id="6873263987691478642">Vue partagée</translation>
-<translation id="687586529977635009">Chrome détectera les numéros de suivi sur les sites que vous visitez et vous montrera les mises à jour des colis sur la page Nouvel onglet. Vos données seront partagées avec Google pour fournir cette fonctionnalité et améliorer Shopping pour tous. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protection standard contre les sites Web, les téléchargements et les extensions qui sont réputés être dangereux.</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications?</translation>
 <translation id="6896758677409633944">Copier</translation>

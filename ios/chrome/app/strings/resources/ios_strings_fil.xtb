@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Puwede mong baguhin ang default na view ng site sa desktop sa Mga Setting at pagkatapos ay Mga Setting ng Content</translation>
 <translation id="1054745118061919935">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Pamahalaan ang Pag-sync</translation>
+<translation id="1066101356081285416">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ipapadala sa Google ang tracking number ng package at pangalan ng website para maibigay ang feature na ito at para mapahusay ang mga feature ng Google para sa shopping para sa lahat. Puwede mo itong i-update anumang oras sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">May Ganito Nang Password</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1076785341346483463">I-sync sa Pinapamahalaang Account</translation>
@@ -1135,7 +1136,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6869389390665537774">Makikita mo ang mga page na binisita mo o maki-clear mo ang mga ito sa iyong history</translation>
 <translation id="687135068089457384">Ipakita ang Mga Setting</translation>
 <translation id="6873263987691478642">Split View</translation>
-<translation id="687586529977635009">Made-detect ng Chrome ang mga tracking number sa mga site na binibisita mo at magpapakita ito sa iyo ng mga update sa package sa page na Bagong Tab. Ishe-share sa Google ang iyong data para maibigay ang feature na ito at mapahusay ang Shopping para sa lahat. Puwede mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting ng Pagsubaybay sa Package<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Karaniwang proteksyon laban sa mga website, download, at extension na kilalang mapanganib.</translation>
 <translation id="6888009575607455378">Sigurado ka bang gusto mong i-discard ang iyong mga pagbabago?</translation>
 <translation id="6896758677409633944">Copy</translation>

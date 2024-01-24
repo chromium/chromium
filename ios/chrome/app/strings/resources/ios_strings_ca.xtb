@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors anant a Configuració i, després, a Configuració del contingut</translation>
 <translation id="1054745118061919935">En continuar, acceptes les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gestiona la sincronització</translation>
+<translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">La contrasenya ja existeix</translation>
 <translation id="1076421457278169141">S'ha escanejat el codi</translation>
 <translation id="1076785341346483463">Sincronitza amb el compte gestionat</translation>
@@ -1135,7 +1136,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6869389390665537774">Pots veure les pàgines que has visitat o esborrar-les de l'historial</translation>
 <translation id="687135068089457384">Mostra la configuració</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
-<translation id="687586529977635009">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. Les teves dades es compartiran amb Google per proporcionar aquesta funció i millorar Shopping per a tothom. Pots canviar aquesta opció a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
 <translation id="6896758677409633944">Copia</translation>

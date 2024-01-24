@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Webgunearen ikuspegi lehenetsia ordenagailuetarako ikuspegira aldatzeko, sakatu Ezarpenak eta, gero, Edukiaren ezarpenak</translation>
 <translation id="1054745118061919935">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK" />Zerbitzu-baldintzak<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
+<translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Jadanik badago pasahitza</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
 <translation id="1076785341346483463">Sinkronizatu kontu kudeatuarekin</translation>
@@ -1135,7 +1136,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6869389390665537774">Bisitatu dituzun orriak ikus ditzakezu, edo historiatik garbitu</translation>
 <translation id="687135068089457384">Erakutsi ezarpenak</translation>
 <translation id="6873263987691478642">Ikuspegi zatitua</translation>
-<translation id="687586529977635009">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Eginbide hori emateko eta erosketak guztientzat hobetzeko, datuak Google-rekin partekatuko dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra.</translation>
 <translation id="6888009575607455378">Ziur aldaketak baztertu nahi dituzula?</translation>
 <translation id="6896758677409633944">Kopiatu</translation>

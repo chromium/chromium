@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Anda dapat mengubah tampilan situs default ke mode desktop di Setelan lalu Setelan Konten</translation>
 <translation id="1054745118061919935">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK" />Persyaratan Layanan<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
+<translation id="1066101356081285416">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Nomor pelacakan paket dan nama situs akan dikirim ke Google untuk menyediakan fitur ini dan meningkatkan kualitas fitur belanja Google bagi semua orang. Anda dapat memperbaruinya kapan saja di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Sandi Sudah Ada</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1076785341346483463">Sinkronkan dengan Akun Terkelola</translation>
@@ -1135,7 +1136,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6869389390665537774">Anda dapat melihat halaman yang pernah Anda kunjungi atau menghapusnya dari histori</translation>
 <translation id="687135068089457384">Tampilkan Setelan</translation>
 <translation id="6873263987691478642">Layar Terpisah</translation>
-<translation id="687586529977635009">Chrome akan mendeteksi nomor pelacakan di situs yang Anda buka dan menampilkan info terbaru terkait paket di halaman Tab Baru. Data Anda akan dibagikan kepada Google untuk menyediakan fitur ini dan meningkatkan layanan Shopping bagi semua orang. Anda dapat mengubahnya di <ph name="BEGIN_LINK" />Setelan Pelacakan Paket<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
 <translation id="6888009575607455378">Yakin ingin menghapus perubahan?</translation>
 <translation id="6896758677409633944">Salin</translation>

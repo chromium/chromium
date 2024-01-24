@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Pode alterar a vista do site predefinida para o computador em Definições e, em seguida, Definições de conteúdo</translation>
 <translation id="1054745118061919935">Ao continuar, aceita os <ph name="BEGIN_LINK" />Termos de Utilização<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gerir a sincronização</translation>
+<translation id="1066101356081285416">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. O número de acompanhamento da embalagem e o nome do Website vão ser enviados para a Google para oferecer esta funcionalidade e melhorar as funcionalidades do Google Shopping para todos. Pode atualizar esta opção em qualquer altura nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">A palavra-passe já existe</translation>
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1076785341346483463">Sincronize com uma conta gerida</translation>
@@ -1135,7 +1136,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6869389390665537774">Pode ver as páginas que visitou ou limpá-las do seu histórico.</translation>
 <translation id="687135068089457384">Mostrar definições</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
-<translation id="687586529977635009">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos. Pode alterar esta opção nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
 <translation id="6888009575607455378">Tem a certeza de que quer rejeitar as alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>

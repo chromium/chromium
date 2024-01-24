@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Poți seta afișarea prestabilită a site-urilor la versiunea pentru desktop în Setări &gt; Setări privind conținutul</translation>
 <translation id="1054745118061919935">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK" />Termenii și condițiile<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Gestionează sincronizarea</translation>
+<translation id="1066101356081285416">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Numărul de urmărire a coletului și numele site-ului se vor trimite la Google pentru a oferi această funcție și a îmbunătăți funcțiile Cumpărături Google pentru toată lumea. Poți actualiza oricând opțiunea în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Parola există deja</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
 <translation id="1076785341346483463">Sincronizează cu contul gestionat</translation>
@@ -1135,7 +1136,6 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="6869389390665537774">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
 <translation id="687135068089457384">Afișează Setările</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
-<translation id="687586529977635009">Chrome va detecta numerele de urmărire pe site-urile pe care le accesezi și va afișa noutăți despre colete în pagina Filă nouă. Datele tale vor fi trimise la Google pentru a oferi această funcție și a îmbunătăți serviciul Cumpărături pentru toată lumea. Poți modifica această opțiune în <ph name="BEGIN_LINK" />Setările pentru urmărirea coletelor<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>

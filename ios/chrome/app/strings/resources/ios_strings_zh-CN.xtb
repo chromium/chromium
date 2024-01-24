@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
 <translation id="1054745118061919935">继续操作即表示您同意遵守<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="1066060668811609597">管理同步数据</translation>
+<translation id="1066101356081285416">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。为实现此功能，系统会将包裹跟踪编号和网站名称发送给 Google。这些信息还将用于完善 Google 购物功能，让所有用户受益。您可以随时在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更新此设置。</translation>
 <translation id="1069154182096085577">密码已存在</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1076785341346483463">与受管理的账号同步</translation>
@@ -1131,7 +1132,6 @@
 <translation id="6869389390665537774">您可以查看自己访问过的网页，也可将它们从历史记录中清除</translation>
 <translation id="687135068089457384">显示设置</translation>
 <translation id="6873263987691478642">拆分视图</translation>
-<translation id="687586529977635009">Chrome 将检测您所访问的网站上的跟踪编号，并在新标签页中向您显示包裹动态。您的数据将分享给 Google，以便系统提供此功能和改进 Google 购物，让所有人都受益。您可在<ph name="BEGIN_LINK" />包裹跟踪设置<ph name="END_LINK" />中更改此设置。</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
 <translation id="6896758677409633944">复制</translation>

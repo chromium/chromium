@@ -14,6 +14,7 @@
 <translation id="1054045277222934172">Selleks et määrata saidi vaikevaateks lauaarvuti versioon, tehke valikud Seaded &gt; Sisu seaded</translation>
 <translation id="1054745118061919935">Jätkates kinnitate, et nõustute <ph name="BEGIN_LINK" />teenusetingimustega<ph name="END_LINK" />.</translation>
 <translation id="1066060668811609597">Sünkroonimise haldamine</translation>
+<translation id="1066101356081285416">Chrome tuvastab teie külastatud saitidel jälgimiskoodid. Kui avate uue vahelehe, kuvatakse saadetise uusim olek. Selle funktsiooni pakkumiseks ja Google'i ostufunktsioonide kõigi jaoks paremaks muutmiseks edastatakse paki jälgimiskood ja veebisaidi nimi Google'ile. Saate seda muuta <ph name="BEGIN_LINK" />pakkide jälgimise seadetes<ph name="END_LINK" />.</translation>
 <translation id="1069154182096085577">Parool on juba olemas</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1076785341346483463">Sünkroonimine hallatud kontoga</translation>
@@ -1135,7 +1136,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6869389390665537774">Saate vaadata külastatud lehti või need ajaloost kustutada</translation>
 <translation id="687135068089457384">Seadete kuvamine</translation>
 <translation id="6873263987691478642">Poolitatud vaade</translation>
-<translation id="687586529977635009">Chrome tuvastab teie külastatud saitidel jälgimisnumbrid ja kuvab teile saadetise värskendusi uuel vahelehel. Teie andmeid jagatakse Google'iga, et pakkuda seda funktsiooni ja parandada ostlemist kõigi jaoks. Saate seda muuta jaotises <ph name="BEGIN_LINK" />Saadetise jälgimisseaded<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu.</translation>
 <translation id="6888009575607455378">Kas soovite kindlasti muudatustest loobuda?</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
