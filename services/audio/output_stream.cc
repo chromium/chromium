@@ -15,12 +15,6 @@
 
 namespace audio {
 
-const float kSilenceThresholdDBFS = -72.24719896f;
-
-// Desired polling frequency.  Note: If this is set too low, short-duration
-// "blip" sounds won't be detected.  http://crbug.com/339133#c4
-const int kPowerMeasurementsPerSecond = 15;
-
 std::string GetCtorLogString(media::AudioManager* audio_manager,
                              const std::string& device_id,
                              const media::AudioParameters& params) {
@@ -29,6 +23,138 @@ std::string GetCtorLogString(media::AudioManager* audio_manager,
       audio_manager->GetName(), device_id.c_str(),
       params.AsHumanReadableString().c_str());
 }
+
+class AudibilityHelperImpl : public OutputStream::AudibilityHelper {
+ public:
+  // Threshold in dbfs at which we consider audio output levels to be
+  // inaudible/silent. There was is no documentation outlining how this
+  // value was initially chosen, but it has been in use for years now.
+  static constexpr float kSilenceThresholdDBFS = -72.24719896f;
+
+  // The minimum amount of time audio must be below kSilenceThresholdDBFS for
+  // the OutputStream to report silence.
+  // Chosen such that it won't meaningfully change the "this tab is playing
+  // audio" icon's responsiveness, while still preventing state changes when
+  // there is a glitch (assuming a 20ms buffer size).
+  static constexpr base::TimeDelta kGlitchTolerance = base::Milliseconds(100);
+
+  // Desired polling frequency.  Note: If this is set too low, short-duration
+  // "blip" sounds won't be detected.  http://crbug.com/339133#c4
+  static constexpr base::TimeDelta kPollingPeriod = base::Seconds(1) / 15;
+
+  // Special value for `first_time_silent_`, to bypass the grace period. This
+  // ensures that *silent* streams that were just created or unpaused are above
+  // the `kGlitchTolerance` threshold.
+  static constexpr base::TimeTicks kForcedSilenceStartTime =
+      base::TimeTicks::Min();
+
+  AudibilityHelperImpl() = default;
+  ~AudibilityHelperImpl() override = default;
+
+  void StartPolling(
+      GetPowerLevelCB get_power_level_cb,
+      OnAudibleStateChangedCB on_audible_state_changed_cb) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+    CHECK(!get_power_level_cb_ && get_power_level_cb);
+    CHECK(!on_audible_state_changed_cb_ && on_audible_state_changed_cb);
+    get_power_level_cb_ = std::move(get_power_level_cb);
+    on_audible_state_changed_cb_ = std::move(on_audible_state_changed_cb);
+
+    CHECK(!poll_timer_.IsRunning());
+
+    // Bypass the grace period when starting a stream.
+    // The first time PollAudioLevel() is called we will immediately fall into
+    // the correct state:
+    // - Silent streams will remain silent, without reporting audibility for a
+    //   period of `kGlitchTolerance`.
+    // - Audible streams will immediately report audibility.
+    CHECK(!is_audible_);
+    first_time_silent_ = kForcedSilenceStartTime;
+
+    // base::Unretained is safe because |this| owns |poll_timer_|.
+    poll_timer_.Start(FROM_HERE, kPollingPeriod,
+                      base::BindRepeating(&AudibilityHelperImpl::PollAudioLevel,
+                                          base::Unretained(this)));
+  }
+
+  void StopPolling() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+    poll_timer_.Stop();
+
+    // Stopped streams are silent.
+    if (is_audible_) {
+      is_audible_ = false;
+      on_audible_state_changed_cb_.Run(false);
+    }
+
+    get_power_level_cb_.Reset();
+    on_audible_state_changed_cb_.Reset();
+  }
+
+  bool IsAudible() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+    return is_audible_;
+  }
+
+ private:
+  void PollAudioLevel() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+    bool was_audible = is_audible_;
+    is_audible_ = ComputeIsAudible();
+
+    if (is_audible_ != was_audible) {
+      on_audible_state_changed_cb_.Run(is_audible_);
+    }
+  }
+
+  bool ComputeIsAudible() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+    const float power_dbfs = get_power_level_cb_.Run();
+    const bool currently_audible = power_dbfs >= kSilenceThresholdDBFS;
+
+    const base::TimeTicks now = base::TimeTicks::Now();
+
+    // Always instantly report audible signals.
+    if (currently_audible) {
+      first_time_silent_ = absl::nullopt;
+      return true;
+    }
+
+    if (!first_time_silent_) {
+      // The stream just became silent.
+      first_time_silent_ = now;
+    }
+
+    const base::TimeDelta silence_duration = now - first_time_silent_.value();
+
+    // Only report silence after a small grace period. This prevents small
+    // audio glitches from changing the audibility state, and potentially
+    // downgrading the tab's priority.
+    return silence_duration <= kGlitchTolerance;
+  }
+
+  SEQUENCE_CHECKER(owning_sequence_);
+
+  GetPowerLevelCB get_power_level_cb_;
+  OnAudibleStateChangedCB on_audible_state_changed_cb_;
+
+  // Calls PollAudioLevel() at regular intervals while |playing_| is true.
+  base::RepeatingTimer poll_timer_;
+
+  // The time at which the stream last transitioned to silence.
+  absl::optional<base::TimeTicks> first_time_silent_;
+
+  // Streams start as silent, without a grace period. This is because the
+  // silent -> audible transition is instant (and we will be in the correct
+  // state after a single call to PollAudioLevels()). This also prevents silent
+  // streams from causing a "this tab is playing audio" icon to appear, when
+  // no audio was emitted.
+  bool is_audible_ = false;
+};
 
 OutputStream::OutputStream(
     CreatedCallback created_callback,
@@ -44,8 +170,7 @@ OutputStream::OutputStream(
     const media::AudioParameters& params,
     LoopbackCoordinator* coordinator,
     const base::UnguessableToken& loopback_group_id)
-    : foreign_socket_(),
-      delete_callback_(std::move(delete_callback)),
+    : delete_callback_(std::move(delete_callback)),
       receiver_(this, std::move(stream_receiver)),
       observer_(std::move(observer)),
       log_(std::move(log)),
@@ -62,7 +187,8 @@ OutputStream::OutputStream(
                   output_device_id,
                   &reader_,
                   std::move(managed_device_output_stream_create_callback)),
-      loopback_group_id_(loopback_group_id) {
+      loopback_group_id_(loopback_group_id),
+      audibility_helper_(std::make_unique<AudibilityHelperImpl>()) {
   DCHECK(receiver_.is_bound());
   DCHECK(created_callback);
   DCHECK(delete_callback_);
@@ -101,8 +227,9 @@ OutputStream::OutputStream(
 OutputStream::~OutputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 
-  if (log_)
+  if (log_) {
     log_->OnClosed();
+  }
 
   if (observer_) {
     observer_.ResetWithReason(
@@ -114,11 +241,13 @@ OutputStream::~OutputStream() {
   controller_.Close();
   coordinator_->UnregisterMember(loopback_group_id_, &controller_);
 
-  if (is_audible_)
+  if (audibility_helper_->IsAudible()) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audible", this);
+  }
 
-  if (playing_)
+  if (playing_) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Playing", this);
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "OutputStream", this);
   TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "audio::OutputStream", this);
@@ -196,11 +325,14 @@ void OutputStream::OnControllerPlaying() {
   if (observer_)
     observer_->DidStartPlaying();
   if (OutputController::will_monitor_audio_levels()) {
-    DCHECK(!poll_timer_.IsRunning());
-    // base::Unretained is safe because |this| owns |poll_timer_|.
-    poll_timer_.Start(FROM_HERE, base::Seconds(1) / kPowerMeasurementsPerSecond,
-                      base::BindRepeating(&OutputStream::PollAudioLevel,
-                                          base::Unretained(this)));
+    const auto get_power_level = [](OutputStream* self) {
+      return self->controller_.ReadCurrentPowerAndClip().first;
+    };
+
+    audibility_helper_->StartPolling(
+        base::BindRepeating(std::move(get_power_level), base::Unretained(this)),
+        base::BindRepeating(&OutputStream::OnAudibleStateChanged,
+                            base::Unretained(this)));
     return;
   }
 
@@ -218,8 +350,7 @@ void OutputStream::OnControllerPaused() {
 
   playing_ = false;
   if (OutputController::will_monitor_audio_levels()) {
-    DCHECK(poll_timer_.IsRunning());
-    poll_timer_.Stop();
+    audibility_helper_->StopPolling();
   }
   if (observer_)
     observer_->DidStopPlaying();
@@ -233,7 +364,7 @@ void OutputStream::OnControllerError() {
 
   // Stop checking the audio level to avoid using this object while it's being
   // torn down.
-  poll_timer_.Stop();
+  audibility_helper_->StopPolling();
 
   if (log_)
     log_->OnError();
@@ -276,28 +407,18 @@ void OutputStream::CallDeleter() {
 
 // TODO(crbug.com/1017219): it might be useful to track these transitions with
 // logs as well but note that the method is called at a rather high rate.
-void OutputStream::PollAudioLevel() {
+void OutputStream::OnAudibleStateChanged(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 
-  bool was_audible = is_audible_;
-  is_audible_ = IsAudible();
-
-  if (is_audible_ && !was_audible) {
+  if (is_audible) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "Audible", this);
-    if (observer_)
-      observer_->DidChangeAudibleState(is_audible_);
-  } else if (!is_audible_ && was_audible) {
+  } else {
     TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audible", this);
-    if (observer_)
-      observer_->DidChangeAudibleState(is_audible_);
   }
-}
 
-bool OutputStream::IsAudible() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-
-  float power_dbfs = controller_.ReadCurrentPowerAndClip().first;
-  return power_dbfs >= kSilenceThresholdDBFS;
+  if (observer_) {
+    observer_->DidChangeAudibleState(is_audible);
+  }
 }
 
 void OutputStream::SendLogMessage(const char* format, ...) {
@@ -310,6 +431,12 @@ void OutputStream::SendLogMessage(const char* format, ...) {
       base::StringPrintf(" [controller=0x%" PRIXPTR "]",
                          reinterpret_cast<uintptr_t>(&controller_)));
   va_end(args);
+}
+
+// Static
+std::unique_ptr<OutputStream::AudibilityHelper>
+OutputStream::MakeAudibilityHelperForTest() {
+  return std::make_unique<AudibilityHelperImpl>();
 }
 
 }  // namespace audio
