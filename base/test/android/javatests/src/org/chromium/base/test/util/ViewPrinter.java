@@ -4,6 +4,7 @@
 
 package org.chromium.base.test.util;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.CheckReturnValue;
 
 /** Renders View hierarchies to text for debugging. */
 public class ViewPrinter {
@@ -67,12 +70,23 @@ public class ViewPrinter {
         }
     }
 
+    /** Convenience method to print an Activity's decor view. */
+    public static void printActivityDecorView(Activity activity) {
+        printActivityDecorView(activity, Options.DEFAULT);
+    }
+
+    /** Convenience method to print an Activity's decor view. */
+    public static void printActivityDecorView(Activity activity, Options options) {
+        printView(decorFromActivity(activity), options);
+    }
+
     /**
      * Dump the representation of a View hierarchy to a String for debugging.
      *
      * @param rootView the root View to start at
      * @return a String representing the View hierarchy
      */
+    @CheckReturnValue
     public static String describeView(View rootView) {
         return describeView(rootView, Options.DEFAULT);
     }
@@ -84,6 +98,7 @@ public class ViewPrinter {
      * @param options options for representing the View Hierarchy
      * @return a String representing the View hierarchy
      */
+    @CheckReturnValue
     public static String describeView(View rootView, Options options) {
         TreeOutput treeOutput = describeViewRecursive(rootView, options);
         if (treeOutput != null) {
@@ -91,6 +106,18 @@ public class ViewPrinter {
         } else {
             return "<root view is not visible>";
         }
+    }
+
+    /** Convenience method to describe an Activity's decor view. */
+    @CheckReturnValue
+    public static String describeActivityDecorView(Activity activity) {
+        return describeActivityDecorView(activity, Options.DEFAULT);
+    }
+
+    /** Convenience method to describe an Activity's decor view. */
+    @CheckReturnValue
+    public static String describeActivityDecorView(Activity activity, Options options) {
+        return describeView(decorFromActivity(activity), options);
     }
 
     private static @Nullable TreeOutput describeViewRecursive(View rootView, Options options) {
@@ -162,6 +189,11 @@ public class ViewPrinter {
             }
             return String.format("@id/%s", name);
         }
+    }
+
+    /** Get the decor view from an Activity. */
+    private static View decorFromActivity(Activity activity) {
+        return activity.getWindow().getDecorView();
     }
 
     /**
