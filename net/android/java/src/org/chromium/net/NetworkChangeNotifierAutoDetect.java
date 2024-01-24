@@ -43,6 +43,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForP;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
 
 import java.io.IOException;
@@ -731,14 +732,19 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
         // Initialize mVpnInPlace.
         void initializeVpnInPlace() {
-            final Network[] networks = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
-            mVpnInPlace = null;
-            // If the filtered list of networks contains just a VPN, then that VPN is in place.
-            if (networks.length == 1) {
-                final NetworkCapabilities capabilities =
-                        mConnectivityManagerDelegate.getNetworkCapabilities(networks[0]);
-                if (capabilities != null && capabilities.hasTransport(TRANSPORT_VPN)) {
-                    mVpnInPlace = networks[0];
+            try (ScopedSysTraceEvent event =
+                    ScopedSysTraceEvent.scoped(
+                            "NetworkChangeNotifierAutoDetect.initializeVpnInPlace")) {
+                final Network[] networks =
+                        getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+                mVpnInPlace = null;
+                // If the filtered list of networks contains just a VPN, then that VPN is in place.
+                if (networks.length == 1) {
+                    final NetworkCapabilities capabilities =
+                            mConnectivityManagerDelegate.getNetworkCapabilities(networks[0]);
+                    if (capabilities != null && capabilities.hasTransport(TRANSPORT_VPN)) {
+                        mVpnInPlace = networks[0];
+                    }
                 }
             }
         }
@@ -1021,42 +1027,46 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      *     {@link RegistrationPolicyApplicationStatus}).
      */
     public NetworkChangeNotifierAutoDetect(Observer observer, RegistrationPolicy policy) {
-        mLooper = Looper.myLooper();
-        mHandler = new Handler(mLooper);
-        mObserver = observer;
-        mConnectivityManagerDelegate =
-                new ConnectivityManagerDelegate(ContextUtils.getApplicationContext());
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            mWifiManagerDelegate = new WifiManagerDelegate(ContextUtils.getApplicationContext());
-        }
-        mNetworkCallback = new MyNetworkCallback();
-        mNetworkRequest =
-                new NetworkRequest.Builder()
-                        .addCapability(NET_CAPABILITY_INTERNET)
-                        // Need to hear about VPNs too.
-                        .removeCapability(NET_CAPABILITY_NOT_VPN)
-                        .build();
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("NetworkChangeNotifierAutoDetect.constructor")) {
+            mLooper = Looper.myLooper();
+            mHandler = new Handler(mLooper);
+            mObserver = observer;
+            mConnectivityManagerDelegate =
+                    new ConnectivityManagerDelegate(ContextUtils.getApplicationContext());
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                mWifiManagerDelegate =
+                        new WifiManagerDelegate(ContextUtils.getApplicationContext());
+            }
+            mNetworkCallback = new MyNetworkCallback();
+            mNetworkRequest =
+                    new NetworkRequest.Builder()
+                            .addCapability(NET_CAPABILITY_INTERNET)
+                            // Need to hear about VPNs too.
+                            .removeCapability(NET_CAPABILITY_NOT_VPN)
+                            .build();
 
-        // Use AndroidRDefaultNetworkCallback to fix Android R issue crbug.com/1120144.
-        // This NetworkCallback could be used on O+ (where onCapabilitiesChanged and
-        // onLinkProperties callbacks are guaranteed to be called after onAvailable)
-        // but is only necessary on Android R+.  For now it's only used on R+ to reduce
-        // churn.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            mDefaultNetworkCallback = new AndroidRDefaultNetworkCallback();
-        } else {
-            mDefaultNetworkCallback =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                            ? new DefaultNetworkCallback()
-                            : null;
+            // Use AndroidRDefaultNetworkCallback to fix Android R issue crbug.com/1120144.
+            // This NetworkCallback could be used on O+ (where onCapabilitiesChanged and
+            // onLinkProperties callbacks are guaranteed to be called after onAvailable)
+            // but is only necessary on Android R+.  For now it's only used on R+ to reduce
+            // churn.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mDefaultNetworkCallback = new AndroidRDefaultNetworkCallback();
+            } else {
+                mDefaultNetworkCallback =
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                                ? new DefaultNetworkCallback()
+                                : null;
+            }
+            mNetworkState = getCurrentNetworkState();
+            mIntentFilter = new NetworkConnectivityIntentFilter();
+            mIgnoreNextBroadcast = false;
+            mShouldSignalObserver = false;
+            mRegistrationPolicy = policy;
+            mRegistrationPolicy.init(this);
+            mShouldSignalObserver = true;
         }
-        mNetworkState = getCurrentNetworkState();
-        mIntentFilter = new NetworkConnectivityIntentFilter();
-        mIgnoreNextBroadcast = false;
-        mShouldSignalObserver = false;
-        mRegistrationPolicy = policy;
-        mRegistrationPolicy.init(this);
-        mShouldSignalObserver = true;
     }
 
     private boolean onThread() {
@@ -1115,69 +1125,75 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
     /** Registers a BroadcastReceiver in the given context. */
     public void register() {
-        assertOnThread();
-        if (mRegistered) {
-            // Even when registered previously, Android may not send callbacks about change of
-            // network state when the device screen is turned on from off. Get the most up-to-date
-            // network state. See https://crbug.com/1007998 for more details.
-            connectionTypeChanged();
-            return;
-        }
-
-        if (mShouldSignalObserver) {
-            connectionTypeChanged();
-        }
-        if (mDefaultNetworkCallback != null) {
-            try {
-                mConnectivityManagerDelegate.registerDefaultNetworkCallback(
-                        mDefaultNetworkCallback, mHandler);
-            } catch (RuntimeException e) {
-                // If registering a default network callback failed, fallback to
-                // listening for CONNECTIVITY_ACTION broadcast.
-                mDefaultNetworkCallback = null;
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("NetworkChangeNotifierAutoDetect.register")) {
+            assertOnThread();
+            if (mRegistered) {
+                // Even when registered previously, Android may not send callbacks about change of
+                // network state when the device screen is turned on from off. Get the most
+                // up-to-date
+                // network state. See https://crbug.com/1007998 for more details.
+                connectionTypeChanged();
+                return;
             }
-        }
-        if (mDefaultNetworkCallback == null) {
-            // When registering for a sticky broadcast, like CONNECTIVITY_ACTION, if
-            // registerReceiver returns non-null, it means the broadcast was previously issued and
-            // onReceive() will be immediately called with this previous Intent. Since this initial
-            // callback doesn't actually indicate a network change, we can ignore it by setting
-            // mIgnoreNextBroadcast.
-            mIgnoreNextBroadcast =
-                    ContextUtils.registerProtectedBroadcastReceiver(
-                                    ContextUtils.getApplicationContext(), this, mIntentFilter)
-                            != null;
-        }
-        mRegistered = true;
 
-        if (mNetworkCallback != null) {
-            mNetworkCallback.initializeVpnInPlace();
-            try {
-                mConnectivityManagerDelegate.registerNetworkCallback(
-                        mNetworkRequest, mNetworkCallback, mHandler);
-            } catch (RuntimeException e) {
-                mRegisterNetworkCallbackFailed = true;
-                // If Android thinks this app has used up all available NetworkRequests, don't
-                // bother trying to register any more callbacks as Android will still think
-                // all available NetworkRequests are used up and fail again needlessly.
-                // Also don't bother unregistering as this call didn't actually register.
-                // See crbug.com/791025 for more info.
-                mNetworkCallback = null;
+            if (mShouldSignalObserver) {
+                connectionTypeChanged();
             }
-            if (!mRegisterNetworkCallbackFailed && mShouldSignalObserver) {
-                // registerNetworkCallback() will rematch the NetworkRequest
-                // against active networks, so a cached list of active networks
-                // will be repopulated immediatly after this. However we need to
-                // purge any cached networks as they may have been disconnected
-                // while mNetworkCallback was unregistered.
-                final Network[] networks =
-                        getAllNetworksFiltered(mConnectivityManagerDelegate, null);
-                // Convert Networks to NetIDs.
-                final long[] netIds = new long[networks.length];
-                for (int i = 0; i < networks.length; i++) {
-                    netIds[i] = networkToNetId(networks[i]);
+            if (mDefaultNetworkCallback != null) {
+                try {
+                    mConnectivityManagerDelegate.registerDefaultNetworkCallback(
+                            mDefaultNetworkCallback, mHandler);
+                } catch (RuntimeException e) {
+                    // If registering a default network callback failed, fallback to
+                    // listening for CONNECTIVITY_ACTION broadcast.
+                    mDefaultNetworkCallback = null;
                 }
-                mObserver.purgeActiveNetworkList(netIds);
+            }
+            if (mDefaultNetworkCallback == null) {
+                // When registering for a sticky broadcast, like CONNECTIVITY_ACTION, if
+                // registerReceiver returns non-null, it means the broadcast was previously issued
+                // and
+                // onReceive() will be immediately called with this previous Intent. Since this
+                // initial
+                // callback doesn't actually indicate a network change, we can ignore it by setting
+                // mIgnoreNextBroadcast.
+                mIgnoreNextBroadcast =
+                        ContextUtils.registerProtectedBroadcastReceiver(
+                                        ContextUtils.getApplicationContext(), this, mIntentFilter)
+                                != null;
+            }
+            mRegistered = true;
+
+            if (mNetworkCallback != null) {
+                mNetworkCallback.initializeVpnInPlace();
+                try {
+                    mConnectivityManagerDelegate.registerNetworkCallback(
+                            mNetworkRequest, mNetworkCallback, mHandler);
+                } catch (RuntimeException e) {
+                    mRegisterNetworkCallbackFailed = true;
+                    // If Android thinks this app has used up all available NetworkRequests, don't
+                    // bother trying to register any more callbacks as Android will still think
+                    // all available NetworkRequests are used up and fail again needlessly.
+                    // Also don't bother unregistering as this call didn't actually register.
+                    // See crbug.com/791025 for more info.
+                    mNetworkCallback = null;
+                }
+                if (!mRegisterNetworkCallbackFailed && mShouldSignalObserver) {
+                    // registerNetworkCallback() will rematch the NetworkRequest
+                    // against active networks, so a cached list of active networks
+                    // will be repopulated immediately after this. However we need to
+                    // purge any cached networks as they may have been disconnected
+                    // while mNetworkCallback was unregistered.
+                    final Network[] networks =
+                            getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+                    // Convert Networks to NetIDs.
+                    final long[] netIds = new long[networks.length];
+                    for (int i = 0; i < networks.length; i++) {
+                        netIds[i] = networkToNetId(networks[i]);
+                    }
+                    mObserver.purgeActiveNetworkList(netIds);
+                }
             }
         }
     }
@@ -1198,7 +1214,11 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     public NetworkState getCurrentNetworkState() {
-        return mConnectivityManagerDelegate.getNetworkState(mWifiManagerDelegate);
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped(
+                        "NetworkChangeNotifierAutoDetect.getCurrentNetworkState")) {
+            return mConnectivityManagerDelegate.getNetworkState(mWifiManagerDelegate);
+        }
     }
 
     /**
@@ -1248,14 +1268,17 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      * Only available when auto-detection has been enabled.
      */
     public long[] getNetworksAndTypes() {
-        final Network networks[] = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
-        final long networksAndTypes[] = new long[networks.length * 2];
-        int index = 0;
-        for (Network network : networks) {
-            networksAndTypes[index++] = networkToNetId(network);
-            networksAndTypes[index++] = mConnectivityManagerDelegate.getConnectionType(network);
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("NetworkChangeNotifierAutoDetect.getNetworksAndTypes")) {
+            final Network networks[] = getAllNetworksFiltered(mConnectivityManagerDelegate, null);
+            final long networksAndTypes[] = new long[networks.length * 2];
+            int index = 0;
+            for (Network network : networks) {
+                networksAndTypes[index++] = networkToNetId(network);
+                networksAndTypes[index++] = mConnectivityManagerDelegate.getConnectionType(network);
+            }
+            return networksAndTypes;
         }
-        return networksAndTypes;
     }
 
     /**
@@ -1347,7 +1370,11 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     private void connectionTypeChanged() {
-        connectionTypeChangedTo(getCurrentNetworkState());
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped(
+                        "NetworkChangeNotifierAutoDetect.connectionTypeChanged")) {
+            connectionTypeChangedTo(getCurrentNetworkState());
+        }
     }
 
     private void connectionTypeChangedTo(NetworkState networkState) {

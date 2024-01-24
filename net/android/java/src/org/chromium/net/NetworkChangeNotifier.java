@@ -14,6 +14,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 
 import java.util.ArrayList;
 
@@ -82,9 +83,12 @@ public class NetworkChangeNotifier {
 
     @CalledByNative
     public int getCurrentConnectionSubtype() {
-        return mAutoDetector == null
-                ? ConnectionSubtype.SUBTYPE_UNKNOWN
-                : mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("NetworkChangeNotifier.getCurrentConnectionSubtype")) {
+            return mAutoDetector == null
+                    ? ConnectionSubtype.SUBTYPE_UNKNOWN
+                    : mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
+        }
     }
 
     @CalledByNative
@@ -111,7 +115,11 @@ public class NetworkChangeNotifier {
      */
     @CalledByNative
     public long[] getCurrentNetworksAndTypes() {
-        return mAutoDetector == null ? new long[0] : mAutoDetector.getNetworksAndTypes();
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped(
+                        "NetworkChangeNotifierAutoDetect.getCurrentNetworksAndTypes")) {
+            return mAutoDetector == null ? new long[0] : mAutoDetector.getNetworksAndTypes();
+        }
     }
 
     /** Adds a native-side observer. */
@@ -189,57 +197,63 @@ public class NetworkChangeNotifier {
 
     private void setAutoDetectConnectivityStateInternal(
             boolean shouldAutoDetect, NetworkChangeNotifierAutoDetect.RegistrationPolicy policy) {
-        if (shouldAutoDetect) {
-            if (mAutoDetector == null) {
-                mAutoDetector =
-                        new NetworkChangeNotifierAutoDetect(
-                                new NetworkChangeNotifierAutoDetect.Observer() {
-                                    @Override
-                                    public void onConnectionTypeChanged(int newConnectionType) {
-                                        updateCurrentConnectionType(newConnectionType);
-                                    }
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped(
+                        "NetworkChangeNotifier.setAutoDetectConnectivityStateInternal")) {
+            if (shouldAutoDetect) {
+                if (mAutoDetector == null) {
+                    mAutoDetector =
+                            new NetworkChangeNotifierAutoDetect(
+                                    new NetworkChangeNotifierAutoDetect.Observer() {
+                                        @Override
+                                        public void onConnectionTypeChanged(int newConnectionType) {
+                                            updateCurrentConnectionType(newConnectionType);
+                                        }
 
-                                    @Override
-                                    public void onConnectionCostChanged(int newConnectionCost) {
-                                        notifyObserversOfConnectionCostChange(newConnectionCost);
-                                    }
+                                        @Override
+                                        public void onConnectionCostChanged(int newConnectionCost) {
+                                            notifyObserversOfConnectionCostChange(
+                                                    newConnectionCost);
+                                        }
 
-                                    @Override
-                                    public void onConnectionSubtypeChanged(
-                                            int newConnectionSubtype) {
-                                        notifyObserversOfConnectionSubtypeChange(
-                                                newConnectionSubtype);
-                                    }
+                                        @Override
+                                        public void onConnectionSubtypeChanged(
+                                                int newConnectionSubtype) {
+                                            notifyObserversOfConnectionSubtypeChange(
+                                                    newConnectionSubtype);
+                                        }
 
-                                    @Override
-                                    public void onNetworkConnect(long netId, int connectionType) {
-                                        notifyObserversOfNetworkConnect(netId, connectionType);
-                                    }
+                                        @Override
+                                        public void onNetworkConnect(
+                                                long netId, int connectionType) {
+                                            notifyObserversOfNetworkConnect(netId, connectionType);
+                                        }
 
-                                    @Override
-                                    public void onNetworkSoonToDisconnect(long netId) {
-                                        notifyObserversOfNetworkSoonToDisconnect(netId);
-                                    }
+                                        @Override
+                                        public void onNetworkSoonToDisconnect(long netId) {
+                                            notifyObserversOfNetworkSoonToDisconnect(netId);
+                                        }
 
-                                    @Override
-                                    public void onNetworkDisconnect(long netId) {
-                                        notifyObserversOfNetworkDisconnect(netId);
-                                    }
+                                        @Override
+                                        public void onNetworkDisconnect(long netId) {
+                                            notifyObserversOfNetworkDisconnect(netId);
+                                        }
 
-                                    @Override
-                                    public void purgeActiveNetworkList(long[] activeNetIds) {
-                                        notifyObserversToPurgeActiveNetworkList(activeNetIds);
-                                    }
-                                },
-                                policy);
-                final NetworkChangeNotifierAutoDetect.NetworkState networkState =
-                        mAutoDetector.getCurrentNetworkState();
-                updateCurrentConnectionType(networkState.getConnectionType());
-                updateCurrentConnectionCost(networkState.getConnectionCost());
-                notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
+                                        @Override
+                                        public void purgeActiveNetworkList(long[] activeNetIds) {
+                                            notifyObserversToPurgeActiveNetworkList(activeNetIds);
+                                        }
+                                    },
+                                    policy);
+                    final NetworkChangeNotifierAutoDetect.NetworkState networkState =
+                            mAutoDetector.getCurrentNetworkState();
+                    updateCurrentConnectionType(networkState.getConnectionType());
+                    updateCurrentConnectionCost(networkState.getConnectionCost());
+                    notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
+                }
+            } else {
+                destroyAutoDetector();
             }
-        } else {
-            destroyAutoDetector();
         }
     }
 
