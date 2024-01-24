@@ -1979,6 +1979,10 @@
       status: "experimental",
     },
     {
+      name: "GetNextSiblingPositionWhenLastChild",
+      status: "stable",
+    },
+    {
       name: "GroupEffect",
       status: "test",
       base_feature: "none",
