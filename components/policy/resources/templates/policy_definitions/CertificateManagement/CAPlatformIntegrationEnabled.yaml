@@ -13,6 +13,7 @@ owners:
 - davidben@chromium.org
 - hchao@chromium.org
 - mattm@chromium.org
+- trusty-transport@chromium.org
 items:
 - caption: Import user-added TLS server certificates from platform trust stores.
   value: true
