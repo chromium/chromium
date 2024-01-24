@@ -18,13 +18,15 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabOrganizationFailureElement} from './tab_organization_failure.js';
-import {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
-import {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
+import type {TabOrganizationFailureElement} from './tab_organization_failure.js';
+import type {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
+import type {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
 import {getTemplate} from './tab_organization_page.html.js';
-import {TabOrganizationResultsElement} from './tab_organization_results.js';
-import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
-import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import type {TabOrganizationResultsElement} from './tab_organization_results.js';
+import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
+import {TabOrganizationError, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
+import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
+import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const MIN_LOADING_ANIMATION_MS: number = 500;
 

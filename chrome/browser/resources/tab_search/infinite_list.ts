@@ -20,8 +20,9 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {calculateSplices, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {TemplateInstanceBase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {calculateSplices, PolymerElement, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BiMap} from './bimap.js';
 import {getTemplate} from './infinite_list.html.js';

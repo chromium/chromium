@@ -12,7 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_not_started.html.js';
-import {AccountInfo, SyncInfo, TabSearchSyncBrowserProxy, TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
+import type {AccountInfo, SyncInfo, TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
+import {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
 
 enum SyncState {
   SIGNED_OUT,

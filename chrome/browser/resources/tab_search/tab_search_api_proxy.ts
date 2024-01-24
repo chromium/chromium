@@ -4,7 +4,8 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.

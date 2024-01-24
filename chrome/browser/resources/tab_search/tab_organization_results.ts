@@ -12,16 +12,18 @@ import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
-import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TabData, TabItemType} from './tab_data.js';
 import {getTemplate} from './tab_organization_results.html.js';
-import {Tab} from './tab_search.mojom-webui.js';
-import {TabSearchItem} from './tab_search_item.js';
+import type {Tab} from './tab_search.mojom-webui.js';
+import type {TabSearchItem} from './tab_search_item.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
