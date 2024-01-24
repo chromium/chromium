@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -48,10 +49,10 @@
 @end
 
 @implementation PostRestoreSignInProvider {
-  syncer::SyncUserSettings* _syncUserSettings;
+  raw_ptr<syncer::SyncUserSettings> _syncUserSettings;
   std::optional<AccountInfo> _accountInfo;
   bool _historySyncEnabled;
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   SearchEngineChoiceCoordinator* _searchEngineChoiceCoordinator;
 }
 

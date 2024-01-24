@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -266,11 +267,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
-  AuthenticationService* auth_service_;
+  raw_ptr<AuthenticationService> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   SafetyCheckMediator* mediator_;
-  PrefService* pref_service_;
-  PrefService* local_pref_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService> local_pref_service_;
   PrefBackedBoolean* safe_browsing_preference_;
 };
 
