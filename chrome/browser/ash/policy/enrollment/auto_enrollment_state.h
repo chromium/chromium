@@ -24,6 +24,8 @@ enum class AutoEnrollmentResult {
   kNoEnrollment,
   // Check completed successfully, device is disabled.
   kDisabled,
+  // Check completed successfully, enrollment is suggested but not enforced.
+  kSuggestedEnrollment,
 };
 
 // Represents a state determination error due to a timeout.

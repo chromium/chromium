@@ -549,7 +549,8 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
     }
   }
 
-  if (state_ == AutoEnrollmentResult::kNoEnrollment) {
+  if (state_ == AutoEnrollmentResult::kNoEnrollment ||
+      state_ == AutoEnrollmentResult::kSuggestedEnrollment) {
     StartCleanupForcedReEnrollment();
   } else {
     progress_callbacks_.Notify(state_.value());
@@ -567,7 +568,8 @@ void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
 
 void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     bool service_is_ready) {
-  DCHECK(state_ == AutoEnrollmentResult::kNoEnrollment);
+  DCHECK(state_ == AutoEnrollmentResult::kNoEnrollment ||
+         state_ == AutoEnrollmentResult::kSuggestedEnrollment);
   if (!service_is_ready) {
     LOG(ERROR) << "Failed waiting for cryptohome D-Bus service availability.";
     progress_callbacks_.Notify(state_.value());
@@ -600,7 +602,8 @@ void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
 
 void AutoEnrollmentController::StartClearForcedReEnrollmentVpd(
     bool service_is_ready) {
-  DCHECK(state_ == AutoEnrollmentResult::kNoEnrollment);
+  DCHECK(state_ == AutoEnrollmentResult::kNoEnrollment ||
+         state_ == AutoEnrollmentResult::kSuggestedEnrollment);
   if (!service_is_ready) {
     LOG(ERROR)
         << "Failed waiting for session_manager D-Bus service availability.";

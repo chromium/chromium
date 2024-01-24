@@ -966,7 +966,7 @@ TEST_F(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
-  EXPECT_EQ(state_, AutoEnrollmentResult::kEnrollment);
+  EXPECT_EQ(state_, AutoEnrollmentResult::kSuggestedEnrollment);
   VerifyCachedResult(/*should_enroll=*/true, kPowerLimit);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentRequested,

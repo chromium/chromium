@@ -600,6 +600,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
       case RESTORE_MODE_DISABLED:
         return AutoEnrollmentResult::kDisabled;
       case RESTORE_MODE_REENROLLMENT_REQUESTED:
+        return AutoEnrollmentResult::kSuggestedEnrollment;
       case RESTORE_MODE_REENROLLMENT_ENFORCED:
       case INITIAL_MODE_ENROLLMENT_ENFORCED:
       case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:

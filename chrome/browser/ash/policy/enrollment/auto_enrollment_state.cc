@@ -21,6 +21,8 @@ std::string_view AutoEnrollmentResultToString(AutoEnrollmentResult result) {
       return "No enrollment";
     case AutoEnrollmentResult::kDisabled:
       return "Device disabled";
+    case AutoEnrollmentResult::kSuggestedEnrollment:
+      return "Suggested enrollment";
   }
 }
 

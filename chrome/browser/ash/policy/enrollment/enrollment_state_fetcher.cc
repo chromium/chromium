@@ -71,6 +71,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   if (state.has_value()) {
     switch (state.value()) {
       case AutoEnrollmentResult::kEnrollment:
+      case AutoEnrollmentResult::kSuggestedEnrollment:
         return kUMASuffixEnrollment;
       case AutoEnrollmentResult::kNoEnrollment:
         return kUMASuffixNoEnrollment;
