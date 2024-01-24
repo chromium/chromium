@@ -2000,19 +2000,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
                                browser_view->frame()->client_view()->size()));
 }
+#endif  // defined(USE_AURA)
 
 // Test to ensure crbug.com/1513330 won't reproduce.
-// TODO(crbug.com/1519307): Enable once the flake is fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
-  DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
-#else
-#define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
-  WindowSetResizableDoesntBlockMoveToAndMoveByApis
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
+    WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
 
@@ -2020,11 +2013,18 @@ IN_PROC_BROWSER_TEST_F(
   browser_view->SetCanResize(true);
   auto* web_contents = browser_view->GetActiveWebContents();
 
+  auto ScreenXYMatches = [&web_contents](const gfx::Point point) {
+    return EvalJs(web_contents, "window.screenX").ExtractInt() == point.x() &&
+           EvalJs(web_contents, "window.screenY").ExtractInt() == point.y();
+  };
+
   // Set the initial window size to something small and close to the origin of
   // the screen.
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(100,100);"));
-  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(10,10);"));
-  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(50,50);"));
+  gfx::Point initial_pos(50, 50);
+  EXPECT_TRUE(RunUntil([&]() { return ScreenXYMatches(initial_pos); }));
+
   int initial_pos_x = EvalJs(web_contents, "window.screenX").ExtractInt();
   int initial_pos_y = EvalJs(web_contents, "window.screenY").ExtractInt();
 
@@ -2033,19 +2033,20 @@ IN_PROC_BROWSER_TEST_F(
 
   // window.moveBy API still takes action.
   EXPECT_TRUE(ExecJs(web_contents, "window.moveBy(10,10);"));
-  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(RunUntil([&]() {
+    return ScreenXYMatches(
+        gfx::Point(initial_pos.x() + 10, initial_pos.y() + 10));
+  }));
+
   EXPECT_EQ(EvalJs(web_contents, "window.screenX").ExtractInt(),
             initial_pos_x + 10);
   EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(),
             initial_pos_y + 10);
 
   // window.moveTo API still takes action.
-  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(10,10);"));
-  WaitForResizeComplete(web_contents);
-  EXPECT_EQ(EvalJs(web_contents, "window.screenX").ExtractInt(), initial_pos_x);
-  EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(), initial_pos_y);
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(50,50);"));
+  EXPECT_TRUE(RunUntil([&]() { return ScreenXYMatches(initial_pos); }));
 }
-#endif  // defined(USE_AURA)
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
