@@ -258,7 +258,11 @@ PermissionContextBase::CreatePermissionRequest(
     base::OnceClosure delete_callback) const {
   return std::make_unique<PermissionRequest>(
       std::move(request_data), std::move(permission_decided_callback),
-      std::move(delete_callback));
+      std::move(delete_callback), UsesAutomaticEmbargo());
+}
+
+bool PermissionContextBase::UsesAutomaticEmbargo() const {
+  return true;
 }
 
 content::PermissionResult PermissionContextBase::GetPermissionStatus(
@@ -341,13 +345,15 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
         content::PermissionStatusSource::UNSPECIFIED);
   }
 
-  absl::optional<content::PermissionResult> result =
-      PermissionsClient::Get()
-          ->GetPermissionDecisionAutoBlocker(browser_context_)
-          ->GetEmbargoResult(requesting_origin, content_settings_type_);
-  if (result) {
-    DCHECK(result->status == PermissionStatus::DENIED);
-    return result.value();
+  if (UsesAutomaticEmbargo()) {
+    absl::optional<content::PermissionResult> result =
+        PermissionsClient::Get()
+            ->GetPermissionDecisionAutoBlocker(browser_context_)
+            ->GetEmbargoResult(requesting_origin, content_settings_type_);
+    if (result) {
+      DCHECK(result->status == PermissionStatus::DENIED);
+      return result.value();
+    }
   }
   return content::PermissionResult(
       PermissionStatus::ASK, content::PermissionStatusSource::UNSPECIFIED);
