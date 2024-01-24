@@ -130,6 +130,7 @@ public class TabDragSourceTest {
     private static final float TAB_POSITION_X = 200f;
     private int mTabStripHeight;
     private final Context mContext = ContextUtils.getApplicationContext();
+    private boolean mTabStripVisible;
 
     /** Resets the environment before each test. */
     @Before
@@ -138,6 +139,7 @@ public class TabDragSourceTest {
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
         mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
+        mTabStripVisible = true;
 
         // Create and spy on a simulated tab view.
         mTabsToolbarView = new FrameLayout(mActivity);
@@ -168,6 +170,7 @@ public class TabDragSourceTest {
                 new TabDragSource(
                         mActivity,
                         () -> mSourceStripLayoutHelper,
+                        () -> mTabStripVisible,
                         () -> mTabContentManager,
                         () -> mLayerTitleCache,
                         mSourceMultiInstanceManager,
@@ -181,6 +184,7 @@ public class TabDragSourceTest {
                 new TabDragSource(
                         mActivity,
                         () -> mDestStripLayoutHelper,
+                        () -> mTabStripVisible,
                         () -> mTabContentManager,
                         () -> mLayerTitleCache,
                         mDestMultiInstanceManager,
@@ -408,6 +412,7 @@ public class TabDragSourceTest {
      *  G.2] invalid clip data.
      *  G.3] drop into different model is disabled.
      *  G.4] drop into destination strip is disabled.
+     *  G.5] destination strip is not visible.
      *  </pre>
      */
     private static final String ONDRAG_TEST_CASES = "";
@@ -765,6 +770,22 @@ public class TabDragSourceTest {
     @Test
     public void test_onDrag_stripToStripDisabled() {
         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.setForTesting(true);
+
+        // Start tab drag action.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
+
+        boolean res =
+                mDestInstance.onDrag(
+                        mTabsToolbarView,
+                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse("onDrag should return false.", res);
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario G.5 */
+    @Test
+    public void test_onDrag_destinationStripNotVisible() {
+        mTabStripVisible = false;
 
         // Start tab drag action.
         mSourceInstance.startTabDragAction(
