@@ -46,6 +46,8 @@
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #if BUILDFLAG(IS_WIN)
+#include "base/functional/callback.h"
+#include "base/task/thread_pool.h"
 #include "base/win/wmi.h"
 #endif
 #include "components/version_info/version_info.h"
@@ -259,6 +261,19 @@ std::unique_ptr<em::BrowserDeviceIdentifier> GetBrowserDeviceIdentifier() {
 #endif
   return device_identifier;
 }
+
+#if BUILDFLAG(IS_WIN)
+void GetBrowserDeviceIdentifierAsync(
+    base::OnceCallback<
+        void(std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>)>
+        callback) {
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      ->PostTaskAndReplyWithResult(FROM_HERE,
+                                   base::BindOnce(&GetBrowserDeviceIdentifier),
+                                   std::move(callback));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
   return type == GetMachineLevelUserCloudPolicyTypeForCurrentOS();

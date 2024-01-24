@@ -793,9 +793,18 @@ class POLICY_EXPORT CloudPolicyClient {
   void CreateUniqueRequestJob(
       std::unique_ptr<RegistrationJobConfiguration> config);
 
+#if BUILDFLAG(IS_WIN)
+  // Callback to get browser device identifier.
+  void SetBrowserDeviceIdentifier(
+      enterprise_management::PolicyFetchRequest* request,
+      std::unique_ptr<DMServerJobConfiguration> config,
+      std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
+          identifier);
+#endif
+
   // Used to store a copy of the previously used `dm_token_`. This is used
-  // during re-registration, which gets triggered by a failed policy fetch with
-  // errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
+  // during re-registration, which gets triggered by a failed policy fetch
+  // with errors `DM_STATUS_SERVICE_DEVICE_NOT_FOUND` and
   // `DM_STATUS_SERVICE_DEVICE_NEEDS_RESET`.
   std::string reregistration_dm_token_;
 

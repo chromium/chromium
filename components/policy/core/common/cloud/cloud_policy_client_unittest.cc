@@ -424,8 +424,10 @@ em::DemoModeDimensions GetDemoModeDimensions() {
 
 class CloudPolicyClientTest : public testing::Test {
  protected:
-  CloudPolicyClientTest()
-      : job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
+  explicit CloudPolicyClientTest(
+      std::unique_ptr<base::test::TaskEnvironment> task_env)
+      : task_environment_(std::move(task_env)),
+        job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -433,6 +435,10 @@ class CloudPolicyClientTest : public testing::Test {
         ash::system::kSerialNumberKeyForTest, "fake_serial_number");
 #endif
   }
+
+  CloudPolicyClientTest()
+      : CloudPolicyClientTest(
+            std::make_unique<base::test::SingleThreadTaskEnvironment>()) {}
 
   void SetUp() override { CreateClient(); }
 
@@ -536,7 +542,7 @@ class CloudPolicyClientTest : public testing::Test {
 #endif
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   DeviceManagementService::JobConfiguration::JobType job_type_;
   DeviceManagementService::JobConfiguration::ParameterMap query_params_;
   DMAuth auth_data_;
@@ -561,6 +567,14 @@ class CloudPolicyClientTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
+};
+
+// CloudPolicyClient tests that need multiple threads.
+class CloudPolicyClientMultipleThreadsTest : public CloudPolicyClientTest {
+ public:
+  CloudPolicyClientMultipleThreadsTest()
+      : CloudPolicyClientTest(std::make_unique<base::test::TaskEnvironment>()) {
+  }
 };
 
 TEST_F(CloudPolicyClientTest, Init) {
@@ -1309,7 +1323,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(CloudPolicyClientTest, PolicyFetchWithBrowserDeviceIdentifier) {
+TEST_F(CloudPolicyClientMultipleThreadsTest,
+       PolicyFetchWithBrowserDeviceIdentifier) {
   RegisterClient();
 
   // Add the policy type that contains browser device identifier.
@@ -1320,7 +1335,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithBrowserDeviceIdentifier) {
   ExpectAndCaptureJob(GetPolicyResponse());
   EXPECT_CALL(observer_, OnPolicyFetched);
   client_->FetchPolicy(kReason);
-  base::RunLoop().RunUntilIdle();
+  task_environment_->RunUntilIdle();
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
