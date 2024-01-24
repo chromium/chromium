@@ -662,15 +662,17 @@ TEST_F(NetworkPortalDetectorImplTest, ProxyAuthRequired) {
   SetConnectedWithProxy(kStubWireless1);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
+  // A 407 response does not set the kProxyAuthRequired state or trigger
+  // additional portal detection.
   CompleteURLFetch(net::OK, 407, nullptr);
-  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_EQ(State::STATE_IDLE, state());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(CheckPortalState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED, 407,
-      NetworkState::PortalState::kProxyAuthRequired, kStubWireless1));
+      NetworkState::PortalState::kOnline, kStubWireless1));
 }
 
 TEST_F(NetworkPortalDetectorImplTest, NoResponseButBehindPortal) {
