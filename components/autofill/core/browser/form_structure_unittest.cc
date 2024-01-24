@@ -2745,13 +2745,16 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
             FormStructure::FindFieldsEligibleForManualFilling(forms));
 }
 
-// Tests that ParseFieldTypesWithPatterns() sets (only) the PatternSource.
+// Tests that AssignBestFieldTypes() sets (only) the PatternSource.
 TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   FormData form = test::CreateTestAddressFormData();
   FormStructure form_structure(form);
   ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                          pattern_source());
-  test_api(form_structure).ParseFieldTypesWithPatterns(context);
+  test_api(form_structure)
+      .AssignBestFieldTypes(
+          test_api(form_structure).ParseFieldTypesWithPatterns(context),
+          pattern_source());
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {

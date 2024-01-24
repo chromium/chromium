@@ -76,8 +76,14 @@ class FormStructureTestApi {
     return base::Contains(form_structure_->phone_rationalized_, section);
   }
 
-  void ParseFieldTypesWithPatterns(ParsingContext& context) {
+  FieldCandidatesMap ParseFieldTypesWithPatterns(
+      ParsingContext& context) const {
     return form_structure_->ParseFieldTypesWithPatterns(context);
+  }
+
+  void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
+                            PatternSource pattern_source) {
+    form_structure_->AssignBestFieldTypes(field_type_map, pattern_source);
   }
 
  private:

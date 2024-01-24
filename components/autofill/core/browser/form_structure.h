@@ -201,9 +201,6 @@ class FormStructure {
   // correctly defined by the web developer.
   bool SetSectionsFromAutocompleteOrReset();
 
-  // Classifies each field in |fields_| using the regular expressions.
-  void ParseFieldTypesWithPatterns(ParsingContext& context);
-
   // Returns the values that can be filled into the form structure for the
   // given type. For example, there's no way to fill in a value of "The Moon"
   // into ADDRESS_HOME_STATE if the form only has a
@@ -392,6 +389,16 @@ class FormStructure {
 
   // Sets the rank of each field in the form.
   void DetermineFieldRanks();
+
+  // Classifies each field using the regular expressions. The classifications
+  // are returned, but not assigned to the `fields_` yet. Use
+  // `AssignBestFieldTypes()` to do so.
+  FieldCandidatesMap ParseFieldTypesWithPatterns(ParsingContext& context) const;
+
+  // Assigns the best heuristic types from the `field_type_map` to the heuristic
+  // types of the corresponding fields for the `pattern_source`.
+  void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
+                            PatternSource pattern_source);
 
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.
