@@ -30,7 +30,6 @@ import requests
 
 
 class GraphQL:
-
     def __init__(self, token):
         super().__init__()
         self.token = token
@@ -52,7 +51,7 @@ class GraphQL:
     def mark_ready_for_review(self, pull_request_id):
         mutation = """
            mutation {
-              markPullRequestReadyForReview(input:{pullRequestId: %s}) {
+              markPullRequestReadyForReview(input:{pullRequestId: "%s"}) {
                   pullRequest{id, isDraft}
               }
            }
