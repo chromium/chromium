@@ -483,7 +483,12 @@ TEST_F(FasterSplitScreenTest, SkipPairingInOverviewOnMouseEvent) {
   // Snap `w1`. Test that clicking on `w1` again exits overview.
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   VerifySplitViewOverviewSession(w1.get());
+
+  // Moving the mouse around won't end overview.
   event_generator->MoveMouseTo(w1->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Clicking on `w1` again exits overview.
   event_generator->ClickLeftButton();
   EXPECT_FALSE(overview_controller->InOverviewSession());
 }

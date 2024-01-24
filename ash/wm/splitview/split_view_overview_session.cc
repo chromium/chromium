@@ -128,9 +128,10 @@ void SplitViewOverviewSession::OnKeyEvent() {
 
 void SplitViewOverviewSession::OnMouseEvent(const ui::MouseEvent& event) {
   aura::Window* target = static_cast<aura::Window*>(event.target());
-  if (window_util::GetNonClientComponent(target, event.location()) !=
-      HTNOWHERE) {
-    // Ignore events in the window caption areas.
+  if (event.type() != ui::ET_MOUSE_PRESSED ||
+      window_util::GetNonClientComponent(target, event.location()) !=
+          HTCLIENT) {
+    // Only MOUSE_PRESSED events in the client hit area will end overview.
     return;
   }
   gfx::Point location_in_screen = event.location();
