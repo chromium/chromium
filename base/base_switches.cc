@@ -65,6 +65,10 @@ const char kFullMemoryCrashReport[] = "full-memory-crash-report";
 // to BEST_EFFORT are not logged.
 const char kLogBestEffortTasks[] = "log-best-effort-tasks";
 
+// Handle to the shared memory segment a child process should use to transmit
+// histograms back to the browser process.
+const char kMetricsSharedMemoryHandle[] = "metrics-shmem-handle";
+
 // Suppresses all error dialogs when present.
 const char kNoErrorDialogs[]                = "noerrdialogs";
 

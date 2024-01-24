@@ -28,7 +28,7 @@ class BucketRanges;
 class FilePath;
 class PersistentSampleMapRecords;
 class PersistentSparseHistogramDataManager;
-class WritableSharedMemoryRegion;
+class UnsafeSharedMemoryRegion;
 
 // A data manager for sparse histograms so each instance of such doesn't have
 // to separately iterate over the entire memory segment.
@@ -444,7 +444,7 @@ class BASE_EXPORT GlobalHistogramAllocator
   // current process's virtual address space and frees it upon destruction.
   // The memory will continue to live if other processes have access to it.
   static void CreateWithSharedMemoryRegion(
-      const WritableSharedMemoryRegion& region);
+      const UnsafeSharedMemoryRegion& region);
 
   // Sets a GlobalHistogramAllocator for globally storing histograms in
   // a space that can be persisted or shared between processes. There is only

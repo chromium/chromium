@@ -16,9 +16,11 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/writable_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_sample_map.h"
@@ -933,14 +935,18 @@ bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
 
 // static
 void GlobalHistogramAllocator::CreateWithSharedMemoryRegion(
-    const WritableSharedMemoryRegion& region) {
+    const UnsafeSharedMemoryRegion& region) {
+  CHECK_EQ(Get(), nullptr) << "Histogram allocator has already been created";
+
   base::WritableSharedMemoryMapping mapping = region.Map();
   if (!mapping.IsValid() ||
       !WritableSharedPersistentMemoryAllocator::IsSharedMemoryAcceptable(
           mapping)) {
+    DVLOG(1) << "Shared memory region is invalid or unacceptable.";
     return;
   }
 
+  DVLOG(1) << "Global histogram allocator initialized.";
   Set(new GlobalHistogramAllocator(
       std::make_unique<WritableSharedPersistentMemoryAllocator>(
           std::move(mapping), 0, StringPiece())));
@@ -954,10 +960,24 @@ void GlobalHistogramAllocator::Set(GlobalHistogramAllocator* allocator) {
   CHECK(!subtle::NoBarrier_Load(&g_histogram_allocator));
   subtle::Release_Store(&g_histogram_allocator,
                         reinterpret_cast<intptr_t>(allocator));
-  size_t existing = StatisticsRecorder::GetHistogramCount();
 
-  DVLOG_IF(1, existing)
-      << existing << " histograms were created before persistence was enabled.";
+  // Record the number of histograms that were sampled before the global
+  // histogram allocator was initialized.
+  //
+  // TODO(crbug/1504919): CHECK(histogram_count == 0) and remove emit of early
+  // histogram count once |histogram_count| is reliably zero (0) for all process
+  // types.
+  size_t histogram_count = StatisticsRecorder::GetHistogramCount();
+  if (histogram_count != 0) {
+    DVLOG(1) << histogram_count
+             << " histogram(s) created before persistence was enabled.";
+
+    if (allocator && allocator->Name() && allocator->Name()[0]) {
+      UmaHistogramCounts100(StrCat({"UMA.PersistentAllocator.EarlyHistograms.",
+                                    allocator->Name()}),
+                            static_cast<int>(histogram_count));
+    }
+  }
 }
 
 // static

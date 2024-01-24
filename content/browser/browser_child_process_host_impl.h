@@ -12,8 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
@@ -226,7 +226,7 @@ class BrowserChildProcessHostImpl
 
   // The shared memory region used by |metrics_allocator_| that should be
   // transferred to the child process.
-  base::WritableSharedMemoryRegion metrics_shared_region_;
+  base::UnsafeSharedMemoryRegion metrics_shared_region_;
 
   // Indicates if the main browser process is used instead of a dedicated child
   // process.

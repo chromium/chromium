@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
@@ -122,7 +123,8 @@ class ChildProcessLauncherHelper
 #endif
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
-      std::unique_ptr<ChildProcessLauncherFileData> file_data);
+      std::unique_ptr<ChildProcessLauncherFileData> file_data,
+      base::UnsafeSharedMemoryRegion histogram_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -312,6 +314,9 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<sandbox::policy::SandboxPolicyFuchsia> sandbox_policy_;
 #endif
+
+  // Histogram shared memory region metadata.
+  base::UnsafeSharedMemoryRegion histogram_memory_region_;
 };
 
 }  // namespace internal

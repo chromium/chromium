@@ -621,6 +621,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="UMA.PersistentAllocator.EarlyHistograms.{PersistentAllocatorType}"
+    units="histograms" expires_after="2024-03-31">
+  <owner>rogerm@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    A count of the histograms emitted before the persistent memory allocator has
+    been initialized, broken down by {PersistentAllocatorType}.
+  </summary>
+  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
+</histogram>
+
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.Errors"
     enum="PersistentAllocatorErrors" expires_after="M85">
   <owner>asvitkine@chromium.org</owner>

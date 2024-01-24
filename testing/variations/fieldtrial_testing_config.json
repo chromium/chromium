@@ -13551,6 +13551,27 @@
             ]
         }
     ],
+    "PassHistogramSharedMemoryOnLaunch": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PassHistogramSharedMemoryOnLaunch"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordChangeAndroid": [
         {
             "platforms": [

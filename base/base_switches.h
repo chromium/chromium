@@ -24,6 +24,7 @@ extern const char kFieldTrialHandle[];
 extern const char kForceFieldTrials[];
 extern const char kFullMemoryCrashReport[];
 extern const char kLogBestEffortTasks[];
+extern const char kMetricsSharedMemoryHandle[];
 extern const char kNoErrorDialogs[];
 extern const char kProfilingAtStart[];
 extern const char kProfilingFile[];
