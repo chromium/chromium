@@ -27,6 +27,10 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
  public:
   // The file from which externally-reported metrics are read.
   static constexpr char kEventsFilePath[] = "/var/lib/metrics/uma-events";
+  // The directory containing per-pid event files from which externally-reported
+  // metrics are read.
+  static constexpr char kEventsDirectoryPath[] =
+      "/var/lib/metrics/uma-events.d";
 
   ExternalMetrics();
 
@@ -41,10 +45,11 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // blocking pool but are executed in the UI thread.
   void Start();
 
-  // Creates an ExternalMetrics instance reading from |filename| for testing
-  // purpose.
+  // Creates an ExternalMetrics instance reading from |filename| and |dir| for
+  // testing purpose.
   static scoped_refptr<ExternalMetrics> CreateForTesting(
-      const std::string& filename);
+      const std::string& filename,
+      const std::string& dir);
 
   // Synchronously executes one collection run for testing purposes. Does not
   // schedule any followup runs.
@@ -57,6 +62,8 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, CustomInterval);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, HandleMissingFile);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest, CanReceiveHistogram);
+  FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest,
+                           CanReceiveHistogramFromPidFiles);
   FRIEND_TEST_ALL_PREFIXES(ExternalMetricsTest,
                            IncorrectHistogramsAreDiscarded);
 
@@ -87,6 +94,12 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // Records a linear histogram. |sample| is expected to be a linear histogram.
   void RecordLinearHistogram(const metrics::MetricSample& sample);
 
+  // Returns the number of samples found in |samples|. |samples| is
+  // cleared at the end of the method. Used to process the samples in an event
+  // file.
+  int ProcessSamples(
+      std::vector<std::unique_ptr<metrics::MetricSample>>* samples);
+
   // Collects external events from metrics log file.  This is run at periodic
   // intervals.
   //
@@ -102,7 +115,11 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // File used by libmetrics to send metrics to Chrome.
   std::string uma_events_file_;
 
-  // Interval between metrics being read from |uma_events_file_|.
+  // Directory of per-pid event files used by libmetrics to send metrics to
+  // Chrome.
+  std::string uma_events_dir_;
+
+  // Interval between metrics being read from our sources.
   base::TimeDelta collection_interval_;
 };
 

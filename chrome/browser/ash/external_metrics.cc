@@ -13,12 +13,14 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/dir_reader_posix.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
@@ -35,13 +37,15 @@ bool CheckValues(const std::string& name,
                  int minimum,
                  int maximum,
                  size_t bucket_count) {
-  if (!base::Histogram::InspectConstructionArguments(
-      name, &minimum, &maximum, &bucket_count))
+  if (!base::Histogram::InspectConstructionArguments(name, &minimum, &maximum,
+                                                     &bucket_count)) {
     return false;
+  }
   base::HistogramBase* histogram =
       base::StatisticsRecorder::FindHistogram(name);
-  if (!histogram)
+  if (!histogram) {
     return true;
+  }
   return histogram->HasConstructionArguments(minimum, maximum, bucket_count);
 }
 
@@ -56,10 +60,9 @@ ExternalMetrics* g_instance = nullptr;
 
 }  // namespace
 
-constexpr char ExternalMetrics::kEventsFilePath[];
-
 ExternalMetrics::ExternalMetrics()
     : uma_events_file_(kEventsFilePath),
+      uma_events_dir_(kEventsDirectoryPath),
       collection_interval_(kDefaultCollectionInterval) {
   CHECK(!g_instance);
   g_instance = this;
@@ -94,9 +97,11 @@ void ExternalMetrics::Start() {
 
 // static
 scoped_refptr<ExternalMetrics> ExternalMetrics::CreateForTesting(
-    const std::string& filename) {
+    const std::string& filename,
+    const std::string& dir) {
   scoped_refptr<ExternalMetrics> external_metrics(new ExternalMetrics());
   external_metrics->uma_events_file_ = filename;
+  external_metrics->uma_events_dir_ = dir;
   return external_metrics;
 }
 
@@ -127,8 +132,8 @@ void ExternalMetrics::RecordCrash(const metrics::MetricSample& crash_sample) {
 
 void ExternalMetrics::RecordHistogram(const metrics::MetricSample& sample) {
   CHECK_EQ(metrics::MetricSample::HISTOGRAM, sample.type());
-  if (!CheckValues(
-          sample.name(), sample.min(), sample.max(), sample.bucket_count())) {
+  if (!CheckValues(sample.name(), sample.min(), sample.max(),
+                   sample.bucket_count())) {
     DLOG(ERROR) << "Invalid histogram: " << sample.name();
     return;
   }
@@ -176,16 +181,13 @@ void ExternalMetrics::RecordSparseHistogram(
   histogram->AddCount(sample.sample(), sample.num_samples());
 }
 
-int ExternalMetrics::CollectEvents() {
-  std::vector<std::unique_ptr<metrics::MetricSample>> samples;
-  metrics::SerializationUtils::ReadAndTruncateMetricsFromFile(uma_events_file_,
-                                                              &samples);
-
-  int cumulative_num_samples = 0;
-  for (auto it = samples.begin(); it != samples.end(); ++it) {
+int ExternalMetrics::ProcessSamples(
+    std::vector<std::unique_ptr<metrics::MetricSample>>* samples) {
+  int num_samples = 0;
+  for (auto it = samples->begin(); it != samples->end(); ++it) {
     const metrics::MetricSample& sample = **it;
 
-    cumulative_num_samples += sample.num_samples();
+    num_samples += sample.num_samples();
 
     // Do not use the UMA_HISTOGRAM_... macros here.  They cache the Histogram
     // instance and thus only work if |sample.name()| is constant.
@@ -206,6 +208,32 @@ int ExternalMetrics::CollectEvents() {
         RecordSparseHistogram(sample);
         break;
     }
+  }
+  samples->clear();
+  return num_samples;
+}
+
+int ExternalMetrics::CollectEvents() {
+  std::vector<std::unique_ptr<metrics::MetricSample>> samples;
+  metrics::SerializationUtils::ReadAndTruncateMetricsFromFile(uma_events_file_,
+                                                              &samples);
+  int cumulative_num_samples = ProcessSamples(&samples);
+
+  base::DirReaderPosix reader(uma_events_dir_.c_str());
+  if (!reader.IsValid()) {
+    LOG(ERROR)
+        << "Failed to create DirReaderPosix. Cannot read per-pid uma files.";
+    return cumulative_num_samples;
+  }
+
+  while (reader.Next()) {
+    std::string filename(reader.name());
+    if (filename == "." || filename == "..") {
+      continue;
+    }
+    metrics::SerializationUtils::ReadAndDeleteMetricsFromFile(
+        base::StrCat({uma_events_dir_, "/", filename}), &samples);
+    cumulative_num_samples += ProcessSamples(&samples);
   }
 
   return cumulative_num_samples;

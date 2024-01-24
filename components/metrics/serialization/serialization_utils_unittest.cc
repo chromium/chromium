@@ -297,7 +297,7 @@ TEST_F(SerializationUtilsTest, NegativeLengthTest) {
   ASSERT_EQ(0U, samples.size());
 }
 
-TEST_F(SerializationUtilsTest, WriteReadTest) {
+TEST_F(SerializationUtilsTest, WriteReadTest_TruncateFile) {
   std::unique_ptr<MetricSample> hist = MetricSample::HistogramSample(
       "myhist", /*sample=*/1, /*min=*/2, /*max=*/3, /*bucket_count=*/4,
       /*num_samples=*/5);
@@ -331,6 +331,40 @@ TEST_F(SerializationUtilsTest, WriteReadTest) {
   int64_t size = 0;
   ASSERT_TRUE(base::GetFileSize(filepath(), &size));
   ASSERT_EQ(0, size);
+}
+
+TEST_F(SerializationUtilsTest, WriteReadTest_DeleteFile) {
+  std::unique_ptr<MetricSample> hist = MetricSample::HistogramSample(
+      "myhist", /*sample=*/1, /*min=*/2, /*max=*/3, /*bucket_count=*/4,
+      /*num_samples=*/5);
+  std::unique_ptr<MetricSample> crash =
+      MetricSample::CrashSample("mycrash", /*num_samples=*/10);
+  std::unique_ptr<MetricSample> lhist = MetricSample::LinearHistogramSample(
+      "linear", /*sample=*/1, /*max=*/10, /*num_samples=*/10);
+  std::unique_ptr<MetricSample> shist = MetricSample::SparseHistogramSample(
+      "mysparse", /*sample=*/30, /*num_samples=*/10);
+  std::unique_ptr<MetricSample> action =
+      MetricSample::UserActionSample("myaction", /*num_samples=*/1);
+
+  SerializationUtils::WriteMetricToFile(*hist.get(), filename());
+  SerializationUtils::WriteMetricToFile(*crash.get(), filename());
+  SerializationUtils::WriteMetricToFile(*lhist.get(), filename());
+  SerializationUtils::WriteMetricToFile(*shist.get(), filename());
+  SerializationUtils::WriteMetricToFile(*action.get(), filename());
+  std::vector<std::unique_ptr<MetricSample>> vect;
+  SerializationUtils::ReadAndDeleteMetricsFromFile(filename(), &vect);
+  // NOTE: Should *not* have an entry for each repeated sample.
+  ASSERT_EQ(vect.size(), size_t(5));
+  for (auto& sample : vect) {
+    ASSERT_NE(nullptr, sample.get());
+  }
+  EXPECT_TRUE(hist->IsEqual(*vect[0]));
+  EXPECT_TRUE(crash->IsEqual(*vect[1]));
+  EXPECT_TRUE(lhist->IsEqual(*vect[2]));
+  EXPECT_TRUE(shist->IsEqual(*vect[3]));
+  EXPECT_TRUE(action->IsEqual(*vect[4]));
+
+  EXPECT_FALSE(base::PathExists(filepath()));
 }
 
 TEST_F(SerializationUtilsTest, TooManyMessagesTest) {
