@@ -329,6 +329,26 @@ if (current_cpu == "arm64") {
       deps = [ ":libvpx_arm64_highbd_headers" ]
     }
   }
+
+  # SVE is disabled for Windows due to a limitation with clang-cl-18:
+  # third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+  # error: cannot mangle this built-in __SVInt8_t type yet
+  if (!is_win) {
+    source_set("libvpx_intrinsics_sve") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libvpx_config" ]
+      cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
+      if (cpu_arch_full == "arm64") {
+        sources = libvpx_srcs_arm64_sve
+        deps = [ ":libvpx_arm64_headers" ]
+      } else if (cpu_arch_full == "arm64-highbd") {
+        sources = libvpx_srcs_arm64_highbd_sve
+        deps = [ ":libvpx_arm64_highbd_headers" ]
+      }
+    }
+  }
 }
 
 if (current_cpu == "arm") {
@@ -512,6 +532,9 @@ static_library("libvpx") {
   if (current_cpu == "arm64") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
     deps += [ ":libvpx_intrinsics_neon_i8mm" ]
+    if (!is_win) {
+      deps += [ ":libvpx_intrinsics_sve" ]
+    }
   }
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
