@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_return_key_forwarding_delegate.h"
 
+#import "base/memory/raw_ptr.h"
+
 @implementation ForwardingReturnDelegate {
   // Weak, acts as a delegate
-  OmniboxTextAcceptDelegate* _delegate;
+  raw_ptr<OmniboxTextAcceptDelegate> _delegate;
 }
 
 - (void)setAcceptDelegate:(OmniboxTextAcceptDelegate*)delegate {

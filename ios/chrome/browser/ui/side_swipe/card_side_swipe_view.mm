@@ -7,6 +7,7 @@
 #import <cmath>
 
 #import "base/ios/device_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -71,7 +72,7 @@ const CGFloat kResizeFactor = 4;
   CGPoint _currentPoint;
 
   // WebStateList provided from the initializer.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 }
 
 @synthesize backgroundTopConstraint = _backgroundTopConstraint;

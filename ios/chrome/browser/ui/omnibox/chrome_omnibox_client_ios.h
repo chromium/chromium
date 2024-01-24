@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -100,10 +101,10 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
     std::u16string text;
     AutocompleteMatch match;
   };
-  WebLocationBar* location_bar_;
-  ChromeBrowserState* browser_state_;
+  raw_ptr<WebLocationBar> location_bar_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
-  feature_engagement::Tracker* engagement_tracker_;
+  raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   // Stores observed navigations from the omnibox. Items are removed once
   // navigation finishes or when it's destroyed.
   std::unordered_map<int32_t, ShortcutElement> web_state_tracker_;

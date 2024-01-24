@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/snapshots/model/snapshot_id.h"
@@ -91,7 +92,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   SnapshotManager* snapshot_manager_ = nil;
 
   // Manages this object as an observer of `web_state_`.

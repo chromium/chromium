@@ -9,6 +9,7 @@
 
 #import "base/check.h"
 #import "base/json/json_writer.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -21,7 +22,7 @@ const int kMaximumMultiParameterValueSize = 256;
 }  // namespace
 
 @implementation CrashReportMultiParameter {
-  crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>* _key;
+  raw_ptr<crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>> _key;
   base::Value::Dict _dictionary;
 }
 

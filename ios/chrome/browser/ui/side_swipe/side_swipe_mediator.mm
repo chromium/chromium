@@ -9,6 +9,7 @@
 
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -103,7 +104,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
 
   // Used to add or remove the snapshot's gray cache.
-  SnapshotBrowserAgent* _snapshotBrowserAgent;
+  raw_ptr<SnapshotBrowserAgent> _snapshotBrowserAgent;
 }
 
 // The current active WebState.

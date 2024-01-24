@@ -97,7 +97,7 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
   snapshot_manager_ = [[SnapshotManager alloc]
       initWithGenerator:[[SnapshotGenerator alloc] initWithWebState:web_state_]
              snapshotID:GenerateSnapshotID(web_state_)];
-  web_state_observation_.Observe(web_state_);
+  web_state_observation_.Observe(web_state_.get());
 }
 
 void SnapshotTabHelper::PageLoaded(
