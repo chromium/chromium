@@ -3672,10 +3672,6 @@
       status: "stable",
     },
     {
-      name: "SvgTextFixHittestAfterScale",
-      status: "stable",
-    },
-    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
       base_feature: "none",

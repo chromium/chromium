@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -148,8 +147,7 @@ void LayoutView::Trace(Visitor* visitor) const {
 bool LayoutView::HitTest(const HitTestLocation& location,
                          HitTestResult& result) {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::SvgTextFixHittestAfterScaleEnabled() &&
-      has_svg_text_descendants_) {
+  if (has_svg_text_descendants_) {
     // This is necessary because SVG <text> might have obsolete geometry after
     // scale-only changes.  See crbug.com/1296089#c16
     auto it = svg_text_descendants_->find(this);
