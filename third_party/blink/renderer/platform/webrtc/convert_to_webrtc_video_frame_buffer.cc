@@ -445,6 +445,9 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       NOTREACHED();
       return nullptr;
   }
+  if (!video_frame) {
+    return nullptr;
+  }
   // The bind ensures that we keep a reference to the underlying buffer.
   video_frame->AddDestructionObserver(
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
