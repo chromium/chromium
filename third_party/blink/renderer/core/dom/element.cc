@@ -612,18 +612,18 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // Also note that if this node is ignored due to a display lock for focus
   // activation reason, we simply return false to avoid updating style & layout
   // tree for this node.
-  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
-  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
-    DCHECK(!NeedsStyleRecalc()) << this;
-    disallow_scope.emplace(GetDocument().Lifecycle());
-  } else {
-    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-            *this, DisplayLockActivationReason::kUserFocus)) {
-      return false;
-    }
+  if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+          *this, DisplayLockActivationReason::kUserFocus)) {
+    return false;
+  }
+  if (update_behavior == UpdateBehavior::kStyleAndLayout) {
     GetDocument().UpdateStyleAndLayoutTreeForElement(
         this, DocumentUpdateReason::kFocus);
+  } else {
+    DCHECK(!NeedsStyleRecalc()) << this;
   }
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      GetDocument().Lifecycle());
 
   DCHECK(
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
@@ -6307,18 +6307,25 @@ bool Element::CanBeKeyboardFocusableScroller(
   }
   // A node is scrollable depending on its layout size. As such, it is important
   // to have up to date style and layout before calling IsScrollableNode.
-  // However, for a11y code, layout updates should not be performed here.
-  absl::optional<DocumentLifecycle::DisallowTransitionScope> disallow_scope;
-  if (UNLIKELY(update_behavior != UpdateBehavior::kStyleAndLayout)) {
-    disallow_scope.emplace(GetDocument().Lifecycle());
-  } else {
-    auto* box = GetLayoutObject();
-    if (box && (box->SelfNeedsFullLayout() || box->NeedsSimplifiedLayout() ||
-                (!box->ChildLayoutBlockedByDisplayLock() &&
-                 box->ChildNeedsFullLayout()))) {
-      GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
-    }
+  // However, some lifecycle stages don't allow update here so we use
+  // UpdateBehavior to guard this behavior.
+  switch (update_behavior) {
+    case UpdateBehavior::kStyleAndLayout:
+      GetDocument().UpdateStyleAndLayoutForNode(this,
+                                                DocumentUpdateReason::kFocus);
+      break;
+    case UpdateBehavior::kNoneForAccessibility:
+      if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(this, true)) {
+        return false;
+      }
+      break;
+    case UpdateBehavior::kNoneForIsFocused:
+    case UpdateBehavior::kNoneForClearingFocus:
+      DCHECK(!DisplayLockUtilities::IsDisplayLockedPreventingPaint(this));
+      break;
   }
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      GetDocument().Lifecycle());
   return IsScrollableNode(this);
 }
 
