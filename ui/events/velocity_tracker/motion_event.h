@@ -84,6 +84,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) MotionEvent {
   virtual int GetButtonState() const = 0;
   virtual int GetFlags() const = 0;
   virtual base::TimeTicks GetEventTime() const = 0;
+  virtual base::TimeTicks GetLatestEventTime() const;
 
   virtual Classification GetClassification() const;
 

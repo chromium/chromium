@@ -21,6 +21,12 @@ base::TimeTicks MotionEvent::GetHistoricalEventTime(
   return base::TimeTicks();
 }
 
+base::TimeTicks MotionEvent::GetLatestEventTime() const {
+  // Fallback to getting the event time which might be oldest event time in
+  // presence of historical event times.
+  return GetEventTime();
+}
+
 float MotionEvent::GetHistoricalTouchMajor(size_t pointer_index,
                                            size_t historical_index) const {
   NOTIMPLEMENTED();
