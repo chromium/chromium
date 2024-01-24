@@ -5847,7 +5847,7 @@
   {
     "name": "omit-cors-client-cert",
     "owners": [ "toyoshim@chromium.org", "loading-dev@chromium.org" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "omnibox-2023-refresh-connection-security-indicators",
