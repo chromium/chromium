@@ -76,11 +76,10 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   // The SI backing this VideoFrame will be read by the display compositor and
   // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
   // be eliminated once OOP-R ships definitively.
-  auto shared_image = sii->NotifyMailboxAdded(
-      mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE);
+  auto shared_image =
+      sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                           gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                           gpu::SHARED_IMAGE_USAGE_RASTER_READ);
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
