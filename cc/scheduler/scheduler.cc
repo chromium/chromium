@@ -737,9 +737,7 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
       // Send early DidNotProduceFrame if we don't expect to produce a frame
       // soon so that display scheduler doesn't wait unnecessarily.
       // Note: This will only send one DidNotProduceFrame ack per begin frame.
-      if (!base::FeatureList::IsEnabled(
-              features::kResetTimerWhenNoActiveTreeLikely) &&
-          !state_machine_.NewActiveTreeLikely()) {
+      if (!state_machine_.NewActiveTreeLikely()) {
         SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(),
                                FrameSkippedReason::kNoDamage);
       }
