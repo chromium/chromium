@@ -596,22 +596,22 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE" desc="Title of the remove warning message shown for local profiles, shown when the user selects remove from the 3 dotted menu.">
       Delete this profile and its data?
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
       Can't use this profile
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to enter a profile that is not allowed to be unlocked.">
       Your administrator has made a system-wide change that disables some old profiles. You can no longer access this profile but can still remove it
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
       Can't unlock the profile
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile with the wrong account.">
       To unlock the profile sign in with your main account email: <ph name="EMAIL">$1<ex>example.com</ex></ph>
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE" desc="Title of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
       Sign in timed out
     </message>
-    <message translateable="false" name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
+    <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile, but the process timed out.">
       Couldn't sign you in, please try again
     </message>
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY" desc="The title of a statistic (browsing history) shown inside a table below the warning text when attempting to remove an user. A number is displayed next to it.">
