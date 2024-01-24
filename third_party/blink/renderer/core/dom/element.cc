@@ -7405,8 +7405,7 @@ AtomicString Element::ComputeInheritedLanguage() const {
         if (const Attribute* attribute =
                 attributes.Find(xml_names::kLangAttr)) {
           value = attribute->Value();
-        } else if (n->IsHTMLElement() || n->IsSVGElement() ||
-                   !RuntimeEnabledFeatures::HTMLLangNewInheritanceEnabled()) {
+        } else if (n->IsHTMLElement() || n->IsSVGElement()) {
           attribute = attributes.Find(html_names::kLangAttr);
           if (attribute) {
             value = attribute->Value();

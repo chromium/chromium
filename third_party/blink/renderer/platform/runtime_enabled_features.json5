@@ -2031,12 +2031,6 @@
       name: "HTMLInvokeTargetAttribute",
       status: "experimental",
     },
-    {
-      // Shipping in M120.  Flag should be removed after M120 has been
-      // shipping to stable for a few weeks.
-      name: "HTMLLangNewInheritance",
-      status: "stable",
-    },
     // This is a killswitch. Removable a few weeks after M121 ships.
     {
       name: "HTMLParserFastPathBulkInsertNotify",
