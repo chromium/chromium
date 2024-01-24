@@ -14,6 +14,8 @@ dictionary VirtualSensorReading {
   // Specifically for Ambient Light Sensors.
   double illuminance;
 
-  // https://w3c.github.io/sensors/#parse-quaternion-reading
-  FrozenArray<double> quaternion;
+  // https://w3c.github.io/deviceorientation/#deviceorientationevent
+  double alpha;
+  double beta;
+  double gamma;
 };

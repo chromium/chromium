@@ -44,6 +44,7 @@
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
+#include "services/device/public/cpp/generic_sensor/orientation_util.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace {
@@ -1168,30 +1169,31 @@ bool ParseXYZValue(const base::Value::Dict& params,
   return true;
 }
 
-bool ParseOrientationQuaternion(const base::Value::Dict& params,
-                                base::Value::Dict* out_params) {
-  constexpr size_t kQuaternionListSize = 4;  // x, y, z, w
+bool ParseOrientationEuler(const base::Value::Dict& params,
+                           base::Value::Dict* out_params) {
+  if (!params.contains("alpha") || !params.contains("beta") ||
+      !params.contains("gamma")) {
+    return false;
+  }
 
-  const base::Value::List* value_list = params.FindList("quaternion");
-  if (!value_list || value_list->size() != kQuaternionListSize) {
+  std::optional<double> alpha = params.FindDouble("alpha");
+  if (!alpha.has_value()) {
     return false;
   }
-  std::optional<double> x = (*value_list)[0].GetIfDouble();
-  if (!x.has_value()) {
+  std::optional<double> beta = params.FindDouble("beta");
+  if (!beta.has_value()) {
     return false;
   }
-  std::optional<double> y = (*value_list)[1].GetIfDouble();
-  if (!y.has_value()) {
+  std::optional<double> gamma = params.FindDouble("gamma");
+  if (!gamma.has_value()) {
     return false;
   }
-  std::optional<double> z = (*value_list)[2].GetIfDouble();
-  if (!z.has_value()) {
+  device::SensorReading quaternion_readings;
+  if (!device::ComputeQuaternionFromEulerAngles(*alpha, *beta, *gamma,
+                                                &quaternion_readings)) {
     return false;
   }
-  std::optional<double> w = (*value_list)[3].GetIfDouble();
-  if (!w.has_value()) {
-    return false;
-  }
+
   // Construct a dict that looks like this:
   // {
   //   quaternion: {
@@ -1201,9 +1203,13 @@ bool ParseOrientationQuaternion(const base::Value::Dict& params,
   //     w: VAL4
   //   }
   // }
+  const double x = quaternion_readings.orientation_quat.x;
+  const double y = quaternion_readings.orientation_quat.y;
+  const double z = quaternion_readings.orientation_quat.z;
+  const double w = quaternion_readings.orientation_quat.w;
   out_params->Set(
       "quaternion",
-      base::Value::Dict().Set("x", *x).Set("y", *y).Set("z", *z).Set("w", *w));
+      base::Value::Dict().Set("x", x).Set("y", y).Set("z", z).Set("w", w));
   return true;
 }
 
@@ -1239,9 +1245,10 @@ base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
     }
   } else if (*type == "absolute-orientation" ||
              *type == "relative-orientation") {
-    if (!ParseOrientationQuaternion(*reading_dict, &reading)) {
-      return base::unexpected(
-          Status(kInvalidArgument, "Could not parse quaternion"));
+    if (!ParseOrientationEuler(*reading_dict, &reading)) {
+      return base::unexpected(Status(
+          kInvalidArgument, "Could not parse " + *type +
+                                " readings. Invalid alpha/beta/gamma values"));
     }
   } else {
     return base::unexpected(Status(

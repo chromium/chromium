@@ -4,6 +4,8 @@
 
 source_set("generic_sensor") {
   sources = [
+    "orientation_util.cc",
+    "orientation_util.h",
     "sensor_reading_shared_buffer.cc",
     "sensor_reading_shared_buffer.h",
     "sensor_reading_shared_buffer_reader.cc",
@@ -23,6 +25,7 @@ source_set("generic_sensor") {
   deps = [
     "//base",
     "//device/base/synchronization",
+    "//ui/gfx/geometry",
   ]
 }
 

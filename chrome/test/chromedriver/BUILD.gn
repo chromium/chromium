@@ -360,6 +360,7 @@ source_set("lib") {
     "//net",
     "//net/server:http_server",
     "//net/traffic_annotation:test_support",
+    "//services/device/public/cpp/generic_sensor",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

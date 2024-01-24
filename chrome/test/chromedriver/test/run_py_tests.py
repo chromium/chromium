@@ -4454,8 +4454,10 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
                            })
 
   def testUpdateVirtualSensorWithoutXYZWValues(self):
+    expected_error = ("invalid argument: Could not parse absolute-orientation "
+                      "readings. Invalid alpha/beta/gamma values")
     self.assertRaisesRegex(chromedriver.InvalidArgument,
-                           "invalid argument: Could not parse quaternion",
+                           expected_error,
                            self._driver.UpdateVirtualSensor,
                            'absolute-orientation', {
                                'y': 2.0,
@@ -4463,7 +4465,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
                                'w': 4.0
                            })
     self.assertRaisesRegex(chromedriver.InvalidArgument,
-                           "invalid argument: Could not parse quaternion",
+                           expected_error,
                            self._driver.UpdateVirtualSensor,
                            'absolute-orientation', {
                                'x': 1.0,
@@ -4471,7 +4473,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
                                'w': 4.0
                            })
     self.assertRaisesRegex(chromedriver.InvalidArgument,
-                           "invalid argument: Could not parse quaternion",
+                           expected_error,
                            self._driver.UpdateVirtualSensor,
                            'absolute-orientation', {
                                'x': 1.0,
@@ -4479,13 +4481,59 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
                                'w': 4.0
                            })
     self.assertRaisesRegex(chromedriver.InvalidArgument,
-                           "invalid argument: Could not parse quaternion",
+                           expected_error,
                            self._driver.UpdateVirtualSensor,
                            'absolute-orientation', {
                                'x': 1.0,
                                'y': 2.0,
                                'z': 3.0
                            })
+
+  def testUpdateVirtualSensorWithoutAlphaBetaGammaValues(self):
+    expected_error = ("invalid argument: Could not parse relative-orientation "
+                      "readings. Invalid alpha/beta/gamma values")
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           expected_error,
+                           self._driver.UpdateVirtualSensor,
+                           'relative-orientation', {
+                               'beta': 2.0,
+                               'gamma': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           expected_error,
+                           self._driver.UpdateVirtualSensor,
+                           'relative-orientation', {
+                               'alpha': 1.0,
+                               'gamma': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           expected_error,
+                           self._driver.UpdateVirtualSensor,
+                           'relative-orientation', {
+                               'alpha': 1.0,
+                               'beta': 2.0
+                           })
+
+  def testUpdateVirtualSensorOutOfRangeEulerAngles(self):
+    # Alpha, beta and gamma must be within the ranges defined by the Device
+    # Orientation API.
+    test_inputs = (
+      # Alpha range: [0, 360).
+      [-1, 2, 3], [361, 2, 3],
+      # Beta range: [-180, 180).
+      [1, -181, 3], [1, 180, 3],
+      # Gamma range: [-90, 90).
+      [1, 2, -91], [1, 2, 90]
+    )
+    expected_error = ("invalid argument: Could not parse relative-orientation "
+                      "readings. Invalid alpha/beta/gamma values")
+    for test_input in test_inputs:
+      alpha, beta, gamma = test_input
+      self.assertRaisesRegex(chromedriver.InvalidArgument,
+                            expected_error,
+                            self._driver.UpdateVirtualSensor,
+                            'relative-orientation',
+                            { 'alpha': alpha, 'beta': beta, 'gamma': gamma })
 
   def testRemoveVirtualSensorWithInvalidSensorName(self):
     self.assertRaisesRegex(
