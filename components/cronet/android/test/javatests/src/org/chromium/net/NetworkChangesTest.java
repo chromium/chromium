@@ -11,8 +11,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.common.truth.TruthJUnit.assume;
 
-import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
-import static org.chromium.net.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.content.Context;
@@ -205,8 +203,8 @@ public class NetworkChangesTest {
     @OptIn(markerClass = org.chromium.net.ConnectionMigrationOptions.Experimental.class)
     private static void disableDefaultNetworkMigration(CronetEngine.Builder engineBuilder) {
         ConnectionMigrationOptions.Builder optionBuilder = ConnectionMigrationOptions.builder();
-        optionBuilder.setDefaultNetworkMigration(MIGRATION_OPTION_DISABLED);
-        optionBuilder.setMigrateIdleConnections(MIGRATION_OPTION_DISABLED);
+        optionBuilder.enableDefaultNetworkMigration(false);
+        optionBuilder.migrateIdleConnections(false);
         engineBuilder.setConnectionMigrationOptions(optionBuilder.build());
     }
 
@@ -233,8 +231,8 @@ public class NetworkChangesTest {
     @OptIn(markerClass = org.chromium.net.ConnectionMigrationOptions.Experimental.class)
     private static void enableDefaultNetworkMigration(CronetEngine.Builder engineBuilder) {
         ConnectionMigrationOptions.Builder optionBuilder = ConnectionMigrationOptions.builder();
-        optionBuilder.setDefaultNetworkMigration(MIGRATION_OPTION_ENABLED);
-        optionBuilder.setMigrateIdleConnections(MIGRATION_OPTION_ENABLED);
+        optionBuilder.enableDefaultNetworkMigration(true);
+        optionBuilder.migrateIdleConnections(true);
         engineBuilder.setConnectionMigrationOptions(optionBuilder.build());
 
         disableSessionHandling(engineBuilder);

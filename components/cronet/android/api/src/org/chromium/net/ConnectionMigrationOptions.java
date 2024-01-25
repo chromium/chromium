@@ -4,12 +4,8 @@
 
 package org.chromium.net;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresOptIn;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class configuring Cronet's connection migration functionality.
@@ -30,50 +26,34 @@ import java.lang.annotation.RetentionPolicy;
  *     Migration specification</a>
  */
 public class ConnectionMigrationOptions {
-    /** Option is unspecified, platform default value will be used. */
-    public static final int MIGRATION_OPTION_UNSPECIFIED = 0;
-
-    /** Option is enabled. */
-    public static final int MIGRATION_OPTION_ENABLED = 1;
-
-    /** Option is disabled. */
-    public static final int MIGRATION_OPTION_DISABLED = 2;
-
-    /** @hide */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(
-            flag = false,
-            value = {
-                MIGRATION_OPTION_UNSPECIFIED,
-                MIGRATION_OPTION_ENABLED,
-                MIGRATION_OPTION_DISABLED,
-            })
-    @interface State {}
-
-    private final @State int mEnableDefaultNetworkMigration;
-    private final @State int mEnablePathDegradationMigration;
-    private final @State int mAllowServerMigration;
-    private final @State int mMigrateIdleConnections;
+    @Nullable private final Boolean mEnableDefaultNetworkMigration;
+    @Nullable private final Boolean mEnablePathDegradationMigration;
+    @Nullable private final Boolean mAllowServerMigration;
+    @Nullable private final Boolean mMigrateIdleConnections;
     @Nullable private final Long mIdleMigrationPeriodSeconds;
-    private final @State int mRetryPreHandshakeErrorsOnAlternateNetwork;
-    private final @State int mAllowNonDefaultNetworkUsage;
+    @Nullable private final Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
+    @Nullable private final Boolean mAllowNonDefaultNetworkUsage;
     @Nullable private final Long mMaxTimeOnNonDefaultNetworkSeconds;
-    @Nullable private final Integer mMaxWriteErrorNonDefaultNetworkMigrationsCount;
-    @Nullable private final Integer mMaxPathDegradingNonDefaultNetworkMigrationsCount;
+    @Nullable private final Integer mMaxWriteErrorEagerMigrationsCount;
+    @Nullable private final Integer mMaxPathDegradingEagerMigrationsCount;
 
-    public @State int getDefaultNetworkMigration() {
+    @Nullable
+    public Boolean getEnableDefaultNetworkMigration() {
         return mEnableDefaultNetworkMigration;
     }
 
-    public @State int getPathDegradationMigration() {
+    @Nullable
+    public Boolean getEnablePathDegradationMigration() {
         return mEnablePathDegradationMigration;
     }
 
-    public @State int getAllowServerMigration() {
+    @Nullable
+    public Boolean getAllowServerMigration() {
         return mAllowServerMigration;
     }
 
-    public @State int getMigrateIdleConnections() {
+    @Nullable
+    public Boolean getMigrateIdleConnections() {
         return mMigrateIdleConnections;
     }
 
@@ -82,11 +62,13 @@ public class ConnectionMigrationOptions {
         return mIdleMigrationPeriodSeconds;
     }
 
-    public @State int getRetryPreHandshakeErrorsOnAlternateNetwork() {
+    @Nullable
+    public Boolean getRetryPreHandshakeErrorsOnAlternateNetwork() {
         return mRetryPreHandshakeErrorsOnAlternateNetwork;
     }
 
-    public @State int getAllowNonDefaultNetworkUsage() {
+    @Nullable
+    public Boolean getAllowNonDefaultNetworkUsage() {
         return mAllowNonDefaultNetworkUsage;
     }
 
@@ -96,13 +78,13 @@ public class ConnectionMigrationOptions {
     }
 
     @Nullable
-    public Integer getMaxWriteErrorNonDefaultNetworkMigrationsCount() {
-        return mMaxWriteErrorNonDefaultNetworkMigrationsCount;
+    public Integer getMaxWriteErrorEagerMigrationsCount() {
+        return mMaxWriteErrorEagerMigrationsCount;
     }
 
     @Nullable
-    public Integer getMaxPathDegradingNonDefaultNetworkMigrationsCount() {
-        return mMaxPathDegradingNonDefaultNetworkMigrationsCount;
+    public Integer getMaxPathDegradingEagerMigrationsCount() {
+        return mMaxPathDegradingEagerMigrationsCount;
     }
 
     public ConnectionMigrationOptions(Builder builder) {
@@ -115,70 +97,65 @@ public class ConnectionMigrationOptions {
                 builder.mRetryPreHandshakeErrorsOnAlternateNetwork;
         this.mAllowNonDefaultNetworkUsage = builder.mAllowNonDefaultNetworkUsage;
         this.mMaxTimeOnNonDefaultNetworkSeconds = builder.mMaxTimeOnNonDefaultNetworkSeconds;
-        this.mMaxWriteErrorNonDefaultNetworkMigrationsCount =
-                builder.mMaxWriteErrorNonDefaultNetworkMigrationsCount;
-        this.mMaxPathDegradingNonDefaultNetworkMigrationsCount =
-                builder.mMaxPathDegradingNonDefaultMigrationsCount;
+        this.mMaxWriteErrorEagerMigrationsCount = builder.mMaxWriteErrorEagerMigrationsCount;
+        this.mMaxPathDegradingEagerMigrationsCount = builder.mMaxPathDegradingEagerMigrationsCount;
     }
 
     /** Builder for {@link ConnectionMigrationOptions}. */
     public static class Builder {
-        private @State int mEnableDefaultNetworkConnectionMigration;
-        private @State int mEnablePathDegradationMigration;
-        private @State int mAllowServerMigration;
-        private @State int mMigrateIdleConnections;
+        @Nullable private Boolean mEnableDefaultNetworkConnectionMigration;
+        @Nullable private Boolean mEnablePathDegradationMigration;
+        @Nullable private Boolean mAllowServerMigration;
+        @Nullable private Boolean mMigrateIdleConnections;
         @Nullable private Long mIdleConnectionMigrationPeriodSeconds;
-        private @State int mRetryPreHandshakeErrorsOnAlternateNetwork;
-        private @State int mAllowNonDefaultNetworkUsage;
+        @Nullable private Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
+        @Nullable private Boolean mAllowNonDefaultNetworkUsage;
         @Nullable private Long mMaxTimeOnNonDefaultNetworkSeconds;
-        @Nullable private Integer mMaxWriteErrorNonDefaultNetworkMigrationsCount;
-        @Nullable private Integer mMaxPathDegradingNonDefaultMigrationsCount;
+        @Nullable private Integer mMaxWriteErrorEagerMigrationsCount;
+        @Nullable private Integer mMaxPathDegradingEagerMigrationsCount;
 
         Builder() {}
 
         /**
-         * Sets whether to enable the possibility of migrating connections on default network
-         * change. If enabled, active QUIC connections will be migrated onto the new network when
-         * the platform indicates that the default network is changing.
+         * Enables the possibility of migrating connections on default network change. If enabled,
+         * active QUIC connections will be migrated onto the new network when the platform indicates
+         * that the default network is changing.
          *
          * @see <a href="https://developer.android.com/training/basics/network-ops/reading-network-state#listening-events">Android
          *     Network State</a>
-         * @param defaultNetworkMigration Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
+         *
          * @return this builder for chaining
          */
-        public Builder setDefaultNetworkMigration(@State int defaultNetworkMigration) {
-            this.mEnableDefaultNetworkConnectionMigration = defaultNetworkMigration;
+        public Builder enableDefaultNetworkMigration(
+                boolean enableDefaultNetworkConnectionMigration) {
+            this.mEnableDefaultNetworkConnectionMigration = enableDefaultNetworkConnectionMigration;
             return this;
         }
 
         /**
-         * Sets whether to enable the possibility of migrating connections if the current path is
-         * performing poorly.
+         * Enables the possibility of migrating connections if the current path is performing
+         * poorly.
          *
          * <p>Depending on other configuration, this can result to migrating the connections within
          * the same default network, or to a non-default network.
          *
-         * @see #setAllowNonDefaultNetworkUsage(int)
-         * @param pathDegradationMigration Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
+         * @see #allowNonDefaultNetworkUsage(boolean)
+         *
          * @return this builder for chaining
          */
-        public Builder setPathDegradationMigration(@State int pathDegradationMigration) {
-            this.mEnablePathDegradationMigration = pathDegradationMigration;
+        public Builder enablePathDegradationMigration(boolean enable) {
+            this.mEnablePathDegradationMigration = enable;
             return this;
         }
 
         /**
-         * Sets whether to enable the possibility of migrating connections to an alternate server
-         * address at the server's request.
+         * Enables the possibility of migrating connections to an alternate server address
+         * at the server's request.
          *
-         * @param allowServerMigration Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
          * @return this builder for chaining
          */
         @Experimental
-        public Builder setAllowServerMigration(@State int allowServerMigration) {
+        public Builder allowServerMigration(boolean allowServerMigration) {
             this.mAllowServerMigration = allowServerMigration;
             return this;
         }
@@ -191,12 +168,10 @@ public class ConnectionMigrationOptions {
          * idle period for which connections will still be migrated can be customized using {@link
          * #setIdleConnectionMigrationPeriodSeconds}.
          *
-         * @param migrateIdleConnections Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
          * @return this builder for chaining
          */
         @Experimental
-        public Builder setMigrateIdleConnections(@State int migrateIdleConnections) {
+        public Builder migrateIdleConnections(boolean migrateIdleConnections) {
             this.mMigrateIdleConnections = migrateIdleConnections;
             return this;
         }
@@ -205,7 +180,7 @@ public class ConnectionMigrationOptions {
          * Sets the maximum idle period for which connections will still be migrated, in seconds.
          * The setting is shared for all connection migration types.
          *
-         * <p>Only relevant if {@link #setMigrateIdleConnections(int)} is enabled.
+         * <p>Only relevant if {@link #migrateIdleConnections(boolean)} is enabled.
          *
          * @return this builder for chaining
          */
@@ -217,21 +192,20 @@ public class ConnectionMigrationOptions {
         }
 
         /**
-         * Sets whether connections can be migrated to an alternate network when Cronet detects a
-         * degradation of the path currently in use.
+         * Sets whether connections can be migrated to an alternate network when Cronet detects
+         * a degradation of the path currently in use.
          *
          * <p>Note: This setting can result in requests being sent on non-default metered networks.
-         * Make sure you're using metered networks sparingly, and fine tune parameters like {@link
-         * #setMaxPathDegradingNonDefaultNetworkMigrationsCount(int)} and {@link
-         * #setMaxTimeOnNonDefaultNetworkSeconds} to limit the time on non-default networks.
+         * Make sure you're using metered networks sparingly, and fine tune parameters like
+         * {@link #setMaxPathDegradingNonDefaultNetworkMigrationsCount(int)}
+         * and {@link #setMaxTimeOnNonDefaultNetworkSeconds} to limit the time on non-default
+         * networks.
          *
-         * @param allowNonDefaultNetworkUsage Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
          * @return this builder for chaining
          */
         @Experimental
-        public Builder setAllowNonDefaultNetworkUsage(@State int allowNonDefaultNetworkUsage) {
-            this.mAllowNonDefaultNetworkUsage = allowNonDefaultNetworkUsage;
+        public Builder allowNonDefaultNetworkUsage(boolean enable) {
+            this.mAllowNonDefaultNetworkUsage = enable;
             return this;
         }
 
@@ -241,7 +215,7 @@ public class ConnectionMigrationOptions {
          * migration off the default network for each connection measures and compares to this value
          * separately.
          *
-         * <p>Only relevant if {@link #setAllowNonDefaultNetworkUsage(int)} is enabled.
+         * <p>Only relevant if {@link #allowNonDefaultNetworkUsage(boolean)} is enabled.
          *
          * @return this builder for chaining
          */
@@ -256,14 +230,14 @@ public class ConnectionMigrationOptions {
          * Sets the maximum number of migrations to the non-default network upon encountering write
          * errors. Counted cumulatively per network per connection.
          *
-         * <p>Only relevant if {@link #setAllowNonDefaultNetworkUsage(int)} is enabled.
+         * <p>Only relevant if {@link #allowNonDefaultNetworkUsage(boolean)} is enabled.
          *
          * @return this builder for chaining
          */
         @Experimental
         public Builder setMaxWriteErrorNonDefaultNetworkMigrationsCount(
                 int maxWriteErrorEagerMigrationsCount) {
-            this.mMaxWriteErrorNonDefaultNetworkMigrationsCount = maxWriteErrorEagerMigrationsCount;
+            this.mMaxWriteErrorEagerMigrationsCount = maxWriteErrorEagerMigrationsCount;
             return this;
         }
 
@@ -271,14 +245,14 @@ public class ConnectionMigrationOptions {
          * Sets the maximum number of migrations to the non-default network upon encountering path
          * degradation for the existing connection. Counted cumulatively per network per connection.
          *
-         * <p>Only relevant if {@link #setAllowNonDefaultNetworkUsage(int)} is enabled.
+         * <p>Only relevant if {@link #allowNonDefaultNetworkUsage(boolean)} is enabled.
          *
          * @return this builder for chaining
          */
         @Experimental
         public Builder setMaxPathDegradingNonDefaultNetworkMigrationsCount(
                 int maxPathDegradingEagerMigrationsCount) {
-            this.mMaxPathDegradingNonDefaultMigrationsCount = maxPathDegradingEagerMigrationsCount;
+            this.mMaxPathDegradingEagerMigrationsCount = maxPathDegradingEagerMigrationsCount;
             return this;
         }
 
@@ -286,19 +260,17 @@ public class ConnectionMigrationOptions {
          * Sets whether connections with pre-handshake errors should be retried on an alternative
          * network.
          *
-         * <p>If true, a new connection may be established an alternate network if it fails on the
-         * default network before handshake is confirmed.
+         * <p>If true, a new connection may be established an alternate network if it fails
+         * on the default network before handshake is confirmed.
          *
-         * <p>Note: similarly to {@link #setAllowNonDefaultNetworkUsage(int)} this setting can
+         * <p>Note: similarly to {@link #allowNonDefaultNetworkUsage(boolean)} this setting can
          * result in requests being sent on non-default metered networks. Use with caution!
          *
-         * @param retryPreHandshakeErrorsOnAlternateNetwork Must be one of {@link
-         *     ConnectionMigrationOptions#MIGRATION_OPTION_DISABLED MIGRATION_OPTION_*}.
          * @return this builder for chaining
          */
         @Experimental
-        public Builder setRetryPreHandshakeErrorsOnNonDefaultNetwork(
-                @State int retryPreHandshakeErrorsOnAlternateNetwork) {
+        public Builder retryPreHandshakeErrorsOnNonDefaultNetwork(
+                boolean retryPreHandshakeErrorsOnAlternateNetwork) {
             this.mRetryPreHandshakeErrorsOnAlternateNetwork =
                     retryPreHandshakeErrorsOnAlternateNetwork;
             return this;
