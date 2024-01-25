@@ -12,6 +12,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/span.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -32,12 +33,21 @@ class ASH_EXPORT PickerSearchResult {
     bool operator==(const GifData&) const;
   };
 
-  using Data = std::variant<TextData, GifData>;
+  struct BrowsingHistoryData {
+    GURL url;
+    ui::ImageModel icon;
+
+    bool operator==(const BrowsingHistoryData&) const;
+  };
+
+  using Data = std::variant<TextData, GifData, BrowsingHistoryData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
   ~PickerSearchResult();
 
+  static PickerSearchResult BrowsingHistory(const GURL& url,
+                                            ui::ImageModel icon);
   static PickerSearchResult Text(std::u16string_view text);
   static PickerSearchResult Gif(const GURL& url);
 

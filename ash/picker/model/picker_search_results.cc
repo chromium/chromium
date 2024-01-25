@@ -12,6 +12,9 @@ bool PickerSearchResult::TextData::operator==(
 bool PickerSearchResult::GifData::operator==(
     const PickerSearchResult::GifData&) const = default;
 
+bool PickerSearchResult::BrowsingHistoryData::operator==(
+    const PickerSearchResult::BrowsingHistoryData&) const = default;
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -25,6 +28,12 @@ PickerSearchResult PickerSearchResult::Text(std::u16string_view text) {
 
 PickerSearchResult PickerSearchResult::Gif(const GURL& url) {
   return PickerSearchResult(GifData{.url = url});
+}
+
+PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
+                                                       ui::ImageModel icon) {
+  return PickerSearchResult(
+      BrowsingHistoryData{.url = url, .icon = std::move(icon)});
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

@@ -17,6 +17,7 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/picker/picker_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -58,6 +59,9 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   }
   return PickerFeatureKeyType::kNone;
 }
+
+// TODO: b/316936687 - Use the icons from real search results.
+const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
 
 }  // namespace
 
@@ -130,9 +134,16 @@ void PickerController::StartSearch(const std::u16string& query,
           {{PickerSearchResult::Text(u"👍"), PickerSearchResult::Text(u"😊"),
             PickerSearchResult::Gif(GURL(
                 "https://media.tenor.com/BzfS_9uPq_AAAAAd/cat-bonfire.gif"))}}),
-      PickerSearchResults::Section(u"Matching links",
-                                   {{PickerSearchResult::Text(u"www.foo.com"),
-                                     PickerSearchResult::Text(u"crbug.com")}}),
+      PickerSearchResults::Section(
+          u"Matching links",
+          {{
+              PickerSearchResult::BrowsingHistory(
+                  GURL("www.foo.com"),
+                  ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
+              PickerSearchResult::BrowsingHistory(
+                  GURL("crbug.com"),
+                  ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
+          }}),
       PickerSearchResults::Section(
           u"Matching files", {{PickerSearchResult::Text(u"my file"),
                                PickerSearchResult::Text(u"my other file")}}),

@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -92,6 +93,15 @@ std::unique_ptr<PickerItemView> PickerSearchResultsView::CreateItemView(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
                 kPlaceholderGifSize));
+            return item_view;
+          },
+          [&, this](const PickerSearchResult::BrowsingHistoryData& data) {
+            // TODO: b/320787548 - Add the icon from `data`.
+            auto item_view = std::make_unique<PickerItemView>(
+                base::BindOnce(&PickerSearchResultsView::SelectSearchResult,
+                               base::Unretained(this), result),
+                PickerItemView::ItemType::kListItem);
+            item_view->SetPrimaryText(base::UTF8ToUTF16(data.url.spec()));
             return item_view;
           },
       },
