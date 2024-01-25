@@ -297,6 +297,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private isHighlightOn_: boolean = true;
   private activeButton_: HTMLElement|null;
 
+  private toolbarContainerObserver_: ResizeObserver|null;
+  private dragResizeCallback_: () => void;
+
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
@@ -324,12 +327,33 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       assert(shadowRoot);
       const toolbar = shadowRoot.getElementById('toolbar-container');
       assert(toolbar);
-      new ResizeObserver(this.onToolbarResize_).observe(toolbar);
+
+      this.toolbarContainerObserver_ =
+          new ResizeObserver(this.onToolbarResize_);
+      this.toolbarContainerObserver_.observe(toolbar);
+
+      this.dragResizeCallback_ = this.onDragResize_.bind(this);
+      window.addEventListener('resize', this.dragResizeCallback_);
     }
     this.textStyleOptions_ =
         this.textStyleOptions_.concat(this.moreOptionsButtons_);
 
     this.updateFonts();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.dragResizeCallback_) {
+      window.removeEventListener('resize', this.dragResizeCallback_);
+    }
+    this.toolbarContainerObserver_?.disconnect();
+  }
+
+  private onDragResize_() {
+    const toolbar =
+        this.shadowRoot?.getElementById('toolbar-container') as HTMLElement;
+    assert(toolbar);
+    ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
   }
 
   private onToolbarResize_(entries: ResizeObserverEntry[]) {
