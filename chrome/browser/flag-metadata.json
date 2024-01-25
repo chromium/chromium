@@ -2771,7 +2771,7 @@
   {
     "name": "enable-follow-IPH-exp-params",
     "owners": [ "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 130
   },
   {
     "name": "enable-follow-management-instant-reload",
@@ -2781,7 +2781,7 @@
   {
     "name": "enable-follow-ui-update",
     "owners": [ "sczs@chromium.org", "adamta@chromium.org", "guiperez@chromium.org" ],
-    "expiry_milestone": 123
+    "expiry_milestone": 130
   },
   {
       "name": "enable-fontations-backend",
@@ -5765,7 +5765,7 @@
   {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "ntp-wide-modules",
@@ -8416,12 +8416,12 @@
   {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "web-feed-awareness",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "web-feed-feedback-reroute",
@@ -8431,17 +8431,17 @@
   {
     "name": "web-feed-ios",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org", "tinazwang@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "web-feed-onboarding",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 130
   },
   {
     "name": "web-identity-digital-credentials",
