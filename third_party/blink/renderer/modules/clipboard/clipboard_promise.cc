@@ -363,20 +363,21 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  if (!RuntimeEnabledFeatures::EmptyClipboardReadEnabled() &&
-      !clipboard_item_data_.size()) {
-    script_promise_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kDataError, "No valid data on clipboard.");
-    return;
-  }
   HeapVector<std::pair<String, ScriptPromise>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
-  for (const auto& item : clipboard_item_data_) {
-    ScriptPromise promise = ScriptPromise::Cast(
-        script_state,
-        ToV8Traits<IDLNullable<Blob>>::ToV8(script_state, item.second));
-    items.emplace_back(item.first, promise);
+  for (const auto& [type, data] : clipboard_item_data_) {
+    if (data) {
+      ScriptPromise promise = ScriptPromise::Cast(
+          script_state,
+          ToV8Traits<Blob>::ToV8(script_state, data).ToLocalChecked());
+      items.emplace_back(type, promise);
+    }
+    if (!RuntimeEnabledFeatures::EmptyClipboardReadEnabled() && !items.size()) {
+      script_promise_resolver_->RejectWithDOMException(
+          DOMExceptionCode::kDataError, "No valid data on clipboard.");
+      return;
+    }
   }
   HeapVector<Member<ClipboardItem>> clipboard_items = {
       MakeGarbageCollected<ClipboardItem>(items)};
