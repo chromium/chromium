@@ -372,9 +372,8 @@ public class SigninFirstRunMediator
                 AccountUtils.findCoreAccountInfoByEmail(
                         mAccountManagerFacade.getCoreAccountInfos().getResult(),
                         mSelectedAccountEmail);
-        if (selectedAccount != null) {
-            signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
-        }
+        assert selectedAccount != null;
+        signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
     }
 
     /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */
