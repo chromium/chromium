@@ -272,7 +272,8 @@ void AppShimController::PreInitFeatureState(
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
        "DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
        "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
-       "UseAdHocSigningForWebAppShims"});
+       "StandardCompliantNonSpecialSchemeURLParsing",
+       "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional"});
 }
 
 // static
