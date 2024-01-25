@@ -6700,8 +6700,8 @@ CSSValue* ConsumeAutospace(CSSParserTokenRange& range) {
 // Consume the `spacing-trim` production.
 // https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
 CSSValue* ConsumeSpacingTrim(CSSParserTokenRange& range) {
-  // Currently, only `space-first` and `space-all` are supported.
-  return ConsumeIdent<CSSValueID::kSpaceFirst, CSSValueID::kSpaceAll>(range);
+  return ConsumeIdent<CSSValueID::kTrimStart, CSSValueID::kSpaceAll,
+                      CSSValueID::kSpaceFirst>(range);
 }
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,

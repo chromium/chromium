@@ -3869,30 +3869,28 @@ bool TextSpacing::ParseShorthand(
   // grammar, instead uses the `autospace` and `spacing-trim` productions.
   // https://drafts.csswg.org/css-text-4/#text-spacing-property
   //
-  // Try `normal | none` first.
+  // Try `none` first.
   if (const CSSIdentifierValue* ident =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kNone,
-                                          CSSValueID::kNormal>(range);
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range);
       ident && range.AtEnd()) {
-    switch (ident->GetValueID()) {
-      case CSSValueID::kNone:
-        autospace = CSSIdentifierValue::Create(CSSValueID::kNoAutospace);
-        spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceAll);
-        break;
-      case CSSValueID::kNormal:
-        autospace = CSSIdentifierValue::Create(CSSValueID::kNormal);
-        spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceFirst);
-        break;
-      default:
-        NOTREACHED_NORETURN();
-    }
+    autospace = CSSIdentifierValue::Create(CSSValueID::kNoAutospace);
+    spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceAll);
   }
 
   // Try `<autospace> || <spacing-trim>`.
   if (!autospace) {
     range = original_range;
 
+    wtf_size_t num_values = 0;
     while (!range.AtEnd()) {
+      if (++num_values > 2) {
+        return false;
+      }
+      if (css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
+        // `normal` can be either `text-autospace`, `text-spacing-trim`, or
+        // both. Keep parsing without setting the value.
+        continue;
+      }
       if (!autospace &&
           (autospace = css_parsing_utils::ConsumeAutospace(range))) {
         continue;
@@ -3903,14 +3901,15 @@ bool TextSpacing::ParseShorthand(
       }
       return false;
     }
-    if (!autospace && !spacing_trim) {
+
+    if (!num_values) {
       return false;
     }
     if (!autospace) {
       autospace = CSSIdentifierValue::Create(CSSValueID::kNormal);
     }
     if (!spacing_trim) {
-      spacing_trim = CSSIdentifierValue::Create(CSSValueID::kSpaceFirst);
+      spacing_trim = CSSIdentifierValue::Create(CSSValueID::kNormal);
     }
   }
 
@@ -3957,8 +3956,8 @@ const CSSValue* TextSpacing::CSSValueFromComputedStyleInternal(
     return autospace_value;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*autospace_value);
   list->Append(*spacing_trim_value);
+  list->Append(*autospace_value);
   return list;
 }
 
