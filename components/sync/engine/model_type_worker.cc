@@ -239,9 +239,6 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
     LogPasswordNotesState(PasswordNotesStateForUMA::kUnset);
     return true;
   }
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return true;
-  }
   // It is guaranteed that if `encrypted()` is decryptable, then
   // `encrypted_notes_backup()` must be decryptable too. Failure to decrypt
   // `encrypted_notes_backup()` indicates a data corruption.
@@ -1385,19 +1382,19 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
         password_data,
         encrypted_password.mutable_password()->mutable_encrypted());
     LogEncryptionResult(type_, result);
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-      // `encrypted_notes_backup` field needs to be populated regardless of
-      // whether or not there are any notes.
-      result = cryptographer_->Encrypt(password_data.notes(),
-                                       encrypted_password.mutable_password()
-                                           ->mutable_encrypted_notes_backup());
-      DCHECK(result);
-      // When encrypting both blobs succeeds, both encrypted blobs must use the
-      // key name.
-      DCHECK_EQ(
-          encrypted_password.password().encrypted().key_name(),
-          encrypted_password.password().encrypted_notes_backup().key_name());
-    }
+
+    // `encrypted_notes_backup` field needs to be populated regardless of
+    // whether or not there are any notes.
+    result = cryptographer_->Encrypt(password_data.notes(),
+                                     encrypted_password.mutable_password()
+                                         ->mutable_encrypted_notes_backup());
+    CHECK(result);
+
+    // When encrypting both blobs succeeds, both encrypted blobs must use the
+    // key name.
+    CHECK_EQ(encrypted_password.password().encrypted().key_name(),
+             encrypted_password.password().encrypted_notes_backup().key_name());
+
     // Replace the entire specifics, among other things to ensure that any
     // client-only fields are cleared.
     entity_data->specifics = std::move(encrypted_password);

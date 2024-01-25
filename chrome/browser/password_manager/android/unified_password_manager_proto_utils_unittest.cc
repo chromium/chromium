@@ -4,12 +4,10 @@
 
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
-#include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_info.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
-#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,11 +61,9 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   // The current code always populates password issues for outgoing protos even
   // when none exist.
   *password_specifics.mutable_password_issues() = sync_pb::PasswordIssues();
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    // The current code always populates notes for outgoing protos even when
-    // non-exists.
-    password_specifics.mutable_notes();
-  }
+  // The current code always populates notes for outgoing protos even when none
+  // exist.
+  password_specifics.mutable_notes();
   // The current code always populates shared password metadata for outgoing
   // protos even when none exist.
   password_specifics.set_sender_email("");

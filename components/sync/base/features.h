@@ -35,20 +35,6 @@ inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
 BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
 #endif
 
-// Enables adding, displaying and modifying extra notes to stored credentials.
-// When enabled, "PasswordViewPageInSettings" feature in the password manager
-// codebase is ignored and the new password view subpage is force enabled. When
-// enabled, Sync machinery will read and writes password notes to the
-// `encrypted_notes_backup` field inside the PasswordSpecifics proto. Together
-// with the logic on the server. this protects against notes being overwritten
-// by legacy clients not supporting password notes.
-// This feature is added here instead of the password manager codebase to avoid
-// cycle dependencies.
-// This feature is used in Credential Provider Extension on iOS. Keep the
-// default value in sync with the default value in
-// ios/chrome/credential_provider_extension/ui/feature_flags.mm.
-BASE_DECLARE_FEATURE(kPasswordNotesWithBackup);
-
 // Controls whether to enable bootstrapping Public-private keys in Nigori
 // key-bag.
 BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);

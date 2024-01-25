@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -31,8 +30,6 @@
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "url/gurl.h"
@@ -659,8 +656,7 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
       new_form.password_issues.clear();
     }
 
-    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
-        note_changed) {
+    if (note_changed) {
       new_form.SetNoteWithEmptyUniqueDisplayName(updated_credential.note);
     }
 

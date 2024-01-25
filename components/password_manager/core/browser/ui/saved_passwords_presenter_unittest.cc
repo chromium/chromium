@@ -18,7 +18,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -31,8 +30,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,7 +123,6 @@ class SavedPasswordsPresenterTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
@@ -483,8 +479,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes.emplace_back(u"display name", u"note with non-empty display name",
@@ -516,8 +510,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
 
@@ -548,8 +540,6 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordNote kExistingNote =
       PasswordNote(u"existing note", base::Time::Now());
   PasswordForm form =
@@ -579,8 +569,6 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes = {PasswordNote(u"existing note", base::Time::Now())};
@@ -1114,7 +1102,6 @@ class SavedPasswordsPresenterWithTwoStoresTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> profile_store_ =
@@ -1998,7 +1985,6 @@ class SavedPasswordsPresenterMoveToAccountTest : public testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockPasswordStoreInterface> profile_store_ =

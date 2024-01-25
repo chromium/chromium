@@ -24,11 +24,9 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -295,10 +293,6 @@ CredentialsEnableServiceSettingToPasswordManagerEnableState(
 void ReportPasswordNotesMetrics(
     bool is_account_store,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    return;
-  }
-
   base::StringPiece suffix_for_store =
       GetMetricsSuffixForStore(is_account_store);
 

@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 using autofill::FormData;
@@ -281,10 +280,8 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
           : password_form.federation_origin.Serialize());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    *password_data.mutable_notes() =
-        PasswordNotesToProto(password_form.notes, base_password_data.notes());
-  }
+  *password_data.mutable_notes() =
+      PasswordNotesToProto(password_form.notes, base_password_data.notes());
   password_data.set_sender_email(base::UTF16ToUTF8(password_form.sender_email));
   password_data.set_sender_name(base::UTF16ToUTF8(password_form.sender_name));
   password_data.set_date_received_windows_epoch_micros(
@@ -349,9 +346,7 @@ PasswordForm PasswordFromSpecifics(
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
   password.password_issues = PasswordIssuesMapFromProto(password_data);
-  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    password.notes = PasswordNotesFromProto(password_data.notes());
-  }
+  password.notes = PasswordNotesFromProto(password_data.notes());
   password.sender_email = base::UTF8ToUTF16(password_data.sender_email());
   password.sender_name = base::UTF8ToUTF16(password_data.sender_name());
   password.date_received =
