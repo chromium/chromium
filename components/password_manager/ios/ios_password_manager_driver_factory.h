@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_FACTORY_H_
 #define COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #include "components/password_manager/ios/password_manager_driver_bridge.h"
@@ -55,7 +56,7 @@ class IOSPasswordManagerDriverFactory
       password_manager::PasswordManagerInterface* password_manager);
 
   id<PasswordManagerDriverBridge> bridge_;
-  password_manager::PasswordManagerInterface* password_manager_;
+  raw_ptr<password_manager::PasswordManagerInterface> password_manager_;
   int next_free_id = 0;
 
   WEB_STATE_USER_DATA_KEY_DECL();

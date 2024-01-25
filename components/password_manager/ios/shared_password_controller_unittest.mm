@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/shared_password_controller.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -239,7 +240,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   std::unique_ptr<TestAutofillManagerInjector<TestBrowserAutofillManager>>
       autofill_manager_injector_;
   web::FakeWebState web_state_;
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   testing::StrictMock<MockPasswordGenerationFrameHelper>
       password_generation_helper_;
@@ -953,7 +954,7 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
   base::test::TaskEnvironment task_environment_;
   autofill::TestAutofillClient autofill_client_;
   web::FakeWebState web_state_;
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   PasswordSuggestionHelper* suggestion_helper_;
   id form_helper_;

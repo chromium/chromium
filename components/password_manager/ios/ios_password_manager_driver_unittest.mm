@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager.h"
@@ -90,10 +91,10 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   }
 
  protected:
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   web::FakeWebState web_state_;
-  IOSPasswordManagerDriver* driver_;
-  IOSPasswordManagerDriver* driver2_;
+  raw_ptr<IOSPasswordManagerDriver> driver_;
+  raw_ptr<IOSPasswordManagerDriver> driver2_;
   id password_controller_;
   testing::StrictMock<MockPasswordManagerClient> password_manager_client_;
   PasswordManager password_manager_ =

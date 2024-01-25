@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 
@@ -125,7 +126,7 @@ class AccountSelectFillData {
   // should be const.
   // Keeps information about last form that was requested in
   // RetrieveSuggestions.
-  mutable const FormInfo* last_requested_form_ = nullptr;
+  mutable raw_ptr<const FormInfo> last_requested_form_ = nullptr;
   // Keeps id of the last requested field if it was password otherwise the empty
   // string.
   autofill::FieldRendererId last_requested_password_field_id_;

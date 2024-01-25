@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -31,7 +32,7 @@ class IOSPasswordManagerDriverFactoryTest : public PlatformTest {
 
  protected:
   web::FakeWebState web_state_;
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   std::unique_ptr<password_manager::PasswordManager> password_manager_;
   SharedPasswordController* password_controller_;
   password_manager::StubPasswordManagerClient password_manager_client_;

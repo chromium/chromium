@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -87,7 +88,7 @@ class IOSPasswordManagerDriver final
 
   base::WeakPtr<web::WebState> web_state_;
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
-  password_manager::PasswordManagerInterface* password_manager_;
+  raw_ptr<password_manager::PasswordManagerInterface> password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
   int id_;
