@@ -136,6 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Slots do not divide low entropy domain"/>
   <int value="5" label="Invalid slot bounds"/>
   <int value="6" label="Unknown fields"/>
+  <int value="7" label="Layer ID is not unique"/>
 </enum>
 
 <enum name="VariationsInvalidStudyReason">

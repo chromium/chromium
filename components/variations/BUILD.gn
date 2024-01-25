@@ -228,6 +228,7 @@ source_set("unit_tests") {
     "uniformity_unittest.cc",
     "variations_associated_data_unittest.cc",
     "variations_ids_provider_unittest.cc",
+    "variations_layers_unittest.cc",
     "variations_murmur_hash_unittest.cc",
     "variations_request_scheduler_unittest.cc",
     "variations_seed_processor_unittest.cc",

@@ -23,7 +23,8 @@ enum class InvalidLayerReason {
   kSlotsDoNotDivideLowEntropyDomain = 4,
   kInvalidSlotBounds = 5,
   kUnknownFields = 6,
-  kMaxValue = kUnknownFields,
+  LayerIDNotUnique = 7,
+  kMaxValue = LayerIDNotUnique,
 };
 
 // A view over the layers defined within a variations seed.
