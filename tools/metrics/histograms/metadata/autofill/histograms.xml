@@ -75,6 +75,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Natwest" summary="card issued by Natwest"/>
 </variants>
 
+<variants name="Autofill.CreditCardNetwork">
+  <variant name="Mastercard" summary="card with the Mastercard network."/>
+  <variant name="Visa" summary="card with the Visa network."/>
+</variants>
+
 <variants name="Autofill.DialogError">
   <variant name="WithNoTemporaryError"
       summary="No temporary error has been shown in the dialog"/>
@@ -89,6 +94,26 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithPreviousStrikes"
       summary="at least one strike has been logged under the key for the
                feature"/>
+</variants>
+
+<variants name="Autofill.FormEventWithMetadata">
+  <variant name="FilledWithMetadata" summary="A card with metadata was filled"/>
+  <variant name="FilledWithMetadataOnce"
+      summary="A card with metadata was filled, logged once per page load"/>
+  <variant name="SelectedWithMetadata"
+      summary="A card with metadata was selected"/>
+  <variant name="SelectedWithMetadataOnce"
+      summary="A card with metadata was selected, logged once per page load"/>
+  <variant name="ShownWithMetadata" summary="A card with metadata was shown"/>
+  <variant name="ShownWithMetadataOnce"
+      summary="A card with metadata was shown, logged once per page load"/>
+  <variant name="SubmittedWithMetadataOnce"
+      summary="A form was submitted after a card with metadata was filled.
+               This event can only be triggered once per page load"/>
+  <variant name="WillSubmitWithMetadataOnce"
+      summary="A form was about to be submitted after a card with metadata
+               was filled. This event can only be triggered once per page
+               load"/>
 </variants>
 
 <variants name="Autofill.MandatoryReauth.AuthenticationMethod">
@@ -1383,10 +1408,10 @@ chromium-metrics-reviews@google.com.
   <owner>alexandertekle@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Emits true if a {CardIssuer} card was selected in the suggestions. Emits
-    false if a {CardIssuer} card with metadata existed in the suggestions list
-    but was not selected from the suggestions. Logged at the time a card
-    selection was made. Logged only once per page load.
+    Emits true if a {CardIssuer} was selected in the suggestions. Emits false if
+    a {CardIssuer} with metadata existed in the suggestions list but was not
+    selected from the suggestions. Logged at the time a card selection was made.
+    Logged only once per page load.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
 </histogram>
@@ -1413,28 +1438,40 @@ chromium-metrics-reviews@google.com.
     &quot;Once&quot; are logged once per page load.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
-  <token key="FormEventWithMetadata">
-    <variant name="FilledWithMetadata"
-        summary="A card with issuer id was filled"/>
-    <variant name="FilledWithMetadataOnce"
-        summary="A card with issuer id was filled, logged once per page load"/>
-    <variant name="SelectedWithMetadata"
-        summary="A card with issuer id was selected"/>
-    <variant name="SelectedWithMetadataOnce"
-        summary="A card with issuer id was selected, logged once per page
-                 load"/>
-    <variant name="ShownWithMetadata"
-        summary="A card with issuer id was shown"/>
-    <variant name="ShownWithMetadataOnce"
-        summary="A card with issuer id was shown, logged once per page load"/>
-    <variant name="SubmittedWithMetadataOnce"
-        summary="A form was submitted after a card with issuer id was filled.
-                 This event can only be triggered once per page load"/>
-    <variant name="WillSubmitWithMetadataOnce"
-        summary="A form was about to be submitted after a card with issuer id
-                 was filled. This event can only be triggered once per page
-                 load"/>
-  </token>
+  <token key="FormEventWithMetadata" variants="Autofill.FormEventWithMetadata"/>
+</histogram>
+
+<histogram
+    name="Autofill.CreditCard.{CardNetwork}.SelectedWithIssuerMetadataPresentOnce"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true if a {CardNetwork} was selected in the suggestions. Emits false
+    if a {CardNetwork} with metadata existed in the suggestions list but was not
+    selected from the suggestions. Logged at the time a card selection was made.
+    Logged only once per page load.
+  </summary>
+  <token key="CardNetwork" variants="Autofill.CreditCardNetwork"/>
+</histogram>
+
+<histogram name="Autofill.CreditCard.{CardNetwork}.{FormEventWithMetadata}"
+    enum="Boolean" expires_after="2024-07-01">
+  <owner>alexandertekle@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true if a {CardNetwork}:
+
+    1. shown in Autofill suggestions had metadata
+
+    2. selected from Autofill suggestions had metadata
+
+    Histograms without `Once` are logged every time Autofill suggestions that
+    are shown or selected have an issuer id. Histograms with `Once` are logged
+    once per page load.
+  </summary>
+  <token key="CardNetwork" variants="Autofill.CreditCardNetwork"/>
+  <token key="FormEventWithMetadata" variants="Autofill.FormEventWithMetadata"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"

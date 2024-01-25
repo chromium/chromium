@@ -223,9 +223,9 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
 
     if (suggestions_.size() > 1) {
       CHECK(personal_data_manager_);
-      // Keeps track of which issuers with metadata were not selected. Can be
-      // zero issuers if there was only one card suggestion and that card was
-      // selected.
+      // Keeps track of which issuers and networks with metadata were not
+      // selected. Can be none if there was only one card suggestion displayed
+      // and that card was selected.
       for (const Suggestion& suggestion : suggestions_) {
         // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
         CreditCard* suggested_credit_card =
@@ -239,8 +239,16 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         if (credit_card.issuer_id() != suggested_credit_card->issuer_id() &&
             (suggested_credit_card->HasRichCardArtImageFromMetadata() ||
              !suggested_credit_card->product_description().empty())) {
-          metadata_logging_context_.not_selected_issuer_ids.insert(
+          metadata_logging_context_.not_selected_issuer_ids_and_networks.insert(
               suggested_credit_card->issuer_id());
+        }
+        // Skip American Express and Discover as they are an issuer and
+        // network. They are already covered in the `issuer_id` check above.
+        if (credit_card.network() != kAmericanExpressCard &&
+            credit_card.network() != kDiscoverCard &&
+            credit_card.network() != suggested_credit_card->network()) {
+          metadata_logging_context_.not_selected_issuer_ids_and_networks.insert(
+              suggested_credit_card->network());
         }
       }
     }
