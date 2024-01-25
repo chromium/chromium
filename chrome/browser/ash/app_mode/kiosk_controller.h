@@ -22,9 +22,7 @@ class KioskController {
  public:
   static KioskController& Get();
 
-  KioskController(WebKioskAppManager& web_app_manager,
-                  KioskChromeAppManager& chrome_app_manager,
-                  ArcKioskAppManager& arc_app_manager);
+  KioskController();
   KioskController(const KioskController&) = delete;
   KioskController& operator=(const KioskController&) = delete;
   ~KioskController();
@@ -34,9 +32,9 @@ class KioskController {
   std::optional<KioskApp> GetAutoLaunchApp() const;
 
  private:
-  raw_ref<WebKioskAppManager> web_app_manager_;
-  raw_ref<KioskChromeAppManager> chrome_app_manager_;
-  raw_ref<ArcKioskAppManager> arc_app_manager_;
+  WebKioskAppManager web_app_manager_;
+  KioskChromeAppManager chrome_app_manager_;
+  ArcKioskAppManager arc_app_manager_;
 };
 
 }  // namespace ash

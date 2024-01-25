@@ -52,11 +52,8 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/memory_pressure/container_app_killer.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
@@ -965,13 +962,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                      chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
-  kiosk_chrome_app_manager_ = std::make_unique<KioskChromeAppManager>();
-  arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();
-  web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
-  kiosk_controller_ = std::make_unique<KioskController>(
-      CHECK_DEREF(web_kiosk_app_manager_.get()),
-      CHECK_DEREF(kiosk_chrome_app_manager_.get()),
-      CHECK_DEREF(arc_kiosk_app_manager_.get()));
+  kiosk_controller_ = std::make_unique<KioskController>();
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),
@@ -1622,11 +1613,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // subsystems.
   g_browser_process->platform_part()->ShutdownAutomaticRebootManager();
 
-  // Clean before the Kiosk web, Chrome app, and ARC app managers.
+  // Dependens on Profile, so needs to be destroyed before ProfileManager, which
+  // happens in `ChromeBrowserMainPartsLinux::PostMainMessageLoopRun()` below.
   kiosk_controller_.reset();
-
-  // Clean up dependency on CrosSettings and stop pending data fetches.
-  kiosk_chrome_app_manager_.reset();
 
   // Make sure that there is no pending URLRequests.
   if (pre_profile_init_called_) {
@@ -1676,7 +1665,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // LacrosAvailabilityPolicyObserver and
   // LacrosDataBackwardMigrationModePolicyObserver have the dependency to
   // ProfileManager, so they need to be destroyed before ProfileManager
-  // destruction, which happens inside PostMainMessageLoop below.
+  // destruction, which happens inside PostMainMessageLoopRun below.
   lacros_availability_policy_observer_.reset();
   lacros_data_backward_migration_mode_policy_observer_.reset();
 
@@ -1685,11 +1674,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
   vc_ash_feature_client_.reset();
-
-  // Has a dependency on Profile, so it needs to be destroyed before Profile
-  // gets destroyed during ProfileManager destruction, which happens inside
-  // PostMainMessageLoop below.
-  web_kiosk_app_manager_.reset();
 
   // NOTE: Closes ash and destroys `Shell`.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
@@ -1707,8 +1691,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // because crosapi depends on it.
   g_browser_process->platform_part()->ShutdownAshProxyMonitor();
 
-  // Destroy classes that may have ash observers or dependencies.
-  arc_kiosk_app_manager_.reset();
   chrome_keyboard_controller_client_.reset();
 
   // All ARC related modules should have been shut down by this point, so

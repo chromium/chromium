@@ -133,22 +133,6 @@ class FakeNetworkMonitor : public ash::NetworkUiController::NetworkMonitor {
   raw_ptr<ash::NetworkUiController::NetworkMonitor::Observer> observer_;
   base::WeakPtrFactory<FakeNetworkMonitor> weak_ptr_factory_{this};
 };
-
-// Helper class to own `KioskController` and the Kiosk managers it depends on.
-class KioskControllerHolder {
- public:
-  KioskControllerHolder()
-      : kiosk_controller(web_kiosk_app_manager_,
-                         chrome_app_manager_,
-                         arc_kiosk_app_manager_) {}
-  ~KioskControllerHolder() = default;
-
-  WebKioskAppManager web_kiosk_app_manager_;
-  KioskChromeAppManager chrome_app_manager_;
-  ArcKioskAppManager arc_kiosk_app_manager_;
-  KioskController kiosk_controller;
-};
-
 }  // namespace
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -221,7 +205,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
 
-    kiosk_controller_holder_.reset();
+    kiosk_controller_.reset();
 
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
   }
@@ -304,7 +288,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     AccountId account_id(AccountId::FromUserEmail(email));
     kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
 
-    kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
+    kiosk_controller_ = std::make_unique<KioskController>();
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -323,7 +307,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
-  std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
+  std::unique_ptr<KioskController> kiosk_controller_;
 
   std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
@@ -948,7 +932,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   void SetUpKioskAppInAppManager() {
-    kiosk_controller_holder_ = std::make_unique<KioskControllerHolder>();
+    kiosk_controller_ = std::make_unique<KioskController>();
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -977,7 +961,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
-  std::unique_ptr<KioskControllerHolder> kiosk_controller_holder_;
+  std::unique_ptr<KioskController> kiosk_controller_;
 
   std::unique_ptr<base::AutoReset<std::optional<bool>>>
       can_configure_network_for_testing_;
