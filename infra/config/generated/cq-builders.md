@@ -658,7 +658,7 @@ as required builders.
   * Experiment percentage: 100.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 100.0
 
   Location filters:
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
