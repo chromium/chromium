@@ -51,14 +51,12 @@ chromium/try/dawn-try-win10-x86-rel
 chromium/try/dawn-win10-x64-deps-rel
 chromium/try/dawn-win10-x86-deps-rel
 chromium/try/fuchsia-arm64-cast-receiver-rel
-chromium/try/fuchsia-arm64-rel
 chromium/try/fuchsia-compile-x64-dbg
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
 chromium/try/fuchsia-fyi-x64-dbg
 chromium/try/fuchsia-fyi-x64-dbg-persistent-emulator
 chromium/try/fuchsia-x64-cast-receiver-rel
-chromium/try/fuchsia-x64-rel
 chromium/try/ios-asan
 chromium/try/ios-catalyst
 chromium/try/ios-device

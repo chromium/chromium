@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-dbg",
+              "builder": "fuchsia-x64-cast-receiver-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -38,7 +38,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-dbg",
+          "builder": "fuchsia-x64-cast-receiver-dbg",
           "project": "chromium"
         }
       ],

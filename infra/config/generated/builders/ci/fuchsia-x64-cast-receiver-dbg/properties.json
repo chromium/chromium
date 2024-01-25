@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/fuchsia-x64-rel/gn-args.json"
+        "infra/config/generated/builders/ci/fuchsia-x64-cast-receiver-dbg/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-rel",
+              "builder": "fuchsia-x64-cast-receiver-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -20,7 +20,7 @@
                 "apply_configs": [
                   "mb"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "chromium",
                 "target_bits": 64,
                 "target_platform": "fuchsia"
@@ -38,14 +38,20 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-rel",
+          "builder": "fuchsia-x64-cast-receiver-dbg",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "fuchsia-compile-x64-dbg",
+          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
+    "instance": "rbe-chromium-trusted",
     "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
@@ -57,6 +63,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.fuchsia",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.fuchsia",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }
