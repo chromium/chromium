@@ -441,6 +441,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.DEPRECATE_UNLOAD,
                 "If false prevents the gradual deprecation of the unload event."),
         Flag.baseFeature(
+                BlinkFeatures.DEPRECATE_UNLOAD_BY_ALLOW_LIST,
+                "Unload Deprecation respects a list of allowed origins."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_RECORD_APP_DATA_DIRECTORY_SIZE,
                 "Record the size of the embedding app's data directory"),
         Flag.baseFeature(
