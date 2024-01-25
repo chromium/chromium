@@ -6019,7 +6019,12 @@ chromium-metrics-reviews@google.com.
     enum="BooleanEnabled" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
-  <summary>Whether the user changed autofilled field.</summary>
+  <summary>
+    Records for forms to which users made manual changes (typing, pasting,
+    etc.), whether a previously autofilled field was changed by the manual
+    changes. No metrics are emitted for forms into which the user has not typed.
+    Recorded on form submission or destruction of the Autofill provider.
+  </summary>
 </histogram>
 
 </histograms>
