@@ -31,7 +31,6 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
-#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -365,12 +364,9 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.bounds = gfx::Rect(0, 0, 1, 1);
   }
 
-  void CreatePdfAccessibilityTree(bool enable_screen_reader) {
+  void CreatePdfAccessibilityTree() {
     content::RenderFrame* render_frame = GetMainRenderFrame();
-    ui::AXMode mode = enable_screen_reader
-                          ? ui::AXMode::kWebContents | ui::AXMode::kScreenReader
-                          : ui::AXMode::kWebContents;
-    render_frame->SetAccessibilityModeForTest(mode);
+    render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
     ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
     pdf_accessibility_tree_ = std::make_unique<TestPdfAccessibilityTree>(
@@ -409,7 +405,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
 };
 
 TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -424,7 +420,7 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -442,7 +438,7 @@ TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   // Make the accessibility tree with a portrait page and then remake with a
   // landscape page.
@@ -510,7 +506,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -619,7 +615,7 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -704,7 +700,7 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -823,7 +819,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -978,7 +974,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1165,7 +1161,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1354,7 +1350,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1561,7 +1557,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1682,7 +1678,7 @@ TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1723,7 +1719,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1755,7 +1751,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1794,7 +1790,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1824,7 +1820,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1867,7 +1863,7 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1899,7 +1895,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1916,7 +1912,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
 TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
   // This test verifies the AXActionData conversion to
   // `chrome_pdf::AccessibilityActionData`.
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -1976,7 +1972,7 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -2035,7 +2031,7 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -2088,7 +2084,7 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -2127,7 +2123,7 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
   pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
@@ -2182,7 +2178,7 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -2287,7 +2283,7 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -2311,7 +2307,7 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
   text_runs_ = {kFirstTextRun, kSecondTextRun};
   chars_ = {std::begin(kDummyCharsData), std::end(kDummyCharsData)};
   page_info_.text_run_count = text_runs_.size();
@@ -2450,48 +2446,12 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   EXPECT_EQ(0u, inline_box->GetChildCount());
 }
 
-TEST_F(PdfAccessibilityTreeTest, CheckUMAMetricsWithScreenReader) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/true);
-
-  base::HistogramTester histograms;
-  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
-  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
-  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
-  WaitForThreadTasks();
-  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
-  WaitForThreadDelayedTasks();
-
-  histograms.ExpectBucketCount("Accessibility.PDF.OpenedWithScreenReader", true,
-                               /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.OpenedWithScreenReader",
-                              /*expected_count=*/1);
-}
-
-TEST_F(PdfAccessibilityTreeTest, CheckUMAMetricsWithoutScreenReader) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
-
-  base::HistogramTester histograms;
-  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
-  pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
-  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
-                                                    chars_, page_objects_);
-  WaitForThreadTasks();
-  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
-  WaitForThreadDelayedTasks();
-
-  histograms.ExpectBucketCount("Accessibility.PDF.OpenedWithScreenReader",
-                               false, /*expected_count=*/1);
-  histograms.ExpectTotalCount("Accessibility.PDF.OpenedWithScreenReader",
-                              /*expected_count=*/1);
-}
-
 // TODO(crbug.com/1442928): Remove the test case below once PDF OCR is launched
 // on Windows, Linux, and macOS as this test will be replaced with the other
 // existing test, `PdfOcrTest.CheckLiveRegionPoliteStatus`.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   page_objects_.images.push_back(CreateMockInaccessibleImage());
 
@@ -2693,7 +2653,7 @@ class PdfOcrServiceTest
 };
 
 TEST_P(PdfOcrServiceTest, PageBatching) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   const bool is_ocr_service_started_before_pdf_loads =
       GetIsOcrServiceStartedBeforePdfLoads();
@@ -2808,7 +2768,7 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
 }
 
 TEST_P(PdfOcrServiceTest, UMAMetrics) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   base::HistogramTester histograms;
   const bool is_ocr_service_started_before_pdf_loads =
@@ -2893,7 +2853,7 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
 }
 
 TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   const bool is_ocr_service_started_before_pdf_loads =
       GetIsOcrServiceStartedBeforePdfLoads();
@@ -2955,7 +2915,7 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
 }
 
 TEST_P(PdfOcrServiceTest, OCRCompleteNotification) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   const bool is_ocr_service_started_before_pdf_loads =
       GetIsOcrServiceStartedBeforePdfLoads();
@@ -3043,7 +3003,7 @@ class PdfOcrTest : public PdfAccessibilityTreeTest {
 };
 
 TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   page_objects_.images.push_back(CreateMockInaccessibleImage());
 
@@ -3156,7 +3116,7 @@ TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
 
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
@@ -3288,7 +3248,7 @@ TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {
 }
 
 TEST_F(PdfOcrTest, FeatureNotificationOnInaccessiblePdf) {
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   page_objects_.images.push_back(CreateMockInaccessibleImage());
 
@@ -3320,7 +3280,7 @@ TEST_F(PdfOcrTest, NoFeatureNotificationOnAccessiblePdf) {
 
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
-  CreatePdfAccessibilityTree(/*enable_screen_reader=*/false);
+  CreatePdfAccessibilityTree();
 
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info_);
