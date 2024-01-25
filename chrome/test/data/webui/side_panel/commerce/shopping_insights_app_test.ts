@@ -353,8 +353,7 @@ suite('ShoppingInsightsAppTest', () => {
     });
   });
 
-  // TODO(crbug.com/1521180): This test seems to be legitimately failing.
-  test.skip('NotShowPriceTrackingWithoutTrackingStatus', async () => {
+  test('NotShowPriceTrackingWithoutTrackingStatus', async () => {
     shoppingServiceApi.setResultFor(
         'isShoppingListEligible', Promise.resolve({eligible: true}));
     shoppingServiceApi.setResultFor(
@@ -374,11 +373,20 @@ suite('ShoppingInsightsAppTest', () => {
     await shoppingServiceApi.whenCalled('getProductInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('getPriceInsightsInfoForCurrentUrl');
     await shoppingServiceApi.whenCalled('isShoppingListEligible');
-    await flushTasks();
 
-    const section =
+    // Price tracking section is not visible before
+    // `getPriceTrackingStatusForCurrentUrl` returns.
+    let section =
         shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
             '#priceTrackingSection');
     assertFalse(isVisible(section));
+
+    await shoppingServiceApi.whenCalled('getPriceTrackingStatusForCurrentUrl');
+    await flushTasks();
+
+    section =
+        shoppingInsightsApp.shadowRoot!.querySelector<PriceTrackingSection>(
+            '#priceTrackingSection');
+    assertTrue(isVisible(section));
   });
 });
