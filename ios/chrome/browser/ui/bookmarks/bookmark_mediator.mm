@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -43,13 +44,13 @@ using bookmarks::BookmarkNode;
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
 
   // Prefs model for this mediator.
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
 
   // Authentication service for this mediator.
   base::WeakPtr<AuthenticationService> _authenticationService;
 
   // Sync service for this mediator.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {

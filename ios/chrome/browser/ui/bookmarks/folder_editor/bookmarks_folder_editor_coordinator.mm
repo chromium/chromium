@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -36,10 +37,10 @@
   // Coordinator to show the folder chooser UI.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
   // Parent folder to `_folderNode`. Should never be `nullptr`.
-  const bookmarks::BookmarkNode* _parentFolderNode;
+  raw_ptr<const bookmarks::BookmarkNode> _parentFolderNode;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
   // the user is editing an existing folder.
-  const bookmarks::BookmarkNode* _folderNode;
+  raw_ptr<const bookmarks::BookmarkNode> _folderNode;
 }
 
 @end

@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -34,7 +35,7 @@
     BookmarksEditorMediatorDelegate,
     BookmarksFolderChooserCoordinatorDelegate> {
   // BookmarkNode to edit.
-  const bookmarks::BookmarkNode* _node;
+  raw_ptr<const bookmarks::BookmarkNode> _node;
 
   // The editor view controller owned and presented by this coordinator.
   // It is wrapped in a TableViewNavigationController.

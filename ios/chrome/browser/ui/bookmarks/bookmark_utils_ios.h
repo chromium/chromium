@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/common/storage_type.h"
@@ -45,7 +46,7 @@ struct BookmarkNodeReference {
   // Node id for the BookmarkNode.
   const base::Uuid uuid;
   // Bookmark model from the BookmarkNode.
-  bookmarks::BookmarkModel* bookmark_model;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model;
 };
 
 typedef std::vector<const bookmarks::BookmarkNode*> NodeVector;

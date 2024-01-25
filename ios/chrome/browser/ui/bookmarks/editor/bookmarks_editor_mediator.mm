@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
 #import "base/auto_reset.h"
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -25,12 +26,12 @@
 
 @interface BookmarksEditorMediator () <BookmarkModelBridgeObserver,
                                        SyncObserverModelBridge> {
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
 
   // Observer for the bookmark model of `self.bookmark`.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
-  ChromeBrowserState* _browserState;
+  raw_ptr<ChromeBrowserState> _browserState;
   // Whether the user manually changed the folder. In which case it must be
   // saved as last used folder on "save".
   BOOL _manuallyChangedTheFolder;
@@ -44,7 +45,7 @@
 @implementation BookmarksEditorMediator {
   base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (instancetype)

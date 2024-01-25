@@ -10,6 +10,7 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -75,16 +76,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::unique_ptr<BookmarkModelBridge> _accountModelBridge;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   // The browser for this view controller.
   base::WeakPtr<Browser> _browser;
-  ChromeBrowserState* _browserState;
+  raw_ptr<ChromeBrowserState> _browserState;
   // Parent folder to `_folder`. Should never be `nullptr`.
-  const BookmarkNode* _parentFolder;
+  raw_ptr<const BookmarkNode> _parentFolder;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
   // the user is editing an existing folder.
-  const BookmarkNode* _folder;
+  raw_ptr<const BookmarkNode> _folder;
 
   BOOL _edited;
   BOOL _editingExistingFolder;

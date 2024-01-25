@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -165,8 +166,8 @@ class BookmarkMediatorUnitTest
   }
 
   BookmarkMediator* mediator_;
-  ChromeAccountManagerService* account_manager_service_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scope_;
   base::HistogramTester histogram_tester_;
