@@ -101,8 +101,6 @@ import org.chromium.content.browser.accessibility.captioning.CaptioningControlle
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -340,10 +338,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             public void onDisabled() {
                                 assert mNativeObj != 0
                                         : "Native code is not initialized, but disable was called.";
-                                assert ContentFeatureMap.isEnabled(
-                                                ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)
-                                        : "Disable was called, but Auto-disable accessibility is"
-                                                + " not enabled.";
                                 TraceEvent.begin(
                                         "WebContentsAccessibilityImpl.AutoDisableAccessibilityHandler.onDisabled");
                                 mHistogramRecorder.onDisableCalled(mAutoDisableUsageCounter == 0);
@@ -777,33 +771,30 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mEventDispatcher.updateRelevantEventTypes(
                     AccessibilityState.relevantEventTypesForCurrentServices());
 
-            // If the auto-disable feature is enabled, then we will disable renderer accessibility
-            // and tear down objects when no accessibility services are running. If we have
-            // disabled then re-enabled the renderer multiple times for this instance, then we
-            // will return early and keep accessibility enabled to prevent further churn.
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) {
-                if (mAutoDisableUsageCounter >= AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT
-                        || !mIsAutoDisableAccessibilityCandidate) {
-                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
-                    return;
-                }
+            // When no accessibility services are running, disable renderer accessibility and tear
+            // down objects. If we have disabled then re-enabled the renderer accessibility multiple
+            // times for this instance, return early and keep enabled to prevent further churn.
+            if (mAutoDisableUsageCounter >= AUTO_DISABLE_SINGLE_INSTANCE_TOGGLE_LIMIT
+                    || !mIsAutoDisableAccessibilityCandidate) {
+                mAutoDisableAccessibilityHandler.cancelDisableTimer();
+                return;
+            }
 
-                // The C++ and Java instances are not fully connected until the root manager has
-                // been connected, which will happen asynchronously. Accessibility cannot be auto
-                // disabled and re-enabled when there is no root manager. See note in
-                // {@link web_contents_accessibility_android.h}.
-                if (!isRootManagerConnected()) return;
+            // The C++ and Java instances are not fully connected until the root manager has
+            // been connected, which will happen asynchronously. Accessibility cannot be auto
+            // disabled and re-enabled when there is no root manager. See note in
+            // {@link web_contents_accessibility_android.h}.
+            if (!isRootManagerConnected()) return;
 
-                // If accessibility was auto-disabled, then we do not want to restart a new timer.
-                if (mIsCurrentlyAutoDisabled) return;
+            // If accessibility was auto-disabled, then we do not want to restart a new timer.
+            if (mIsCurrentlyAutoDisabled) return;
 
-                if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) {
-                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
-                    mAutoDisableAccessibilityHandler.startDisableTimer(
-                            NO_ACCESSIBILITY_SERVICES_ENABLED_DELAY_MS);
-                } else {
-                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
-                }
+            if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) {
+                mAutoDisableAccessibilityHandler.cancelDisableTimer();
+                mAutoDisableAccessibilityHandler.startDisableTimer(
+                        NO_ACCESSIBILITY_SERVICES_ENABLED_DELAY_MS);
+            } else {
+                mAutoDisableAccessibilityHandler.cancelDisableTimer();
             }
         }
     }

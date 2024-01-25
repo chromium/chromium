@@ -87,6 +87,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         waitForActiveShellToBeDoneLoading();
         setupTestFramework();
         setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         sendReadyForTestSignal();
     }
 

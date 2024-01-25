@@ -25,7 +25,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPageZoomEnhancements,
     &features::kAccessibilityPerformanceFiltering,
-    &features::kAutoDisableAccessibilityV2,
     &features::kFedCm,
     &features::kMouseAndTrackpadDropdownMenu,
     &features::kOptimizeImmHideCalls,

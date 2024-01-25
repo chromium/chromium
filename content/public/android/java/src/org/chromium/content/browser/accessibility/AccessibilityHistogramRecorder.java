@@ -135,7 +135,8 @@ public class AccessibilityHistogramRecorder {
         TraceEvent.begin("AccessibilityHistogramRecorder.onDisabledCalled");
         // To disable accessibility, it needs to have been previously initialized.
         assert mTimeOfNativeInitialization > 0
-                : "Accessibility onDisabled was called, but accessibility has not been initialized.";
+                : "Accessibility onDisabled was called, but accessibility has not been"
+                        + " initialized.";
         long now = SystemClock.elapsedRealtime();
 
         // As we disable accessibility, we want to record how long it had been enabled.
@@ -377,13 +378,8 @@ public class AccessibilityHistogramRecorder {
                     USAGE_ACCESSIBILITY_ALWAYS_ON_TIME, now - mTimeOfNativeInitialization);
         }
 
+        // Reset values.
         mTimeOfFirstShown = -1;
-
-        // When the auto-disable feature is running, the accessibility engine will be disabled in
-        // the background, and native initialization time will be reset at that point.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2)) return;
-
-        // Reset value.
         mTimeOfNativeInitialization = -1;
     }
 }

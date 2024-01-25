@@ -260,9 +260,6 @@ void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
 
 void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
     JNIEnv* env) {
-  // This method should only be called if the Auto-Disable feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
-
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
@@ -294,9 +291,6 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
 void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
-  // This method should only be called if the Auto-Disable feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
-
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).

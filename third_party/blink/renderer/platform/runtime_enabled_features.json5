@@ -372,11 +372,6 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
-      name: "AutoDisableAccessibilityV2",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,

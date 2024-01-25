@@ -263,9 +263,6 @@ extern const char kEnableFileBackedBlobFactoryDescription[];
 extern const char kEnableAutoDisableAccessibilityName[];
 extern const char kEnableAutoDisableAccessibilityDescription[];
 
-extern const char kEnableAutoDisableAccessibilityV2Name[];
-extern const char kEnableAutoDisableAccessibilityV2Description[];
-
 extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationName[];
 extern const char kAutofillEnableAndroidNKeyForFidoAuthenticationDescription[];
 

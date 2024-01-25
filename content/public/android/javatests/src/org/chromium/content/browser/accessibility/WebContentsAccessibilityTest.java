@@ -167,8 +167,6 @@ public class WebContentsAccessibilityTest {
     // ContentFeatureList maps used for various tests.
     private static final Map<String, Boolean> AXMODES_ON =
             Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true);
-    private static final Map<String, Boolean> AUTO_DISABLE_V2_ON =
-            Map.of(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY_V2, true);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
             Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
@@ -199,6 +197,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setupTestFramework();
         mActivityTestRule.setAccessibilityDelegate();
 
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
     }
@@ -208,6 +209,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForFormControlsMode();
         mActivityTestRule.setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
@@ -219,6 +223,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setupTestFrameworkForBasicMode();
         mActivityTestRule.setAccessibilityDelegate();
 
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
     }
@@ -229,6 +236,9 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFramework();
         mActivityTestRule.setAccessibilityDelegate();
+
+        // To prevent flakes, do not disable accessibility mid tests.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         mTestData = AccessibilityContentShellTestData.getInstance();
         mActivityTestRule.sendReadyForTestSignal();
@@ -637,7 +647,8 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTML("<p>This is a test</p>");
         waitForNodeMatching(sTextMatcher, "This is a test");
 
-        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
+        // Explicitly enable auto-disable capabilities for this test.
+        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(true);
 
         // The test suite always initializes native, so first we will disable it manually.
         var histogramWatcher =
@@ -818,8 +829,7 @@ public class WebContentsAccessibilityTest {
         setupTestWithHTML("<p>This is a test</p>");
         waitForNodeMatching(sTextMatcher, "This is a test");
 
-        // Enable feature, but set this instance as not a candidate.
-        FeatureList.setTestFeatures(AUTO_DISABLE_V2_ON);
+        // Set this instance as not a candidate.
         mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         // Changing the accessibility state will refresh the native state.
