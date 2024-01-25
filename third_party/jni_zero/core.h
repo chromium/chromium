@@ -7,9 +7,11 @@
 
 #include <jni.h>
 
+#include <atomic>
 #include <string>
 
 #include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/scoped_java_ref.h"
 
 namespace jni_zero {
 // Attaches the current thread to the VM (if necessary) and return the JNIEnv*.
@@ -54,6 +56,42 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool ClearException(JNIEnv* env);
 // If there's any pending exception, this function will call the set exception
 // handler, or if none are set, it will fatally LOG.
 JNI_ZERO_COMPONENT_BUILD_EXPORT void CheckException(JNIEnv* env);
+
+// Sets a function to call instead of just using JNIEnv.FindClass. Useful for
+// chrome's "splits" which need to be resolved in special ClassLoaders. The
+// class name parameter (first string) will be given in package.dot.Format. The
+// second parameter is the split name, which will just be an empty string if not
+// used.
+JNI_ZERO_COMPONENT_BUILD_EXPORT void SetClassResolver(
+    jclass (*resolver)(JNIEnv*, const char*, const char*));
+
+// Finds the class named |class_name| and returns it.
+// Use this method instead of invoking directly the JNI FindClass method (to
+// prevent leaking local references).
+// This method triggers a fatal assertion if the class could not be found.
+// Use HasClass if you need to check whether the class exists.
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass>
+GetClass(JNIEnv* env, const char* class_name, const char* split_name);
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jclass> GetClass(
+    JNIEnv* env,
+    const char* class_name);
+
+// The method will initialize |atomic_class_id| to contain a global ref to the
+// class. And will return that ref on subsequent calls.  It's the caller's
+// responsibility to release the ref when it is no longer needed.
+// The caller is responsible to zero-initialize |atomic_method_id|.
+// It's fine to simultaneously call this on multiple threads referencing the
+// same |atomic_method_id|.
+JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
+LazyGetClass(JNIEnv* env,
+             const char* class_name,
+             const char* split_name,
+             std::atomic<jclass>* atomic_class_id);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT jclass
+LazyGetClass(JNIEnv* env,
+             const char* class_name,
+             std::atomic<jclass>* atomic_class_id);
 
 }  // namespace jni_zero
 

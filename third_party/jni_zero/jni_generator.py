@@ -429,7 +429,7 @@ const char kClassPath_${JAVA_CLASS}[] = \
     for full_clazz in classes.values():
       values = {
           'JAVA_CLASS': common.escape_class_name(full_clazz),
-          'JNI_CLASS_PATH': full_clazz,
+          'JNI_CLASS_PATH': full_clazz.replace('/', '.'),
       }
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
@@ -440,7 +440,7 @@ const char kClassPath_${JAVA_CLASS}[] = \
 #ifndef ${JAVA_CLASS}_clazz_defined
 #define ${JAVA_CLASS}_clazz_defined
 inline jclass ${JAVA_CLASS}_clazz(JNIEnv* env) {
-  return base::android::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
+  return jni_zero::LazyGetClass(env, kClassPath_${JAVA_CLASS}, \
 ${MAYBE_SPLIT_NAME_ARG}&g_${JAVA_CLASS}_clazz);
 }
 #endif

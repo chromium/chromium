@@ -290,7 +290,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool ${REGISTRATION_NAME}(JNIEnv* env) {
   const int number_of_methods = std::size(kMethods_${ESCAPED_PROXY_CLASS});
 
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-      base::android::GetClass(env, "${PROXY_CLASS}");
+      jni_zero::GetClass(env, "${PROXY_CLASS}");
   if (env->RegisterNatives(
       native_clazz.obj(),
       kMethods_${ESCAPED_PROXY_CLASS},

@@ -21,24 +21,24 @@
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_org_jni_1zero_samples_SampleForTests[];
 const char kClassPath_org_jni_1zero_samples_SampleForTests[] =
-    "org/jni_zero/samples/SampleForTests";
+    "org.jni_zero.samples.SampleForTests";
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructA[];
 const char kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructA[] =
-    "org/jni_zero/samples/SampleForTests$InnerStructA";
+    "org.jni_zero.samples.SampleForTests$InnerStructA";
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructB[];
 const char kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructB[] =
-    "org/jni_zero/samples/SampleForTests$InnerStructB";
+    "org.jni_zero.samples.SampleForTests$InnerStructB";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
 JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
     g_org_jni_1zero_samples_SampleForTests_clazz(nullptr);
 #ifndef org_jni_1zero_samples_SampleForTests_clazz_defined
 #define org_jni_1zero_samples_SampleForTests_clazz_defined
 inline jclass org_jni_1zero_samples_SampleForTests_clazz(JNIEnv* env) {
-  return base::android::LazyGetClass(env, kClassPath_org_jni_1zero_samples_SampleForTests,
+  return jni_zero::LazyGetClass(env, kClassPath_org_jni_1zero_samples_SampleForTests,
       &g_org_jni_1zero_samples_SampleForTests_clazz);
 }
 #endif
@@ -48,7 +48,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
 #ifndef org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz_defined
 #define org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz_defined
 inline jclass org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz(JNIEnv* env) {
-  return base::android::LazyGetClass(env,
+  return jni_zero::LazyGetClass(env,
       kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructA,
       &g_org_jni_1zero_samples_SampleForTests_00024InnerStructA_clazz);
 }
@@ -59,7 +59,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
 #ifndef org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz_defined
 #define org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz_defined
 inline jclass org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(JNIEnv* env) {
-  return base::android::LazyGetClass(env,
+  return jni_zero::LazyGetClass(env,
       kClassPath_org_jni_1zero_samples_SampleForTests_00024InnerStructB,
       &g_org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz);
 }

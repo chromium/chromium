@@ -81,38 +81,15 @@ inline void DisableJvmForTesting() {
   return jni_zero::DisableJvmForTesting();
 }
 
-// Initializes the global ClassLoader used by the GetClass and LazyGetClass
-// methods. This is needed because JNI will use the base ClassLoader when there
-// is no Java code on the stack. The base ClassLoader doesn't know about any of
-// the application classes and will fail to lookup anything other than system
-// classes.
-void InitGlobalClassLoader(JNIEnv* env);
-
 // Finds the class named |class_name| and returns it.
 // Use this method instead of invoking directly the JNI FindClass method (to
 // prevent leaking local references).
 // This method triggers a fatal assertion if the class could not be found.
 // Use HasClass if you need to check whether the class exists.
-BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                                const char* class_name,
-                                                const char* split_name);
-BASE_EXPORT ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                                const char* class_name);
-
-// The method will initialize |atomic_class_id| to contain a global ref to the
-// class. And will return that ref on subsequent calls.  It's the caller's
-// responsibility to release the ref when it is no longer needed.
-// The caller is responsible to zero-initialize |atomic_method_id|.
-// It's fine to simultaneously call this on multiple threads referencing the
-// same |atomic_method_id|.
-BASE_EXPORT jclass LazyGetClass(JNIEnv* env,
-                                const char* class_name,
-                                const char* split_name,
-                                std::atomic<jclass>* atomic_class_id);
-BASE_EXPORT jclass LazyGetClass(
-    JNIEnv* env,
-    const char* class_name,
-    std::atomic<jclass>* atomic_class_id);
+inline ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
+                                           const char* class_name) {
+  return jni_zero::GetClass(env, class_name);
+}
 
 // This class is a wrapper for JNIEnv Get(Static)MethodID.
 class BASE_EXPORT MethodID {

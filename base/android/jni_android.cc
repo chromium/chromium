@@ -33,42 +33,33 @@ BASE_FEATURE(kHandleExceptionsInJava,
              "HandleJniExceptionsInJava",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-jobject g_class_loader = nullptr;
 jclass g_out_of_memory_error_class = nullptr;
 jmethodID g_class_loader_load_class_method_id = nullptr;
 
-ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
-                                            const char* class_name,
-                                            jobject class_loader) {
-  jclass clazz;
-  if (class_loader != nullptr) {
-    // ClassLoader.loadClass expects a classname with components separated by
-    // dots instead of the slashes that JNIEnv::FindClass expects. The JNI
-    // generator generates names with slashes, so we have to replace them here.
-    // TODO(torne): move to an approach where we always use ClassLoader except
-    // for the special case of base::android::GetClassLoader(), and change the
-    // JNI generator to generate dot-separated names. http://crbug.com/461773
-    size_t bufsize = strlen(class_name) + 1;
-    char dotted_name[bufsize];
-    memmove(dotted_name, class_name, bufsize);
-    for (size_t i = 0; i < bufsize; ++i) {
-      if (dotted_name[i] == '/') {
-        dotted_name[i] = '.';
-      }
-    }
-
-    clazz = static_cast<jclass>(
-        env->CallObjectMethod(class_loader, g_class_loader_load_class_method_id,
-                              ConvertUTF8ToJavaString(env, dotted_name).obj()));
-  } else {
-    clazz = env->FindClass(class_name);
-  }
-  if (ClearException(env) || !clazz) {
-    LOG(FATAL) << "Failed to find class " << class_name;
-  }
-  return ScopedJavaLocalRef<jclass>(env, clazz);
+jclass GetClassFromSplit(JNIEnv* env,
+                         const char* class_name,
+                         const char* split_name) {
+  return static_cast<jclass>(env->CallObjectMethod(
+      GetSplitClassLoader(env, split_name), g_class_loader_load_class_method_id,
+      ConvertUTF8ToJavaString(env, class_name).obj()));
 }
 
+// Must be called before using GetClassFromSplit - we need to set the global,
+// and we need to call GetClassLoader at least once to allow the default
+// resolver (env->FindClass()) to get our main ClassLoader class instance, which
+// we then cache use for all future calls to GetSplitClassLoader.
+void PrepareClassLoaders(JNIEnv* env) {
+  if (g_class_loader_load_class_method_id == nullptr) {
+    GetClassLoader(env);
+    ScopedJavaLocalRef<jclass> class_loader_clazz = ScopedJavaLocalRef<jclass>(
+        env, env->FindClass("java/lang/ClassLoader"));
+    CHECK(!ClearException(env));
+    g_class_loader_load_class_method_id =
+        env->GetMethodID(class_loader_clazz.obj(), "loadClass",
+                         "(Ljava/lang/String;)Ljava/lang/Class;");
+    CHECK(!ClearException(env));
+  }
+}
 }  // namespace
 
 LogFatalCallback g_log_fatal_callback_for_testing = nullptr;
@@ -95,80 +86,14 @@ void InitVM(JavaVM* vm) {
   jni_zero::InitVM(vm);
   jni_zero::SetExceptionHandler(CheckException);
   JNIEnv* env = jni_zero::AttachCurrentThread();
+  // Warmup needed for GetClassFromSplit, must be called before we set the
+  // resolver, since GetClassFromSplit won't work until after
+  // PrepareClassLoaders has happened.
+  PrepareClassLoaders(env);
+  jni_zero::SetClassResolver(GetClassFromSplit);
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
-}
-
-void InitGlobalClassLoader(JNIEnv* env) {
-  DCHECK(g_class_loader == nullptr);
-
-  ScopedJavaLocalRef<jclass> class_loader_clazz =
-      GetClass(env, "java/lang/ClassLoader");
-  CHECK(!ClearException(env));
-  g_class_loader_load_class_method_id =
-      env->GetMethodID(class_loader_clazz.obj(),
-                       "loadClass",
-                       "(Ljava/lang/String;)Ljava/lang/Class;");
-  CHECK(!ClearException(env));
-
-  // GetClassLoader() caches the reference, so we do not need to wrap it in a
-  // smart pointer as well.
-  g_class_loader = GetClassLoader(env);
-}
-
-ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
-                                    const char* class_name,
-                                    const char* split_name) {
-  return GetClassInternal(env, class_name,
-                          GetSplitClassLoader(env, split_name));
-}
-
-ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return GetClassInternal(env, class_name, g_class_loader);
-}
-
-// This is duplicated with LazyGetClass below because these are performance
-// sensitive.
-jclass LazyGetClass(JNIEnv* env,
-                    const char* class_name,
-                    const char* split_name,
-                    std::atomic<jclass>* atomic_class_id) {
-  const jclass value = atomic_class_id->load(std::memory_order_acquire);
-  if (value)
-    return value;
-  ScopedJavaGlobalRef<jclass> clazz;
-  clazz.Reset(GetClass(env, class_name, split_name));
-  jclass cas_result = nullptr;
-  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
-                                               std::memory_order_acq_rel)) {
-    // We intentionally leak the global ref since we now storing it as a raw
-    // pointer in |atomic_class_id|.
-    return clazz.Release();
-  } else {
-    return cas_result;
-  }
-}
-
-// This is duplicated with LazyGetClass above because these are performance
-// sensitive.
-jclass LazyGetClass(JNIEnv* env,
-                    const char* class_name,
-                    std::atomic<jclass>* atomic_class_id) {
-  const jclass value = atomic_class_id->load(std::memory_order_acquire);
-  if (value)
-    return value;
-  ScopedJavaGlobalRef<jclass> clazz;
-  clazz.Reset(GetClass(env, class_name));
-  jclass cas_result = nullptr;
-  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
-                                               std::memory_order_acq_rel)) {
-    // We intentionally leak the global ref since we now storing it as a raw
-    // pointer in |atomic_class_id|.
-    return clazz.Release();
-  } else {
-    return cas_result;
-  }
 }
 
 template<MethodID::Type type>
