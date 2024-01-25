@@ -76,10 +76,12 @@ using base::Time;
 
 namespace net {
 
+namespace {
+
+static constexpr int kHoursInOneWeek = 24 * 7;
+static constexpr int kHoursInOneYear = 24 * 365;
 static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
-
-namespace {
 
 // Determine the cookie domain to use for setting the specified cookie.
 bool GetCookieDomain(const GURL& url,
@@ -335,6 +337,28 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   if (!secure || !url.SchemeIsCryptographic() || path != "/")
     return false;
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
+}
+
+// Records the age in hours of a session cookie loaded from the store.
+void HistogramSessionCookieAge(const CanonicalCookie& cookie) {
+  // Ignore non-session cookies and those without creation dates.
+  if (cookie.IsPersistent() || cookie.CreationDate().is_null()) {
+    return;
+  }
+
+  // We are studying the age of session cookies being provided into browser
+  // contexts. The record is split into two histograms to improve resolution.
+  const int session_cookie_age_in_hours =
+      (Time::Now() - cookie.CreationDate()).InHours();
+  if (session_cookie_age_in_hours > kHoursInOneWeek) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursGTOneWeek",
+                                session_cookie_age_in_hours,
+                                kHoursInOneWeek + 1, kHoursInOneYear, 100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursLTEOneWeek",
+                                session_cookie_age_in_hours, 1,
+                                kHoursInOneWeek + 1, 100);
+  }
 }
 
 }  // namespace
@@ -954,6 +978,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
   } else {
     return nullptr;
   }
+  HistogramSessionCookieAge(*cc);
   return cc;
 }
 

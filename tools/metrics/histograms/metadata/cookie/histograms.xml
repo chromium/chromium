@@ -1021,6 +1021,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SessionAgeInHoursGTOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values greater than one week). Recorded when cookies are loaded from the
+    store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SessionAgeInHoursLTEOneWeek" units="hours"
+    expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values less than or equal to one week). Recorded when cookies are loaded
+    from the store.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2024-07-21">
   <owner>nharper@chromium.org</owner>
