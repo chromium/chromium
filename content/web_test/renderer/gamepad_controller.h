@@ -23,7 +23,7 @@
 namespace content {
 class RenderFrame;
 
-class GamepadController : public base::SupportsWeakPtr<GamepadController> {
+class GamepadController final {
  public:
   GamepadController();
 
