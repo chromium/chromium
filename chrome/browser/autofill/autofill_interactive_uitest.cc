@@ -3434,8 +3434,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DISABLED_DynamicChangingFormFill_DoubleSelectUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DynamicChangingFormFill_DoubleSelectUpdated
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_DoubleSelectUpdated) {
+                       MAYBE_DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
@@ -3533,8 +3541,17 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
+// TODO(crbug.com/1481004) Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
+  DISABLED_DynamicChangingFormFill_SelectUpdated_SyntheticForm
+#else
+#define MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm \
+  DynamicChangingFormFill_SelectUpdated_SyntheticForm
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AutofillInteractiveTestDynamicForm,
+    MAYBE_DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_synthetic_form_select_options_change.html");
