@@ -170,7 +170,7 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     if (const auto* const controller =
             browser_view_->toolbar()->toolbar_controller()) {
-      if (controller->ShouldShowOverflowButton()) {
+      if (controller->InOverflowMode()) {
         return false;
       }
     }

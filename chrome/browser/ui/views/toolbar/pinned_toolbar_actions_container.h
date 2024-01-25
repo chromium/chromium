@@ -131,6 +131,8 @@ class PinnedToolbarActionsContainer
   // ToolbarController::PinnedActionsDelegate:
   actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override;
   bool IsOverflowed(const actions::ActionId& id) override;
+  views::View* GetContainerView() override;
+  bool ShouldAnyButtonsOverflow(gfx::Size available_size) const override;
 
   bool IsActionPinned(const actions::ActionId& id);
 

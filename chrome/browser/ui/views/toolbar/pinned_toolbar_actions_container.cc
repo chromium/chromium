@@ -825,13 +825,6 @@ void PinnedToolbarActionsContainer::RemoveButton(
   }
 }
 
-bool PinnedToolbarActionsContainer::IsActionPinned(
-    const actions::ActionId& id) {
-  PinnedToolbarActionsContainer::PinnedActionToolbarButton* button =
-      GetPinnedButtonFor(id);
-  return button != nullptr;
-}
-
 bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
   const auto* const pinned_button = GetPinnedButtonFor(id);
   // TODO(crbug.com/1508656): If this container is not visible treat the
@@ -840,6 +833,33 @@ bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
   return static_cast<views::LayoutManagerBase*>(GetLayoutManager())
              ->CanBeVisible(pinned_button) &&
          (!GetVisible() || !pinned_button->GetVisible());
+}
+
+views::View* PinnedToolbarActionsContainer::GetContainerView() {
+  return static_cast<views::View*>(this);
+}
+
+bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
+    gfx::Size available_size) const {
+  views::ProposedLayout proposed_layout =
+      static_cast<views::LayoutManagerBase*>(GetLayoutManager())
+          ->GetProposedLayout(available_size);
+  for (PinnedActionToolbarButton* pinned_button : pinned_buttons_) {
+    if (views::ChildLayout* child_layout =
+            proposed_layout.GetLayoutFor(pinned_button)) {
+      if (!child_layout->visible) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool PinnedToolbarActionsContainer::IsActionPinned(
+    const actions::ActionId& id) {
+  PinnedToolbarActionsContainer::PinnedActionToolbarButton* button =
+      GetPinnedButtonFor(id);
+  return button != nullptr;
 }
 
 void PinnedToolbarActionsContainer::ReorderViews() {

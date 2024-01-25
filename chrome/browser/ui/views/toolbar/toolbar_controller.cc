@@ -341,15 +341,45 @@ bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
   return true;
 }
 
-bool ToolbarController::ShouldShowOverflowButton() const {
+bool ToolbarController::ShouldShowOverflowButton(
+    gfx::Size available_size) const {
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return false;
+  }
+
   // Once at least one button has been dropped by layout manager show overflow
   // button.
+  views::ProposedLayout proposed_layout =
+      static_cast<views::LayoutManagerBase*>(
+          toolbar_container_view_->GetLayoutManager())
+          ->GetProposedLayout(available_size);
+
+  // Check if any buttons should overflow from pinned action delegate given the
+  // available size.
+  if (pinned_actions_delegate_) {
+    if (views::ChildLayout* child_layout = proposed_layout.GetLayoutFor(
+            pinned_actions_delegate_->GetContainerView())) {
+      if (pinned_actions_delegate_->ShouldAnyButtonsOverflow(gfx::Size(
+              child_layout->bounds.width(), child_layout->bounds.height()))) {
+        return true;
+      }
+    }
+  }
+
   for (const auto& element : responsive_elements_) {
-    if (IsOverflowed(element)) {
+    // Skip if it's an ActionId because it's already checked.
+    if (absl::holds_alternative<actions::ActionId>(element.overflow_id)) {
+      continue;
+    }
+    if (IsOverflowed(element, &proposed_layout)) {
       return true;
     }
   }
   return false;
+}
+
+bool ToolbarController::InOverflowMode() const {
+  return overflow_button_->GetVisible();
 }
 
 std::u16string ToolbarController::GetMenuText(
@@ -418,13 +448,15 @@ ToolbarController::GetOverflowedElements() {
 }
 
 bool ToolbarController::IsOverflowed(
-    const ResponsiveElementInfo& element) const {
+    const ResponsiveElementInfo& element,
+    const views::ProposedLayout* proposed_layout) const {
   return absl::visit(
-      base::Overloaded{[this](actions::ActionId id) {
+      base::Overloaded{[&](actions::ActionId id) {
+                         CHECK(!proposed_layout);
                          return pinned_actions_delegate_ &&
                                 pinned_actions_delegate_->IsOverflowed(id);
                        },
-                       [this](ToolbarController::ElementIdInfo id) {
+                       [&](ToolbarController::ElementIdInfo id) {
                          const auto* const toolbar_element =
                              FindToolbarElementWithId(toolbar_container_view_,
                                                       id.overflow_identifier);
@@ -432,7 +464,11 @@ bool ToolbarController::IsOverflowed(
                              static_cast<views::FlexLayout*>(
                                  toolbar_container_view_->GetLayoutManager());
                          return flex_layout->CanBeVisible(toolbar_element) &&
-                                !toolbar_element->GetVisible();
+                                !(proposed_layout
+                                      ? proposed_layout
+                                            ->GetLayoutFor(toolbar_element)
+                                            ->visible
+                                      : toolbar_element->GetVisible());
                        }},
       element.overflow_id);
 }
