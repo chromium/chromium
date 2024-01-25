@@ -770,8 +770,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   int max_connections_per_proxy =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy != -1)
-    network_service->SetMaxConnectionsPerProxy(max_connections_per_proxy);
+  if (max_connections_per_proxy != -1) {
+    network_service->SetMaxConnectionsPerProxyChain(max_connections_per_proxy);
+  }
 
   network_service_network_context_.reset();
   content::CreateNetworkContextInNetworkService(

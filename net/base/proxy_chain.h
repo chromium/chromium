@@ -24,10 +24,6 @@ namespace net {
 // servers means that a single connection will go through all of the proxies in
 // order, using a tunnel through the first proxy to connect to the second, etc.
 // A "direct" connection is a chain of length zero.
-//
-// TODO(crbug.com/1491092): Initial implementations of proxy chaining may, in
-// fact, not tunnel through the last proxy in the ProxyChain if the destination
-// is http.
 class NET_EXPORT ProxyChain {
  public:
   // Constructs an invalid ProxyChain.

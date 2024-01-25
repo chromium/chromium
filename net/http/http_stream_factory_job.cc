@@ -931,11 +931,9 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     // proxies in ConnectJobFactory.
     cert_verifier_flags = CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES;
 
-    // TODO(https://crbug.com/1491092): To support multi-proxy chains here,
-    // either remove support for using proxy GET requests for HTTP traffic
-    // entirely or make it so that HTTP requests are always tunneled when
-    // multi-proxy chains are in use (like what's currently done for HTTPS/SPDY
-    // proxies).
+    // TODO(https://crbug.com/1520929): Remove support for sending GET requests
+    // to the proxy server when proxying HTTP requests and instead always tunnel
+    // them.
     CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
     const HostPortPair& proxy_endpoint =
         proxy_info_.proxy_chain().Last().host_port_pair();

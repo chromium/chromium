@@ -87,19 +87,7 @@ class QuicSessionPoolPeer {
   static void SetYieldAfterDuration(QuicSessionPool* factory,
                                     quic::QuicTime::Delta yield_after_duration);
 
-  static size_t GetNumberOfActiveJobs(QuicSessionPool* factory,
-                                      const quic::QuicServerId& server_id);
-
   static bool CryptoConfigCacheIsEmpty(
-      QuicSessionPool* factory,
-      const quic::QuicServerId& quic_server_id,
-      const NetworkAnonymizationKey& network_anonymization_key);
-
-  // Creates a dummy QUIC server config and caches it. Caller must be holding
-  // onto a QuicCryptoClientConfigHandle for the corresponding
-  // |network_anonymization_key|.
-  // TODO(awillia): This is unused and can be removed.
-  static void CacheDummyServerConfig(
       QuicSessionPool* factory,
       const quic::QuicServerId& quic_server_id,
       const NetworkAnonymizationKey& network_anonymization_key);

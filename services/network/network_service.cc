@@ -739,7 +739,7 @@ void NetworkService::SetRawHeadersAccess(
   }
 }
 
-void NetworkService::SetMaxConnectionsPerProxy(int32_t max_connections) {
+void NetworkService::SetMaxConnectionsPerProxyChain(int32_t max_connections) {
   int new_limit = max_connections;
   if (new_limit < 0) {
     new_limit = net::kDefaultMaxSocketsPerProxyChain;

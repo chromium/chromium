@@ -607,5 +607,6 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
 }
 
 void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
-  // TODO(brgoldstein): Update IP protection state based on user settings.
+  // TODO(https://crbug.com/1521138): Update IP protection state based on user
+  // settings.
 }

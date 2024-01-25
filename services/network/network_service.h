@@ -175,8 +175,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_params) override;
   void SetRawHeadersAccess(int32_t process_id,
                            const std::vector<url::Origin>& origins) override;
-  // TODO(https://crbug.com/1491092): Rename to SetMaxConnectionsPerProxyChain.
-  void SetMaxConnectionsPerProxy(int32_t max_connections) override;
+  void SetMaxConnectionsPerProxyChain(int32_t max_connections) override;
   void GetNetworkChangeManager(
       mojo::PendingReceiver<mojom::NetworkChangeManager> receiver) override;
   void GetNetworkQualityEstimatorManager(

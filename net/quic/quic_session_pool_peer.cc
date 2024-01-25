@@ -138,45 +138,6 @@ bool QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
                                                      network_anonymization_key);
 }
 
-void QuicSessionPoolPeer::CacheDummyServerConfig(
-    QuicSessionPool* factory,
-    const quic::QuicServerId& quic_server_id,
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  // Minimum SCFG that passes config validation checks.
-  const char scfg[] = {// SCFG
-                       0x53, 0x43, 0x46, 0x47,
-                       // num entries
-                       0x01, 0x00,
-                       // padding
-                       0x00, 0x00,
-                       // EXPY
-                       0x45, 0x58, 0x50, 0x59,
-                       // EXPY end offset
-                       0x08, 0x00, 0x00, 0x00,
-                       // Value
-                       '1', '2', '3', '4', '5', '6', '7', '8'};
-
-  string server_config(reinterpret_cast<const char*>(&scfg), sizeof(scfg));
-  string source_address_token("test_source_address_token");
-  string signature("test_signature");
-
-  std::vector<string> certs;
-  // Load a certificate that is valid for *.example.org
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
-  DCHECK(cert);
-  certs.emplace_back(x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-
-  std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
-      GetCryptoConfig(factory, network_anonymization_key);
-  quic::QuicCryptoClientConfig::CachedState* cached =
-      crypto_config_handle->GetConfig()->LookupOrCreate(quic_server_id);
-  quic::QuicChromiumClock clock;
-  cached->Initialize(server_config, source_address_token, certs, "", "",
-                     signature, clock.WallNow(), quic::QuicWallTime::Zero());
-  DCHECK(!cached->certs().empty());
-}
-
 size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* factory) {
   return factory->connectivity_monitor_.GetNumDegradingSessions();
 }

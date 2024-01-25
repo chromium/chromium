@@ -1006,40 +1006,40 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-static int GetGlobalMaxConnectionsPerProxy() {
+static int GetGlobalMaxConnectionsPerProxyChain() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL);
 }
 
-// Tests that NetworkService::SetMaxConnectionsPerProxy() (1) modifies globals
-// in net::ClientSocketPoolManager (2) saturates out of bound values.
-TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxy) {
+// Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
+// globals in net::ClientSocketPoolManager (2) saturates out of bound values.
+TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
   const int kDefault = net::kDefaultMaxSocketsPerProxyChain;
   const int kMin = 6;
   const int kMax = 99;
 
   // Starts off at default value.
   EXPECT_EQ(net::kDefaultMaxSocketsPerProxyChain,
-            GetGlobalMaxConnectionsPerProxy());
+            GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything less than kMin saturates to kMin.
-  service()->SetMaxConnectionsPerProxy(kMin - 1);
-  EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(kMin - 1);
+  EXPECT_EQ(kMin, GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything larger than kMax saturates to kMax
-  service()->SetMaxConnectionsPerProxy(kMax + 1);
-  EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(kMax + 1);
+  EXPECT_EQ(kMax, GetGlobalMaxConnectionsPerProxyChain());
 
   // Anything in between kMin and kMax should be set exactly.
-  service()->SetMaxConnectionsPerProxy(58);
-  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(58);
+  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxyChain());
 
   // Negative values select the default.
-  service()->SetMaxConnectionsPerProxy(-2);
-  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxy());
+  service()->SetMaxConnectionsPerProxyChain(-2);
+  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
 
   // Restore the default value to minize sideffects.
-  service()->SetMaxConnectionsPerProxy(kDefault);
+  service()->SetMaxConnectionsPerProxyChain(kDefault);
 }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)

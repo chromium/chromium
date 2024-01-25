@@ -279,11 +279,11 @@ interface NetworkService {
   // (e.g. DevTools attached).
   SetRawHeadersAccess(int32 process_id, array<url.mojom.Origin> origins);
 
-  // Sets the maximum number of connections for a proxy server.
+  // Sets the maximum number of connections for a proxy chain.
   //   * Negative values will set the default proxy connection limit (32)
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
-  SetMaxConnectionsPerProxy(int32 max_connections);
+  SetMaxConnectionsPerProxyChain(int32 max_connections);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(
