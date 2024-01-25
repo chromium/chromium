@@ -79,8 +79,8 @@ constexpr char kTargetDeviceInfoKey[] = "targetDeviceInfo";
 constexpr char kCredentialDataKey[] = "credentialData";
 constexpr char kOauthTokenKey[] = "oauthToken";
 
-const int64_t kGetChallengeDataTimeoutInSeconds = 60;
-const int64_t kStartSessionTimeoutInSeconds = 60;
+const int64_t kGetChallengeDataTimeoutInSeconds = 3 * 60;
+const int64_t kStartSessionTimeoutInSeconds = 3 * 60;
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/json";
 
