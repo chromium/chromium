@@ -11265,6 +11265,7 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/add_new_keyboard_interactive_uitest.cc",
+          "../browser/ui/webui/ash/settings/integration_tests/open_keyboard_subpage_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/open_touchpad_subpage_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/privacy_hub_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/pages/device/integration_tests/audio_page_interactive_uitest.cc",
