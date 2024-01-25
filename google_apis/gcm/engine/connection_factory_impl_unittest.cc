@@ -769,4 +769,31 @@ TEST_F(ConnectionFactoryImplTest, MultipleFailuresWrapClientEvents) {
   ASSERT_EQ(2, client_events.size());
 }
 
+TEST_F(ConnectionFactoryImplTest,
+       ShouldConnectWhenNetworkChangedDuringHandshake) {
+  // SetDelayLogin() will keep handshake in progress.
+  factory()->SetDelayLogin(true);
+  factory()->SetConnectResult(net::OK);
+  factory()->Connect();
+  WaitForConnections();
+  ASSERT_FALSE(factory()->IsEndpointReachable());
+
+  // Mimic a network change during handshake, and fail connection request.
+  factory()->SetDelayLogin(false);
+  factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
+  factory()->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
+  WaitForConnections();
+  ASSERT_FALSE(factory()->IsEndpointReachable());
+  ASSERT_FALSE(factory()->NextRetryAttempt().is_null());
+
+  // After backoff, connection should be established.
+  factory()->SetConnectResult(net::OK);
+  factory()->tick_clock()->Advance(factory()->NextRetryAttempt() -
+                                   factory()->tick_clock()->NowTicks());
+  WaitForConnections();
+
+  EXPECT_TRUE(factory()->IsEndpointReachable());
+}
+
 }  // namespace gcm

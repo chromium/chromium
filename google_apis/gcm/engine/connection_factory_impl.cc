@@ -238,13 +238,7 @@ void ConnectionFactoryImpl::SignalConnectionReset(
 
   // Network changes get special treatment as they can trigger a one-off canary
   // request that bypasses backoff (but does nothing if a connection is in
-  // progress). Other connection reset events can be ignored as a connection
-  // is already awaiting backoff expiration.
-  if (waiting_for_backoff_ && reason != NETWORK_CHANGE) {
-    DVLOG(1) << "Backoff expiration pending, ignoring reset.";
-    return;
-  }
-
+  // progress).
   if (reason == NETWORK_CHANGE) {
     // Canary attempts bypass backoff without resetting it. These will have no
     // effect if we're already in the process of connecting. Connection attempt
@@ -252,12 +246,17 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     // within a short period in case of many network changes.
     ConnectImpl(/*ignore_connection_failure=*/true);
     return;
-  } else if (handshake_in_progress_) {
-    // Failures prior to handshake completion reuse the existing backoff entry.
-    handshake_in_progress_ = false;
-    backoff_entry_->InformOfRequest(false);
-  } else if (reason == LOGIN_FAILURE ||
-             ShouldRestorePreviousBackoff(last_login_time_, NowTicks())) {
+  }
+
+  if (waiting_for_backoff_) {
+    // Other connection reset events can be ignored as a connection is already
+    // awaiting backoff expiration.
+    DVLOG(1) << "Backoff expiration pending, ignoring reset.";
+    return;
+  }
+
+  if (reason == LOGIN_FAILURE ||
+      ShouldRestorePreviousBackoff(last_login_time_, NowTicks())) {
     // Failures due to login, or within the reset window of a login, restore
     // the backoff entry that was saved off at login completion time.
     backoff_entry_.swap(previous_backoff_);
@@ -485,6 +484,12 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
     // TODO(zea): Consider how to handle errors that may require some sort of
     // user intervention (login page, etc.).
     LOG(ERROR) << "ConnectionHandler failed with net error: " << result;
+
+    // Failures prior to handshake completion reuse the existing backoff entry.
+    if (handshake_in_progress_) {
+      backoff_entry_->InformOfRequest(false);
+      handshake_in_progress_ = false;
+    }
     SignalConnectionReset(SOCKET_FAILURE);
     return;
   }
@@ -493,10 +498,10 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
   // the client should invoke SignalConnectionReset(LOGIN_FAILURE), which will
   // restore the previous backoff.
   DVLOG(1) << "Handshake complete.";
+  handshake_in_progress_ = false;
   last_login_time_ = NowTicks();
   previous_backoff_.swap(backoff_entry_);
   backoff_entry_->Reset();
-  handshake_in_progress_ = false;
 
   event_tracker_.ConnectionAttemptSucceeded();
 
@@ -514,6 +519,7 @@ void ConnectionFactoryImpl::CloseSocket() {
 
   socket_.reset();
   peer_addr_ = net::IPEndPoint();
+  handshake_in_progress_ = false;
 }
 
 }  // namespace gcm
