@@ -42,6 +42,16 @@ struct ResultMetadata {
   // Method used to assign measurement results to the resource context.
   MeasurementAlgorithm algorithm;
 
+  // Constructor ensures both `measurement_time` and `algorithm` are set.
+  //
+  // Since there's no default constructor, any ResultType class containing
+  // metadata also can't be default-constructed. This ensures none of them have
+  // an invalid or uninitialized state. Use std::optional<ResultType> when
+  // default-construction is needed.
+  ResultMetadata(base::TimeTicks measurement_time,
+                 MeasurementAlgorithm algorithm)
+      : measurement_time(measurement_time), algorithm(algorithm) {}
+
   friend constexpr auto operator<=>(const ResultMetadata&,
                                     const ResultMetadata&) = default;
   friend constexpr bool operator==(const ResultMetadata&,

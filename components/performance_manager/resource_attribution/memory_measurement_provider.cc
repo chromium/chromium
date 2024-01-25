@@ -59,8 +59,8 @@ void MemoryMeasurementProvider::OnMemorySummary(
     // Create a result with metadata if the key isn't in the map yet.
     const auto [it, inserted] = results.try_emplace(
         context, QueryResults{.memory_summary_result = MemorySummaryResult{
-                                  .metadata = {.measurement_time = now,
-                                               .algorithm = algorithm}}});
+                                  .metadata = ResultMetadata(now, algorithm),
+                              }});
     MemorySummaryResult& result = it->second.memory_summary_result.value();
     if (!inserted) {
       CHECK_LE(result.metadata.measurement_time, now);

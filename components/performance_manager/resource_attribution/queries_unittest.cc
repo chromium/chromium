@@ -172,8 +172,7 @@ MemorySummaryResult FakeMemorySummaryResult(
     MeasurementAlgorithm expected_algorithm,
     base::TimeTicks expected_measurement_time = base::TimeTicks::Now()) {
   return {
-      .metadata = {.measurement_time = expected_measurement_time,
-                   .algorithm = expected_algorithm},
+      .metadata = ResultMetadata(expected_measurement_time, expected_algorithm),
       .resident_set_size_kb = kFakeResidentSetSize,
       .private_footprint_kb = kFakePrivateFootprint,
   };

@@ -1391,7 +1391,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
                              base::TimeTicks measurement_time) {
     results[frame8->GetResourceContext()] = QueryResults{
         .cpu_time_result = CPUTimeResult{
-            .metadata = {.measurement_time = measurement_time},
+            .metadata = ResultMetadata(
+                measurement_time, MeasurementAlgorithm::kDirectMeasurement),
             .start_time = half_first_interval,
             .cumulative_cpu = (measurement_time - half_first_interval) * 0.4,
         }};
