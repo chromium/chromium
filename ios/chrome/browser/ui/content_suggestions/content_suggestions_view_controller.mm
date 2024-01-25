@@ -1015,6 +1015,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.audience neverShowModuleType:type];
 }
 
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  [self.audience enableNotifications:type];
+}
+
 // Returns the module's subtitle, if any, given the Magic Stack module `type`.
 - (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
   if (type == ContentSuggestionsModuleType::kSafetyCheck ||

@@ -33,6 +33,10 @@ enum class SafetyCheckItemType;
 // anymore.
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
 
+// Indicates that the user has tapped the context menu item to enable
+// notifications for a module.
+- (void)enableNotifications:(ContentSuggestionsModuleType)type;
+
 // Notifies the audience that the Magic Stack edit button was tapped.
 - (void)didTapMagicStackEditButton;
 

@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
@@ -96,6 +98,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
@@ -103,6 +106,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -111,6 +115,7 @@
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
     NotificationsConfirmationPresenter,
+    NotificationsOptInAlertCoordinatorDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListViewDelegate>
@@ -160,6 +165,9 @@
   // The coordinator used to present a modal alert for the parcel tracking
   // module.
   AlertCoordinator* _parcelTrackingAlertCoordinator;
+
+  // The coordinator used to present an alert to enable Tips notifications.
+  NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 }
 
 - (void)start {
@@ -305,6 +313,8 @@
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
   [self dismissParcelTrackingAlertCoordinator];
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator = nil;
   _started = NO;
 }
 
@@ -367,6 +377,27 @@
     default:
       break;
   }
+}
+
+- (void)enableNotifications:(ContentSuggestionsModuleType)type {
+  // This is only supported for Set Up List modules.
+  CHECK(IsSetUpListModuleType(type));
+
+  // Ask user for permission to opt-in notifications.
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator =
+      [[NotificationsOptInAlertCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  _notificationsOptInAlertCoordinator.clientId =
+      PushNotificationClientId::kTips;
+  _notificationsOptInAlertCoordinator.confirmationMessage =
+      l10n_util::GetNSStringF(
+          IDS_IOS_NOTIFICATIONS_CONFIRMATION_MESSAGE,
+          l10n_util::GetStringUTF16(
+              content_suggestions::SetUpListTitleStringID()));
+  _notificationsOptInAlertCoordinator.delegate = self;
+  [_notificationsOptInAlertCoordinator start];
 }
 
 - (void)didTapMagicStackEditButton {
@@ -709,6 +740,13 @@
   _contentNotificationCoordinator.delegate = self;
   _contentNotificationCoordinator.messagePresenter = self;
   [_contentNotificationCoordinator start];
+}
+
+#pragma mark - NotificationsOptInAlertCoordinatorDelegate
+
+- (void)notificationsOptInAlertResult:(NotificationsOptInAlertResult)result {
+  [_notificationsOptInAlertCoordinator stop];
+  _notificationsOptInAlertCoordinator = nil;
 }
 
 #pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate

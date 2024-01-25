@@ -413,20 +413,11 @@ const CGFloat kSeparatorHeight = 0.5;
                        configurationForMenuAtLocation:(CGPoint)location {
   CHECK([self allowsLongPress]);
   __weak MagicStackModuleContainer* weakSelf = self;
-  UIContextMenuActionProvider actionProvider = ^(
-      NSArray<UIMenuElement*>* suggestedActions) {
-    UIAction* hideAction = [UIAction
-        actionWithTitle:[self contextMenuHideDescription]
-                  image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  MagicStackModuleContainer* strongSelf = weakSelf;
-                  [strongSelf->_delegate neverShowModuleType:strongSelf->_type];
-                }];
-    hideAction.attributes = UIMenuElementAttributesDestructive;
-    return [UIMenu menuWithTitle:[self contextMenuTitle]
-                        children:@[ hideAction ]];
-  };
+  UIContextMenuActionProvider actionProvider =
+      ^(NSArray<UIMenuElement*>* suggestedActions) {
+        return [UIMenu menuWithTitle:[weakSelf contextMenuTitle]
+                            children:[weakSelf contextMenuActions]];
+      };
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
@@ -434,6 +425,46 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 #pragma mark - Helpers
+
+// Returns the list of actions for the long-press /  context menu.
+- (NSArray<UIAction*>*)contextMenuActions {
+  NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
+
+  if (IsSetUpListModuleType(self.type) && IsIOSTipsNotificationsEnabled()) {
+    [actions addObject:[self turnOnTipsNotificationsAction]];
+  }
+  [actions addObject:[self hideAction]];
+  return actions;
+}
+
+// Returns the menu action to hide this module type.
+- (UIAction*)hideAction {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* hideAction = [UIAction
+      actionWithTitle:[self contextMenuHideDescription]
+                image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate neverShowModuleType:weakSelf.type];
+              }];
+  hideAction.attributes = UIMenuElementAttributesDestructive;
+  return hideAction;
+}
+
+// Returns the menu action to opt-in to Tips Notifications.
+- (UIAction*)turnOnTipsNotificationsAction {
+  __weak __typeof(self) weakSelf = self;
+  NSString* title = l10n_util::GetNSStringF(
+      IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
+      l10n_util::GetStringUTF16(content_suggestions::SetUpListTitleStringID()));
+  return
+      [UIAction actionWithTitle:title
+                          image:DefaultSymbolWithPointSize(kBellSymbol, 18)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.delegate enableNotifications:weakSelf.type];
+                        }];
+}
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
   [_delegate seeMoreWasTappedForModuleType:_type];

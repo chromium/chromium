@@ -100,4 +100,7 @@ const int kMaxTrendingQueries = 4;
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     SetUpListItemType type);
 
+// Returns true if the module type is one of the SetUpList types.
+bool IsSetUpListModuleType(ContentSuggestionsModuleType type);
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_
