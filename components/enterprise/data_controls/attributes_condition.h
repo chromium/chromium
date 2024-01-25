@@ -63,7 +63,7 @@ class AttributesCondition {
 
   // Helpers that compare a given value from a destination/source context to its
   // corresponding conditions.
-  bool IncognitoMatches(const absl::optional<bool>& incognito) const;
+  bool IncognitoMatches(bool incognito) const;
   bool OsClipboardMatches(bool os_clipboard) const;
 
   // Helpers to help check which attributes are meaningful to the condition.

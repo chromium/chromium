@@ -309,9 +309,8 @@ TEST(AttributesConditionTest, IncognitoDestination) {
       non_incognito_dst->IsTriggered({.destination = {.incognito = true}}));
   ASSERT_TRUE(
       non_incognito_dst->IsTriggered({.destination = {.incognito = false}}));
-  ASSERT_FALSE(non_incognito_dst->IsTriggered({.source = {.incognito = true}}));
-  ASSERT_FALSE(
-      non_incognito_dst->IsTriggered({.source = {.incognito = false}}));
+  ASSERT_TRUE(non_incognito_dst->IsTriggered({.source = {.incognito = true}}));
+  ASSERT_TRUE(non_incognito_dst->IsTriggered({.source = {.incognito = false}}));
 }
 
 TEST(AttributesConditionTest, IncognitoSource) {
@@ -332,9 +331,9 @@ TEST(AttributesConditionTest, IncognitoSource) {
         "incognito": false,
       })"));
   ASSERT_TRUE(non_incognito_src);
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       non_incognito_src->IsTriggered({.destination = {.incognito = true}}));
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       non_incognito_src->IsTriggered({.destination = {.incognito = false}}));
   ASSERT_FALSE(non_incognito_src->IsTriggered({.source = {.incognito = true}}));
   ASSERT_TRUE(non_incognito_src->IsTriggered({.source = {.incognito = false}}));
@@ -375,7 +374,7 @@ TEST(AttributesConditionTest, URLAndIncognitoDestination) {
       {.destination = {.url = GURL(kGoogleUrl), .incognito = true}}));
   ASSERT_TRUE(url_and_not_incognito->IsTriggered(
       {.destination = {.url = GURL(kGoogleUrl), .incognito = false}}));
-  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+  ASSERT_TRUE(url_and_not_incognito->IsTriggered(
       {.destination = {.url = GURL(kGoogleUrl)}}));
   ASSERT_FALSE(url_and_not_incognito->IsTriggered(
       {.destination = {.url = GURL(kChromiumUrl), .incognito = true}}));
@@ -422,7 +421,7 @@ TEST(AttributesConditionTest, URLAndIncognitoSource) {
       {.source = {.url = GURL(kGoogleUrl), .incognito = true}}));
   ASSERT_TRUE(url_and_not_incognito->IsTriggered(
       {.source = {.url = GURL(kGoogleUrl), .incognito = false}}));
-  ASSERT_FALSE(url_and_not_incognito->IsTriggered(
+  ASSERT_TRUE(url_and_not_incognito->IsTriggered(
       {.source = {.url = GURL(kGoogleUrl)}}));
   ASSERT_FALSE(url_and_not_incognito->IsTriggered(
       {.source = {.url = GURL(kChromiumUrl), .incognito = true}}));

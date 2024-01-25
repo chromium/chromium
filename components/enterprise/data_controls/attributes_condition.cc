@@ -93,13 +93,12 @@ bool AttributesCondition::ComponentMatches(Component component) const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool AttributesCondition::IncognitoMatches(
-    const absl::optional<bool>& incognito) const {
+bool AttributesCondition::IncognitoMatches(bool incognito) const {
   if (!incognito_.has_value()) {
     return true;
   }
 
-  return incognito.has_value() && incognito_.value() == incognito.value();
+  return incognito_.value() == incognito;
 }
 
 bool AttributesCondition::OsClipboardMatches(bool os_clipboard) const {
