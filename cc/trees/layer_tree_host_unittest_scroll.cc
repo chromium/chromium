@@ -801,8 +801,16 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1521778): Fix the flakiness on Mac ASan and re-enable.
+#define MAYBE_DeviceScaleFactor2_ScrollRootScrollLayer \
+  DISABLED_DeviceScaleFactor2_ScrollRootScrollLayer
+#else
+#define MAYBE_DeviceScaleFactor2_ScrollRootScrollLayer \
+  DeviceScaleFactor2_ScrollRootScrollLayer
+#endif
 TEST_F(LayerTreeHostScrollTestCaseWithChild,
-       DeviceScaleFactor2_ScrollRootScrollLayer) {
+       MAYBE_DeviceScaleFactor2_ScrollRootScrollLayer) {
   device_scale_factor_ = 2.f;
   scroll_child_layer_ = false;
   RunTest(CompositorMode::THREADED);
