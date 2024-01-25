@@ -471,7 +471,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
 // TODO(crbug.com/1520400): enable the flaky test.
-#if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)) || \
+    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
 #define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
   DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
 #else
