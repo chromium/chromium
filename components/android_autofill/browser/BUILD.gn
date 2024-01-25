@@ -34,6 +34,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/autofill/AndroidAutofillClient.java",
     "java/src/org/chromium/components/autofill/AutofillHintsService.java",
     "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
@@ -50,6 +51,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/autofill/AndroidAutofillClient.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
@@ -92,6 +94,8 @@ static_library("android") {
   sources = [
     "android_autofill_bridge_factory.cc",
     "android_autofill_bridge_factory.h",
+    "android_autofill_client.cc",
+    "android_autofill_client.h",
     "autofill_provider_android.cc",
     "autofill_provider_android.h",
     "autofill_provider_android_bridge.h",
@@ -115,6 +119,8 @@ static_library("android") {
     "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
+    "//components/prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//third_party/jni_zero",
     "//ui/android",

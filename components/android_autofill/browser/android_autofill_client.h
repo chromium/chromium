@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_AW_AUTOFILL_CLIENT_H_
-#define ANDROID_WEBVIEW_BROWSER_AW_AUTOFILL_CLIENT_H_
+#ifndef COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_
+#define COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -12,6 +12,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -43,27 +44,40 @@ class SyncService;
 class PersonalDataManager;
 class PrefService;
 
-namespace android_webview {
+namespace android_autofill {
 
-// Manager delegate for the autofill functionality.
+// One Android implementation of the AutofillClient. If used, the Android
+// Autofill framework is responsible for autofill and password management.
 //
-// Android O and beyond uses `AndroidAutofillManager`, unlike Chrome, which
-// uses `BrowserAutofillManager`.
+// This client is
+//   a) always used on WebView, and
+//   b) used on Clank if users switch to a 3P provider and thus disable the
+//      built-in `BrowserAutofillManager`.
 //
-// Android WebView supports enabling Autofill feature for each webview
-// instance (different than the browser which supports enabling/disabling for a
-// profile). Since there is only one pref service for a given browser context,
-// we cannot enable this feature via UserPrefs. Rather, we always keep the
-// feature enabled at the pref service, and control it via the delegates.
-// Lifetime: WebView
-class AwAutofillClient : public autofill::ContentAutofillClient {
+// By using this client, the embedder responds to requests from the Android
+// Autofill API asking for a "virtual view structure". This class defers to
+// parsing logic in renderer and components/autofill to identify forms. The
+// forms are translated into that virtual view structure by the Java-side of
+// this component (see AndroidAutofillClient.java using AutofillProvider.java).
+// Any higher layer only needs to forward the API requests to this client. The
+// same applies to filling: the data filling happens in renderer code and only
+// requires the embedder to forward the data to be filled.
+// The UI (except for datalist dropdowns) are handled entirely by the Platform.
+// Neither WebView nor Chrome can control whether e.g. a dropdown or
+// keyboard-inlined suggestion are served to the user.
+//
+// Lifetime is the same as the WebContents object it's attachted to.
+class AndroidAutofillClient : public autofill::ContentAutofillClient {
  public:
-  static void CreateForWebContents(content::WebContents* contents);
+  static void CreateForWebContents(
+      content::WebContents* contents,
+      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
+          notify_client_created);
 
-  AwAutofillClient(const AwAutofillClient&) = delete;
-  AwAutofillClient& operator=(const AwAutofillClient&) = delete;
+  AndroidAutofillClient(const AndroidAutofillClient&) = delete;
+  AndroidAutofillClient& operator=(const AndroidAutofillClient&) = delete;
 
-  ~AwAutofillClient() override;
+  ~AndroidAutofillClient() override;
 
   // AutofillClient:
   bool IsOffTheRecord() override;
@@ -140,9 +154,19 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
                           jint position);
 
  private:
-  friend class content::WebContentsUserData<AwAutofillClient>;
+  friend class content::WebContentsUserData<AndroidAutofillClient>;
 
-  explicit AwAutofillClient(content::WebContents* web_contents);
+  // Ownership: The native object is created by either AwContents or
+  // ChromeAutofillClient and owned by the WebContents it's attached to.
+  // The native object creates the Java peer which delegates autofill
+  // functionality at the Java side to the Android Autofill API. The Java peer
+  // is owned by Java AwContents or the ContentView. The native object only
+  // maintains a weak ref to it.
+  // TODO(b/322164882): Use the WebContentsUserData template or return the Ref.
+  explicit AndroidAutofillClient(
+      content::WebContents* web_contents,
+      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
+          notify_client_created);
 
   void ShowAutofillPopupImpl(
       const gfx::RectF& element_bounds,
@@ -160,12 +184,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
-
-#if DCHECK_IS_ON()
-  bool use_android_autofill_manager_;
-#endif
 };
 
-}  // namespace android_webview
+}  // namespace android_autofill
 
-#endif  // ANDROID_WEBVIEW_BROWSER_AW_AUTOFILL_CLIENT_H_
+#endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_CLIENT_H_

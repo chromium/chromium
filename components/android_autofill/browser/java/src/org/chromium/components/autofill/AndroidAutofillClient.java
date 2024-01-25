@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview;
+package org.chromium.components.autofill;
 
 import android.content.Context;
 import android.view.View;
@@ -11,31 +11,26 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
-import org.chromium.components.autofill.AutofillDelegate;
-import org.chromium.components.autofill.AutofillPopup;
-import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
 
 /**
- * Java counterpart to the AwAutofillClient. This class is owned by AwContents and has
- * a weak reference from native side.
+ * Java counterpart to AndroidAutofillClient. This class is created by AwContents or ContentView and
+ * has a weak reference from native side. Its lifetime matches the duration of the WebView or the
+ * WebContents using it.
  */
-@Lifetime.WebView
-@JNINamespace("android_webview")
-public class AwAutofillClient {
-    private final long mNativeAwAutofillClient;
+@JNINamespace("android_autofill")
+public class AndroidAutofillClient {
+    private final long mNativeAndroidAutofillClient;
     private AutofillPopup mAutofillPopup;
     private Context mContext;
 
     @CalledByNative
-    public static AwAutofillClient create(long nativeClient) {
-        return new AwAutofillClient(nativeClient);
+    public static AndroidAutofillClient create(long nativeClient) {
+        return new AndroidAutofillClient(nativeClient);
     }
 
-    private AwAutofillClient(long nativeAwAutofillClient) {
-        mNativeAwAutofillClient = nativeAwAutofillClient;
+    private AndroidAutofillClient(long nativeAndroidAutofillClient) {
+        mNativeAndroidAutofillClient = nativeAndroidAutofillClient;
     }
 
     public void init(Context context) {
@@ -48,7 +43,8 @@ public class AwAutofillClient {
 
         if (mAutofillPopup == null) {
             if (ContextUtils.activityFromContext(mContext) == null) {
-                AwAutofillClientJni.get().dismissed(mNativeAwAutofillClient, AwAutofillClient.this);
+                AndroidAutofillClientJni.get()
+                        .dismissed(mNativeAndroidAutofillClient, AndroidAutofillClient.this);
                 return;
             }
             try {
@@ -59,18 +55,18 @@ public class AwAutofillClient {
                                 new AutofillDelegate() {
                                     @Override
                                     public void dismissed() {
-                                        AwAutofillClientJni.get()
+                                        AndroidAutofillClientJni.get()
                                                 .dismissed(
-                                                        mNativeAwAutofillClient,
-                                                        AwAutofillClient.this);
+                                                        mNativeAndroidAutofillClient,
+                                                        AndroidAutofillClient.this);
                                     }
 
                                     @Override
                                     public void suggestionSelected(int listIndex) {
-                                        AwAutofillClientJni.get()
+                                        AndroidAutofillClientJni.get()
                                                 .suggestionSelected(
-                                                        mNativeAwAutofillClient,
-                                                        AwAutofillClient.this,
+                                                        mNativeAndroidAutofillClient,
+                                                        AndroidAutofillClient.this,
                                                         listIndex);
                                     }
 
@@ -84,7 +80,8 @@ public class AwAutofillClient {
             } catch (RuntimeException e) {
                 // Deliberately swallowing exception because bad fraemwork implementation can
                 // throw exceptions in ListPopupWindow constructor.
-                AwAutofillClientJni.get().dismissed(mNativeAwAutofillClient, AwAutofillClient.this);
+                AndroidAutofillClientJni.get()
+                        .dismissed(mNativeAndroidAutofillClient, AndroidAutofillClient.this);
                 return;
             }
         }
@@ -129,8 +126,9 @@ public class AwAutofillClient {
 
     @NativeMethods
     interface Natives {
-        void dismissed(long nativeAwAutofillClient, AwAutofillClient caller);
+        void dismissed(long nativeAndroidAutofillClient, AndroidAutofillClient caller);
 
-        void suggestionSelected(long nativeAwAutofillClient, AwAutofillClient caller, int position);
+        void suggestionSelected(
+                long nativeAndroidAutofillClient, AndroidAutofillClient caller, int position);
     }
 }

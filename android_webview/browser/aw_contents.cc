@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "android_webview/browser/aw_autofill_client.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
@@ -63,6 +62,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -303,7 +303,9 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
   if (!autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
     return;
   }
-  AwAutofillClient::CreateForWebContents(web_contents_.get());
+  android_autofill::AndroidAutofillClient::CreateForWebContents(
+      web_contents_.get(),
+      [&](const JavaRef<jobject>& client) { SetAwAutofillClient(client); });
 
   // We need to initialize the keyboard suppressor before creating any
   // AutofillManagers and after the autofill client is available.
@@ -317,7 +319,7 @@ void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj)
     return;
-  Java_AwContents_setAwAutofillClient(env, obj, client);
+  Java_AwContents_setAndroidAutofillClient(env, obj, client);
 }
 
 AwContents::~AwContents() {
