@@ -571,23 +571,12 @@ const InputHandler& LayerTreeHostImpl::GetInputHandler() const {
   return static_cast<const InputHandler&>(*input_delegate_.get());
 }
 
-void LayerTreeHostImpl::DidSendBeginMainFrame(const viz::BeginFrameArgs& args) {
-  frame_trackers_.NotifyBeginMainFrame(args);
-}
-
 void LayerTreeHostImpl::BeginMainFrameAborted(
     CommitEarlyOutReason reason,
     std::vector<std::unique_ptr<SwapPromise>> swap_promises,
     const viz::BeginFrameArgs& args,
     bool next_bmf,
     bool scroll_and_viewport_changes_synced) {
-  if (reason == CommitEarlyOutReason::kAbortedNotVisible ||
-      reason == CommitEarlyOutReason::kFinishedNoUpdates) {
-    frame_trackers_.NotifyMainFrameCausedNoDamage(args, true);
-  } else {
-    frame_trackers_.NotifyMainFrameProcessed(args);
-  }
-
   // If the begin frame data was handled, then scroll and scale set was applied
   // by the main thread, so the active tree needs to be updated as if these sent
   // values were applied and committed.
@@ -619,7 +608,6 @@ void LayerTreeHostImpl::ReadyToCommit(
     bool scroll_and_viewport_changes_synced,
     const BeginMainFrameMetrics* begin_main_frame_metrics,
     bool commit_timeout) {
-  frame_trackers_.NotifyMainFrameProcessed(commit_args);
   if (!is_measuring_smoothness_ &&
       ((begin_main_frame_metrics &&
         begin_main_frame_metrics->should_measure_smoothness) ||
@@ -2517,10 +2505,6 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
 
   if (frame->has_no_damage) {
     DCHECK(!resourceless_software_draw_);
-
-    frame_trackers_.NotifyImplFrameCausedNoDamage(frame->begin_frame_ack);
-    frame_trackers_.NotifyMainFrameCausedNoDamage(
-        frame->origin_begin_main_frame_args, false);
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
     active_tree()->ResetAllChangeTracking();
@@ -2582,15 +2566,6 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     DCHECK_EQ(bfargs.frame_id, begin_frame_ack_frame_id);
   }
 #endif
-
-  // In some cases (e.g. for android-webviews), the frame-submission happens
-  // outside of begin-impl frame pipeline. Avoid notifying the trackers in such
-  // cases.
-  if (impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME) {
-    frame_trackers_.NotifySubmitFrame(frame_token, frame->has_missing_content,
-                                      frame->begin_frame_ack,
-                                      frame->origin_begin_main_frame_args);
-  }
 
   if (!mutator_host_->NextFrameHasPendingRAF())
     frame_trackers_.StopSequence(FrameSequenceTrackerType::kRAF);
@@ -3087,24 +3062,6 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                            FrameSkippedReason reason) {
   if (layer_tree_frame_sink_)
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
-
-  // If a frame was not submitted because there was no damage, or the scheduler
-  // hit the frame-deadline while waiting for the main-thread, notify the
-  // trackers.
-  if (reason != FrameSkippedReason::kRecoverLatency &&
-      impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME) {
-    // It is possible that |ack| is for a 'future frame', i.e. for the next
-    // frame from the one currently being handled by the compositor (represented
-    // by the BeginFrameArgs instance in |current_begin_frame_tracker_|). This
-    // can happen, for example, when a frame is skipped early for
-    // latency-recovery, while the previous frame is still being processed.
-    // Notify the trackers only when this is *not* the case (since the trackers
-    // are not notified about the start of the future frame either).
-    const auto& args = current_begin_frame_tracker_.Current();
-    if (args.frame_id == ack.frame_id) {
-      frame_trackers_.NotifyImplFrameCausedNoDamage(ack);
-    }
-  }
 }
 
 void LayerTreeHostImpl::SynchronouslyInitializeAllTiles() {
@@ -5250,8 +5207,6 @@ void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
     std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks,
     const viz::FrameTimingDetails& details) {
-  frame_trackers_.NotifyFramePresented(frame_token,
-                                       details.presentation_feedback);
   for (auto& callback : callbacks)
     std::move(callback).Run(details.presentation_feedback.timestamp);
 }

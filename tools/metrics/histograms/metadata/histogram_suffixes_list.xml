@@ -4203,21 +4203,6 @@ chromium-metrics-reviews@google.com.
       name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
-  <suffix name="CanvasAnimation" label="Main-thread canvas animation"/>
-  <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
-  <suffix name="JSAnimation" label="JS-driven animation"/>
-  <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>
-  <suffix name="PinchZoom" label="Pinch-to-zoom interaction"/>
-  <suffix name="RAF" label="rAF callback driven animation"/>
-  <suffix name="ScrollbarScroll" label="Scrollbar driven scrolls"/>
-  <suffix name="TouchScroll" label="Touchscreen driven interaction"/>
-  <suffix name="Video" label="Video playback"/>
-  <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
-  <affected-histogram name="Graphics.Smoothness.MaxStale"/>
-  <affected-histogram name="Graphics.Smoothness.Stale"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">
   <suffix name="Both"
       label="This variation counts the number of locales that are supported

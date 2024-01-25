@@ -3950,11 +3950,9 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
     // OnNeedsBeginFrames(true) will be called during tree initialization.
   }
 
-  void WillBeginMainFrame() override { ++will_begin_main_frame_count_; }
-
-  void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
-    ++sent_begin_main_frame_count_;
-    EXPECT_GE(begin_frame_count_, sent_begin_main_frame_count_);
+  void WillBeginMainFrame() override {
+    ++will_begin_main_frame_count_;
+    EXPECT_GE(begin_frame_count_, will_begin_main_frame_count_);
   }
 
   void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
@@ -3965,7 +3963,7 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
   }
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_LE(sent_begin_main_frame_count_, begin_frame_count_);
+    EXPECT_LE(will_begin_main_frame_count_, begin_frame_count_);
     if (begin_frame_count_ < 3) {
       // Send another animation_only BeginFrame.
       PostIssueBeginFrame(true);
@@ -4000,7 +3998,7 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
 
     // Fourth BeginMainFrame should lead to commit.
     EXPECT_EQ(5, begin_frame_count_);
-    EXPECT_EQ(3, sent_begin_main_frame_count_);
+    EXPECT_EQ(3, will_begin_main_frame_count_);
 
     EndTest();
   }
@@ -4012,7 +4010,6 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
   void AfterTest() override {
     EXPECT_EQ(2, commit_count_);
     EXPECT_EQ(5, begin_frame_count_);
-    EXPECT_EQ(3, sent_begin_main_frame_count_);
 
     EXPECT_EQ(3, will_begin_main_frame_count_);
     EXPECT_EQ(3, update_layer_tree_host_count_);
@@ -4036,7 +4033,6 @@ class LayerTreeHostTestAnimateOnlyBeginFrames
       viz::BeginFrameArgs::kStartingFrameNumber;
   int commit_count_ = 0;
   int begin_frame_count_ = 0;
-  int sent_begin_main_frame_count_ = 0;
   int will_begin_main_frame_count_ = 0;
   int update_layer_tree_host_count_ = 0;
   int ready_to_commit_count_ = 0;

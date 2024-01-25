@@ -74,31 +74,20 @@ class FrameSequenceTrackerTest : public testing::Test {
                                        viz::BeginFrameArgs::NORMAL);
   }
 
-  void StartImplAndMainFrames(const viz::BeginFrameArgs& args) {
+  void StartFrames(const viz::BeginFrameArgs& args) {
     collection_.NotifyBeginImplFrame(args);
-    collection_.NotifyBeginMainFrame(args);
   }
 
   uint32_t DispatchCompleteFrame(const viz::BeginFrameArgs& args,
                                  uint32_t damage_type,
                                  bool has_missing_content = false) {
-    StartImplAndMainFrames(args);
+    StartFrames(args);
 
     if (damage_type & kImplDamage) {
-      if (!(damage_type & kMainDamage)) {
-        collection_.NotifyMainFrameCausedNoDamage(args, false);
-      } else {
-        collection_.NotifyMainFrameProcessed(args);
-      }
       uint32_t frame_token = NextFrameToken();
-      collection_.NotifySubmitFrame(frame_token, has_missing_content,
-                                    viz::BeginFrameAck(args, true), args);
       collection_.NotifyFrameEnd(args, args);
       return frame_token;
     } else {
-      collection_.NotifyImplFrameCausedNoDamage(
-          viz::BeginFrameAck(args, false));
-      collection_.NotifyMainFrameCausedNoDamage(args, true);
       collection_.NotifyFrameEnd(args, args);
     }
     return 0;
@@ -132,24 +121,23 @@ class FrameSequenceTrackerTest : public testing::Test {
 
   void GenerateSequence(const char* str) {
     const uint64_t source_id = 1;
-    uint64_t current_frame = 0;
     viz::BeginFrameArgs last_activated_main_args;
     while (*str) {
       const char command = *str++;
       uint64_t sequence = 0, dummy = 0, last_activated_main = 0;
       switch (command) {
         case 'b':
+        case 'd':
+        case 'D':
+        case 'p':
         case 'P':
         case 'n':
-        case 's':
-        case 'E':
           ASSERT_EQ(*str, '(') << command;
           str = ParseNumber(++str, &sequence);
           ASSERT_EQ(*str, ')');
           ++str;
           break;
 
-        case 'B':
         case 'N':
           ASSERT_EQ(*str, '(');
           str = ParseNumber(++str, &dummy);
@@ -177,72 +165,71 @@ class FrameSequenceTrackerTest : public testing::Test {
 
       switch (command) {
         case 'b':
-          current_frame = sequence;
           collection_.NotifyBeginImplFrame(
               CreateBeginFrameArgs(source_id, sequence));
           break;
 
-        case 'P':
-          collection_.NotifyFramePresented(
-              sequence, {base::TimeTicks::Now(),
-                         viz::BeginFrameArgs::DefaultInterval(), 0});
+        case 'd': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kDropped;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
+          collection_.AddSortedFrame(args, frame_info);
           break;
+        }
 
+        case 'D': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kDropped;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothMain;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
+
+        case 'p': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothCompositor;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
+
+        case 'P': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothMain;
+          collection_.AddSortedFrame(args, frame_info);
+          break;
+        }
         case 'R':
           collection_.NotifyPauseFrameProduction();
           break;
 
-        case 'n':
-          collection_.NotifyImplFrameCausedNoDamage(
-              viz::BeginFrameAck(source_id, sequence, false, 0));
-          break;
-
-        case 's': {
-          auto frame_token = sequence;
-          if (current_frame == 0)
-            current_frame = 1;
-          auto args = CreateBeginFrameArgs(source_id, current_frame);
-          auto main_args = args;
-          if (*str == 'S') {
-            ++str;
-            ASSERT_EQ(*str, '(');
-            str = ParseNumber(++str, &sequence);
-            ASSERT_EQ(*str, ')');
-            ++str;
-            main_args = CreateBeginFrameArgs(source_id, sequence);
-          }
-          collection_.NotifySubmitFrame(
-              frame_token, /*has_missing_content=*/false,
-              viz::BeginFrameAck(args, true), main_args);
+        case 'n': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kNoUpdateDesired;
+          collection_.AddSortedFrame(args, frame_info);
           break;
         }
 
         case 'e': {
           auto args = CreateBeginFrameArgs(source_id, sequence);
-          if (last_activated_main != 0)
-            DCHECK_EQ(last_activated_main_args.frame_id.sequence_number,
-                      last_activated_main);
-          collection_.NotifyFrameEnd(args, last_activated_main_args);
-          FrameInfo frame_info;
-          frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
-          collection_.AddSortedFrame(args, frame_info);
+          collection_.NotifyFrameEnd(args, args);
           break;
         }
 
-        case 'E':
-          last_activated_main_args = CreateBeginFrameArgs(source_id, sequence);
-          collection_.NotifyMainFrameProcessed(last_activated_main_args);
+        case 'N': {
+          auto args = CreateBeginFrameArgs(source_id, sequence);
+          FrameInfo frame_info;
+          frame_info.final_state = FrameInfo::FrameFinalState::kNoUpdateDesired;
+          frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothMain;
+          collection_.AddSortedFrame(args, frame_info);
           break;
-
-        case 'B':
-          collection_.NotifyBeginMainFrame(
-              CreateBeginFrameArgs(source_id, sequence));
-          break;
-
-        case 'N':
-          collection_.NotifyMainFrameCausedNoDamage(
-              CreateBeginFrameArgs(source_id, sequence), true);
-          break;
+        }
 
         default:
           NOTREACHED();
@@ -270,30 +257,17 @@ class FrameSequenceTrackerTest : public testing::Test {
     return tracker_->begin_impl_frame_data_.previous_sequence;
   }
 
-  uint64_t BeginMainFrameDataPreviousSequence() const {
-    return tracker_->begin_main_frame_data_.previous_sequence;
+  void IncrementFramesExpected(uint32_t frames) {
+    tracker_->metrics_->v3_.frames_expected += frames;
   }
 
-  base::flat_set<uint32_t> IgnoredFrameTokens() const {
-    return tracker_->ignored_frame_tokens_;
+  uint32_t frames_expected() const {
+    return tracker_->metrics_->v3_.frames_expected;
   }
 
-  FrameSequenceMetrics::ThroughputData& ImplThroughput(
-      FrameSequenceTracker* tracker) const {
-    return tracker->impl_throughput();
-  }
-
-  FrameSequenceMetrics::ThroughputData& ImplThroughput() const {
-    return tracker_->impl_throughput();
-  }
-
-  FrameSequenceMetrics::ThroughputData& MainThroughput(
-      FrameSequenceTracker* tracker) const {
-    return tracker->main_throughput();
-  }
-
-  FrameSequenceMetrics::ThroughputData& MainThroughput() const {
-    return tracker_->main_throughput();
+  uint32_t frames_produced() const {
+    return tracker_->metrics_->v3_.frames_expected -
+           tracker_->metrics_->v3_.frames_dropped;
   }
 
   FrameSequenceTracker::TerminationStatus GetTerminationStatus(
@@ -340,13 +314,6 @@ TEST_F(FrameSequenceTrackerTest, SourceIdChangeDuringSequence) {
   uint64_t sequence_2 = 0;
   auto args_2 = CreateBeginFrameArgs(source_2, ++sequence_2);
   collection_.NotifyBeginImplFrame(args_2);
-  collection_.NotifyBeginMainFrame(args_2);
-  collection_.NotifyMainFrameCausedNoDamage(args_2, true);
-  // Since the main-frame did not have any new damage from the latest
-  // BeginFrameArgs, the submit-frame will carry the previous BeginFrameArgs
-  // (from source_1);
-  collection_.NotifySubmitFrame(NextFrameToken(), /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args_2, true), args_1);
 }
 
 TEST_F(FrameSequenceTrackerTest, TestNotifyFramePresented) {
@@ -373,19 +340,17 @@ TEST_F(FrameSequenceTrackerTest, ReportMetricsAtFixedInterval) {
   // args.frame_time is less than 5s of the tracker creation time, so won't
   // schedule this tracker to report its throughput.
   collection_.NotifyBeginImplFrame(args);
-  collection_.NotifyImplFrameCausedNoDamage(viz::BeginFrameAck(args, false));
   collection_.NotifyFrameEnd(args, args);
 
   EXPECT_EQ(NumberOfTrackers(), 1u);
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 
-  ImplThroughput().frames_expected += 101;
+  IncrementFramesExpected(101u);
   // Now args.frame_time is 5s since the tracker creation time, so this tracker
   // should be scheduled to report its throughput.
   args = CreateBeginFrameArgs(source, ++sequence,
                               args.frame_time + TimeDeltaToReport());
   collection_.NotifyBeginImplFrame(args);
-  collection_.NotifyImplFrameCausedNoDamage(viz::BeginFrameAck(args, false));
   collection_.NotifyFrameEnd(args, args);
   FrameInfo frame_info;
   frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
@@ -393,45 +358,6 @@ TEST_F(FrameSequenceTrackerTest, ReportMetricsAtFixedInterval) {
   EXPECT_EQ(NumberOfTrackers(), 1u);
   // At NotifyFrameEnd, the tracker is removed from removal_tracker_ list.
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, ReportWithoutBeginImplFrame) {
-  const uint64_t source = 1;
-  uint64_t sequence = 0;
-
-  auto args = CreateBeginFrameArgs(source, ++sequence);
-  collection_.NotifyBeginMainFrame(args);
-
-  EXPECT_EQ(BeginImplFrameDataPreviousSequence(), 0u);
-  // Call to ReportBeginMainFrame should early exit.
-  EXPECT_EQ(BeginMainFrameDataPreviousSequence(), 0u);
-
-  uint32_t frame_token = NextFrameToken();
-  collection_.NotifySubmitFrame(frame_token, false,
-                                viz::BeginFrameAck(args, true), args);
-
-  // Call to ReportSubmitFrame should early exit.
-  EXPECT_TRUE(IgnoredFrameTokens().contains(frame_token));
-
-  gfx::PresentationFeedback feedback;
-  collection_.NotifyFramePresented(frame_token, feedback);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, MainFrameTracking) {
-  const uint64_t source = 1;
-  uint64_t sequence = 0;
-
-  auto args = CreateBeginFrameArgs(source, ++sequence);
-  auto frame_1 = DispatchCompleteFrame(args, kImplDamage | kMainDamage);
-
-  args = CreateBeginFrameArgs(source, ++sequence);
-  auto frame_2 = DispatchCompleteFrame(args, kImplDamage);
-
-  gfx::PresentationFeedback feedback;
-  collection_.NotifyFramePresented(frame_1, feedback);
-  collection_.NotifyFramePresented(frame_2, feedback);
 }
 
 TEST_F(FrameSequenceTrackerTest, MainFrameNoDamageTracking) {
@@ -443,170 +369,116 @@ TEST_F(FrameSequenceTrackerTest, MainFrameNoDamageTracking) {
 
   // Now, start the next frame, but for main, respond with the previous args.
   const auto second_args = CreateBeginFrameArgs(source, ++sequence);
-  StartImplAndMainFrames(second_args);
+  StartFrames(second_args);
 
-  uint32_t frame_token = NextFrameToken();
-  collection_.NotifySubmitFrame(frame_token, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(second_args, true),
-                                first_args);
   collection_.NotifyFrameEnd(second_args, second_args);
 
   // Start and submit the next frame, with no damage from main.
   auto args = CreateBeginFrameArgs(source, ++sequence);
   collection_.NotifyBeginImplFrame(args);
-  frame_token = NextFrameToken();
-  collection_.NotifySubmitFrame(frame_token, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args, true), first_args);
   collection_.NotifyFrameEnd(args, args);
 
   // Now, submit a frame with damage from main from |second_args|.
-  collection_.NotifyMainFrameProcessed(second_args);
   args = CreateBeginFrameArgs(source, ++sequence);
-  StartImplAndMainFrames(args);
-  frame_token = NextFrameToken();
-  collection_.NotifySubmitFrame(frame_token, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args, true), second_args);
+  StartFrames(args);
   collection_.NotifyFrameEnd(args, args);
 }
 
 TEST_F(FrameSequenceTrackerTest, SimpleSequenceOneFrame) {
-  const char sequence[] = "b(1)B(0,1)s(1)S(1)e(1,0)P(1)";
+  const char sequence[] = "b(1)e(1,0)P(1)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_expected(), 1u);
+  EXPECT_EQ(frames_produced(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, SimpleSequenceOneFrameNoDamage) {
-  const char sequence[] = "b(1)B(0,1)N(1,1)n(1)e(1,0)";
+  const char sequence[] = "b(1)N(1,1)n(1)e(1,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 2u);
+  EXPECT_EQ(frames_produced(), 2u);
 
-  const char second_sequence[] = "b(2)B(1,2)n(2)N(2,2)e(2,0)";
+  const char second_sequence[] = "b(2)n(2)N(2,2)e(2,0)";
   GenerateSequence(second_sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 4u);
+  EXPECT_EQ(frames_produced(), 4u);
 }
 
 TEST_F(FrameSequenceTrackerTest, MultipleNoDamageNotifications) {
   const char sequence[] = "b(1)n(1)n(1)e(1,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 2u);
+  EXPECT_EQ(frames_produced(), 2u);
 }
 
 TEST_F(FrameSequenceTrackerTest, MultipleNoDamageNotificationsFromMain) {
-  const char sequence[] = "b(1)B(0,1)N(1,1)n(1)N(0,1)e(1,0)";
+  const char sequence[] = "b(1)N(1,1)n(1)N(0,1)e(1,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 3u);
+  EXPECT_EQ(frames_produced(), 3u);
 }
 
 TEST_F(FrameSequenceTrackerTest, DelayedMainFrameNoDamage) {
-  const char sequence[] =
-      "b(1)B(0,1)n(1)e(1,0)b(2)n(2)e(2,0)b(3)N(0,1)n(3)e(3,0)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)n(1)e(1,0)b(2)n(2)e(2,0)b(3)N(0,1)n(3)e(3,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
+  EXPECT_EQ(frames_produced(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, DelayedMainFrameNoDamageFromOlderFrame) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   // Start a sequence, and receive a 'no damage' from an earlier frame.
-  const char second_sequence[] = "b(2)B(0,2)N(2,1)n(2)N(2,2)e(2,0)";
+  const char second_sequence[] = "b(2)N(2,1)n(2)N(2,2)e(2,0)";
   GenerateSequence(second_sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
+  EXPECT_EQ(frames_produced(), 0u);
 }
 
 // This tests when a BeginMainFrame leads to No Damage, after the next Main
 // Frame has started. This should not crash.
 TEST_F(FrameSequenceTrackerTest, DelayedMainFrameNoDamageAfterNextMainFrame) {
-  const char sequence[] =
-      "b(1)B(0,1)n(1)e(1,0)E(1)b(2)B(0,2)N(0,1)n(2)N(0,2)e(2,0)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)n(1)e(1,0)b(2)N(0,1)n(2)N(0,2)e(2,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
+  EXPECT_EQ(frames_produced(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, StateResetDuringSequence) {
-  const char sequence[] = "b(1)B(0,1)n(1)N(1,1)Re(1,0)b(2)n(2)e(2,0)";
+  const char sequence[] = "b(1)n(1)N(1,1)Re(1,0)b(2)n(2)e(2,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, NoCompositorDamageSubmitFrame) {
-  const char sequence[] = "b(1)n(1)B(0,1)E(1)s(1)S(1)e(1,1)P(1)b(2)";
-  GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 2u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_expected(), 3u);
+  EXPECT_EQ(frames_produced(), 3u);
 }
 
 TEST_F(FrameSequenceTrackerTest, SequenceStateResetsDuringFrame) {
   const char sequence[] = "b(1)Rn(1)e(1,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 0u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
+  EXPECT_EQ(frames_expected(), 1u);
+  EXPECT_EQ(frames_produced(), 1u);
 
-  GenerateSequence("b(2)s(1)e(2,0)P(1)b(4)");
-  EXPECT_EQ(ImplThroughput().frames_expected, 3u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
-}
-
-TEST_F(FrameSequenceTrackerTest, BeginImplFrameBeforeTerminate) {
-  const char sequence[] = "b(1)s(1)e(1,0)b(4)P(1)";
-  GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 4u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(ImplThroughput().frames_expected, 4u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
+  GenerateSequence("b(2)e(2,0)P(1)b(4)");
+  EXPECT_EQ(frames_expected(), 2u);
+  EXPECT_EQ(frames_produced(), 2u);
 }
 
 // b(2417)B(0,2417)E(2417)n(2417)N(2417,2417)
 TEST_F(FrameSequenceTrackerTest, SequenceNumberReset) {
-  const char sequence[] =
-      "b(6)B(0,6)n(6)e(6,0)Rb(1)B(0,1)N(1,1)n(1)e(1,0)b(2)B(1,2)n(2)e(2,0)";
+  const char sequence[] = "b(6)n(6)e(6,0)Rb(1)N(1,1)n(1)e(1,0)b(2)n(2)e(2,0)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  EXPECT_EQ(frames_expected(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, MainThroughputWithHighLatency) {
-  const char sequence[] = "b(1)B(0,1)n(1)e(1,0)b(2)E(1)s(1)S(1)e(2,1)P(1)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)n(1)e(1,0)b(2)e(2,1)P(1)D(1)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(ImplThroughput().frames_produced, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 2u);
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_expected(), 2u);
+  EXPECT_EQ(frames_produced(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame1) {
-  GenerateSequence("b(1)s(1)e(1,0)b(4)");
+  GenerateSequence("b(1)e(1,0)b(4)e(4,0)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
   FrameSequenceTracker* removal_tracker =
@@ -622,26 +494,16 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame1) {
             FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
 }
 
-// Following 2 cases are for: b(1)s(1)P(1), and StopSequence can happen
-// anywhere after b and before P. Because there is no e when P happens, the
-// tracker is not ready for termination.
-TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame5) {
-  GenerateSequence("b(1)");
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  FrameSequenceTracker* removal_tracker =
-      collection_.GetRemovalTrackerForTesting(
-          FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(GetTerminationStatus(removal_tracker),
-            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
-  GenerateSequence("s(1)P(1)");
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  EXPECT_EQ(GetTerminationStatus(removal_tracker),
-            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
-}
-
-TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame6) {
-  GenerateSequence("b(1)s(1)");
+// All the following cases are for one complete impl + one incomplete:
+// b(1)e(1,0)xxxxxxxxP(1)
+// The 'xxxxx' is an incomplete impl frame that has no damage, it could be
+// 1. b(2)e(2,0)P(1)n(2), and StopSequence happens anywhere after e and
+//    before P.
+// 2. b(2)e(2,0)P(1)n(2), and StopSequence can happen anywhere after e and
+//    before P. In this case, the tracker is not ready for termination yet at P
+//    because the sorted n(2) has not been called yet.
+TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame10) {
+  GenerateSequence("b(1)e(1,0)b(2)e(2,0)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
   FrameSequenceTracker* removal_tracker =
@@ -655,31 +517,8 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame6) {
             FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
 }
 
-// All the following cases are for one complete impl + one incomplete:
-// b(1)s(1)e(1,0)xxxxxxxxP(1)
-// The 'xxxxx' is an incomplete impl frame that has no damage, it could be
-// 1. b(2)n(2)e(2,0)P(1), and StopSequence can happen anywhere after b and
-//    before P.
-// 2. b(2)n(2)P(1), and StopSequence can happen anywhere after b and before P.
-//    In this case, the tracker is not ready for termination yet because e never
-//    happens.
-TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame10) {
-  GenerateSequence("b(1)s(1)e(1,0)b(2)");
-  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  FrameSequenceTracker* removal_tracker =
-      collection_.GetRemovalTrackerForTesting(
-          FrameSequenceTrackerType::kTouchScroll);
-  EXPECT_EQ(GetTerminationStatus(removal_tracker),
-            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
-  GenerateSequence("n(2)P(1)");
-  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  EXPECT_EQ(GetTerminationStatus(removal_tracker),
-            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
-}
-
 TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame11) {
-  GenerateSequence("b(1)s(1)e(1,0)b(2)n(2)");
+  GenerateSequence("b(1)e(1,0)b(2)e(2,0)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
   FrameSequenceTracker* removal_tracker =
@@ -695,182 +534,164 @@ TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame11) {
 
 // This test ensure that the tracker would terminate at e.
 TEST_F(FrameSequenceTrackerTest, TrackLastImplFrame24) {
-  GenerateSequence("b(1)s(1)P(1)");
+  GenerateSequence("b(1)P(1)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
-  GenerateSequence("e(1,0)");
+  GenerateSequence("e(1,0)p(1)");
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 }
 
-TEST_F(FrameSequenceTrackerTest, IgnoredFrameTokensRemovedAtPresentation1) {
-  GenerateSequence("b(5)s(1)e(5,0)P(1)");
-  auto args = CreateBeginFrameArgs(/*source_id=*/1u, 1u);
-  // Ack to an impl frame that doesn't exist in this tracker.
-  collection_.NotifySubmitFrame(2, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args, true), args);
-  EXPECT_EQ(IgnoredFrameTokens().size(), 1u);
-  GenerateSequence("P(3)");
-  // Any token that is < 3 should have been removed.
-  EXPECT_EQ(IgnoredFrameTokens().size(), 0u);
-}
-
-// Test the case where the frame tokens wraps around the 32-bit max value.
-TEST_F(FrameSequenceTrackerTest, IgnoredFrameTokensRemovedAtPresentation2) {
-  GenerateSequence("b(5)");
-  auto args = CreateBeginFrameArgs(1u, 1u);
-  // Ack to an impl frame that doesn't exist in this tracker.
-  collection_.NotifySubmitFrame(UINT32_MAX, /*has_missing_content=*/false,
-                                viz::BeginFrameAck(args, true), args);
-  EXPECT_EQ(IgnoredFrameTokens().size(), 1u);
-
-  args = CreateBeginFrameArgs(1u, 5u);
-  collection_.NotifySubmitFrame(1, false, viz::BeginFrameAck(args, true), args);
-  GenerateSequence("e(5,0)P(1)");
-  EXPECT_TRUE(IgnoredFrameTokens().empty());
+// Termination is triggered after a new tree is committed and activated. Due to
+// this we will have started a BeginImplFrame that is not actually a part of the
+// sequence. When this occurs we terminate as soon as the most recently
+// submitted frame has bee processed.
+TEST_F(FrameSequenceTrackerTest, IgnoreImplFrameBeforeTermination) {
+  GenerateSequence("b(1)e(1,0)b(2)");
+  collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
+  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
+  FrameSequenceTracker* removal_tracker =
+      collection_.GetRemovalTrackerForTesting(
+          FrameSequenceTrackerType::kTouchScroll);
+  EXPECT_EQ(GetTerminationStatus(removal_tracker),
+            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
+  GenerateSequence("e(2,0)");
+  EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
+  EXPECT_EQ(GetTerminationStatus(removal_tracker),
+            FrameSequenceTracker::TerminationStatus::kScheduledForTermination);
+  GenerateSequence("P(1)");
+  EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, TerminationWithNullPresentationTimeStamp) {
-  GenerateSequence("b(1)s(1)");
+  GenerateSequence("b(1)");
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
   EXPECT_EQ(NumberOfRemovalTrackers(), 1u);
   // Even if the presentation timestamp is null, as long as this presentation
   // is acking the last impl frame, we consider that impl frame completed and
   // so the tracker is ready for termination.
-  collection_.NotifyFramePresented(
-      1, {base::TimeTicks(), viz::BeginFrameArgs::DefaultInterval(), 0});
-  GenerateSequence("e(1,0)");
+  GenerateSequence("e(1,0)p(1)");
   EXPECT_EQ(NumberOfRemovalTrackers(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage1) {
-  const char sequence[] =
-      "b(1)B(0,1)n(1)e(1,0)b(2)E(1)B(1,2)n(2)e(2,1)b(3)E(2)B(2,3)n(3)e(3,2)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)n(1)e(1,0)b(2)n(2)e(2,1)b(3)n(3)e(3,2)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
   // At E(2), B(0,1) is treated no damage.
-  EXPECT_EQ(MainThroughput().frames_expected, 2u);
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage2) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(1)B(0,1)n(1)e(1,0)b(2)E(1)B(1,2)n(2)e(2,1)b(3)n(3)e(3,1)b(4)n(4)e(4,1)"
-      "b(8)E(2)"
-      "B(8,8)n(8)e(8,2)";
+      "b(1)n(1)e(1,0)b(2)n(2)e(2,1)b(3)n(3)e(3,1)b(4)n(4)e(4,1)b(8)n(8)e(8,2)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
   // At E(2), B(0,1) is treated as no damage.
-  EXPECT_EQ(MainThroughput().frames_expected, 7u);
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage3) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(34)B(0,34)n(34)e(34,0)b(35)n(35)e(35,0)b(36)E(34)n(36)e(36,34)b(39)s("
-      "1)e(39,34)";
+      "b(34)n(34)e(34,0)b(35)n(35)e(35,0)b(36)n(36)e(36,34)b(39)e(39,34)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage4) {
-  const char sequence[] =
-      "b(9)B(0,9)n(9)Re(9,0)E(9)b(11)B(0,11)n(11)e(11,9)b(12)E(11)B(11,12)s(1)"
-      "S(11)e(12,11)b(13)E(12)s(2)S(12)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(9)n(9)Re(9,0)b(11)n(11)e(11,9)b(12)e(12,11)b(13)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 2u);
-  EXPECT_EQ(MainThroughput().frames_expected, 2u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage5) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(1)B(0,1)E(1)s(1)S(1)e(1,0)b(2)n(2)e(2,0)b(3)B(1,3)n(3)e(3,0)E(3)b(4)B("
-      "3,4)n("
-      "4)e(4,3)E(4)";
+      "b(1)e(1,0)b(2)n(2)e(2,0)b(3)n(3)e(3,0)b(4)n(4)e(4,3)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
   // At E(4), we treat B(1,3) as if it had no damage.
-  EXPECT_EQ(MainThroughput().frames_expected, 3u);
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage6) {
-  const char sequence[] =
-      "b(1)B(0,1)E(1)s(1)S(1)e(1,1)b(2)B(1,2)E(2)n(2)N(2,2)e(2,2)b(3)B(0,3)E(3)"
-      "n(3)"
-      "N(3,3)e(3,3)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)e(1,1)b(2)n(2)N(2,2)e(2,2)b(3)n(3)N(3,3)e(3,3)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage7) {
-  const char sequence[] =
-      "b(8)B(0,8)n(8)e(8,0)b(9)E(8)B(8,9)E(9)s(1)S(8)e(9,9)b(10)s(2)S(9)e(10,"
-      "9)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(8)n(8)e(8,0)b(9)e(9,9)b(10)e(10,9)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 2u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage8) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(18)B(0,18)E(18)n(18)N(18,18)Re(18,18)b(20)B(0,20)N(20,20)n(20)N(0,20)"
-      "e("
-      "20,18)b(21)B(0,21)E(21)s(1)S(21)e(21,21)";
+      "b(18)n(18)N(18,18)Re(18,18)b(20)N(20,20)n(20)N(0,20)e(20,18)b(21)e(21,"
+      "21)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage9) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(78)n(78)Re(78,0)Rb(82)B(0,82)E(82)n(82)N(82,82)Re(82,82)b(86)B(0,86)E("
-      "86)n("
-      "86)e(86,86)b(87)s(1)S(86)e(87,86)";
+      "b(78)n(78)Re(78,0)Rb(82)n(82)N(82,82)Re(82,82)b(86)n(86)e(86,86)b(87)e("
+      "87,86)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  // No damage frames are not expected.
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 TEST_F(FrameSequenceTrackerTest, OffScreenMainDamage10) {
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char sequence[] =
-      "b(2)B(0,2)E(2)n(2)N(2,2)e(2,2)b(3)B(0,3)E(3)n(3)N(3,3)e(3,3)b(4)B(0,4)E("
-      "4)n("
-      "4)N(4,4)e(4,4)b(5)B(0,5)E(5)n(5)N(5,5)e(5,5)b(6)B(0,6)n(6)e(6,5)E(6)Rb("
-      "8)B(0,"
-      "8)E(8)n(8)N(8,8)e(8,8)";
+      "b(2)n(2)N(2,2)e(2,2)b(3)n(3)N(3,3)e(3,3)b(4)n(4)N(4,4)e(4,4)b(5)n(5)N(5,"
+      "5)e(5,5)b(6)n(6)e(6,5)Rb(8)n(8)N(8,8)e(8,8)";
   GenerateSequence(sequence);
-  EXPECT_EQ(ImplThroughput().frames_expected, 0u);
-  EXPECT_EQ(MainThroughput().frames_expected, 0u);
+  EXPECT_EQ(frames_expected(), 0u);
 }
 
 // A presentation with a frame token that is > the main frame token submitted.
 TEST_F(FrameSequenceTrackerTest, MainThreadPresentWithNonMatchedToken) {
-  const char sequence[] = "b(1)B(0,1)E(1)s(1)S(1)e(1,0)b(2)s(2)S(1)e(2,1)P(2)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)e(1,0)b(2)e(2,1)P(2)";
   GenerateSequence(sequence);
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_expected(), 1u);
+  EXPECT_EQ(frames_produced(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, CoalescedMainThreadPresent) {
-  const char sequence[] =
-      "b(1)B(0,1)E(1)s(1)S(1)e(1,1)b(2)B(1,2)E(2)s(2)S(2)e(2,2)P(2)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)e(1,1)b(2)e(2,2)D(1)P(2)";
   GenerateSequence(sequence);
-  EXPECT_EQ(MainThroughput().frames_expected, 2u);
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_expected(), 2u);
+  EXPECT_EQ(frames_produced(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, MainThreadPresentWithNullTimeStamp) {
-  const char sequence[] = "b(1)B(0,1)E(1)s(1)S(1)e(1,1)";
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
+  const char sequence[] = "b(1)e(1,1)D(1)";
   GenerateSequence(sequence);
-  collection_.NotifyFramePresented(
-      1, {base::TimeTicks(), viz::BeginFrameArgs::DefaultInterval(),
-          gfx::PresentationFeedback::kFailure});
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  EXPECT_EQ(frames_expected(), 1u);
   // No presentation, no main frame produced.
-  EXPECT_EQ(MainThroughput().frames_produced, 0u);
-  GenerateSequence("b(2)s(2)S(1)e(2,0)P(2)");
-  EXPECT_EQ(MainThroughput().frames_expected, 1u);
+  EXPECT_EQ(frames_produced(), 0u);
+  GenerateSequence("b(2)e(2,0)P(2)");
+  // We are creating a second frame, it will be expected
+  EXPECT_EQ(frames_expected(), 2u);
   // The main frame update is caught up here.
-  EXPECT_EQ(MainThroughput().frames_produced, 1u);
+  EXPECT_EQ(frames_produced(), 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, TrackerTypeEncoding) {
@@ -894,8 +715,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   EXPECT_EQ(1u, NumberOfCustomTrackers());
 
   // No reports.
-  uint32_t frame_token = 1u;
-  collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(0u, results.size());
 
   // Start custom tracker 2 and 3 in addition to 1.
@@ -904,7 +723,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   EXPECT_EQ(3u, NumberOfCustomTrackers());
 
   // All custom trackers are running. No reports.
-  collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(0u, results.size());
 
   // Tracker 2 is stopped and scheduled to terminate.
@@ -912,12 +730,11 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   EXPECT_EQ(2u, NumberOfCustomTrackers());
 
   // Tracker 2 has zero expected frames.
-  collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(1u, results.size());
   EXPECT_EQ(0u, results[2].frames_expected_v3);
 
   // Simple sequence of one frame.
-  const char sequence[] = "b(1)B(0,1)s(1)S(1)e(1,0)P(1)";
+  const char sequence[] = "b(1)e(1,0)P(1)";
   GenerateSequence(sequence);
 
   // Stop all custom trackers.
@@ -926,7 +743,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   EXPECT_EQ(0u, NumberOfCustomTrackers());
 
   // Tracker 1 and 3 and should report.
-  collection_.NotifyFramePresented(frame_token, {});
   EXPECT_EQ(3u, results.size());
   EXPECT_EQ(0u, results[1].frames_dropped_v3);
   EXPECT_EQ(1u, results[1].frames_expected_v3);

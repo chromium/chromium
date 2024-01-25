@@ -199,75 +199,11 @@ void FrameSequenceTrackerCollection::NotifyBeginImplFrame(
     tracker.second->ReportBeginImplFrame(args);
 }
 
-void FrameSequenceTrackerCollection::NotifyBeginMainFrame(
-    const viz::BeginFrameArgs& args) {
-  for (auto& tracker : frame_trackers_)
-    tracker.second->ReportBeginMainFrame(args);
-  for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportBeginMainFrame(args);
-}
-
-void FrameSequenceTrackerCollection::NotifyMainFrameProcessed(
-    const viz::BeginFrameArgs& args) {
-  for (auto& tracker : frame_trackers_)
-    tracker.second->ReportMainFrameProcessed(args);
-  for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportMainFrameProcessed(args);
-}
-
-void FrameSequenceTrackerCollection::NotifyImplFrameCausedNoDamage(
-    const viz::BeginFrameAck& ack) {
-  for (auto& tracker : frame_trackers_)
-    tracker.second->ReportImplFrameCausedNoDamage(ack);
-  for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportImplFrameCausedNoDamage(ack);
-
-  // Removal trackers continue to process any frames which they started
-  // observing.
-  for (auto& tracker : removal_trackers_)
-    tracker->ReportImplFrameCausedNoDamage(ack);
-}
-
-void FrameSequenceTrackerCollection::NotifyMainFrameCausedNoDamage(
-    const viz::BeginFrameArgs& args,
-    bool aborted) {
-  for (auto& tracker : frame_trackers_)
-    tracker.second->ReportMainFrameCausedNoDamage(args, aborted);
-  for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportMainFrameCausedNoDamage(args, aborted);
-}
-
 void FrameSequenceTrackerCollection::NotifyPauseFrameProduction() {
   for (auto& tracker : frame_trackers_)
     tracker.second->PauseFrameProduction();
   for (auto& tracker : custom_frame_trackers_)
     tracker.second->PauseFrameProduction();
-}
-
-void FrameSequenceTrackerCollection::NotifySubmitFrame(
-    uint32_t frame_token,
-    bool has_missing_content,
-    const viz::BeginFrameAck& ack,
-    const viz::BeginFrameArgs& origin_args) {
-  for (auto& tracker : frame_trackers_) {
-    tracker.second->ReportSubmitFrame(frame_token, has_missing_content, ack,
-                                      origin_args);
-  }
-  for (auto& tracker : custom_frame_trackers_) {
-    tracker.second->ReportSubmitFrame(frame_token, has_missing_content, ack,
-                                      origin_args);
-  }
-
-  // Removal trackers continue to process any frames which they started
-  // observing.
-  for (auto& tracker : removal_trackers_) {
-    tracker->ReportSubmitFrame(frame_token, has_missing_content, ack,
-                               origin_args);
-  }
-
-  // TODO(crbug.com/1072482): find a proper way to terminate a tracker. Please
-  // refer to details in FrameSequenceTracker::ReportSubmitFrame
-  DestroyTrackers();
 }
 
 void FrameSequenceTrackerCollection::NotifyFrameEnd(
@@ -282,19 +218,6 @@ void FrameSequenceTrackerCollection::NotifyFrameEnd(
   // observing.
   for (auto& tracker : removal_trackers_)
     tracker->ReportFrameEnd(args, main_args);
-  DestroyTrackers();
-}
-
-void FrameSequenceTrackerCollection::NotifyFramePresented(
-    uint32_t frame_token,
-    const gfx::PresentationFeedback& feedback) {
-  for (auto& tracker : frame_trackers_)
-    tracker.second->ReportFramePresented(frame_token, feedback);
-  for (auto& tracker : custom_frame_trackers_)
-    tracker.second->ReportFramePresented(frame_token, feedback);
-  for (auto& tracker : removal_trackers_)
-    tracker->ReportFramePresented(frame_token, feedback);
-
   DestroyTrackers();
 }
 

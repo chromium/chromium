@@ -2539,7 +2539,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
     invalidated_on_impl_thread_ = false;
   }
 
-  void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
+  void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
     switch (++num_of_main_frames_) {
       case 1:
         // Do nothing for the first BeginMainFrame.
