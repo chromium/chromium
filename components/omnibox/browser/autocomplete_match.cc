@@ -817,7 +817,8 @@ bool AutocompleteMatch::IsSearchType(Type type) {
          type == AutocompleteMatchType::CALCULATOR ||
          type == AutocompleteMatchType::VOICE_SUGGEST ||
 #if BUILDFLAG(IS_ANDROID)
-         // iOS tests fail if Clipboard searches are annotated as searches.
+         // TODO(crbug.com/1470185): iOS tests fail if Clipboard searches are
+         //   annotated as searches.
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
          type == AutocompleteMatchType::CLIPBOARD_IMAGE ||
 #endif
