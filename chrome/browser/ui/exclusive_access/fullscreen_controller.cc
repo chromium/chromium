@@ -369,14 +369,16 @@ void FullscreenController::WindowFullscreenStateChanged() {
           ExclusiveAccessBubbleHideCallback(),
           /*force_update=*/true);
     }
-    if (IsFullscreenCausedByTab()) {
-      exclusive_access_manager()->RecordLockStateOnEnteringApiFullscreen();
-    } else {
-      exclusive_access_manager()->RecordLockStateOnEnteringBrowserFullscreen();
-    }
     if (!fullscreen_start_time_) {
       fullscreen_start_time_ = base::TimeTicks::Now();
     }
+    // This must be posted because keyboard lock engages right after entering
+    // fullscreen, and we want to record the keyboard/pointer lock state after
+    // that.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FullscreenController::RecordMetricsOnEnteringFullscreen,
+                       ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -627,4 +629,12 @@ GURL FullscreenController::GetEmbeddingOrigin() const {
   DCHECK(exclusive_access_tab());
 
   return exclusive_access_tab()->GetLastCommittedURL();
+}
+
+void FullscreenController::RecordMetricsOnEnteringFullscreen() {
+  if (IsFullscreenCausedByTab()) {
+    exclusive_access_manager()->RecordLockStateOnEnteringApiFullscreen();
+  } else {
+    exclusive_access_manager()->RecordLockStateOnEnteringBrowserFullscreen();
+  }
 }
