@@ -80,10 +80,53 @@ printer::Media ConvertPaperToMedia(
   // When converting to Media, the size and printable area should have a larger
   // height than width.
   if (paper_size.width() > paper_size.height()) {
+    // When swapping the printable_area, we can't simply transpose the rect
+    // since the margins may not be the same on all sides.  A visualization may
+    // help.  Suppose we have a page with width of 127000 and height of 76200.
+    // Additionally, the left margin is 1000, right margin is 700, bottom margin
+    // is 500, and top margin is 200.
+    //
+    //        +---------- 127000 ---------+
+    //        |        200                |
+    //      76200      +-----------+      |
+    //        |        |           |      |
+    //        |  1000  |           |  700 |
+    //        |        |           |      |
+    //        |        +-----------+      |
+    //        |         500               |
+    //        +---------------------------+
+    //
+    // After swapping the page size and printable area (rotating 90 degrees
+    // clockwise), this should be the resulting sizes:
+    //
+    //        +---- 76200 ---+
+    //        |              |
+    //        |      1000    |
+    //        |             127000
+    //        |    +-----+   |
+    //        |    |     |   |
+    //        |    |     |   |
+    //        |500 |     |200|
+    //        |    |     |   |
+    //        |    |     |   |
+    //        |    +-----+   |
+    //        |              |
+    //        |      700     |
+    //        +--------------+
+    //
+    // Namely, the new x value for the printable area is: the old printable area
+    // y value.  The new y value for the printable area is: (the old width) -
+    // (the old printable area width) - (the old printable areay x value).  Note
+    // that if the top/bottom margins are equal and the left/right margins are
+    // equal, then a simple transpose does indeed work.
+
+    // Rotate clockwise by 90 degrees.
+    int new_x = paper_printable_area.y();
+    int new_y = paper_size.width() - paper_printable_area.width() -
+                paper_printable_area.x();
+    paper_printable_area.SetRect(new_x, new_y, paper_printable_area.height(),
+                                 paper_printable_area.width());
     paper_size.SetSize(paper_size.height(), paper_size.width());
-    paper_printable_area.SetRect(
-        paper_printable_area.y(), paper_printable_area.x(),
-        paper_printable_area.height(), paper_printable_area.width());
   }
   return printer::MediaBuilder()
       .WithSizeAndPrintableArea(paper_size, paper_printable_area)
