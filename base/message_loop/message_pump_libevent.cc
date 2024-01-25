@@ -153,11 +153,6 @@ MessagePumpLibevent::MessagePumpLibevent() {
   DCHECK(wakeup_event_);
 }
 
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-MessagePumpLibevent::MessagePumpLibevent(decltype(kUseEpoll))
-    : epoll_pump_(std::make_unique<MessagePumpEpoll>()) {}
-#endif
-
 MessagePumpLibevent::~MessagePumpLibevent() {
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
   const bool using_libevent = !epoll_pump_;

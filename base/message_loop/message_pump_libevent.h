@@ -179,13 +179,6 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   MessagePumpLibevent();
 
-#if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
-  // Constructs a MessagePumpLibevent which is forced to use epoll directly
-  // instead of libevent.
-  enum { kUseEpoll };
-  explicit MessagePumpLibevent(decltype(kUseEpoll));
-#endif
-
   MessagePumpLibevent(const MessagePumpLibevent&) = delete;
   MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
 
