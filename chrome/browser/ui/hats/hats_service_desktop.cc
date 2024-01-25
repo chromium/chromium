@@ -114,9 +114,10 @@ void HatsServiceDesktop::DelayedSurveyTask::Launch() {
   CHECK(web_contents());
   if (web_contents() &&
       web_contents()->GetVisibility() == content::Visibility::VISIBLE) {
-    hats_service_->LaunchSurveyForWebContents(trigger_, web_contents(),
-                                              product_specific_bits_data_,
-                                              product_specific_string_data_);
+    hats_service_->LaunchSurveyForWebContents(
+        trigger_, web_contents(), product_specific_bits_data_,
+        product_specific_string_data_, std::move(success_callback_),
+        std::move(failure_callback_), supplied_trigger_id_);
     hats_service_->RemoveTask(*this);
   }
 }

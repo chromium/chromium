@@ -81,7 +81,7 @@ class HatsServiceDesktop : public HatsService {
     NavigationBehaviour navigation_behaviour_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
-    std::optional<std::string_view> supplied_trigger_id_;
+    std::optional<std::string> supplied_trigger_id_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
   };
 
