@@ -13,18 +13,12 @@ version = "0.9"
 [imports.chromeos]
 url = "https://chromium.googlesource.com/chromiumos/third_party/rust_crates/+/refs/heads/main/cargo-vet/audits.toml?format=TEXT"
 
-[imports.fuchsia]
-url = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml?format=TEXT"
-
-[imports.google]
-url = "https://raw.githubusercontent.com/google/rust-crate-audits/main/manual-sources/google3-audits.toml"
-
 [imports.chromeos.criteria-map]
 # All criteria from the chromeos audits file need to be forwarded explicitly to
 # use them in Chromium.
-rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 crypto-safe = "crypto-safe"
 does-not-implement-crypto = "does-not-implement-crypto"
+rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 ub-risk-0 = "ub-risk-0"
 ub-risk-1 = "ub-risk-1"
 ub-risk-1-thorough = "ub-risk-1-thorough"
@@ -32,13 +26,16 @@ ub-risk-2 = "ub-risk-2"
 ub-risk-2-thorough = "ub-risk-2-thorough"
 ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
+
+[imports.fuchsia]
+url = "https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/third_party/rust_crates/supply-chain/audits.toml?format=TEXT"
 
 [imports.fuchsia.criteria-map]
 # All criteria from the fuchsia audits file need to be forwarded explicitly to
 # use them in Chromium.
-rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 crypto-safe = "crypto-safe"
 does-not-implement-crypto = "does-not-implement-crypto"
+rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 ub-risk-0 = "ub-risk-0"
 ub-risk-1 = "ub-risk-1"
 ub-risk-1-thorough = "ub-risk-1-thorough"
@@ -46,13 +43,16 @@ ub-risk-2 = "ub-risk-2"
 ub-risk-2-thorough = "ub-risk-2-thorough"
 ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
+
+[imports.google]
+url = "https://raw.githubusercontent.com/google/rust-crate-audits/main/manual-sources/google3-audits.toml"
 
 [imports.google.criteria-map]
 # All criteria from the google audits file need to be forwarded explicitly to
 # use them in Chromium.
-rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 crypto-safe = "crypto-safe"
 does-not-implement-crypto = "does-not-implement-crypto"
+rule-of-two-safe-to-deploy = "rule-of-two-safe-to-deploy"
 ub-risk-0 = "ub-risk-0"
 ub-risk-1 = "ub-risk-1"
 ub-risk-1-thorough = "ub-risk-1-thorough"
@@ -60,8 +60,8 @@ ub-risk-2 = "ub-risk-2"
 ub-risk-2-thorough = "ub-risk-2-thorough"
 ub-risk-3 = "ub-risk-3"
 ub-risk-4 = "ub-risk-4"
-
 {{#each this.policies}}
+
 [policy."{{crate_name}}"]
 criteria = [{{#each criteria}}{{#if @first}}{{else}}, {{/if}}"{{this}}"{{/each}}]
 {{/each}}
