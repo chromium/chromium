@@ -59,6 +59,17 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyViewedQuery() {
   return query;
 }
 
+drivefs::mojom::QueryParametersPtr CreateSharedWithMeQuery() {
+  auto query = drivefs::mojom::QueryParameters::New();
+  query->page_size = 10;
+  query->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query->sort_direction =
+      drivefs::mojom::QueryParameters::SortDirection::kDescending;
+  query->sort_field = drivefs::mojom::QueryParameters::SortField::kSharedWithMe;
+  return query;
+}
+
 FileSuggestData CreateFileSuggestionWithJustification(
     const base::FilePath& path,
     app_list::JustificationType justification_type,
@@ -148,11 +159,12 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
   }
 
   base::RepeatingClosure search_callback = base::BarrierClosure(
-      2, base::BindOnce(
+      3, base::BindOnce(
              &DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted,
              weak_factory_.GetWeakPtr()));
   PerformSearch(CreateRecentlyModifiedQuery(), drive_service, search_callback);
   PerformSearch(CreateRecentlyViewedQuery(), drive_service, search_callback);
+  PerformSearch(CreateSharedWithMeQuery(), drive_service, search_callback);
 }
 
 void DriveRecentFileSuggestionProvider::PerformSearch(

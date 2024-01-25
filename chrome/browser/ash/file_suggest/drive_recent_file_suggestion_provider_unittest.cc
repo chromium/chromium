@@ -374,6 +374,20 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<FakeSearchQuery>(CreateQueryItems({})),
+            std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -471,6 +485,20 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifyingUserInfo) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<FakeSearchQuery>(CreateQueryItems({})),
+            std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -541,7 +569,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
               .modified_by_me_time = GetReferenceTime() - base::Minutes(2),
               .last_modifying_user = "Test User",
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
-              .shared_with_me_time = GetReferenceTime() - base::Days(2)},
+              .shared_with_me_time = GetReferenceTime() - base::Hours(56)},
              {.path = base::FilePath("/Modified last, not viewed by user"),
               .last_modified_time = GetReferenceTime() - base::Minutes(3),
               .last_modifying_user = "Test User",
@@ -576,6 +604,40 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Modified last, viewed by user"),
+              .last_modified_time = GetReferenceTime(),
+              .last_modifying_user = "Test User",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
+              .shared_with_me_time = GetReferenceTime() - base::Days(2)},
+             {.path = base::FilePath("/Shared"),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .last_modifying_user = "Test User",
+              .shared_with_me_time = GetReferenceTime() - base::Hours(50)},
+             {.path = base::FilePath("/Modified last by user"),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .modified_by_me_time = GetReferenceTime() - base::Minutes(2),
+              .last_modifying_user = "Test User",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
+              .shared_with_me_time = GetReferenceTime() - base::Hours(56)},
+             {.path = base::FilePath("/Shared with sharing user info"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -605,6 +667,8 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
                             u"Shared · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
                                        u"You viewed · just now"),
+                        SuggestionInfo(root.Append("Shared"),
+                                       u"Shared · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
                             u"Shared · Dec 2")));
@@ -643,15 +707,15 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
               .shared_with_me_time = GetReferenceTime() - base::Days(2)},
              {.path = base::FilePath("/Modified last by user"),
-              .last_modified_time = GetReferenceTime() - base::Hours(2),
-              .modified_by_me_time = GetReferenceTime() - base::Hours(2),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .modified_by_me_time = GetReferenceTime() - base::Minutes(2),
               .last_modifying_user = "Test User",
               .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
-              .shared_with_me_time = GetReferenceTime() - base::Days(2)},
+              .shared_with_me_time = GetReferenceTime() - base::Hours(56)},
              {.path = base::FilePath("/Modified last, not viewed by user"),
-              .last_modified_time = GetReferenceTime() - base::Hours(2),
+              .last_modified_time = GetReferenceTime() - base::Minutes(3),
               .last_modifying_user = "Test User",
-              .shared_with_me_time = GetReferenceTime() - base::Hours(3)},
+              .shared_with_me_time = GetReferenceTime() - base::Minutes(5)},
              {.path = base::FilePath("/Shared with sharing user info"),
               .last_modified_time = GetReferenceTime() - base::Hours(26),
               .last_modifying_user = "Test User 1",
@@ -677,12 +741,46 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
               .last_modified_time = GetReferenceTime() - base::Days(1),
               .modified_by_me_time = GetReferenceTime() - base::Days(1),
               .last_modifying_user = "Test User",
-              .last_viewed_by_me_time = GetReferenceTime() - base::Hours(12),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Minutes(5),
               .shared_with_me_time = GetReferenceTime() - base::Days(2)}}));
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
 
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Modified last, viewed by user"),
+              .last_modified_time = GetReferenceTime(),
+              .last_modifying_user = "Test User",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
+              .shared_with_me_time = GetReferenceTime() - base::Days(2)},
+             {.path = base::FilePath("/Shared"),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .last_modifying_user = "Test User",
+              .shared_with_me_time = GetReferenceTime() - base::Hours(50)},
+             {.path = base::FilePath("/Modified last by user"),
+              .last_modified_time = GetReferenceTime() - base::Minutes(2),
+              .modified_by_me_time = GetReferenceTime() - base::Minutes(2),
+              .last_modifying_user = "Test User",
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(1),
+              .shared_with_me_time = GetReferenceTime() - base::Hours(56)},
+             {.path = base::FilePath("/Shared with sharing user info"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
       ->GetService(profile())
@@ -705,12 +803,14 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
                             root.Append("Modified last, viewed by user"),
                             u"Test User modified · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You modified · 11:30 AM"),
+                                       u"You modified · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
-                            u"Shared · 10:30 AM"),
+                            u"Shared · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · 1:30 AM"),
+                                       u"You viewed · just now"),
+                        SuggestionInfo(root.Append("Shared"),
+                                       u"Shared · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
                             u"Test User 2 shared · Dec 2")));
@@ -777,6 +877,20 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
 
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
+      });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<FakeSearchQuery>(CreateQueryItems({})),
+            std::move(receiver));
       });
 
   base::RunLoop result_waiter;
@@ -872,6 +986,20 @@ TEST_F(DriveRecentFileSuggestionProviderTest, TimestampsInFuture) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<FakeSearchQuery>(CreateQueryItems({})),
+            std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -914,7 +1042,7 @@ TEST_F(DriveRecentFileSuggestionProviderTest, DriveFailedSearch) {
   EnableDriveAndWaitForMountPoint();
 
   EXPECT_CALL(*fake_drivefs(), StartSearchQuery)
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(
           [&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
               drivefs::mojom::QueryParametersPtr query_params) {
@@ -998,6 +1126,25 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Shared with sharing user info"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -1023,7 +1170,10 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
                             root.Append("Modified and viewed last item"),
                             u"Modified · Dec 4"),
                         SuggestionInfo(root.Append("Modified last item 2"),
-                                       u"Modified · Dec 2")));
+                                       u"Modified · Dec 2"),
+                        SuggestionInfo(
+                            root.Append("Shared with sharing user info"),
+                            u"Shared · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -1083,6 +1233,26 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifiedTimeSearchFailed) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Shared with sharing user info"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
 
   base::RunLoop result_waiter;
   FileSuggestKeyedServiceFactory::GetInstance()
@@ -1108,7 +1278,114 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifiedTimeSearchFailed) {
                             root.Append("Modified and viewed last item"),
                             u"Modified · Dec 4"),
                         SuggestionInfo(root.Append("Viewed last item 2"),
-                                       u"You viewed · Dec 3")));
+                                       u"You viewed · Dec 3"),
+                        SuggestionInfo(
+                            root.Append("Shared with sharing user info"),
+                            u"Shared · Dec 2")));
+
+                result_waiter.Quit();
+              })));
+  result_waiter.Run();
+}
+
+// Verifies that file suggest service returns recently viewed files if only
+// search for files recently shared with user fails.
+TEST_F(DriveRecentFileSuggestionProviderTest, SharedWithMeSearchFailed) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+
+  EnableDriveAndWaitForMountPoint();
+
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kLastModified))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Modified last item"),
+              .last_modified_time = GetReferenceTime() - base::Days(1),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Hours(36)},
+             {.path = base::FilePath("/Modified and viewed last item"),
+              .last_modified_time = GetReferenceTime() - base::Days(2),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(2)}}));
+
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+  EXPECT_CALL(
+      *fake_drivefs(),
+      StartSearchQuery(
+          _, Pointee(Field(&QueryParameters::sort_field,
+                           QueryParameters::SortField::kLastViewedByMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Viewed last item"),
+              .last_modified_time = GetReferenceTime() - base::Days(1),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Hours(12)},
+             {.path = base::FilePath("/Modified and viewed last item"),
+              .last_modified_time = GetReferenceTime() - base::Days(2),
+              .last_viewed_by_me_time = GetReferenceTime() - base::Days(2)}}));
+
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(
+            std::vector<drivefs::mojom::QueryItemPtr>());
+        search_query->SetToFail();
+
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
+  base::RunLoop result_waiter;
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile())
+      ->GetSuggestFileData(
+          FileSuggestionType::kDriveFile,
+          base::BindOnce(base::BindLambdaForTesting(
+              [&](const std::optional<std::vector<FileSuggestData>>& data) {
+                ASSERT_TRUE(data);
+
+                std::vector<SuggestionInfo> actual_suggestions;
+                for (const auto& suggestion : data.value()) {
+                  actual_suggestions.emplace_back(suggestion);
+                }
+
+                const base::FilePath root = GetDriveRoot();
+                EXPECT_THAT(
+                    actual_suggestions,
+                    ElementsAre(
+                        SuggestionInfo(root.Append("Viewed last item"),
+                                       u"You viewed · 1:30 AM"),
+                        SuggestionInfo(root.Append("Modified last item"),
+                                       u"Modified · Dec 4"),
+                        SuggestionInfo(
+                            root.Append("Modified and viewed last item"),
+                            u"Modified · Dec 3")));
 
                 result_waiter.Quit();
               })));
@@ -1193,6 +1470,41 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
         mojo::MakeSelfOwnedReceiver(std::move(search_query),
                                     std::move(receiver));
       });
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Shared 1"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      })
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Shared 2"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
 
   auto* const suggest_service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
@@ -1215,7 +1527,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 1"),
                                            u"You viewed · just now"),
                             SuggestionInfo(root.Append("Modified last item 1"),
-                                           u"Modified · Dec 4")));
+                                           u"Modified · Dec 4"),
+                            SuggestionInfo(root.Append("Shared 1"),
+                                           u"Shared · Dec 2")));
 
             result_waiter_1.Quit();
           })));
@@ -1239,7 +1553,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearches) {
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 2"),
                                            u"You viewed · just now"),
                             SuggestionInfo(root.Append("Modified last item 2"),
-                                           u"Modified · Dec 3")));
+                                           u"Modified · Dec 3"),
+                            SuggestionInfo(root.Append("Shared 2"),
+                                           u"Shared · Dec 2")));
 
             result_waiter_2.Quit();
           })));
@@ -1295,6 +1611,27 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
                                     std::move(receiver));
       });
 
+  EXPECT_CALL(*fake_drivefs(),
+              StartSearchQuery(
+                  _, Pointee(Field(&QueryParameters::sort_field,
+                                   QueryParameters::SortField::kSharedWithMe))))
+      .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery> receiver,
+                    drivefs::mojom::QueryParametersPtr query_params) {
+        EXPECT_EQ(drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
+                  query_params->query_source);
+        EXPECT_EQ(drivefs::mojom::QueryParameters::SortDirection::kDescending,
+                  query_params->sort_direction);
+
+        auto search_query = std::make_unique<FakeSearchQuery>(CreateQueryItems(
+            {{.path = base::FilePath("/Shared"),
+              .last_modified_time = GetReferenceTime() - base::Hours(26),
+              .last_modifying_user = "Test User 1",
+              .shared_with_me_time = GetReferenceTime() - base::Days(3),
+              .sharing_user = "Test User 2"}}));
+        mojo::MakeSelfOwnedReceiver(std::move(search_query),
+                                    std::move(receiver));
+      });
+
   auto* const suggest_service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile());
 
@@ -1313,10 +1650,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             const base::FilePath root = GetDriveRoot();
             EXPECT_THAT(
                 actual_suggestions,
-                ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
-                            SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4")));
+                ElementsAre(
+                    SuggestionInfo(root.Append("Viewed last item"),
+                                   u"You viewed · just now"),
+                    SuggestionInfo(root.Append("Modified last item"),
+                                   u"Modified · Dec 4"),
+                    SuggestionInfo(root.Append("Shared"), u"Shared · Dec 2")));
 
             result_waiter_1.Quit();
           })));
@@ -1336,10 +1675,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             const base::FilePath root = GetDriveRoot();
             EXPECT_THAT(
                 actual_suggestions,
-                ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
-                            SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4")));
+                ElementsAre(
+                    SuggestionInfo(root.Append("Viewed last item"),
+                                   u"You viewed · just now"),
+                    SuggestionInfo(root.Append("Modified last item"),
+                                   u"Modified · Dec 4"),
+                    SuggestionInfo(root.Append("Shared"), u"Shared · Dec 2")));
 
             result_waiter_2.Quit();
           })));

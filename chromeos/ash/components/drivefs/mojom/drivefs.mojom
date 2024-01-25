@@ -706,6 +706,7 @@ struct QueryParameters {
     kLastModified = 1,
     kLastViewedByMe = 2,
     kFileSize = 3,
+    kSharedWithMe = 4,
   };
 
   enum SortDirection {
