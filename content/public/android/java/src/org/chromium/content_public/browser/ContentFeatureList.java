@@ -22,9 +22,6 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS =
             "AccessibilityPageZoomEnhancements";
 
-    public static final String ACCESSIBILITY_PERFORMANCE_FILTERING =
-            "AccessibilityPerformanceFiltering";
-
     public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
 
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";

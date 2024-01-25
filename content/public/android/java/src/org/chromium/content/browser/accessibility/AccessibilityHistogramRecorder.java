@@ -10,8 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Helper class for recording UMA histograms of accessibility events */
@@ -256,11 +254,6 @@ public class AccessibilityHistogramRecorder {
 
     /** Record UMA histograms for the event counts for the OnDemand feature. */
     public void recordEventsHistograms() {
-        // To investigate whether adding more AXModes could be beneficial, track separate
-        // stats when both the AccessibilityPerformanceFiltering and OnDemand features are enabled.
-        boolean isAccessibilityPerformanceFilteringEnabled =
-                ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING);
-
         // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
         boolean isAXModeComplete = AccessibilityState.isScreenReaderEnabled();
         boolean isAXModeFormControls = AccessibilityState.isOnlyPasswordManagersEnabled();
@@ -271,16 +264,13 @@ public class AccessibilityHistogramRecorder {
             int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
             RecordHistogram.recordPercentageHistogram(
                     PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
-            // Log the percentage dropped per AXMode as well.
-            if (isAccessibilityPerformanceFilteringEnabled) {
-                RecordHistogram.recordPercentageHistogram(
-                        isAXModeComplete
-                                ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE
-                                : isAXModeFormControls
-                                        ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS
-                                        : PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC,
-                        100 - percentSent);
-            }
+            RecordHistogram.recordPercentageHistogram(
+                    isAXModeComplete
+                            ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_COMPLETE
+                            : isAXModeFormControls
+                                    ? PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_FORM_CONTROLS
+                                    : PERCENTAGE_DROPPED_HISTOGRAM_AXMODE_BASIC,
+                    100 - percentSent);
 
             // Log the total number of dropped events. (Not relevant to be tracked per AXMode)
             RecordHistogram.recordCustomCountHistogram(
@@ -300,19 +290,16 @@ public class AccessibilityHistogramRecorder {
                         EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
                         EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
 
-                // Log the 100% events count per AXMode as well.
-                if (isAccessibilityPerformanceFilteringEnabled) {
-                    RecordHistogram.recordCustomCountHistogram(
-                            isAXModeComplete
-                                    ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE
-                                    : isAXModeFormControls
-                                            ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_FORM_CONTROLS
-                                            : ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC,
-                            mTotalEnqueuedEvents - mTotalDispatchedEvents,
-                            EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET,
-                            EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
-                            EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
-                }
+                RecordHistogram.recordCustomCountHistogram(
+                        isAXModeComplete
+                                ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_COMPLETE
+                                : isAXModeFormControls
+                                        ? ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_FORM_CONTROLS
+                                        : ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC,
+                        mTotalEnqueuedEvents - mTotalDispatchedEvents,
+                        EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET,
+                        EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
+                        EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
             }
         }
 

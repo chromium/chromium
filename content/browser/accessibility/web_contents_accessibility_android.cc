@@ -1509,10 +1509,10 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
 
-  // The AXMode flags will be set according to enabled feature flag and what is
-  // needed by the current system as indicated by the parameters.
-  if (!accessibility_state->IsPerformanceFilteringAllowed() ||
-      !features::IsAccessibilityPerformanceFilteringEnabled()) {
+  // The AXMode flags will be set according to requirements of the current
+  // system based on running services. This can be disabled with an enterprise
+  // policy, in which case accessibility becomes an all-or-none approach.
+  if (!accessibility_state->IsPerformanceFilteringAllowed()) {
     // When the browser is not yet accessible, then set the AXMode to
     // |ui::kAXModeComplete| for all web contents.
     if (!accessibility_state->IsAccessibleBrowser()) {
@@ -1521,10 +1521,15 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     return;
   }
 
-  // If the AccessibilityPerformanceFiltering feature flag has been enabled,
-  // then set |ui::kAXModeComplete| if a screen reader is present,
-  // |ui::kAXModeFormControls| if form controls mode is enabled, and
-  // |ui::kAXModeBasic| otherwise.
+  // Set the AXMode based on currently running services, sent from Java-side
+  // code and will fit into one of the below categories:
+  //
+  //    1. Screenreader running - |ui::kAXModeComplete|
+  //    2. Only password manager running - |ui::kAXModeFormControls|
+  //    3. Some accessibility services running that need more information than a
+  //       password manager, but not as much as a screenreader -
+  //       |ui::kAXModeBasic|
+  //
   if (is_screen_reader_enabled) {
     // Remove form controls experimental mode to preserve screen reader mode.
     ui::AXMode flags_to_remove(ui::AXMode::kNone,

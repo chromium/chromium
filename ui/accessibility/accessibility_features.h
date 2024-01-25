@@ -180,10 +180,6 @@ AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-// Filter AXModes based on running accessibility services.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPerformanceFiltering);
-AX_BASE_EXPORT bool IsAccessibilityPerformanceFilteringEnabled();
-
 // Disable max node and timeout limits on the
 // AXTreeSnapshotter's Snapshot method, and track related histograms.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySnapshotStressTests);

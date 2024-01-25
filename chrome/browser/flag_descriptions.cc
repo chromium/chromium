@@ -3864,13 +3864,6 @@ const char kAccessibilityPageZoomEnhancementsDescription[] =
     "When enabled, will show enhancements to the Page Zoom feature based on "
     "user feedback from the v1 version (e.g. reset button, better IPH, etc).";
 
-const char kAccessibilityPerformanceFilteringName[] =
-    "Accessibility Performance Filtering";
-const char kAccessibilityPerformanceFilteringDescription[] =
-    "Enable experimental accessibility filters to improve performance by"
-    " supporting different levels of the accessibility engine depending on what"
-    " accessibility services and assistive technologies are running.";
-
 const char kAccessibilitySnapshotStressTestsName[] =
     "Accessibility AXTree Snapshot Stress Tests";
 const char kAccessibilitySnapshotStressTestsDescription[] =

@@ -165,8 +165,6 @@ public class WebContentsAccessibilityTest {
             "Expected focus to be on a different node than it is.";
 
     // ContentFeatureList maps used for various tests.
-    private static final Map<String, Boolean> AXMODES_ON =
-            Map.of(ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
             Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
     private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
@@ -398,7 +396,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
@@ -433,7 +430,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
@@ -469,7 +465,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
@@ -507,7 +502,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
@@ -548,7 +542,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
@@ -586,7 +579,6 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        FeatureList.setTestFeatures(AXMODES_ON);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(

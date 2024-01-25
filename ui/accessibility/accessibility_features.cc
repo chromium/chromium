@@ -228,14 +228,6 @@ bool IsAccessibilityMagnifierFollowsStsEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAccessibilityPerformanceFiltering,
-             "AccessibilityPerformanceFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityPerformanceFilteringEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityPerformanceFiltering);
-}
-
 BASE_FEATURE(kAccessibilitySnapshotStressTests,
              "AccessibilitySnapshotStressTests",
              base::FEATURE_DISABLED_BY_DEFAULT);
