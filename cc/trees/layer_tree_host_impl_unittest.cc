@@ -932,6 +932,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
     auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
         layer_tree_impl, ScrollbarOrientation::kVertical, false, true);
+    scrollbar->draw_properties().opacity = 1.f;
     // SetupScrollbarLayerCommon will register the scrollbar, which sets the
     // layer's opacity to 0. An effect node for the scrollbar layer object needs
     // to be registered in the EffectTree before this happens.
@@ -976,17 +977,14 @@ class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData append_quads_data;
     scrollbar->AppendQuads(render_pass.get(), &append_quads_data);
-    viz::DrawQuad* track_quad = *(render_pass->quad_list.BackToFrontBegin());
     if (expected_opacity == 0.f) {
       // If the opacity of the track is expected to be zero, the layer code
       // makes an early return and doesn't append the track's quads.
+      viz::DrawQuad* track_quad = *(render_pass->quad_list.BackToFrontBegin());
       EXPECT_EQ(track_quad, nullptr);
     } else {
-      const viz::TextureDrawQuad* texture_quad =
-          viz::TextureDrawQuad::MaterialCast(track_quad);
-      for (auto& opacity_value : texture_quad->vertex_opacity) {
-        EXPECT_FLOAT_EQ(expected_opacity, opacity_value);
-      }
+      EXPECT_FLOAT_EQ(expected_opacity,
+                      render_pass->shared_quad_state_list.back()->opacity);
     }
   }
 };
