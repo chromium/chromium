@@ -17,16 +17,9 @@ namespace autofill {
 
 class ContentAutofillDriverFactoryTestApi {
  public:
-  // Creates a factory of ContentAutofillDrivers whose managers are
-  // TestBrowserAutofillManager.
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
-      TestAutofillClient* client);
-
-  static std::unique_ptr<ContentAutofillDriverFactory> Create(
-      content::WebContents* web_contents,
-      AutofillClient* client,
-      ContentAutofillDriverFactory::DriverInitCallback driver_init_hook);
+      ContentAutofillClient* client);
 
   explicit ContentAutofillDriverFactoryTestApi(
       ContentAutofillDriverFactory* factory);
@@ -34,7 +27,7 @@ class ContentAutofillDriverFactoryTestApi {
   size_t num_drivers() const { return factory_->driver_map_.size(); }
 
   void SetDriver(content::RenderFrameHost* rfh,
-                 std::unique_ptr<ContentAutofillDriver> driver);
+                 std::unique_ptr<ContentAutofillDriver> new_driver);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
   base::ObserverList<ContentAutofillDriverFactory::Observer>& observers() {
@@ -47,7 +40,7 @@ class ContentAutofillDriverFactoryTestApi {
   void AddObserverAtIndex(ContentAutofillDriverFactory::Observer* observer,
                           size_t index);
 
-  void set_client(AutofillClient* client) { factory_->client_ = client; }
+  void set_client(ContentAutofillClient* client) { factory_->client_ = client; }
 
  private:
   const raw_ref<ContentAutofillDriverFactory> factory_;

@@ -129,6 +129,8 @@ static_library("test_support") {
   sources = [
     "autofill_uitest_util.cc",
     "autofill_uitest_util.h",
+    "mock_autofill_agent.cc",
+    "mock_autofill_agent.h",
     "mock_autofill_popup_controller.cc",
     "mock_autofill_popup_controller.h",
     "mock_manual_filling_controller.cc",
@@ -139,6 +141,7 @@ static_library("test_support") {
     "//chrome/browser/autofill:autofill",
     "//chrome/browser/profiles:profile",
     "//components/autofill/content/browser:browser",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/browser:test_support",
     "//content/test:test_support",
     "//testing/gmock",

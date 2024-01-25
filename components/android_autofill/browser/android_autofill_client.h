@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -152,6 +153,14 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void SuggestionSelected(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
                           jint position);
+
+  // ContentAutofillClient:
+  std::unique_ptr<autofill::AutofillManager> CreateManager(
+      base::PassKey<autofill::ContentAutofillDriver> pass_key,
+      autofill::ContentAutofillDriver& driver) override;
+  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
+                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
+                     agent) override;
 
  private:
   friend class content::WebContentsUserData<AndroidAutofillClient>;

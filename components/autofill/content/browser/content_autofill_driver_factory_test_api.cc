@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 
 namespace autofill {
@@ -13,25 +14,8 @@ namespace autofill {
 // static
 std::unique_ptr<ContentAutofillDriverFactory>
 ContentAutofillDriverFactoryTestApi::Create(content::WebContents* web_contents,
-                                            TestAutofillClient* client) {
-  return Create(
-      web_contents, client,
-      base::BindRepeating(
-          [](TestAutofillClient* client, ContentAutofillDriver* driver) {
-            driver->set_autofill_manager(
-                std::make_unique<TestBrowserAutofillManager>(driver, client));
-          },
-          client));
-}
-
-// static
-std::unique_ptr<ContentAutofillDriverFactory>
-ContentAutofillDriverFactoryTestApi::Create(
-    content::WebContents* web_contents,
-    AutofillClient* client,
-    ContentAutofillDriverFactory::DriverInitCallback driver_init_hook) {
-  return base::WrapUnique(
-      new ContentAutofillDriverFactory(web_contents, client, driver_init_hook));
+                                            ContentAutofillClient* client) {
+  return std::make_unique<ContentAutofillDriverFactory>(web_contents, client);
 }
 
 ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
@@ -40,8 +24,10 @@ ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
 
 void ContentAutofillDriverFactoryTestApi::SetDriver(
     content::RenderFrameHost* rfh,
-    std::unique_ptr<ContentAutofillDriver> driver) {
-  factory_->driver_map_[rfh] = std::move(driver);
+    std::unique_ptr<ContentAutofillDriver> new_driver) {
+  std::unique_ptr<ContentAutofillDriver>& old_driver =
+      factory_->driver_map_[rfh];
+  old_driver = std::move(new_driver);
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(

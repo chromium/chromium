@@ -181,11 +181,26 @@
 namespace autofill {
 
 namespace {
+
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
   return AutoselectFirstSuggestion(
       source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
 }
+
+bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
+  switch (channel) {
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      return true;
+    case version_info::Channel::STABLE:
+    case version_info::Channel::BETA:
+    case version_info::Channel::UNKNOWN:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 // static
@@ -1322,11 +1337,7 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 }
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
-    : ContentAutofillClient(
-          web_contents,
-          base::BindRepeating(&BrowserDriverInitHook,
-                              this,
-                              g_browser_process->GetApplicationLocale())),
+    : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
       log_manager_(
           // TODO(crbug.com/928595): Replace the closure with a callback to the
@@ -1414,5 +1425,20 @@ ChromeAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
   return autofill_save_card_bottom_sheet_bridge_.get();
 }
 #endif
+
+std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
+    base::PassKey<ContentAutofillDriver> pass_key,
+    ContentAutofillDriver& driver) {
+  return std::make_unique<BrowserAutofillManager>(
+      &driver, this, g_browser_process->GetApplicationLocale());
+}
+
+void ChromeAutofillClient::InitAgent(
+    base::PassKey<ContentAutofillDriverFactory> pass_key,
+    const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) {
+  if (ShouldEnableHeavyFormDataScraping(GetChannel())) {
+    agent->EnableHeavyFormDataScraping();
+  }
+}
 
 }  // namespace autofill

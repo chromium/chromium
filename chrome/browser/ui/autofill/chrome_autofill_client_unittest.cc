@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -27,8 +28,11 @@
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
@@ -76,11 +80,9 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
 };
 #endif
 
-// Exposes the protected constructor.
 class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
-  explicit TestChromeAutofillClient(content::WebContents* web_contents)
-      : ChromeAutofillClient(web_contents) {}
+  using ChromeAutofillClient::ChromeAutofillClient;
 
 #if BUILDFLAG(IS_ANDROID)
   MockFastCheckoutClient* GetFastCheckoutClient() override {
@@ -98,7 +100,6 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
   }
 
   MockFastCheckoutClient fast_checkout_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 
@@ -135,14 +136,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return personal_data_manager_;
   }
 
-  TestContentAutofillDriver* autofill_driver() {
-    return test_autofill_driver_injector_[web_contents()];
-  }
-
-  TestBrowserAutofillManager* autofill_manager() {
-    return test_autofill_manager_injector_[web_contents()];
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
   MockSaveCardBubbleController& save_card_bubble_controller() {
     return static_cast<MockSaveCardBubbleController&>(
@@ -170,13 +163,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
-  TestAutofillClientInjector<TestChromeAutofillClient>
+  TestAutofillClientInjector<testing::NiceMock<TestChromeAutofillClient>>
       test_autofill_client_injector_;
-  TestAutofillDriverInjector<TestContentAutofillDriver>
-      test_autofill_driver_injector_;
-  TestAutofillManagerInjector<TestBrowserAutofillManager>
-      test_autofill_manager_injector_;
-
   base::OnceCallback<void()> setup_flags_;
 };
 

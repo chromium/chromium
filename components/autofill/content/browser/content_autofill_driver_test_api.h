@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace autofill {
 
@@ -15,6 +16,10 @@ class ContentAutofillDriverTestApi {
  public:
   explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
       : driver_(*driver) {}
+
+  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
+    driver_->autofill_manager_ = std::move(autofill_manager);
+  }
 
   void SetFrameAndFormMetaData(FormData& form, FormFieldData* field) const {
     driver_->SetFrameAndFormMetaData(form, field);

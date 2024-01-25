@@ -25,33 +25,6 @@ namespace autofill {
 
 class ScopedAutofillManagersObservation;
 
-namespace {
-
-bool ShouldEnableHeavyFormDataScraping(const version_info::Channel channel) {
-  switch (channel) {
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return true;
-    case version_info::Channel::STABLE:
-    case version_info::Channel::BETA:
-    case version_info::Channel::UNKNOWN:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-}  // namespace
-
-void BrowserDriverInitHook(AutofillClient* client,
-                           const std::string& app_locale,
-                           ContentAutofillDriver* driver) {
-  driver->set_autofill_manager(
-      std::make_unique<BrowserAutofillManager>(driver, client, app_locale));
-  if (client && ShouldEnableHeavyFormDataScraping(client->GetChannel()))
-    driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
-}
-
 // static
 ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
     content::WebContents* contents) {
@@ -86,23 +59,13 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
 
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
-    AutofillClient* client,
-    DriverInitCallback driver_init_hook)
-    : content::WebContentsObserver(web_contents),
-      client_(client),
-      driver_init_hook_(std::move(driver_init_hook)) {}
+    ContentAutofillClient* client)
+    : content::WebContentsObserver(web_contents), client_(client) {}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
   for (Observer& observer : observers_) {
     observer.OnContentAutofillDriverFactoryDestroyed(*this);
   }
-}
-
-std::unique_ptr<ContentAutofillDriver>
-ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
-  auto driver = std::make_unique<ContentAutofillDriver>(rfh, this);
-  driver_init_hook_.Run(driver.get());
-  return driver;
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
@@ -131,12 +94,13 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     //    calls `DriverForFrame(render_frame_host)`.
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
     if (render_frame_host->IsRenderFrameLive()) {
-      driver = CreateDriver(render_frame_host);
+      driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
       for (Observer& observer : observers_) {
         observer.OnContentAutofillDriverCreated(*this, *driver);
       }
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
+      client()->InitAgent(/*pass_key=*/{}, driver->GetAutofillAgent());
     } else {
       driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);
