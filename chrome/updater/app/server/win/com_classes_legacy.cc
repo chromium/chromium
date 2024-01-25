@@ -965,7 +965,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
   int code = -1;
   if (!process_.IsValid() ||
       !process_.WaitForExitWithTimeout(base::TimeDelta(), &code)) {
-    return E_FAIL;
+    return S_FALSE;
   }
 
   *exit_code = code;
