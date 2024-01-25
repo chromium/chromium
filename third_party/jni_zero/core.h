@@ -93,6 +93,33 @@ LazyGetClass(JNIEnv* env,
              const char* class_name,
              std::atomic<jclass>* atomic_class_id);
 
+// This class is a wrapper for JNIEnv Get(Static)MethodID.
+class JNI_ZERO_COMPONENT_BUILD_EXPORT MethodID {
+ public:
+  enum Type {
+    TYPE_STATIC,
+    TYPE_INSTANCE,
+  };
+
+  // Returns the method ID for the method with the specified name and signature.
+  // This method triggers a fatal assertion if the method could not be found.
+  template <Type type>
+  static jmethodID Get(JNIEnv* env,
+                       jclass clazz,
+                       const char* method_name,
+                       const char* jni_signature);
+
+  // The caller is responsible to zero-initialize |atomic_method_id|.
+  // It's fine to simultaneously call this on multiple threads referencing the
+  // same |atomic_method_id|.
+  template <Type type>
+  static jmethodID LazyGet(JNIEnv* env,
+                           jclass clazz,
+                           const char* method_name,
+                           const char* jni_signature,
+                           std::atomic<jmethodID>* atomic_method_id);
+};
+
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_CORE_H_

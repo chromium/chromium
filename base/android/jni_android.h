@@ -91,32 +91,6 @@ inline ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
   return jni_zero::GetClass(env, class_name);
 }
 
-// This class is a wrapper for JNIEnv Get(Static)MethodID.
-class BASE_EXPORT MethodID {
- public:
-  enum Type {
-    TYPE_STATIC,
-    TYPE_INSTANCE,
-  };
-
-  // Returns the method ID for the method with the specified name and signature.
-  // This method triggers a fatal assertion if the method could not be found.
-  template<Type type>
-  static jmethodID Get(JNIEnv* env,
-                       jclass clazz,
-                       const char* method_name,
-                       const char* jni_signature);
-
-  // The caller is responsible to zero-initialize |atomic_method_id|.
-  // It's fine to simultaneously call this on multiple threads referencing the
-  // same |atomic_method_id|.
-  template<Type type>
-  static jmethodID LazyGet(JNIEnv* env,
-                           jclass clazz,
-                           const char* method_name,
-                           const char* jni_signature,
-                           std::atomic<jmethodID>* atomic_method_id);
-};
 
 // Returns true if an exception is pending in the provided JNIEnv*.
 inline bool HasException(JNIEnv* env) {
@@ -139,6 +113,7 @@ BASE_EXPORT std::string GetJavaExceptionInfo(
 // This returns a string representation of the java stack trace.
 BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
+using MethodID = jni_zero::MethodID;
 }  // namespace android
 }  // namespace base
 

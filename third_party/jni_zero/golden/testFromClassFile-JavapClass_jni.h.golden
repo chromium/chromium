@@ -57,7 +57,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(JNIEnv*
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "<init>",
@@ -81,7 +81,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolea
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "<init>",
@@ -105,7 +105,7 @@ static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(JN
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "<init>",
@@ -129,7 +129,7 @@ static jint Java_JavapClass_intMethod(JNIEnv* env, const jni_zero::JavaRef<jobje
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "intMethod",
@@ -153,7 +153,7 @@ static void Java_JavapClass_needsMangling__String(JNIEnv* env, const jni_zero::J
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "needsMangling",
@@ -176,7 +176,7 @@ static void Java_JavapClass_needsMangling__java_util_ArrayList(JNIEnv* env, cons
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "needsMangling",
@@ -196,7 +196,7 @@ static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "needsMangling",
@@ -220,7 +220,7 @@ static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(JNIEnv* env,
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "objTest",
@@ -245,7 +245,7 @@ static jint Java_JavapClass_staticIntMethod(JNIEnv* env, const jni_zero::JavaRef
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "staticIntMethod",
@@ -269,7 +269,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMetho
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "staticIntMethod",

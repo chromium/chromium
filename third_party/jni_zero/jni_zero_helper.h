@@ -51,7 +51,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
   }
 
   // Force no inline to reduce code size.
-  template <base::android::MethodID::Type type>
+  template <MethodID::Type type>
   NOINLINE void Init(JNIEnv* env,
                      jclass clazz,
                      const char* method_name,
@@ -64,8 +64,8 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
     // Gets PC of the calling function.
     pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
 
-    method_id = base::android::MethodID::LazyGet<type>(
-        env, clazz, method_name, jni_signature, atomic_method_id);
+    method_id = MethodID::LazyGet<type>(env, clazz, method_name, jni_signature,
+                                        atomic_method_id);
   }
 
   NOINLINE ~JniJavaCallContextUnchecked() {
@@ -84,7 +84,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
 // Context about the JNI call with exception unchecked to be stored in stack.
 struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextChecked {
   // Force no inline to reduce code size.
-  template <base::android::MethodID::Type type>
+  template <MethodID::Type type>
   NOINLINE void Init(JNIEnv* env,
                      jclass clazz,
                      const char* method_name,

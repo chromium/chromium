@@ -81,7 +81,7 @@ static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const jni_zero::Ja
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "useBar1",

@@ -96,57 +96,6 @@ void InitVM(JavaVM* vm) {
   DCHECK(g_out_of_memory_error_class);
 }
 
-template<MethodID::Type type>
-jmethodID MethodID::Get(JNIEnv* env,
-                        jclass clazz,
-                        const char* method_name,
-                        const char* jni_signature) {
-  auto get_method_ptr = type == MethodID::TYPE_STATIC ?
-      &JNIEnv::GetStaticMethodID :
-      &JNIEnv::GetMethodID;
-  jmethodID id = (env->*get_method_ptr)(clazz, method_name, jni_signature);
-  if (base::android::ClearException(env) || !id) {
-    LOG(FATAL) << "Failed to find " <<
-        (type == TYPE_STATIC ? "static " : "") <<
-        "method " << method_name << " " << jni_signature;
-  }
-  return id;
-}
-
-// If |atomic_method_id| set, it'll return immediately. Otherwise, it'll call
-// into ::Get() above. If there's a race, it's ok since the values are the same
-// (and the duplicated effort will happen only once).
-template <MethodID::Type type>
-jmethodID MethodID::LazyGet(JNIEnv* env,
-                            jclass clazz,
-                            const char* method_name,
-                            const char* jni_signature,
-                            std::atomic<jmethodID>* atomic_method_id) {
-  const jmethodID value = atomic_method_id->load(std::memory_order_acquire);
-  if (value)
-    return value;
-  jmethodID id = MethodID::Get<type>(env, clazz, method_name, jni_signature);
-  atomic_method_id->store(id, std::memory_order_release);
-  return id;
-}
-
-// Various template instantiations.
-template jmethodID MethodID::Get<MethodID::TYPE_STATIC>(
-    JNIEnv* env, jclass clazz, const char* method_name,
-    const char* jni_signature);
-
-template jmethodID MethodID::Get<MethodID::TYPE_INSTANCE>(
-    JNIEnv* env, jclass clazz, const char* method_name,
-    const char* jni_signature);
-
-template jmethodID MethodID::LazyGet<MethodID::TYPE_STATIC>(
-    JNIEnv* env, jclass clazz, const char* method_name,
-    const char* jni_signature, std::atomic<jmethodID>* atomic_method_id);
-
-template jmethodID MethodID::LazyGet<MethodID::TYPE_INSTANCE>(
-    JNIEnv* env, jclass clazz, const char* method_name,
-    const char* jni_signature, std::atomic<jmethodID>* atomic_method_id);
-
 
 void CheckException(JNIEnv* env) {
   if (!jni_zero::HasException(env)) {

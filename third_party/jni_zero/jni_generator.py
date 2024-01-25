@@ -793,7 +793,7 @@ ${FUNCTION_HEADER}
 
   jni_zero::JniJavaCallContext${CHECK_EXCEPTION} call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_${METHOD_ID_TYPE}>(
+      jni_zero::MethodID::TYPE_${METHOD_ID_TYPE}>(
           env,
           clazz,
           "${JNI_NAME}",

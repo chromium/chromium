@@ -89,7 +89,7 @@ static void Java_SampleBidirectionalNonProxy_addStructB(JNIEnv* env, const
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "addStructB",
@@ -110,7 +110,7 @@ static void Java_SampleBidirectionalNonProxy_setBool(JNIEnv* env, const jni_zero
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "setBool",
@@ -131,7 +131,7 @@ static void Java_SampleBidirectionalNonProxy_setStringBuilder(JNIEnv* env, const
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "setStringBuilder",
@@ -151,7 +151,7 @@ static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* en
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "testMethodWithNoParam",
@@ -174,7 +174,7 @@ static void Java_SampleBidirectionalNonProxy_testMethodWithParam(JNIEnv* env, co
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "testMethodWithParam",
@@ -196,7 +196,7 @@ static jni_zero::ScopedJavaLocalRef<jstring>
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_INSTANCE>(
+      jni_zero::MethodID::TYPE_INSTANCE>(
           env,
           clazz,
           "testMethodWithParamAndReturn",
@@ -219,7 +219,7 @@ static jni_zero::ScopedJavaLocalRef<jstring>
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "testStaticMethodWithNoParam",
@@ -242,7 +242,7 @@ static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(JNIEnv* e
 
   jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
-      base::android::MethodID::TYPE_STATIC>(
+      jni_zero::MethodID::TYPE_STATIC>(
           env,
           clazz,
           "testStaticMethodWithParam",
