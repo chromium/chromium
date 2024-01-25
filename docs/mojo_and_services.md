@@ -431,7 +431,7 @@ The preferred way to define the sandbox for your interface is by specifying a
 `[ServiceSandbox=type]` attribute on your `interface {}` in its `.mojom` file:
 
 ```
-import "sandbox/policy/mojom/sandbox.mojom"
+import "sandbox/policy/mojom/sandbox.mojom";
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FakeService {
   ...
