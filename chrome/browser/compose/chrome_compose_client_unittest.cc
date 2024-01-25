@@ -427,6 +427,17 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
   FlushMojo();
 
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCreateClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 1);
+
   NavigateAndCommitActiveTab(GURL("about:blank"));
 
   // Check page level UKM metrics.
@@ -1172,8 +1183,20 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
       << "Undo should return valid state after second Compose() invocation.";
   EXPECT_EQ("this state should be restored with undo", state->webui_state);
 
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
   // Make sure the async call to CloseUI completes before navigating away.
   FlushMojo();
+
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kUndoClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCloseClicked, 1);
 
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -1491,6 +1514,26 @@ TEST_F(ChromeComposeClientTest,
 
   // No FRE related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 compose::ComposeSessionEventTypes::kFREShown,
+                                 0);
+  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 compose::ComposeSessionEventTypes::kMSBBShown,
+                                 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMSBBEnabled, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCloseClicked, 1);
 }
 
 TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
@@ -1577,6 +1620,23 @@ TEST_F(ChromeComposeClientTest,
                                  compose::ComposeFirstRunSessionCloseReason::
                                      kFirstRunDisclaimerAcknowledgedWithInsert,
                                  1);
+
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 compose::ComposeSessionEventTypes::kFREShown,
+                                 1);
+  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 compose::ComposeSessionEventTypes::kMSBBShown,
+                                 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 1);
 }
 
 TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
@@ -2224,8 +2284,21 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
                                  compose::ComposeRequestReason::kRetryRequest,
                                  1);
 
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
   // Make sure the async call to CloseUI completes before navigating away.
   FlushMojo();
+
+  // Check Compose Session Event Counts
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kRetryClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCloseClicked, 1);
 
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));

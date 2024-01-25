@@ -95,6 +95,28 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="New session with selected text opened"/>
 </enum>
 
+<enum name="ComposeSessionEventTypes">
+  <int value="0" label="Dialog Shown"/>
+  <int value="1" label="FRE Shown"/>
+  <int value="2" label="FRE Accepted"/>
+  <int value="3" label="MSBB Shown"/>
+  <int value="4" label="MSBB Settings Opened"/>
+  <int value="5" label="MSBB Enabled In Session"/>
+  <int value="6" label="Sesstion started with selection"/>
+  <int value="7" label="Create Clicked"/>
+  <int value="8" label="Update Clicked"/>
+  <int value="9" label="Retry Clicked"/>
+  <int value="10" label="Undo Clicked"/>
+  <int value="11" label="Shorten Clicked"/>
+  <int value="12" label="Elaborate Clicked"/>
+  <int value="13" label="Casual Clicked"/>
+  <int value="14" label="Formal Clicked"/>
+  <int value="15" label="Thumbs Down Clicked"/>
+  <int value="16" label="Thumbs Up Clicked"/>
+  <int value="17" label="Insert Clicked"/>
+  <int value="18" label="Close Clicked"/>
+</enum>
+
 <enum name="ComposeShowStatus">
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Blocked for generic reason"/>

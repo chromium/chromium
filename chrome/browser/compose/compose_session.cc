@@ -179,7 +179,6 @@ ComposeSession::ComposeSession(
       handler_receiver_(this),
       current_msbb_state_(false),
       msbb_initially_off_(false),
-      msbb_enabled_during_session_(false),
       msbb_close_reason_(
           compose::ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly),
       fre_close_reason_(
@@ -206,7 +205,8 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
-  if (!fre_complete_ || fre_completed_in_session_) {
+  if (session_events_.fre_dialog_shown_count > 0 &&
+      (!fre_complete_ || session_events_.fre_completed_in_session)) {
     compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
     compose::LogComposeFirstRunSessionDialogShownCount(
         fre_close_reason_, session_events_.fre_dialog_shown_count);
@@ -214,13 +214,21 @@ ComposeSession::~ComposeSession() {
       return;
     }
   }
-  if (!current_msbb_state_ || msbb_enabled_during_session_) {
+  if (session_events_.msbb_dialog_shown_count > 0 &&
+      (!current_msbb_state_ || session_events_.msbb_enabled_in_session)) {
     compose::LogComposeMSBBSessionDialogShownCount(
         msbb_close_reason_, session_events_.msbb_dialog_shown_count);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
       return;
     }
+  }
+
+  if (session_events_.dialog_shown_count < 1) {
+    // Do not report any further metrics if the dialog was never shown.
+    // This is mostly like because the session was the debug session but
+    // could occur if the tab closes while Compose is opening.
+    return;
   }
 
   if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
@@ -658,7 +666,11 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
                                     ->log_ai_data_request()
                                     ->model_execution_info()
                                     .execution_id();
+      session_events_.has_thumbs_down = true;
       OpenFeedbackPage(feedback_id);
+    } else if (feedback ==
+               compose::mojom::UserFeedback::kUserFeedbackPositive) {
+      session_events_.has_thumbs_up = true;
     }
   }
 }
@@ -672,6 +684,7 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
   text_selected_ = text_selected;
   if (text.has_value()) {
     initial_input_ = text.value();
+    session_events_.has_initial_text = true;
   }
 
   if (!fre_complete_) {
@@ -794,7 +807,7 @@ void ComposeSession::SetFirstRunCloseReason(
 }
 
 void ComposeSession::SetFirstRunCompleted() {
-  fre_completed_in_session_ = true;
+  session_events_.fre_completed_in_session = true;
   fre_complete_ = true;
 
   // Start inner text capture which was skipped until FRE was complete.
@@ -812,7 +825,7 @@ void ComposeSession::SetCloseReason(
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
-      session_events_.canceled = true;
+      session_events_.close_clicked = true;
       break;
     case compose::ComposeSessionCloseReason::kEndedImplicitly:
       final_status_ = optimization_guide::proto::FinalStatus::
@@ -861,7 +874,7 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
   if (!msbb_enabled) {
     msbb_initially_off_ = true;
   } else if (msbb_initially_off_) {
-    msbb_enabled_during_session_ = true;
+    session_events_.msbb_enabled_in_session = true;
     SetMSBBCloseReason(
         compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
     base::RecordAction(

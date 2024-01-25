@@ -251,6 +251,11 @@ void ChromeComposeClient::OpenComposeSettings() {
   params.close_button_alt_text_id =
       IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT;
 
+  ComposeSession* active_session = GetSessionForActiveComposeField();
+  if (active_session) {
+    active_session->set_msbb_settings_opened();
+  }
+
   base::RecordAction(
       base::UserMetricsAction("Compose.SessionPaused.MSBBSettingsShown"));
   ShowPromoInPage::Start(browser, std::move(params));

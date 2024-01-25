@@ -24,6 +24,7 @@ extern const char kComposeRequestStatus[];
 extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];
+extern const char kComposeSessionEventCounts[];
 extern const char kComposeSessionUndoCount[];
 extern const char kComposeSessionUpdateInputCount[];
 extern const char kComposeShowStatus[];
@@ -88,6 +89,31 @@ enum class ComposeSessionCloseReason {
   kMaxValue = kNewSessionWithSelectedText,
 };
 
+// Keep in sync with ComposeSessionEventCounts in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeSessionEventTypes {
+  kDialogShown = 0,
+  kFREShown = 1,
+  kFREAccepted = 2,
+  kMSBBShown = 3,
+  kMSBBSettingsOpened = 4,
+  kMSBBEnabled = 5,
+  kStartedWithSelection = 6,
+  kCreateClicked = 7,
+  kUpdateClicked = 8,
+  kRetryClicked = 9,
+  kUndoClicked = 10,
+  kShortenClicked = 11,
+  kElaborateClicked = 12,
+  kCasualClicked = 13,
+  kFormalClicked = 14,
+  kThumbsDown = 15,
+  kThumbsUp = 16,
+  kInsertClicked = 17,
+  kCloseClicked = 18,
+  kMaxValue = kCloseClicked,
+};
+
 // Enum for recording the show status of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Keep in sync with
@@ -120,7 +146,7 @@ struct ComposeSessionEvents {
   ~ComposeSessionEvents() = default;
 
   // Logging counters.
-  // Times "Generate" button is pressed.
+  // The total number of Compose Requests for the session.
   unsigned int compose_count = 0;
   // Times we have shown the compose dialog.
   unsigned int dialog_shown_count = 0;
@@ -132,20 +158,36 @@ struct ComposeSessionEvents {
   unsigned int undo_count = 0;
   // Compose request after input edited.
   unsigned int update_input_count = 0;
-  // Tiems the user has pressed the "regenerate" button.
+  // Tiems the user has pressed the "Retry" button.
   unsigned int regenerate_count = 0;
-  // Times the user has picked the "shorter" option.
+  // Times the user has picked the "Shorter" option.
   unsigned int shorten_count = 0;
-  // Times the user has picked the "elaborate" option.
+  // Times the user has picked the "Elaborate" option.
   unsigned int lengthen_count = 0;
-  // Times the user has picked the "formalize" option.
+  // Times the user has picked the "Formal" option.
   unsigned int formal_count = 0;
-  // Times the user has picked the "casual" option.
+  // Times the user has picked the "Casual" option.
   unsigned int casual_count = 0;
+
+  // Logging flags
+  // True if the FRE was completed in the session.
+  bool fre_completed_in_session = false;
+  // True if the MSBB settings were opened.
+  bool msbb_settings_opened = false;
+  // True if the MSBB was enabled in the session.
+  bool msbb_enabled_in_session = false;
+
+  // True if the session started with selected text.
+  bool has_initial_text = false;
+  // True if thumbs up was ever clicked during the session.
+  bool has_thumbs_up = false;
+  // True if thumbs down was ever clicked during the session.
+  bool has_thumbs_down = false;
+
   // True if the results were eventually inserted back to the web page.
   bool inserted_results = false;
-  // True if the the user canceled the compose dialog via the "x" button.
-  bool canceled = false;
+  // True if the the user closed the compose session via the "x" button.
+  bool close_clicked = false;
 };
 
 // Enum with the possible reasons for it being impossible to open the Compose
@@ -220,6 +262,7 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
                                            int dialog_shown_count);
 
 // Log session based metrics when a session ends.
+// Should only be called once per session.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    const ComposeSessionEvents& session_events);
 
