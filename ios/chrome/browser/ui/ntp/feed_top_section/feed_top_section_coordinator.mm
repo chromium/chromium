@@ -210,19 +210,21 @@
 #pragma mark - NotificationsConfirmationPresenter
 
 - (void)presentNotificationsConfirmationMessage {
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  __weak __typeof(self) weakSelf = self;
-  [snackbarHandler
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE)
-                   buttonText:
-                       l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
-                messageAction:^{
-                  [weakSelf showNotificationSettings];
-                }
-             completionAction:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    __weak __typeof(self) weakSelf = self;
+    [snackbarHandler
+        showSnackbarWithMessage:l10n_util::GetNSString(
+                                    IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE)
+                     buttonText:
+                         l10n_util::GetNSString(
+                             IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
+                  messageAction:^{
+                    [weakSelf showNotificationSettings];
+                  }
+               completionAction:nil];
+  });
 }
 
 #pragma mark - Private
