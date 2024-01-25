@@ -558,7 +558,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
 const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     const CompositorRenderPass& source_pass,
     AggregatedRenderPass* dest_pass,
-    const gfx::Transform& parent_target_transform,
+    const gfx::Transform& pass_to_root_target_transform,
     const Surface* surface,
     size_t* overlay_damage_index) {
   // Only process the damage rect at the root render pass, once per surface.
@@ -619,24 +619,23 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
   // rect to this quad.
   // For similar reasons, we should not assign damage to quads with non-axis
   // aligned transforms, because those won't be promoted to overlay.
-  auto& damage_rect_in_target_space = surface_damage_rect_list_->back();
-  if (!damage_rect_in_target_space.IsEmpty()) {
-    gfx::Transform transform =
-        parent_target_transform *
+  auto& damage_rect_in_root_space = surface_damage_rect_list_->back();
+  if (!damage_rect_in_root_space.IsEmpty()) {
+    gfx::Transform quad_to_root_transform =
+        pass_to_root_target_transform *
         target_quad->shared_quad_state->quad_to_target_transform;
-    if (!transform.Preserves2dAxisAlignment()) {
+    if (!quad_to_root_transform.Preserves2dAxisAlignment()) {
       return nullptr;
     }
 
-    gfx::RectF rect_in_target_space =
-        cc::MathUtil::MapClippedRect(transform, gfx::RectF(target_quad->rect));
+    gfx::RectF rect_in_root_space = cc::MathUtil::MapClippedRect(
+        quad_to_root_transform, gfx::RectF(target_quad->rect));
     // Because OverlayCandidate.damage_rect is a gfx::Rect, we can't really
     // assign damage if the display_rect is not pixel-aligned.
-    if (!gfx::IsNearestRectWithinDistance(rect_in_target_space, 0.01f)) {
+    if (!gfx::IsNearestRectWithinDistance(rect_in_root_space, 0.01f)) {
       return nullptr;
     }
-    if (!rect_in_target_space.Contains(
-            gfx::RectF(damage_rect_in_target_space))) {
+    if (!rect_in_root_space.Contains(gfx::RectF(damage_rect_in_root_space))) {
       return nullptr;
     }
   }
@@ -1447,6 +1446,9 @@ void SurfaceAggregator::CopyQuadsToPass(
   }
 #endif
 
+  const gfx::Transform pass_to_dest_root_target_transform =
+      dest_pass->transform_to_root_target * target_transform;
+
   size_t overlay_damage_index = 0;
   const DrawQuad* quad_with_overlay_damage_index = nullptr;
   if (needs_surface_damage_rect_list_ &&
@@ -1454,13 +1456,10 @@ void SurfaceAggregator::CopyQuadsToPass(
     // TODO(crbug.com/1323002): If there is one specific quad for this pass's
     // damage we should move the allocation of the damage index below to be
     // consistent with quad ordering.
-    quad_with_overlay_damage_index =
-        FindQuadWithOverlayDamage(source_pass, dest_pass, target_transform,
-                                  surface, &overlay_damage_index);
+    quad_with_overlay_damage_index = FindQuadWithOverlayDamage(
+        source_pass, dest_pass, pass_to_dest_root_target_transform, surface,
+        &overlay_damage_index);
   }
-
-  gfx::Transform pass_to_dest_root_target_transform =
-      dest_pass->transform_to_root_target * target_transform;
 
   // Add render pass |output_rect| to |dest_root_target_clip_rect|.
   auto new_dest_root_target_clip_rect = CalculateClipRect(

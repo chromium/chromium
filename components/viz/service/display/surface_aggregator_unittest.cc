@@ -9003,6 +9003,145 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, QuadContainsSurfaceDamageRect) {
   }
 }
 
+// Check that the overlay damage index is set for quads in non-root render
+// passes. This can be useful e.g. if we want to do overlay processing even if
+// the web contents surface does not merge.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       OverlayDamageIndexFromNonRootSurface) {
+  const gfx::Rect video_quad_rect = gfx::Rect(0, 0, 50, 50);
+  const gfx::Rect child_surface_quad_rect = gfx::Rect(0, 0, 100, 100);
+  const gfx::Rect root_surface_rect = gfx::Rect(200, 200);
+
+  const gfx::Transform transform_child_surface_to_root =
+      gfx::Transform::MakeTranslation(0.0f, 10.0f);
+  const gfx::Transform transform_video_to_child_surface =
+      gfx::Transform::MakeTranslation(10.0f, 0.0f);
+  const gfx::Rect video_rect_in_root =
+      (transform_child_surface_to_root * transform_video_to_child_surface)
+          .MapRect(video_quad_rect);
+  const gfx::Rect child_surface_rect_in_root =
+      transform_child_surface_to_root.MapRect(child_surface_quad_rect);
+
+  auto video_embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+
+  TestSurfaceIdAllocator video_surface_id(
+      video_embedded_support->frame_sink_id());
+  auto video_quad = Quad::YUVVideoQuad(video_quad_rect);
+
+  std::vector<Pass> video_surface_passes = {
+      Pass({video_quad}, /*size=*/video_quad_rect.size(),
+           /*damage_rect=*/video_quad_rect)};
+  {
+    CompositorFrame video_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&video_surface_frame.render_pass_list, video_surface_passes,
+              &video_surface_frame.metadata.referenced_surfaces);
+    PopulateTransferableResources(video_surface_frame);
+
+    video_embedded_support->SubmitCompositorFrame(
+        video_surface_id.local_surface_id(), std::move(video_surface_frame));
+  }
+
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  {
+    auto surface_quad = Quad::SurfaceQuad(
+        SurfaceRange(absl::nullopt, video_surface_id), SkColors::kWhite,
+        /*primary_surface_rect*/ video_quad_rect,
+        /*opacity*/ 1.f, transform_video_to_child_surface,
+        /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
+        /*is_fast_rounded_corner=*/false);
+    // TODO doc
+    surface_quad.allow_merge = false;
+
+    std::vector<Pass> child_surface_passes = {
+        Pass({surface_quad},
+             /*size=*/child_surface_quad_rect.size())};
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    PopulateTransferableResources(child_surface_frame);
+
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+  }
+
+  // First frame will have full damage for each surface.
+  {
+    std::vector<Quad> root_surface_quads = {Quad::SurfaceQuad(
+        SurfaceRange(absl::nullopt, child_surface_id), SkColors::kWhite,
+        /*primary_surface_rect*/ child_surface_quad_rect,
+        /*opacity*/ 1.f, transform_child_surface_to_root,
+        /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
+        /*is_fast_rounded_corner=*/false)};
+    std::vector<Pass> root_passes = {Pass(root_surface_quads,
+                                          /*size=*/root_surface_rect.size())};
+
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(root_surface_rect, output_root_pass->damage_rect);
+    EXPECT_THAT(aggregated_frame.surface_damage_rect_list_,
+                testing::ElementsAreArray({
+                    root_surface_rect,
+                    child_surface_rect_in_root,
+                    video_rect_in_root,
+                }));
+    EXPECT_EQ(DamageListUnion(aggregated_frame.surface_damage_rect_list_),
+              output_root_pass->damage_rect);
+
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size())
+        << "Test assumes surface does not merge";
+    EXPECT_THAT(aggregated_frame.render_pass_list[0]->quad_list,
+                ElementsAre(IsYuvVideoQuad()));
+    EXPECT_THAT(aggregated_frame.render_pass_list[1]->quad_list,
+                ElementsAre(IsAggregatedRenderPassQuad()));
+  }
+
+  // Video surface is submitted again with damage, which will be the only thing
+  // with damage. The video quad will have the overlay damage index referring to
+  // this damage rect.
+  {
+    CompositorFrame video_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&video_surface_frame.render_pass_list, video_surface_passes,
+              &video_surface_frame.metadata.referenced_surfaces);
+    video_embedded_support->SubmitCompositorFrame(
+        video_surface_id.local_surface_id(), std::move(video_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(video_rect_in_root, output_root_pass->damage_rect);
+    EXPECT_THAT(aggregated_frame.surface_damage_rect_list_,
+                testing::ElementsAreArray({
+                    video_rect_in_root,
+                }));
+    EXPECT_EQ(DamageListUnion(aggregated_frame.surface_damage_rect_list_),
+              output_root_pass->damage_rect);
+
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size())
+        << "Test assumes surface does not merge";
+    EXPECT_THAT(aggregated_frame.render_pass_list[0]->quad_list,
+                ElementsAre(IsYuvVideoQuad()));
+    EXPECT_THAT(aggregated_frame.render_pass_list[1]->quad_list,
+                ElementsAre(IsAggregatedRenderPassQuad()));
+
+    const SharedQuadState* video_sqs = aggregated_frame.render_pass_list[0]
+                                           ->quad_list.back()
+                                           ->shared_quad_state;
+
+    // Surface damage can be assigned to the video quad.
+    ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+    EXPECT_EQ(video_rect_in_root,
+              aggregated_frame.surface_damage_rect_list_[index]);
+  }
+}
+
 // Check GetRectDamage() handles per quad damage correctly.
 TEST_F(SurfaceAggregatorValidSurfaceTest, NonRootRenderPassWithPerQuadDamage) {
   constexpr gfx::Rect root_damage_rect(70, 70, 10, 10);
