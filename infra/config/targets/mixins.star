@@ -225,6 +225,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "android_u",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_os": "UQ1A.240105.002",
+        },
+    ),
+)
+
+targets.mixin(
     name = "android_user",
     swarming = targets.swarming(
         dimensions = {

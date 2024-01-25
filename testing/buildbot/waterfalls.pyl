@@ -4074,6 +4074,24 @@
       'timeout_30m',
     ],
     'machines': {
+      'Android FYI Experimental Release (Pixel 6)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'android_u',
+          'has_native_resultdb_integration',
+          'oriole',
+          'gpu-swarming-pool',
+          'limited_capacity_bot',
+        ],
+        # If the experimental configuration is the same as stable, this should
+        # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
+        # should be running the same tests as 'Android FYI Release (Pixel 6)'.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',

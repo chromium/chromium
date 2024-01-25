@@ -192,6 +192,13 @@
       },
     },
   },
+  'android_u': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'UQ1A.240105.002',
+      },
+    },
+  },
   'android_user': {
     'swarming': {
       'dimensions': {
