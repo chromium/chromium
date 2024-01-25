@@ -6,8 +6,10 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -71,6 +73,11 @@ using ::testing::Return;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 
 const char kConversionUrl[] = "https://b.com";
+
+const char kRedirectHeaderData[] =
+    "HTTP/1.1 301 Moved\0"
+    "Location: http://foopy/\0"
+    "\0";
 
 constexpr BeaconId kBeaconId(123);
 constexpr int64_t kNavigationId(456);
@@ -208,7 +215,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
 TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
   blink::Impression impression;
 
-  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      std::string(kRedirectHeaderData, std::size(kRedirectHeaderData)));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
   const SuitableOrigin source_origin =
@@ -262,7 +270,8 @@ TEST_F(AttributionHostTest,
        ValidAndInvalidSourceRegistrations_ForwardedToManager) {
   blink::Impression impression;
 
-  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      std::string(kRedirectHeaderData, std::size(kRedirectHeaderData)));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
   const SuitableOrigin source_origin =
@@ -942,7 +951,8 @@ TEST_F(
 TEST_F(AttributionHostTest, InsecureTaintTracking) {
   blink::Impression impression;
 
-  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  auto redirect_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      std::string(kRedirectHeaderData, std::size(kRedirectHeaderData)));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
   const SuitableOrigin source_origin =

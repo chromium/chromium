@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -41,6 +42,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -51,6 +53,8 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_navigation_throttle.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -791,6 +795,73 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   http_response->set_code(net::HTTP_OK);
   http_response->AddCustomHeader(kAttributionReportingRegisterSourceHeader,
                                  R"({"destination":"https://d.test"})");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  run_loop.Run();
+}
+
+// Regression test for https://crbug.com/1520612.
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       ForegroundNavigationRedirectCancelled_SourceRegistered) {
+  TestNavigationThrottleInserter throttle_inserter(
+      web_contents(),
+      base::BindLambdaForTesting(
+          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            auto throttle = std::make_unique<TestNavigationThrottle>(handle);
+            throttle->SetResponse(TestNavigationThrottle::WILL_REDIRECT_REQUEST,
+                                  TestNavigationThrottle::SYNCHRONOUS,
+                                  NavigationThrottle::CANCEL_AND_IGNORE);
+
+            return throttle;
+          }));
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source_redirect");
+
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_source_url =
+      https_server->GetURL("d.test", "/register_source_redirect");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      mock_attribution_manager(),
+      HandleSource(
+          ReportingOriginIs(*SuitableOrigin::Create(register_source_url)), _))
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: '',
+                        target: $2});)",
+                                               register_source_url, "_top")));
+
+  ASSERT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(kAttributionReportingRegisterSourceHeader,
+                                 R"({"destination":"https://a.test"})");
+  http_response->AddCustomHeader(
+      "Location",
+      https_server
+          ->GetURL("c.test",
+                   "/attribution_reporting/page_with_conversion_redirect.html")
+          .spec());
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
 
