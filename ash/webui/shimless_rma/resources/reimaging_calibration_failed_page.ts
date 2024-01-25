@@ -10,7 +10,6 @@ import './calibration_component_chip.js';
 import './icons.html.js';
 import './shimless_rma_shared.css.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -213,12 +212,13 @@ export class ReimagingCalibrationFailedPage extends
     this.getInitialComponentsList();
 
     // Hide the gradient when the list is scrolled to the end.
-    (this.shadowRoot!.querySelector('.scroll-container') as HTMLDivElement)
-        .addEventListener('scroll', (event: Event) => {
+    this.shadowRoot!.querySelector('.scroll-container')!.addEventListener(
+        'scroll', (event: Event) => {
           const gradient =
-              this.shadowRoot!.querySelector('.gradient') as HTMLDivElement;
-          const dialog: CrDialogElement|null =
-              this.shadowRoot!.querySelector('#failedComponentsDialog');
+              this.shadowRoot!.querySelector<HTMLElement>('.gradient');
+          assert(gradient);
+          const dialog = this.shadowRoot!.querySelector<CrDialogElement>(
+              '#failedComponentsDialog');
           assert(dialog);
           dialog.close();
           const target = (event.target as HTMLElement);
@@ -282,9 +282,10 @@ export class ReimagingCalibrationFailedPage extends
               this.componentCheckboxes[this.focusedComponentIndex]
                   .uniqueId}"]`);
       assert(componentChip);
-      (componentChip.shadowRoot!.querySelector('#componentButton') as
-       CrButtonElement)
-          .focus();
+      const button = componentChip.shadowRoot!.querySelector<HTMLElement>(
+          '#componentButton');
+      assert(button);
+      button.focus();
     }
   }
 

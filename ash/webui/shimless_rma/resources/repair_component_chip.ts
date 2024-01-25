@@ -93,7 +93,7 @@ export class RepairComponentChip extends RepairComponentChipBase {
     // Tab should go to the first non-disabled component in the list,
     // not individual component.
     modifyTabbableElement(
-        this.shadowRoot!.querySelector('#componentButton') as HTMLElement,
+        this.shadowRoot!.querySelector<HTMLElement>('#componentButton')!,
         this.isFirstClickableComponent);
   }
 

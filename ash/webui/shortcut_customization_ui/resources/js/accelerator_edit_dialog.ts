@@ -162,7 +162,7 @@ export class AcceleratorEditDialogElement extends
   }
 
   private getViewList(): DomRepeat {
-    const viewList = this.shadowRoot!.querySelector('#viewList') as DomRepeat;
+    const viewList = this.shadowRoot!.querySelector<DomRepeat>('#viewList');
     assert(viewList);
     return viewList;
   }

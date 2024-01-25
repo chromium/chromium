@@ -199,8 +199,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
    * Set up canvas width, height and drawing context.
    */
   private setupCanvas(): void {
-    const canvas =
-        this.shadowRoot!.querySelector('canvas') as HTMLCanvasElement;
+    const canvas = this.shadowRoot!.querySelector('canvas');
     assert(canvas);
 
     canvas.width = SCREEN_MAX_LENGTH;
@@ -208,9 +207,8 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
 
     // CSS in .html file does not have access to this element,
     // therefore adjust it here to make the canvas cover the whole screen.
-    const topContainer =
-        this.getDialog(DialogType.CANVAS)!.shadowRoot!.querySelector(
-            '.top-container') as HTMLElement;
+    const topContainer = this.getDialog(DialogType.CANVAS)!.shadowRoot!
+                             .querySelector<HTMLElement>('.top-container');
     topContainer!.style.display = 'none';
 
     const ctx = canvas.getContext('2d');

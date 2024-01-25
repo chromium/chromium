@@ -385,7 +385,8 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
         .then(stream => {
           this.stream_ = stream;
           if (this.stream_) {
-            const videoElement = this.shadowRoot!.querySelector('#video') as HTMLVideoElement | null;
+            const videoElement =
+                this.shadowRoot!.querySelector<HTMLVideoElement>('#video');
             if (videoElement) {
               videoElement.srcObject = stream;
               this.playVideo_();

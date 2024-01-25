@@ -82,7 +82,8 @@ export class TextAcceleratorElement extends PolymerElement {
 
   private parseAndDisplayTextParts(): void {
     const container =
-        this.shadowRoot!.querySelector('.parts-container') as HTMLDivElement;
+        this.shadowRoot!.querySelector<HTMLElement>('.parts-container');
+    assert(container);
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
     const textParts: Node[] = [];

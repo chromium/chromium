@@ -379,7 +379,8 @@ const DELEGATE: ClientApiDelegate = {
  * Returns the media app if it can find it in the DOM.
  */
 function getApp(): ClientApi {
-  return document.querySelector('backlight-app') as unknown as ClientApi;
+  const app = document.querySelector('backlight-app')!;
+  return app as unknown as ClientApi;
 }
 
 /**

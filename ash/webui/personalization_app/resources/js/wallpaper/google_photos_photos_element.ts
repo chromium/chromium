@@ -221,7 +221,7 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     // Attempt to focus the |element| at the focused index. Note that the
     // |element| may not be rendered as it could exist outside of the viewport.
     const selector = `.photo[photoindex="${focusedPhotoIndex}"]`;
-    const element = this.$.grid.querySelector(selector) as HTMLElement;
+    const element = this.$.grid.querySelector<HTMLElement>(selector);
     if (element) {
       element.focus();
       return;

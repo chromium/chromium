@@ -740,8 +740,8 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   private loadComponent(componentIs: string): ShimlessCustomElementType {
     const alreadyLoadedComponent =
-        this.shadowRoot!.querySelector(`#${componentIs}`) as
-        ShimlessCustomElementType;
+        this.shadowRoot!.querySelector<ShimlessCustomElementType>(
+            `#${componentIs}`);
     if (alreadyLoadedComponent) {
       return alreadyLoadedComponent;
     }

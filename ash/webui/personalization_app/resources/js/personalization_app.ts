@@ -149,7 +149,7 @@ export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper
 PersonalizationStore.getInstance().init(emptyState());
 SeaPenStoreAdapter.initSeaPenStore();
 
-const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;
+const link = document.querySelector<HTMLLinkElement>('link[rel=\'icon\']');
 if (link) {
   // |link| may be null in tests.
   link.href = '/hub_icon_192.png';
