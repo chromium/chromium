@@ -6,10 +6,22 @@
 #define CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
 class WebUI;
 }
+
+class AutofillInternalsUIConfig : public content::WebUIConfig {
+ public:
+  AutofillInternalsUIConfig();
+  ~AutofillInternalsUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class AutofillInternalsUI : public content::WebUIController {
  public:
