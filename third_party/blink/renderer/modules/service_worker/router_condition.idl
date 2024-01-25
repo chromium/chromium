@@ -13,7 +13,7 @@ dictionary RouterCondition {
   URLPatternCompatible urlPattern;
 
   // For the Request condition.
-  USVString requestMethod;
+  ByteString requestMethod;
   RequestMode requestMode;
   RequestDestination requestDestination;
 

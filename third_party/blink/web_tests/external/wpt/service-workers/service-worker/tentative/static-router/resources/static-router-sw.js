@@ -3,6 +3,7 @@
 import {routerRules} from './router-rules.js';
 
 var requests = [];
+var errors = [];
 
 self.addEventListener('install', async e => {
   e.waitUntil(caches.open('v1').then(
@@ -10,7 +11,11 @@ self.addEventListener('install', async e => {
 
   const params = new URLSearchParams(location.search);
   const key = params.get('key');
-  await e.addRoutes(routerRules[key]);
+  try {
+    await e.addRoutes(routerRules[key]);
+  } catch (e) {
+    errors.push(e);
+  }
   self.skipWaiting();
 });
 
@@ -26,6 +31,13 @@ self.addEventListener('fetch', function(event) {
 });
 
 self.addEventListener('message', function(event) {
-  event.data.port.postMessage({requests: requests});
-  requests = [];
+  let r = requests;
+  let e = errors;
+  if (event.data.reset) {
+    requests = [];
+    errors = [];
+  }
+  if (event.data.port) {
+    event.data.port.postMessage({requests: r, errors: e});
+  }
 });
