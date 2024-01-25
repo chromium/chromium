@@ -534,7 +534,7 @@ void LoginScreenController::OnLockScreenDestroyed() {
                  << authentication_stage_;
   }
 
-  // Dimiss the toast created by `ShowKioskAppError`, if any.
+  // Dismiss the toast created by `ShowKioskAppError`, if any.
   Shell::Get()->toast_manager()->Cancel(kKioskToastId);
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
