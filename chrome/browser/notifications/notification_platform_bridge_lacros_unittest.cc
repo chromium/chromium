@@ -233,12 +233,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
 
 TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
   // Create a message_center notification.
-  message_center::NotificationItem item1;
-  item1.title = u"title1";
-  item1.message = u"message1";
-  message_center::NotificationItem item2;
-  item2.title = u"title2";
-  item2.message = u"message2";
+  message_center::NotificationItem item1(u"title1", u"message1");
+  message_center::NotificationItem item2(u"title2", u"message2");
   message_center::RichNotificationData rich_data;
   rich_data.items = {item1, item2};
   message_center::Notification ui_notification(

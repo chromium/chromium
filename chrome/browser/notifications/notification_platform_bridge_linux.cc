@@ -703,8 +703,8 @@ class NotificationPlatformBridgeLinuxImpl
 
       if (notification->type() == message_center::NOTIFICATION_TYPE_MULTIPLE) {
         for (const auto& item : notification->items()) {
-          const std::string item_title = base::UTF16ToUTF8(item.title);
-          const std::string item_message = base::UTF16ToUTF8(item.message);
+          const std::string item_title = base::UTF16ToUTF8(item.title());
+          const std::string item_message = base::UTF16ToUTF8(item.message());
           // TODO(peter): Figure out the right way to internationalize
           // this for RTL languages.
           if (body_markup)

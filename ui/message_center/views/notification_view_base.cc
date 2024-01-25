@@ -111,14 +111,14 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
   auto* title = view->AddChildView(std::make_unique<views::Label>(
-      item.title, views::style::CONTEXT_DIALOG_BODY_TEXT));
+      item.title(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   title->SetCollapseWhenHidden(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* message = view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           IDS_MESSAGE_CENTER_LIST_NOTIFICATION_MESSAGE_WITH_DIVIDER,
-          item.message),
+          item.message()),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   message->SetCollapseWhenHidden(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);

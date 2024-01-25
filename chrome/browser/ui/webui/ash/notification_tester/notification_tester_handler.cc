@@ -191,7 +191,7 @@ std::vector<message_center::NotificationItem>
 NotificationTesterHandler::GetRichDataNotifItems(int num_items) {
   std::vector<message_center::NotificationItem> items;
   for (int i = 0; i < num_items; i++) {
-    items.push_back({u"Item " + base::NumberToString16(i), u"item message"});
+    items.emplace_back(u"Item " + base::NumberToString16(i), u"item message");
   }
   return items;
 }

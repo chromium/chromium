@@ -262,10 +262,10 @@ TEST_F(MessageCenterAshTest, SerializationList) {
       message_center->FindVisibleNotificationById("test_id");
   ASSERT_TRUE(ui_notification);
   ASSERT_EQ(2u, ui_notification->items().size());
-  EXPECT_EQ(u"title1", ui_notification->items()[0].title);
-  EXPECT_EQ(u"message1", ui_notification->items()[0].message);
-  EXPECT_EQ(u"title2", ui_notification->items()[1].title);
-  EXPECT_EQ(u"message2", ui_notification->items()[1].message);
+  EXPECT_EQ(u"title1", ui_notification->items()[0].title());
+  EXPECT_EQ(u"message1", ui_notification->items()[0].message());
+  EXPECT_EQ(u"title2", ui_notification->items()[1].title());
+  EXPECT_EQ(u"message2", ui_notification->items()[1].message());
 }
 
 TEST_F(MessageCenterAshTest, SerializationProgress) {

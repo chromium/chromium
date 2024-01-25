@@ -213,8 +213,8 @@ mac_notifications::mojom::NotificationPtr CreateMacNotification(
 
   std::u16string body = notification.items().empty()
                             ? notification.message()
-                            : (notification.items().at(0).title + u" - " +
-                               notification.items().at(0).message);
+                            : (notification.items().at(0).title() + u" - " +
+                               notification.items().at(0).message());
 
   return mac_notifications::mojom::Notification::New(
       std::move(meta), CreateMacNotificationTitle(notification),

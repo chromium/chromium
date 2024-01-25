@@ -84,9 +84,7 @@ std::unique_ptr<mc::Notification> FromMojo(
     }
   }
   for (const auto& mojo_item : notification->items) {
-    mc::NotificationItem item;
-    item.title = mojo_item->title;
-    item.message = mojo_item->message;
+    mc::NotificationItem item(mojo_item->title, mojo_item->message);
     rich_data.items.push_back(item);
   }
   rich_data.progress = std::clamp(notification->progress, -1, 100);

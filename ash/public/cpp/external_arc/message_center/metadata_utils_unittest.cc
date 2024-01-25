@@ -150,16 +150,16 @@ TEST_F(MetadataUtilsTest, CreateListNotification) {
   EXPECT_EQ(notification->type(), notification_type);
   EXPECT_EQ(notification->id(), kDefaultNotificationId);
   ASSERT_EQ(items_num, notification->items().size());
-  EXPECT_EQ(notification->items()[0].message, u"text 1");
-  EXPECT_EQ(notification->items()[1].message, u"text 2");
-  EXPECT_EQ(notification->items()[2].message, u"text 3");
-  EXPECT_EQ(notification->items()[3].message, u"text 4");
-  EXPECT_EQ(notification->items()[4].message, u"\u2026");
-  EXPECT_TRUE(notification->items()[0].title.empty());
-  EXPECT_TRUE(notification->items()[1].title.empty());
-  EXPECT_TRUE(notification->items()[2].title.empty());
-  EXPECT_TRUE(notification->items()[3].title.empty());
-  EXPECT_TRUE(notification->items()[4].title.empty());
+  EXPECT_EQ(notification->items()[0].message(), u"text 1");
+  EXPECT_EQ(notification->items()[1].message(), u"text 2");
+  EXPECT_EQ(notification->items()[2].message(), u"text 3");
+  EXPECT_EQ(notification->items()[3].message(), u"text 4");
+  EXPECT_EQ(notification->items()[4].message(), u"\u2026");
+  EXPECT_TRUE(notification->items()[0].title().empty());
+  EXPECT_TRUE(notification->items()[1].title().empty());
+  EXPECT_TRUE(notification->items()[2].title().empty());
+  EXPECT_TRUE(notification->items()[3].title().empty());
+  EXPECT_TRUE(notification->items()[4].title().empty());
 }
 
 }  // namespace ash

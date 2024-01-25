@@ -14,7 +14,7 @@ struct VectorIcon;
 
 namespace message_center {
 struct ButtonInfo;
-struct NotificationItem;
+class NotificationItem;
 class RichNotificationData;
 }  // namespace message_center
 

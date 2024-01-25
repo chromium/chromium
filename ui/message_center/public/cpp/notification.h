@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
@@ -40,9 +39,24 @@ class ColorProvider;
 namespace message_center {
 
 // Represents an individual item in NOTIFICATION_TYPE_MULTIPLE notifications.
-struct MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
-  std::u16string title;
-  std::u16string message;
+class MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
+ public:
+  NotificationItem(const std::u16string& title,
+                   const std::u16string& message,
+                   ui::ImageModel icon = ui::ImageModel());
+  NotificationItem(const NotificationItem& other);
+  NotificationItem();
+  ~NotificationItem();
+  NotificationItem& operator=(const NotificationItem& other);
+
+  const std::u16string& title() const { return title_; }
+  const std::u16string& message() const { return message_; }
+  const std::optional<ui::ImageModel>& icon() const { return icon_; }
+
+ private:
+  std::u16string title_;
+  std::u16string message_;
+  std::optional<ui::ImageModel> icon_;
 };
 
 enum class SettingsButtonHandler {

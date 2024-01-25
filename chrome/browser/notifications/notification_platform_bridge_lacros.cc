@@ -97,8 +97,8 @@ crosapi::mojom::NotificationPtr ToMojo(
   }
   for (const auto& item : notification.items()) {
     auto mojo_item = crosapi::mojom::NotificationItem::New();
-    mojo_item->title = item.title;
-    mojo_item->message = item.message;
+    mojo_item->title = item.title();
+    mojo_item->message = item.message();
     mojo_note->items.push_back(std::move(mojo_item));
   }
   mojo_note->progress = std::clamp(notification.progress(), -1, 100);

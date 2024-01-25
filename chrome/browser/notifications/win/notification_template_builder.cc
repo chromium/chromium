@@ -187,8 +187,8 @@ void WriteItems(XmlWriter* xml_writer,
   std::string item_list;
   for (size_t i = 0; i < entries; ++i) {
     const auto& item = items[i];
-    item_list += base::UTF16ToUTF8(item.title) + " - " +
-                 base::UTF16ToUTF8(item.message) + "\n";
+    item_list += base::UTF16ToUTF8(item.title()) + " - " +
+                 base::UTF16ToUTF8(item.message()) + "\n";
   }
   WriteTextElement(xml_writer, item_list, TextType::NORMAL);
 }
