@@ -204,7 +204,8 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest,
       ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
 }
 
-TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
+TEST_F(PasswordStoreBackendMetricsRecorderTest,
+       RecordMetrics_CancelledTimeout) {
   using base::Bucket;
   base::HistogramTester histogram_tester;
 
@@ -214,7 +215,7 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
 
   AdvanceClock(kLatencyDelta);
 
-  metrics_recorder.RecordMetrics(SuccessStatus::kCancelled,
+  metrics_recorder.RecordMetrics(SuccessStatus::kCancelledTimeout,
                                  /*error=*/std::nullopt);
 
   // Checking records in the backend-specific histogram.
@@ -234,6 +235,39 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_Cancelled) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kOverallMetric),
       ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Timeout */ 1, 1)));
+}
+
+TEST_F(PasswordStoreBackendMetricsRecorderTest,
+       RecordMetrics_CancelledPwdSyncStateChanged) {
+  using base::Bucket;
+  base::HistogramTester histogram_tester;
+
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
+                                          MetricInfix(kSomeMethod));
+
+  AdvanceClock(kLatencyDelta);
+
+  metrics_recorder.RecordMetrics(SuccessStatus::kCancelledPwdSyncStateChanged,
+                                 /*error=*/std::nullopt);
+
+  // Checking records in the backend-specific histogram.
+  histogram_tester.ExpectTotalCount(kDurationMetric, 0);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetric),
+              ElementsAre(Bucket(false, 1)));
+
+  // Checking records in the overall histogram.
+  histogram_tester.ExpectTotalCount(kDurationOverallMetric, 0);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessOverallMetric),
+              ElementsAre(Bucket(false, 1)));
+
+  // Checking timed-out requests in the overall and backend-specific histogram.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSpecificMetric),
+              ElementsAre(Bucket(/* Requested */ 0, 1),
+                          Bucket(/* CancelledPwdSyncStateChanged */ 3, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kOverallMetric),
+              ElementsAre(Bucket(/* Requested */ 0, 1),
+                          Bucket(/* CancelledPwdSyncStateChanged */ 3, 1)));
 }
 
 }  // namespace password_manager

@@ -1321,7 +1321,43 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_TRUE(sync_service()->HasObserver(sync_controller_delegate()));
 }
 
-TEST_F(PasswordStoreAndroidAccountBackendTest, RecordClearedZombieTaskWithoutLatency) {
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       CancelPendingJobsOnSyncStateChange) {
+  const std::string kSuccessMetric = SuccessMetricName("GetAllLoginsAsync");
+  const std::string kDurationMetric = DurationMetricName("GetAllLoginsAsync");
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        /*remote_form_changes_received=*/base::DoNothing(),
+                        /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+                        /*completion=*/base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EnableSyncForTestAccount();
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+
+  // This call will queue the job.
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  DisableSyncFeature();
+  sync_service()->FireStateChanged();
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+  EXPECT_CALL(
+      mock_reply,
+      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
+                      PasswordStoreBackendErrorRecoveryType::kRecoverable)));
+  RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kBackendErrorCodeMetric,
+      AndroidBackendErrorType::kCancelledPwdSyncStateChanged, 1);
+  histogram_tester.ExpectTotalCount(kDurationMetric, 0);
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RecordClearedZombieTaskWithoutLatency) {
   const char kStartedMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync";
   const std::string kDurationMetric = DurationMetricName("AddLoginAsync");

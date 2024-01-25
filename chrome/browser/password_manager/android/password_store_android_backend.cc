@@ -33,13 +33,13 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
-#include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -218,7 +218,9 @@ SuccessStatus GetSuccessStatusFromError(
     return SuccessStatus::kSuccess;
   switch (error.value().type) {
     case AndroidBackendErrorType::kCleanedUpWithoutResponse:
-      return SuccessStatus::kCancelled;
+      return SuccessStatus::kCancelledTimeout;
+    case AndroidBackendErrorType::kCancelledPwdSyncStateChanged:
+      return SuccessStatus::kCancelledPwdSyncStateChanged;
     case AndroidBackendErrorType::kUncategorized:
     case AndroidBackendErrorType::kNoContext:
     case AndroidBackendErrorType::kNoAccount:
@@ -648,6 +650,29 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsInternal(
       PasswordStoreOperation::kDisableAutoSignInForOriginsAsync);
 }
 
+void PasswordStoreAndroidBackend::ClearAllTasksAndReplyWithReason(
+    const AndroidBackendError& reason,
+    const PasswordStoreBackendError& reply_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  for (auto& [id, job_reply] : request_for_job_) {
+    job_reply.RecordMetrics(reason);
+    if (job_reply.Holds<LoginsOrErrorReply>()) {
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(job_reply).Get<LoginsOrErrorReply>(),
+                         reply_error));
+
+    } else if (job_reply.Holds<PasswordChangesOrErrorReply>()) {
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(job_reply).Get<PasswordChangesOrErrorReply>(),
+              reply_error));
+    }
+  }
+  request_for_job_.clear();
+}
+
 void PasswordStoreAndroidBackend::RetryOperation(
     base::OnceCallback<void(base::TimeDelta)> callback,
     base::TimeDelta delay) {
@@ -940,6 +965,7 @@ void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
   stored_passwords_changed_.Run(std::nullopt);
 }
 
+// TODO(b/322163027): Merge this with `ClearAllTasksAndReplyWithReason(...)`.
 void PasswordStoreAndroidBackend::ClearZombieTasks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Collect expired jobs. Deleting them immediately would invalidate iterators.

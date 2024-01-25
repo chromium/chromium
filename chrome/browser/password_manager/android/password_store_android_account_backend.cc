@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/android/explicit_passphrase_platform_client.h"
@@ -140,6 +141,9 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
           base::BindOnce(&PasswordStoreAndroidAccountBackend::SyncShutdown,
                          weak_ptr_factory_.GetWeakPtr()));
+  sync_controller_delegate_->SetPwdSyncStateChangedCallback(base::BindRepeating(
+      &PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
@@ -157,6 +161,9 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
       affiliations_prefetcher_(affiliations_prefetcher),
       try_fix_passphrase_error_cb_(try_fix_passphrase_error_cb) {
   sync_controller_delegate_ = std::move(sync_controller_delegate);
+  sync_controller_delegate_->SetPwdSyncStateChangedCallback(base::BindRepeating(
+      &PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordStoreAndroidAccountBackend::~PasswordStoreAndroidAccountBackend() =
@@ -377,6 +384,17 @@ void PasswordStoreAndroidAccountBackend::
   }
   affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
       std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+}
+
+void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {
+  // Reply with a recoverable error, because this isn't a persistent issue,
+  // only a transient state
+  ClearAllTasksAndReplyWithReason(
+      AndroidBackendError(
+          AndroidBackendErrorType::kCancelledPwdSyncStateChanged),
+      PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kUncategorized,
+          PasswordStoreBackendErrorRecoveryType::kRecoverable));
 }
 
 void PasswordStoreAndroidAccountBackend::SyncShutdown() {

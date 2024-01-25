@@ -1158,12 +1158,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Downstream implementation not available."/>
   <int value="10"
       label="Failed to create FacetId to obtain affiliated matches."/>
+  <int value="11" label="Job cancelled because the sync state changed"/>
 </enum>
 
 <enum name="PasswordStoreAndroidBackendRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Timeout"/>
   <int value="2" label="Completed"/>
+  <int value="3" label="Cancelled: password sync status changed"/>
 </enum>
 
 <enum name="PasswordStoreBackendErrorType">

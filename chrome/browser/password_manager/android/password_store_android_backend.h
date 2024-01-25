@@ -219,10 +219,20 @@ class PasswordStoreAndroidBackend
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
 
+  // Cancels all the queued jobs because of `reason` and replies to them with
+  // `reply_error`.
+  void ClearAllTasksAndReplyWithReason(
+      const AndroidBackendError& reason,
+      const PasswordStoreBackendError& reply_error);
+
   PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
     return bridge_helper_.get();
   }
+
   PrefService* prefs() { return prefs_; }
+
+  // TODO(b/306673712): Move to account implementation.
+  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
   // Subclasses can override this method
   // to have a special handling for different errors. This function returns
@@ -324,10 +334,6 @@ class PasswordStoreAndroidBackend
   // This object is the proxy to the dispatcher JNI bridge that performs the API
   // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
-
- protected:
-  // TODO(b/306673712): Move to account implementation.
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 
  private:
   raw_ptr<PrefService> prefs_ = nullptr;

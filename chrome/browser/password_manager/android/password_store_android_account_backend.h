@@ -95,6 +95,13 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
       LoginsOrErrorReply callback,
       LoginsResultOrError forms_or_error);
 
+  // Called when password sync flips from disabled to enabled and vice-versa.
+  // If the sync status changes, all pending jobs should be replied to
+  // with the corresponding error since their results are no longer relevant.
+  // This should also interrupt retry chains or other pre-scheduled
+  // chains of calls to the store.
+  void OnPasswordsSyncStateChanged();
+
   // Clears |sync_service_| when syncer::SyncServiceObserver::OnSyncShutdown is
   // called.
   void SyncShutdown();
