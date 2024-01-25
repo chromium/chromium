@@ -4493,6 +4493,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebContentsState.SavedStateVersion" units="version"
+    expires_after="2024-06-01">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/tab/OWNERS</owner>
+  <summary>
+    Logs which version of the WebContentsState saved state is being deserialized
+    by ExtractNavigationEntries() and related functions.
+
+    This is recorded every time a WebContentsState is deserialized.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AndroidX.ApiCall" enum="AndroidXWebkitApiCall"
     expires_after="2024-10-31">
   <owner>ntfschr@chromium.org</owner>
