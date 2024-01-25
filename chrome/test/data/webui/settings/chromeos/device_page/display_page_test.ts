@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, DevicePageBrowserProxyImpl, DisplayLayoutElement, displaySettingsProviderMojom, Router, routes, setDisplayApiForTesting, setDisplaySettingsProviderForTesting, SettingsDisplayElement, SettingsDropdownMenuElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -748,12 +748,14 @@ suite('<settings-display>', () => {
         })
         .then(() => {
           const displayLayout =
-              displayPage.shadowRoot!.querySelector('#displayLayout') as any;
+              displayPage.shadowRoot!.querySelector<DisplayLayoutElement>(
+                  '#displayLayout');
           assert(!!displayLayout);
           const display = strictQuery(
               `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
-          const layout =
-              displayLayout.displayLayoutMap_.get(`${kDisplayIdPrefix}2`);
+          const layout = displayLayout.getDisplayLayoutMapForTesting().get(
+              `${kDisplayIdPrefix}2`);
+          assert(layout);
 
           assertEquals(layout.parentId, `${kDisplayIdPrefix}1`);
           assertEquals(layout.position, 'right');

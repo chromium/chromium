@@ -74,9 +74,9 @@ suite('<keyboard-six-pack-key-row>', () => {
       await setKey((key as SixPackKey));
       assertDeepEquals(
           getMenuOptionsForSixPackKey((key as SixPackKey)),
-          (sixPackKeyRow.shadowRoot!.querySelector('#keyDropdown') as
-           SettingsDropdownMenuElement)
-              .menuOptions);
+          sixPackKeyRow.shadowRoot!
+              .querySelector<SettingsDropdownMenuElement>(
+                  '#keyDropdown')!.menuOptions);
     }
   });
 });

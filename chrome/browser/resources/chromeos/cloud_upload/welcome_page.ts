@@ -26,9 +26,9 @@ export class WelcomePageElement extends BaseSetupPageElement {
 
     this.innerHTML = getTemplate();
 
-    const description = this.querySelector('#description') as HTMLElement;
-    const actionButton = this.querySelector('.action-button') as HTMLElement;
-    const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
+    const description = this.querySelector<HTMLElement>('#description')!;
+    const actionButton = this.querySelector<HTMLElement>('.action-button')!;
+    const cancelButton = this.querySelector<HTMLElement>('.cancel-button')!;
 
     if (this.isOfficeWebAppInstalled && this.isOdfsMounted) {
       description.innerText = loadTimeData.getString('welcomeMoveFiles');

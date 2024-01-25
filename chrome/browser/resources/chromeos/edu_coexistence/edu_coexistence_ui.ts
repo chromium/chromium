@@ -16,7 +16,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 import {EduCoexistenceButton} from './edu_coexistence_button.js';
 import {EduCoexistenceController, EduCoexistenceParams} from './edu_coexistence_controller.js';
-import {EduCoexistenceTemplate} from './edu_coexistence_template.js';
 import {getTemplate} from './edu_coexistence_ui.html.js';
 
 export interface EduCoexistenceUi {
@@ -119,8 +118,8 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
 
   private handleGaiaLoginGoBack(e: Event) {
     e.stopPropagation();
-    const backButton = this.shadowRoot!.querySelector('#gaia-back-button') as
-        EduCoexistenceButton;
+    const backButton = this.shadowRoot!.querySelector<EduCoexistenceButton>(
+        '#gaia-back-button')!;
     if (backButton!.disabled) {
       // This is a safeguard against this method getting called somehow
       // despite the button being disabled.
@@ -144,8 +143,8 @@ export class EduCoexistenceUi extends EduCoexistenceUiBase {
    */
   private configureUiForGaiaFlow() {
     const currentUrl = new URL(this.webview.src);
-    const template = this.shadowRoot!.querySelector(
-                         'edu-coexistence-template') as EduCoexistenceTemplate;
+    const template =
+        this.shadowRoot!.querySelector('edu-coexistence-template')!;
     // const contentContainer = template!.getContentContainer();
     const contentContainer =
         template.shadowRoot!.querySelector<HTMLElement>('.content-container')!;

@@ -95,7 +95,7 @@ export function updateStructuredMetricsEvents(
     uptime.textContent = event.sequenceMetadata?.systemUptimeMs ?? '-';
 
     const detailsRow = detailsTemplate.content.cloneNode(true) as HTMLElement;
-    const metricsRow = detailsRow.querySelector('#metrics-row') as HTMLElement;
+    const metricsRow = detailsRow.querySelector<HTMLElement>('#metrics-row');
     assert(metricsRow);
 
     const [details, metrics] = detailsRow.querySelectorAll('tbody');
@@ -105,7 +105,8 @@ export function updateStructuredMetricsEvents(
     updateEventDetailsTable(details, event, kvTemplate);
     updateEventMetricsTable(metrics, event, kvTemplate);
 
-    const eventRow = row.querySelector('#event-row') as HTMLElement;
+    const eventRow = row.querySelector('#event-row');
+    assert(eventRow);
     eventRow.addEventListener('click', () => {
       if (metricsRow.style.display === 'none') {
         metricsRow.style.display = 'table-row';

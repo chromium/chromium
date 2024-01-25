@@ -91,7 +91,7 @@ export class FolderSelector extends HTMLElement {
       if (!parentElements.has(parentPath)) {
         const parentSelector = selectorFromPath(parentPath);
         const parentElement =
-            this.shadowRoot!.querySelector(parentSelector) as HTMLInputElement;
+            this.shadowRoot!.querySelector<HTMLInputElement>(parentSelector)!;
         parentElements.set(parentPath, parentElement);
         parentSelected = parentElement.checked;
       }
@@ -164,7 +164,7 @@ export class FolderSelector extends HTMLElement {
         this.folderSelectorTemplate.content.cloneNode(true) as HTMLElement;
     const textNode = document.createTextNode(getFolderName(folderPath));
 
-    const li = newFolderTemplate.querySelector('li') as HTMLLIElement;
+    const li = newFolderTemplate.querySelector('li')!;
     li.appendChild(textNode);
     li.addEventListener(
         'click', (event) => this.onPathExpanded(event, folderPath));
@@ -200,6 +200,12 @@ export type FolderExpandedEvent = CustomEvent<string>;
 declare global {
   interface HTMLElementEventMap {
     [FOLDER_EXPANDED]: FolderExpandedEvent;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'folder-selector': FolderSelector;
   }
 }
 

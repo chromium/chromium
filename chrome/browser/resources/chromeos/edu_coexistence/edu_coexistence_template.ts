@@ -13,7 +13,7 @@ const EduCoexistenceTemplateBase = CrScrollableMixin(PolymerElement);
 
 export class EduCoexistenceTemplate extends EduCoexistenceTemplateBase {
   static get is() {
-    return 'edu-coexistence-template';
+    return 'edu-coexistence-template' as const;
   }
 
   static get template() {
@@ -42,6 +42,12 @@ export class EduCoexistenceTemplate extends EduCoexistenceTemplateBase {
     const contentContainer =
         this.shadowRoot!.querySelector<HTMLElement>('.content-container');
     return contentContainer!;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EduCoexistenceTemplate.is]: EduCoexistenceTemplate;
   }
 }
 
