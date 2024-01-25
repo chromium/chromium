@@ -7,25 +7,35 @@
  */
 import {constants} from './constants.js';
 
-const ActionType = chrome.automation.ActionType;
-const AutomationNode = chrome.automation.AutomationNode;
-const DefaultActionVerb = chrome.automation.DefaultActionVerb;
-const Dir = constants.Dir;
-const InvalidState = chrome.automation.InvalidState;
-const MarkerType = chrome.automation.MarkerType;
-const Restriction = chrome.automation.Restriction;
-const Role = chrome.automation.RoleType;
-const State = chrome.automation.StateType;
+import ActionType = chrome.automation.ActionType;
+import AutomationNode = chrome.automation.AutomationNode;
+import DefaultActionVerb = chrome.automation.DefaultActionVerb;
+import Dir = constants.Dir;
+import InvalidState = chrome.automation.InvalidState;
+import MarkerType = chrome.automation.MarkerType;
+import Restriction = chrome.automation.Restriction;
+import Role = chrome.automation.RoleType;
+import State = chrome.automation.StateType;
+
+interface MatchParams {
+  anyRole?: Role[];
+  anyPredicate?: AutomationPredicate.Unary[];
+}
+
+interface TableCellPredicateOptions {
+  dir?: Dir;
+  end?: boolean;
+  row?: boolean;
+  col?: boolean;
+}
 
 /**
  * A helper to check if |node| or any descendant is actionable.
- * @param {!AutomationNode} node
- * @param {boolean} sawClickAncestorAction A node during this search has a
+ * @param sawClickAncestorAction A node during this search has a
  *     default action verb involving click ancestor or none.
- * @return {boolean}
  */
 const isActionableOrHasActionableDescendant = function(
-    node, sawClickAncestorAction = false) {
+    node: AutomationNode, sawClickAncestorAction: boolean = false): boolean {
   // Static text nodes are never actionable for the purposes of navigation even
   // if they have default action verb set.
   if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb &&
@@ -50,12 +60,8 @@ const isActionableOrHasActionableDescendant = function(
   return false;
 };
 
-/**
- * A helper to check if any descendants of |node| are actionable.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-const hasActionableDescendant = function(node) {
+/** A helper to check if any descendants of |node| are actionable. */
+const hasActionableDescendant = function(node: AutomationNode): boolean {
   const sawClickAncestorAction = !node.defaultActionVerb ||
       node.defaultActionVerb === DefaultActionVerb.CLICK_ANCESTOR;
   for (let i = 0; i < node.children.length; i++) {
@@ -72,11 +78,9 @@ const hasActionableDescendant = function(node) {
  * A helper to determine whether the children of a node are all
  * STATIC_TEXT, and whether the joined names of such children nodes are equal to
  * the current nodes name.
- * @param {!AutomationNode} node
- * @return {boolean}
- * @private
  */
-const nodeNameContainedInStaticTextChildren = function(node) {
+const nodeNameContainedInStaticTextChildren = function(
+    node: AutomationNode): boolean {
   const name = node.name;
   let child = node.firstChild;
   if (name === undefined || !child) {
@@ -106,105 +110,60 @@ const nodeNameContainedInStaticTextChildren = function(node) {
   return true;
 };
 
-export class AutomationPredicate {
-  /**
-   * Constructs a predicate given a list of roles.
-   * @param {!Array<chrome.automation.RoleType>} roles
-   * @return {!AutomationPredicate.Unary}
-   */
-  static roles(roles) {
+export namespace AutomationPredicate {
+  /** Constructs a predicate given a list of roles. */
+  export function roles(roles: Role[]): AutomationPredicate.Unary {
     return AutomationPredicate.match({anyRole: roles});
   }
 
-  /**
-   * Constructs a predicate given a list of roles or predicates.
-   * @param {{anyRole: (Array<Role>|undefined),
-   *          anyPredicate: (Array<AutomationPredicate.Unary>|undefined),
-   *          anyAttribute: (Object|undefined)}} params
-   * @return {!AutomationPredicate.Unary}
-   */
-  static match(params) {
+  /** Constructs a predicate given a list of roles or predicates. */
+  export function match(params: MatchParams): AutomationPredicate.Unary {
     const anyRole = params.anyRole || [];
     const anyPredicate = params.anyPredicate || [];
-    const anyAttribute = params.anyAttribute || {};
-    return function(node) {
-      return anyRole.some(function(role) {
-        return role === node.role;
-      }) ||
-          anyPredicate.some(function(p) {
-            return p(node);
-          }) ||
-          Object.keys(anyAttribute).some(function(key) {
-            return node[key] === anyAttribute[key];
-          });
+    return function(node: AutomationNode): boolean {
+      return anyRole.some(role => role === node.role) ||
+          anyPredicate.some(p => p(node));
     };
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static button(node) {
+  export function button(node: AutomationNode): boolean {
     return node.isButton;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static comboBox(node) {
+  export function comboBox(node: AutomationNode): boolean {
     return node.isComboBox;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static checkBox(node) {
+  export function checkBox(node: AutomationNode): boolean {
     return node.isCheckBox;
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static editText(node) {
+  export function editText(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return node.role === Role.TEXT_FIELD ||
-        (node.state[State.EDITABLE] && Boolean(node.parent) &&
-         !node.parent.state[State.EDITABLE]);
+        (node.state![State.EDITABLE] && Boolean(node.parent) &&
+         !node.parent!.state![State.EDITABLE]);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static image(node) {
+  export function image(node: AutomationNode): boolean {
     return node.isImage && Boolean(node.name || node.url);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static visitedLink(node) {
-    return node.state[State.VISITED];
+  export function visitedLink(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+   return node.state![State.VISITED];
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static focused(node) {
-    return node.state[State.FOCUSED];
+  export function focused(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    return node.state![State.FOCUSED];
   }
 
   /**
    * Returns true if this node should be considered a leaf for touch
    * exploration.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static touchLeaf(node) {
+  export function touchLeaf(node: AutomationNode): boolean {
     return Boolean(!node.firstChild && node.name) ||
         node.role === Role.BUTTON || node.role === Role.CHECK_BOX ||
         node.role === Role.POP_UP_BUTTON || node.role === Role.PORTAL ||
@@ -217,24 +176,15 @@ export class AutomationPredicate {
         AutomationPredicate.simpleListItem(node);
   }
 
-  /**
-   * Returns true if this node is marked as invalid.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static isInvalid(node) {
+  /** Returns true if this node is marked as invalid. */
+  export function isInvalid(node: AutomationNode): boolean {
     return node.invalidState === InvalidState.TRUE ||
         AutomationPredicate.hasInvalidGrammarMarker(node) ||
         AutomationPredicate.hasInvalidSpellingMarker(node);
   }
 
-
-  /**
-   * Returns true if this node has an invalid grammar marker.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static hasInvalidGrammarMarker(node) {
+  /** Returns true if this node has an invalid grammar marker. */
+  export function hasInvalidGrammarMarker(node: AutomationNode): boolean {
     const markers = node.markers;
     if (!markers) {
       return false;
@@ -244,12 +194,8 @@ export class AutomationPredicate {
     });
   }
 
-  /**
-   * Returns true if this node has an invalid spelling marker.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static hasInvalidSpellingMarker(node) {
+  /** Returns true if this node has an invalid spelling marker. */
+  export function hasInvalidSpellingMarker(node: AutomationNode): boolean {
     const markers = node.markers;
     if (!markers) {
       return false;
@@ -259,11 +205,8 @@ export class AutomationPredicate {
     });
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static leaf(node) {
+  export function leaf(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return Boolean(
         AutomationPredicate.touchLeaf(node) || node.role === Role.LIST_BOX ||
         // A node acting as a label should be a leaf if it has no actionable
@@ -273,35 +216,27 @@ export class AutomationPredicate {
         (node.descriptionFor && node.descriptionFor.length > 0 &&
          !isActionableOrHasActionableDescendant(node)) ||
         (node.activeDescendantFor && node.activeDescendantFor.length > 0) ||
-        node.state[State.INVISIBLE] || node.children.every(function(n) {
-          return n.state[State.INVISIBLE];
-        }) ||
+        node.state![State.INVISIBLE] ||
+        node.children.every((n: AutomationNode) => n.state![State.INVISIBLE]) ||
         AutomationPredicate.math(node));
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static leafWithText(node) {
+  export function leafWithText(node: AutomationNode): boolean {
     return AutomationPredicate.leaf(node) && Boolean(node.name || node.value);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static leafWithWordStop(node) {
-    function hasWordStop(node) {
+  export function leafWithWordStop(node: AutomationNode): boolean {
+    function hasWordStop(node: AutomationNode): boolean {
       if (node.role === Role.INLINE_TEXT_BOX) {
-        return node.wordStarts && node.wordStarts.length;
+        return Boolean(node.wordStarts && node.wordStarts.length);
       }
 
       // Non-text objects  are treated as having a single word stop.
       return true;
     }
     // Do not include static text leaves, which occur for an en end-of-line.
-    return AutomationPredicate.leaf(node) && !node.state[State.INVISIBLE] &&
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    return AutomationPredicate.leaf(node) && !node.state![State.INVISIBLE] &&
         node.role !== Role.STATIC_TEXT && hasWordStop(node);
   }
 
@@ -309,10 +244,8 @@ export class AutomationPredicate {
    * Matches against leaves or static text nodes. Useful when restricting
    * traversal to non-inline textboxes while still allowing them if navigation
    * already entered into an inline textbox.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static leafOrStaticText(node) {
+  export function leafOrStaticText(node: AutomationNode): boolean {
     return AutomationPredicate.leaf(node) || node.role === Role.STATIC_TEXT;
   }
 
@@ -321,15 +254,14 @@ export class AutomationPredicate {
    * defined below, are all nodes that are focusable or static text. When used
    * in tree walking, it should visit all nodes that tab traversal would as well
    * as non-focusable static text.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static object(node) {
+  export function object(node: AutomationNode): boolean {
     // Editable nodes are within a text-like field and don't make sense when
     // performing object navigation. Users should use line, word, or character
     // navigation. Only navigate to the top level node.
-    if (node.parent && node.parent.state[State.EDITABLE] &&
-        !node.parent.state[State.RICHLY_EDITABLE]) {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (node.parent && node.parent.state![State.EDITABLE] &&
+        !node.parent.state![State.RICHLY_EDITABLE]) {
       return false;
     }
 
@@ -341,8 +273,9 @@ export class AutomationPredicate {
 
     // Given no other information, we want to visit focusable
     // (e.g. tabindex=0) nodes only when it has a name or is a control.
-    if (node.state[State.FOCUSABLE] &&
-        (node.name || node.state[State.EDITABLE] ||
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (node.state![State.FOCUSABLE] &&
+        (node.name || node.state![State.EDITABLE] ||
          AutomationPredicate.formField(node))) {
       return true;
     }
@@ -369,18 +302,15 @@ export class AutomationPredicate {
     // Otherwise, leaf or static text nodes that don't contain only whitespace
     // should be visited with the exception of non-text only nodes. This covers
     // cases where an author might make a link with a name of ' '.
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return AutomationPredicate.leafOrStaticText(node) &&
-        (/\S+/.test(node.name) ||
+        (/\S+/.test(node.name!) ||
          (node.role !== Role.LINE_BREAK && node.role !== Role.STATIC_TEXT &&
           node.role !== Role.INLINE_TEXT_BOX));
   }
 
-  /**
-   * Matches against nodes visited during touch exploration.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static touchObject(node) {
+  /** Matches against nodes visited during touch exploration. */
+  export function touchObject(node: AutomationNode): boolean {
     // Exclude large objects such as containers.
     if (AutomationPredicate.container(node)) {
       return false;
@@ -389,41 +319,31 @@ export class AutomationPredicate {
     return AutomationPredicate.object(node);
   }
 
-  /**
-   * Matches against nodes visited during object navigation with a gesture.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static gestureObject(node) {
+  /** Matches against nodes visited during object navigation with a gesture. */
+  export function gestureObject(node: AutomationNode): boolean {
     if (node.role === Role.LIST_BOX) {
       return false;
     }
     return AutomationPredicate.object(node);
   }
 
-
-  /**
-   * @param {!AutomationNode} first
-   * @param {!AutomationNode} second
-   * @return {boolean}
-   */
-  static linebreak(first, second) {
+  export function linebreak(
+      first: AutomationNode, second: AutomationNode): boolean {
     if (first.nextOnLine === second) {
       return false;
     }
 
-    const fl = first.unclippedLocation;
-    const sl = second.unclippedLocation;
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    const fl = first.unclippedLocation!;
+    const sl = second.unclippedLocation!;
     return fl.top !== sl.top || (fl.top + fl.height !== sl.top + sl.height);
   }
 
   /**
    * Matches against a node that contains other interesting nodes.
    * These nodes should always have their subtrees scanned when navigating.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static container(node) {
+  export function container(node: AutomationNode): boolean {
     // Math is never a container.
     if (AutomationPredicate.math(node)) {
       return false;
@@ -432,7 +352,8 @@ export class AutomationPredicate {
     // Sometimes a focusable node will have a static text child with the same
     // name. During object navigation, the child will receive focus, resulting
     // in the name being read out twice.
-    if (node.state[State.FOCUSABLE] &&
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (node.state![State.FOCUSABLE] &&
         nodeNameContainedInStaticTextChildren(node)) {
       return false;
     }
@@ -444,13 +365,14 @@ export class AutomationPredicate {
 
     // Always try to dive into subtrees with actionable descendants for some
     // roles even if these roles are not naturally containers.
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     if ([
           Role.BUTTON,
           Role.CELL,
           Role.CHECK_BOX,
           Role.RADIO_BUTTON,
           Role.SWITCH,
-        ].includes(node.role) &&
+        ].includes(node.role!) &&
         hasActionableDescendant(node)) {
       return true;
     }
@@ -476,16 +398,16 @@ export class AutomationPredicate {
       anyPredicate: [
         AutomationPredicate.landmark,
         AutomationPredicate.structuralContainer,
-        function(node) {
+        (node: AutomationNode) => {
           // For example, crosh.
           return node.role === Role.TEXT_FIELD &&
               node.restriction === Restriction.READ_ONLY;
         },
-        function(node) {
-          return (
-              node.state[State.EDITABLE] && node.parent &&
-              !node.parent.state[State.EDITABLE]);
-        },
+        // TODO(b/314203187): Not null asserted, check to make sure it's
+        // correct.
+        (node: AutomationNode) => (
+              node.state![State.EDITABLE] && node.parent &&
+              !node.parent.state![State.EDITABLE]),
       ],
     })(node);
   }
@@ -493,34 +415,33 @@ export class AutomationPredicate {
   /**
    * Returns whether the given node should not be crossed when performing
    * traversals up the ancestry chain.
-   * @param {AutomationNode} node
-   * @return {boolean}
    */
-  static root(node) {
+  export function root(node: AutomationNode): boolean {
     if (node.modal) {
       return true;
     }
 
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     switch (node.role) {
       case Role.WINDOW:
         return true;
       case Role.DIALOG:
-        if (node.root.role !== Role.DESKTOP) {
+        if (node.root!.role !== Role.DESKTOP) {
           return Boolean(node.modal);
         }
 
         // The below logic handles nested dialogs properly in the desktop tree
         // like that found in a bubble view.
-        return Boolean(node.parent) && node.parent.role === Role.WINDOW &&
-            node.parent.children.every(function(child) {
-              return node.role === Role.WINDOW || node.role === Role.DIALOG;
-            });
+        return node.parent !== undefined && node.parent.role === Role.WINDOW &&
+            node.parent.children.every((_child: AutomationNode) =>
+                // TODO(b/322191528): This should be |child|, not |node|.
+                node.role === Role.WINDOW || node.role === Role.DIALOG);
       case Role.TOOLBAR:
-        return node.root.role === Role.DESKTOP &&
+        return node.root!.role === Role.DESKTOP &&
             !(node.nextWindowFocus || !node.previousWindowFocus);
       case Role.ROOT_WEB_AREA:
         if (node.parent && node.parent.role === Role.WEB_VIEW &&
-            !node.parent.state[State.FOCUSED]) {
+            !node.parent.state![State.FOCUSED]) {
           // If parent web view is not focused, we should allow this root web
           // area to be crossed when performing traversals up the ancestry
           // chain.
@@ -539,24 +460,22 @@ export class AutomationPredicate {
    * traversal inside of an editable. Note that this predicate should not be
    * applied everywhere since there would be no way for a user to exit the
    * editable.
-   * @param {AutomationNode} node
-   * @return {boolean}
    */
-  static rootOrEditableRoot(node) {
+  export function rootOrEditableRoot(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return AutomationPredicate.root(node) ||
-        (node.state[State.RICHLY_EDITABLE] && node.state[State.FOCUSED] &&
+        (node.state![State.RICHLY_EDITABLE] && node.state![State.FOCUSED] &&
          node.children.length > 0);
   }
 
   /**
    * Nodes that should be ignored while traversing the automation tree. For
    * example, apply this predicate when moving to the next object.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static shouldIgnoreNode(node) {
+  export function shouldIgnoreNode(node: AutomationNode): boolean {
     // Ignore invisible nodes.
-    if (node.state[State.INVISIBLE] ||
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    if (node.state![State.INVISIBLE] ||
         (node.location.height === 0 && node.location.width === 0)) {
       return true;
     }
@@ -619,30 +538,24 @@ export class AutomationPredicate {
            ])(node));
   }
 
-  /**
-   * Returns if the node has a meaningful checked state.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static checkable(node) {
+  /** Returns if the node has a meaningful checked state. */
+  export function checkable(node: AutomationNode): boolean {
     return Boolean(node.checked);
   }
 
   /**
    * Returns a predicate that will match against the directed next cell taking
    * into account the current ancestor cell's position in the table.
-   * @param {AutomationNode} start
-   * @param {{dir: (Dir|undefined),
-   *           row: (boolean|undefined),
-   *          col: (boolean|undefined)}} opts
-   * |dir|, specifies direction for |row or/and |col| movement by one cell.
-   *     |dir| defaults to forward.
-   *     |row| and |col| are both false by default.
-   *     |end| defaults to false. If set to true, |col| must also be set to
-   * true. It will then return the first or last cell in the current column.
-   * @return {?AutomationPredicate.Unary} Returns null if not in a table.
+   * @param opts |dir|, specifies direction for |row or/and |col| movement by
+   *     one cell. |dir| defaults to forward.
+   * |row| and |col| are both false by default.
+   * |end| defaults to false. If set to true, |col| must also be set to
+   *     true. It will then return the first or last cell in the current column.
+   * @return Returns null if not in a table.
    */
-  static makeTableCellPredicate(start, opts) {
+  export function makeTableCellPredicate(
+      start: AutomationNode,
+      opts: TableCellPredicateOptions): AutomationPredicate.Unary | null {
     if (!opts.row && !opts.col) {
       throw new Error('You must set either row or col to true');
     }
@@ -652,15 +565,16 @@ export class AutomationPredicate {
     // Compute the row/col index defaulting to 0.
     let rowIndex = 0;
     let colIndex = 0;
-    let tableNode = start;
+    let tableNode: AutomationNode | undefined = start;
     while (tableNode) {
       if (AutomationPredicate.table(tableNode)) {
         break;
       }
 
+      // TODO(b/314203187): Not null asserted, check to make sure it's correct.
       if (AutomationPredicate.cellLike(tableNode)) {
-        rowIndex = tableNode.tableCellRowIndex;
-        colIndex = tableNode.tableCellColumnIndex;
+        rowIndex = tableNode.tableCellRowIndex!;
+        colIndex = tableNode.tableCellColumnIndex!;
       }
 
       tableNode = tableNode.parent;
@@ -675,18 +589,15 @@ export class AutomationPredicate {
         throw 'Unsupported option.';
       }
 
+      // TODO(b/314203187): Not null asserted, check to make sure it's correct.
       if (dir === Dir.FORWARD) {
-        return function(node) {
-          return AutomationPredicate.cellLike(node) &&
+        return (node: AutomationNode) => AutomationPredicate.cellLike(node) &&
               node.tableCellColumnIndex === colIndex &&
-              node.tableCellRowIndex >= 0;
-        };
+              node.tableCellRowIndex! >= 0;
       } else {
-        return function(node) {
-          return AutomationPredicate.cellLike(node) &&
+        return (node: AutomationNode) => AutomationPredicate.cellLike(node) &&
               node.tableCellColumnIndex === colIndex &&
-              node.tableCellRowIndex < tableNode.tableRowCount;
-        };
+              node.tableCellRowIndex! < tableNode!.tableRowCount!;
       }
     }
 
@@ -698,21 +609,19 @@ export class AutomationPredicate {
       colIndex = dir === Dir.FORWARD ? colIndex + 1 : colIndex - 1;
     }
 
-    return function(node) {
-      return AutomationPredicate.cellLike(node) &&
+    return (node: AutomationNode) => AutomationPredicate.cellLike(node) &&
           node.tableCellColumnIndex === colIndex &&
           node.tableCellRowIndex === rowIndex;
-    };
   }
 
   /**
    * Returns a predicate that will match against a heading with a specific
    * hierarchical level.
-   * @param {number} level 1-6
-   * @return {AutomationPredicate.Unary}
+   * @param level 1-6
    */
-  static makeHeadingPredicate(level) {
-    return function(node) {
+  export function makeHeadingPredicate(
+      level: number): AutomationPredicate.Unary {
+    return function(node: AutomationNode) {
       return node.role === Role.HEADING && node.hierarchicalLevel === level;
     };
   }
@@ -720,54 +629,42 @@ export class AutomationPredicate {
   /**
    * Matches against a node that forces showing surrounding contextual
    * information for braille.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static contextualBraille(node) {
+  export function contextualBraille(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return node.parent != null &&
         ((node.parent.role === Role.ROW &&
           AutomationPredicate.cellLike(node)) ||
          (node.parent.role === Role.TREE &&
-          node.parent.state[State.HORIZONTAL]));
+          node.parent.state![State.HORIZONTAL]));
   }
 
   /**
    * Matches against a node that handles multi line key commands.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static multiline(node) {
-    return node.state[State.MULTILINE] || node.state[State.RICHLY_EDITABLE];
+  export function multiline(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    return node.state![State.MULTILINE] || node.state![State.RICHLY_EDITABLE];
   }
 
-  /**
-   * Matches against a node that should be auto-scrolled during navigation.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static autoScrollable(node) {
+  /** Matches against a node that should be auto-scrolled during navigation. */
+  export function autoScrollable(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return Boolean(node.scrollable) &&
-        (node.standardActions.includes(ActionType.SCROLL_FORWARD) ||
-         node.standardActions.includes(ActionType.SCROLL_BACKWARD)) &&
+        (node.standardActions!.includes(ActionType.SCROLL_FORWARD) ||
+         node.standardActions!.includes(ActionType.SCROLL_BACKWARD)) &&
         (node.role === Role.GRID || node.role === Role.LIST ||
          node.role === Role.POP_UP_BUTTON || node.role === Role.SCROLL_VIEW);
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static math(node) {
+  export function math(node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return node.role === Role.MATH ||
-        Boolean(node.htmlAttributes['data-mathml']);
+        Boolean(node.htmlAttributes!['data-mathml']);
   }
 
-  /**
-   * Matches against nodes visited during group navigation.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static group(node) {
+  /** Matches against nodes visited during group navigation. */
+  export function group(node: AutomationNode): boolean {
     if (AutomationPredicate.text(node) || node.display === 'inline') {
       return false;
     }
@@ -787,259 +684,190 @@ export class AutomationPredicate {
    * Matches against editable nodes, that should not be treated in the usual
    * fashion.
    * Instead, only output the contents around the selection in braille.
-   * @param {!AutomationNode} node
-   * @return {boolean}
    */
-  static shouldOnlyOutputSelectionChangeInBraille(node) {
-    return node.state[State.RICHLY_EDITABLE] && node.state[State.FOCUSED] &&
+  export function shouldOnlyOutputSelectionChangeInBraille(
+      node: AutomationNode): boolean {
+    // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+    return node.state![State.RICHLY_EDITABLE] && node.state![State.FOCUSED] &&
         node.role === Role.LOG;
   }
 
-  /**
-   * Matches against nodes we should ignore in a jump command.
-   * @param {!AutomationNode} node
-   * @return {boolean}
-   */
-  static ignoreDuringJump(node) {
+  /** Matches against nodes we should ignore in a jump command. */
+  export function ignoreDuringJump(node: AutomationNode): boolean {
     return node.role === Role.GENERIC_CONTAINER ||
         node.role === Role.STATIC_TEXT || node.role === Role.INLINE_TEXT_BOX;
   }
 
   /**
    * Returns a predicate that will match against a list-like node. The returned
-   * predicate should not match the first list-like ancestor of |node| (or
-   * |node| itself, if it is list-like).
-   * @param {AutomationNode} node
-   * @return {AutomationPredicate.Unary}
+   * predicate should not match the first list-like ancestor of |avoidThis| (or
+   * |avoidThis| itself, if it is list-like).
    */
-  static makeListPredicate(node) {
+  export function makeListPredicate(
+      avoidThis: AutomationNode): AutomationPredicate.Unary {
     // Scan upward for a list-like ancestor. We do not want to match against
     // this node.
-    let avoidNode = node;
+    let avoidNode: AutomationNode | undefined = avoidThis;
     while (avoidNode && !AutomationPredicate.listLike(avoidNode)) {
       avoidNode = avoidNode.parent;
     }
 
-    return function(autoNode) {
-      return AutomationPredicate.listLike(autoNode) && (autoNode !== avoidNode);
+    return function(node: AutomationNode): boolean {
+      return AutomationPredicate.listLike(node) && (node !== avoidNode);
     };
   }
+
+  export type Unary = (node: AutomationNode) => boolean;
+  export type Binary =
+      (first: AutomationNode, second: AutomationNode) => boolean;
+
+  export const heading = AutomationPredicate.roles([Role.HEADING]);
+  export const inlineTextBox =
+      AutomationPredicate.roles([Role.INLINE_TEXT_BOX]);
+  export const link = AutomationPredicate.roles([Role.LINK]);
+  export const row = AutomationPredicate.roles([Role.ROW]);
+  export const table =
+      AutomationPredicate.roles([Role.GRID, Role.LIST_GRID, Role.TABLE]);
+  export const listLike =
+      AutomationPredicate.roles([Role.LIST, Role.DESCRIPTION_LIST]);
+
+  // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+  export const simpleListItem = AutomationPredicate.match({
+    anyPredicate:
+        [node => node.role === Role.LIST_ITEM && node.children.length === 2 &&
+            node.firstChild!.role === Role.LIST_MARKER &&
+            node.lastChild!.role === Role.STATIC_TEXT],
+  });
+
+  export const formField = AutomationPredicate.match({
+    anyPredicate: [
+      AutomationPredicate.button,
+      AutomationPredicate.comboBox,
+      AutomationPredicate.editText,
+    ],
+    anyRole: [
+      Role.CHECK_BOX,
+      Role.COLOR_WELL,
+      Role.LIST_BOX,
+      Role.SLIDER,
+      Role.SWITCH,
+      Role.TAB,
+      Role.TREE,
+    ],
+  });
+
+  export const control = AutomationPredicate.match({
+    anyPredicate: [
+      AutomationPredicate.formField,
+    ],
+    anyRole: [
+      Role.DISCLOSURE_TRIANGLE,
+      Role.MENU_ITEM,
+      Role.MENU_ITEM_CHECK_BOX,
+      Role.MENU_ITEM_RADIO,
+      Role.MENU_LIST_OPTION,
+      Role.SCROLL_BAR,
+    ],
+  });
+
+  export const linkOrControl = AutomationPredicate.match(
+      {anyPredicate: [AutomationPredicate.control], anyRole: [Role.LINK]});
+
+  export const landmark = AutomationPredicate.roles([
+    Role.APPLICATION,
+    Role.BANNER,
+    Role.COMPLEMENTARY,
+    Role.CONTENT_INFO,
+    Role.FORM,
+    Role.MAIN,
+    Role.NAVIGATION,
+    Role.REGION,
+    Role.SEARCH,
+  ]);
+
+  /**
+   * Matches against nodes that contain interesting nodes, but should never be
+   * visited.
+   */
+  export const structuralContainer = AutomationPredicate.roles([
+    Role.ALERT_DIALOG,
+    Role.CLIENT,
+    Role.DIALOG,
+    Role.LAYOUT_TABLE,
+    Role.LAYOUT_TABLE_CELL,
+    Role.LAYOUT_TABLE_ROW,
+    Role.ROOT_WEB_AREA,
+    Role.WEB_VIEW,
+    Role.WINDOW,
+    Role.EMBEDDED_OBJECT,
+    Role.IFRAME,
+    Role.IFRAME_PRESENTATIONAL,
+    Role.PLUGIN_OBJECT,
+    Role.UNKNOWN,
+    Role.PANE,
+    Role.SCROLL_VIEW,
+  ]);
+
+  export const clickable = AutomationPredicate.match({
+    anyPredicate: [
+      AutomationPredicate.button,
+      AutomationPredicate.link,
+      node => node.defaultActionVerb === DefaultActionVerb.CLICK,
+      node => node.clickable === true,
+    ],
+  });
+
+  // TODO(b/314203187): Not null asserted, check to make sure it's correct.
+  export const longClickable = AutomationPredicate.match({
+    anyPredicate: [
+      node => node.standardActions!.includes(
+          chrome.automation.ActionType.LONG_CLICK),
+      // @ts-ignore Long clickable doesn't seem to be a property?
+      node => node.longClickable === true,
+    ],
+  });
+
+  /** Returns if the node is a list option, either in a menu or a listbox. */
+  export const listOption =
+      AutomationPredicate.roles([Role.LIST_BOX_OPTION, Role.MENU_LIST_OPTION]);
+
+  // Table related predicates.
+  /** Returns if the node has a cell like role. */
+  export const cellLike =
+      AutomationPredicate.roles(
+        [Role.CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
+
+  /** Returns if the node is a table header. */
+  export const tableHeader =
+      AutomationPredicate.roles([Role.ROW_HEADER, Role.COLUMN_HEADER]);
+
+  /** Matches against nodes that we may be able to retrieve image data from. */
+  export const supportsImageData =
+      AutomationPredicate.roles([Role.CANVAS, Role.IMAGE, Role.VIDEO]);
+
+  /** Matches against menu item like nodes. */
+  export const menuItem = AutomationPredicate.roles(
+      [Role.MENU_ITEM, Role.MENU_ITEM_CHECK_BOX, Role.MENU_ITEM_RADIO]);
+
+  /** Matches against text like nodes. */
+  export const text = AutomationPredicate.roles(
+      [Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK]);
+
+  /** Matches against selecteable text like nodes. */
+  export const selectableText = AutomationPredicate.roles([
+    Role.STATIC_TEXT,
+    Role.INLINE_TEXT_BOX,
+    Role.LINE_BREAK,
+    Role.LIST_MARKER,
+  ]);
+
+  /**
+   * Matches against pop-up button like nodes.
+   * Historically, single value <select> controls were represented as a
+   * popup button, but they are distinct from <button aria-haspopup='menu'>.
+   */
+  export const popUpButton = AutomationPredicate.roles([
+    Role.COMBO_BOX_SELECT,
+    Role.POP_UP_BUTTON,
+  ]);
 }
-
-/**
- * @typedef {function(!AutomationNode) : boolean}
- */
-AutomationPredicate.Unary;
-
-/**
- * @typedef {function(!AutomationNode,
- * !AutomationNode) : boolean}
- */
-AutomationPredicate.Binary;
-
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.heading = AutomationPredicate.roles([Role.HEADING]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.inlineTextBox =
-    AutomationPredicate.roles([Role.INLINE_TEXT_BOX]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.link = AutomationPredicate.roles([Role.LINK]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.row = AutomationPredicate.roles([Role.ROW]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.table =
-    AutomationPredicate.roles([Role.GRID, Role.LIST_GRID, Role.TABLE]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.listLike =
-    AutomationPredicate.roles([Role.LIST, Role.DESCRIPTION_LIST]);
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.simpleListItem = AutomationPredicate.match({
-  anyPredicate:
-      [node => node.role === Role.LIST_ITEM && node.children.length === 2 &&
-           node.firstChild.role === Role.LIST_MARKER &&
-           node.lastChild.role === Role.STATIC_TEXT],
-});
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.formField = AutomationPredicate.match({
-  anyPredicate: [
-    AutomationPredicate.button,
-    AutomationPredicate.comboBox,
-    AutomationPredicate.editText,
-  ],
-  anyRole: [
-    Role.CHECK_BOX,
-    Role.COLOR_WELL,
-    Role.LIST_BOX,
-    Role.SLIDER,
-    Role.SWITCH,
-    Role.TAB,
-    Role.TREE,
-  ],
-});
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.control = AutomationPredicate.match({
-  anyPredicate: [
-    AutomationPredicate.formField,
-  ],
-  anyRole: [
-    Role.DISCLOSURE_TRIANGLE,
-    Role.MENU_ITEM,
-    Role.MENU_ITEM_CHECK_BOX,
-    Role.MENU_ITEM_RADIO,
-    Role.MENU_LIST_OPTION,
-    Role.SCROLL_BAR,
-  ],
-});
-
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.linkOrControl = AutomationPredicate.match(
-    {anyPredicate: [AutomationPredicate.control], anyRole: [Role.LINK]});
-
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.landmark = AutomationPredicate.roles([
-  Role.APPLICATION,
-  Role.BANNER,
-  Role.COMPLEMENTARY,
-  Role.CONTENT_INFO,
-  Role.FORM,
-  Role.MAIN,
-  Role.NAVIGATION,
-  Role.REGION,
-  Role.SEARCH,
-]);
-
-/**
- * Matches against nodes that contain interesting nodes, but should never be
- * visited.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.structuralContainer = AutomationPredicate.roles([
-  Role.ALERT_DIALOG,
-  Role.CLIENT,
-  Role.DIALOG,
-  Role.LAYOUT_TABLE,
-  Role.LAYOUT_TABLE_CELL,
-  Role.LAYOUT_TABLE_ROW,
-  Role.ROOT_WEB_AREA,
-  Role.WEB_VIEW,
-  Role.WINDOW,
-  Role.EMBEDDED_OBJECT,
-  Role.IFRAME,
-  Role.IFRAME_PRESENTATIONAL,
-  Role.PLUGIN_OBJECT,
-  Role.UNKNOWN,
-  Role.PANE,
-  Role.SCROLL_VIEW,
-]);
-
-
-/**
- * Returns if the node is clickable.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.clickable = AutomationPredicate.match({
-  anyPredicate: [
-    AutomationPredicate.button,
-    AutomationPredicate.link,
-    node => {
-      return node.defaultActionVerb === DefaultActionVerb.CLICK;
-    },
-  ],
-  anyAttribute: {clickable: true},
-});
-
-/**
- * Returns if the node is long clickable.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.longClickable = AutomationPredicate.match({
-  anyPredicate: [
-    node => {
-      return node.standardActions.includes(
-          chrome.automation.ActionType.LONG_CLICK);
-    },
-  ],
-  anyAttribute: {longClickable: true},
-});
-
-/**
- * Returns if the node is a list option, either in a menu or a listbox.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.listOption =
-    AutomationPredicate.roles([Role.LIST_BOX_OPTION, Role.MENU_LIST_OPTION]);
-
-// Table related predicates.
-/**
- * Returns if the node has a cell like role.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.cellLike =
-    AutomationPredicate.roles([Role.CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
-
-/**
- * Returns if the node is a table header.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.tableHeader =
-    AutomationPredicate.roles([Role.ROW_HEADER, Role.COLUMN_HEADER]);
-
-/**
- * Matches against nodes that we may be able to retrieve image data from.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.supportsImageData =
-    AutomationPredicate.roles([Role.CANVAS, Role.IMAGE, Role.VIDEO]);
-
-
-/**
- * Matches against menu item like nodes.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.menuItem = AutomationPredicate.roles(
-    [Role.MENU_ITEM, Role.MENU_ITEM_CHECK_BOX, Role.MENU_ITEM_RADIO]);
-
-/**
- * Matches against text like nodes.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.text = AutomationPredicate.roles(
-    [Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK]);
-
-/**
- * Matches against selecteable text like nodes.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.selectableText = AutomationPredicate.roles([
-  Role.STATIC_TEXT,
-  Role.INLINE_TEXT_BOX,
-  Role.LINE_BREAK,
-  Role.LIST_MARKER,
-]);
-
-/**
- * Matches against pop-up button like nodes.
- * Historically, single value <select> controls were represented as a
- * popup button, but they are distinct from <button aria-haspopup='menu'>.
- * @param {!AutomationNode} node
- * @return {boolean}
- */
-AutomationPredicate.popUpButton = AutomationPredicate.roles([
-  Role.COMBO_BOX_SELECT,
-  Role.POP_UP_BUTTON,
-]);

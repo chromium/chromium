@@ -44,7 +44,6 @@ chromevox_modules = [
 
 # ES6 modules.
 chromevox_es6_modules = [
-  "../common/automation_predicate.js",
   "../common/async_util.js",
   "../common/browser_util.js",
   "../common/key_code.js",
