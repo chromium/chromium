@@ -286,6 +286,8 @@ static_library("test_support") {
         "base/chromeos/crosier/supervised_user_login_delegate.cc",
         "base/chromeos/crosier/supervised_user_login_delegate.h",
       ]
+
+      deps += [ "//ui/ozone/platform/drm:ui_controls" ]
     }
 
     deps += [

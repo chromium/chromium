@@ -244,3 +244,22 @@ source_set("drm_integration_tests") {
     "//ui/ozone/common",
   ]
 }
+
+source_set("ui_controls") {
+  testonly = true
+
+  sources = [
+    "test/ui_controls_system_input_injector.cc",
+    "test/ui_controls_system_input_injector.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/ozone:platform",
+    "//ui/ozone/common",
+  ]
+
+  visibility += [ "//chrome/test:test_support" ]
+}
