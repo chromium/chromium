@@ -125,6 +125,107 @@ test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
+  test.innerHTML = "ABCD";
+  editContext.updateText(0, 4, "abcd");
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
+  });
+
+  let compositionStartData = [];
+  let compositionEndData = [];
+  editContext.addEventListener("compositionstart", e => {
+    compositionStartData.push(e.data);
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndData.push(e.data);
+  });
+
+  test.editContext = editContext;
+  test.focus();
+  editContext.updateSelection(1, 3);
+  textInputController.setComposition("foo");
+  assert_equals(editContext.text, "afood");
+  assert_equals(test.innerHTML, "AFOOD");
+  assert_array_equals(compositionStartData, ["foo"], "Should get compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, [], "Should not get compositionend until terminating composition");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+  textInputController.insertText("foo");
+  assert_array_equals(compositionStartData, ["foo"], "Should get compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, ["foo"], "Should not get compositionend until terminating composition");
+  assert_equals(editContext.text, "afood");
+  assert_equals(test.innerHTML, "AFOOD");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+  editContext.updateSelection(4, 1);
+  textInputController.setComposition("bar");
+  assert_equals(editContext.text, "abard");
+  assert_equals(test.innerHTML, "ABARD");
+  assert_array_equals(compositionStartData, ["foo", "bar"], "Should get compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, ["foo"], "Should not get compositionend until terminating composition");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "abard");
+  assert_equals(test.innerHTML, "ABARD");
+  assert_array_equals(compositionStartData, ["foo", "bar"], "Should get compositionstart after setting non-empty composition");
+  assert_array_equals(compositionEndData, ["foo", "bar"], "Should not get compositionend until terminating composition");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+}, 'Testing EditContext composition text updates and events with non-collapsed selection');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "ABCD";
+  editContext.updateText(0, 4, "abcd");
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.text.toUpperCase() + buffer.substr(e.updateRangeEnd);
+  });
+
+  let compositionStartData = [];
+  let compositionEndData = [];
+  editContext.addEventListener("compositionstart", e => {
+    assert_unreached("Should not get composition events when composition was not set");
+  });
+
+  editContext.addEventListener("compositionend", e => {
+    assert_unreached("Should not get composition events when composition was not set");
+  });
+
+  test.editContext = editContext;
+  test.focus();
+  editContext.updateSelection(1, 3);
+  textInputController.insertText("foo");
+  assert_equals(editContext.text, "afood");
+  assert_equals(test.innerHTML, "AFOOD");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+  editContext.updateSelection(4, 1);
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "abard");
+  assert_equals(test.innerHTML, "ABARD");
+  assert_equals(editContext.selectionStart, 4);
+  assert_equals(editContext.selectionEnd, 4);
+
+}, 'Testing EditContext insertText without composition');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
   test.innerHTML = "";
   let textFormats = [];
   // Add EditContext event listeners
