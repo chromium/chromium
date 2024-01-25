@@ -39,6 +39,14 @@ main {
   padding-top: 1rem;
 }
 
+cr-tab-box, cr-tab-box * {
+  max-width: 100%;
+}
+
+attribution-internals-table {
+  overflow-x: auto;
+}
+
 .content {
   background-color: #fbfbfb;
   border: 1px solid #cecece;
