@@ -41,6 +41,8 @@ source_set("privacy_guide_ui") {
     "privacy_guide_url_usage_view_controller.mm",
     "privacy_guide_url_usage_view_controller_delegate.h",
     "privacy_guide_url_usage_view_controller_presentation_delegate.h",
+    "privacy_guide_utils.h",
+    "privacy_guide_utils.mm",
     "privacy_guide_welcome_view_controller.h",
     "privacy_guide_welcome_view_controller.mm",
   ]

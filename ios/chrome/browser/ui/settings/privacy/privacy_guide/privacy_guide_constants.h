@@ -14,10 +14,10 @@ enum PrivacyGuideStepType : NSInteger {
   kPrivacyGuideHistorySyncStep,
 };
 
-// The accessibility identifier of the Privacy Guide History Sync step view.
+// The accessibility identifier for the Privacy Guide History Sync step view.
 extern NSString* const kPrivacyGuideHistorySyncViewID;
 
-// The accessibility identifier of the Privacy Guide wide navigation bar.
+// The accessibility identifier for the Privacy Guide wide navigation bar.
 extern NSString* const kPrivacyGuideNavigationBarViewID;
 
 // The accessibility identifier for the URL usage switch.
