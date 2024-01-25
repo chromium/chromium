@@ -91,7 +91,6 @@ class BorderEdge;
 class ContentData;
 class CounterDirectives;
 class CSSAnimationData;
-class FloodColor;
 class CSSTransitionData;
 class CSSVariableData;
 class Font;

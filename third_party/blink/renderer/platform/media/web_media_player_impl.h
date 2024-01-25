@@ -72,10 +72,6 @@ namespace gfx {
 class Size;
 }
 
-namespace learning {
-class LearningTaskController;
-}
-
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
@@ -84,6 +80,10 @@ class MediaLog;
 class MemoryDumpProviderProxy;
 class PipelineController;
 class SwitchableAudioRendererSink;
+
+namespace learning {
+class LearningTaskController;
+}
 }  // namespace media
 
 namespace viz {

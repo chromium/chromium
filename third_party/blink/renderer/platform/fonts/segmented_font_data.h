@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-class SimpleFontData;
-
 namespace blink {
+
+class SimpleFontData;
 
 class PLATFORM_EXPORT SegmentedFontData : public FontData {
  public:

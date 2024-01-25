@@ -21,8 +21,6 @@
 
 namespace blink {
 
-class WebView;
-
 namespace web_pref {
 
 using blink::mojom::EffectiveConnectionType;

@@ -14,9 +14,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-class FontSelector;
-
 namespace blink {
+
+class FontSelector;
 
 // This class acts as a cache ensuring that equivalent `FontDescription`s will
 // have the same `FontFallbackList`.

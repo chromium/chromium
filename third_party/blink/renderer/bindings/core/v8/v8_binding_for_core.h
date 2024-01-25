@@ -63,7 +63,6 @@ class EventLoop;
 
 class ExceptionState;
 class ExecutionContext;
-class Frame;
 class LocalDOMWindow;
 class LocalFrame;
 class XPathNSResolver;

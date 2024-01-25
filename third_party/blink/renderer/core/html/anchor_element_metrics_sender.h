@@ -21,7 +21,6 @@ class Document;
 class HTMLAnchorElement;
 class IntersectionObserver;
 class IntersectionObserverEntry;
-class AnchorElementMetrics;
 class PointerEvent;
 
 // AnchorElementMetricsSender is responsible to send anchor element metrics to

@@ -40,9 +40,11 @@
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
-namespace blink {
-
+namespace base {
 class WaitableEvent;
+}  // namespace base
+
+namespace blink {
 
 // HRTFDatabaseLoader will asynchronously load the default HRTFDatabase in a new
 // thread.

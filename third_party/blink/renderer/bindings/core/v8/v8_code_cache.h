@@ -24,14 +24,11 @@ class TextPosition;
 namespace blink {
 
 class CachedMetadata;
+class CodeCacheHost;
 class ClassicScript;
 class KURL;
 class ModuleRecordProduceCacheData;
 class ScriptState;
-
-namespace mojom {
-class CodeCacheHost;
-}
 
 class CORE_EXPORT V8CodeCache final {
   STATIC_ONLY(V8CodeCache);
