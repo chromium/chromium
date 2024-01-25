@@ -171,8 +171,7 @@ void U2fRegisterOperation::OnRegisterResponseReceived(
     case apdu::ApduResponse::Status::SW_NO_ERROR: {
       FIDO_LOG(DEBUG)
           << "Received successful U2F register response from authenticator: "
-          << base::HexEncode(apdu_response->data().data(),
-                             apdu_response->data().size());
+          << base::HexEncode(apdu_response->data());
       auto response =
           AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
               device()->DeviceTransport(),

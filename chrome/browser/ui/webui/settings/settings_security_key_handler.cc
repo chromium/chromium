@@ -65,7 +65,7 @@ base::Value::Dict EncodeEnrollment(const std::vector<uint8_t>& id,
                                    const std::string& name) {
   base::Value::Dict value;
   value.Set("name", name);
-  value.Set("id", base::HexEncode(id.data(), id.size()));
+  value.Set("id", base::HexEncode(id));
   return value;
 }
 

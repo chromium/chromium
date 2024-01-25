@@ -66,8 +66,7 @@ absl::optional<std::string> GetHexStringRegValue(
     if (res == ERROR_SUCCESS) {
       // Converting the values to lowercase specifically for CrowdStrike as
       // some of their APIs only accept the lowercase version.
-      return base::ToLowerASCII(
-          base::HexEncode(raw_bytes.data(), raw_bytes.size()));
+      return base::ToLowerASCII(base::HexEncode(raw_bytes));
     }
   }
 

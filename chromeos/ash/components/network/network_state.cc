@@ -529,7 +529,7 @@ bool NetworkState::IsSecure() const {
 }
 
 std::string NetworkState::GetHexSsid() const {
-  return base::HexEncode(raw_ssid().data(), raw_ssid().size());
+  return base::HexEncode(raw_ssid());
 }
 
 std::string NetworkState::GetDnsServersAsString() const {

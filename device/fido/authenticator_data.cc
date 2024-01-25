@@ -99,7 +99,7 @@ absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
       FIDO_LOG(ERROR)
           << "CBOR decoding of authenticator data extensions failed ("
           << cbor::Reader::ErrorCodeToString(error) << ") from "
-          << base::HexEncode(auth_data.data(), auth_data.size());
+          << base::HexEncode(auth_data);
       return absl::nullopt;
     }
     if (!extensions->is_map()) {

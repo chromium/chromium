@@ -679,8 +679,7 @@ void NearbyConnectionsManagerImpl::OnEndpointFound(
     DiscoveredEndpointInfoPtr info) {
   if (!discovery_listener_) {
     CD_LOG(INFO, Feature::NC) << "Ignoring discovered endpoint "
-                              << base::HexEncode(info->endpoint_info.data(),
-                                                 info->endpoint_info.size())
+                              << base::HexEncode(info->endpoint_info)
                               << " because we're no longer "
                                  "in discovery mode";
     return;
@@ -689,8 +688,7 @@ void NearbyConnectionsManagerImpl::OnEndpointFound(
   auto result = discovered_endpoints_.insert(endpoint_id);
   if (!result.second) {
     CD_LOG(INFO, Feature::NC) << "Ignoring discovered endpoint "
-                              << base::HexEncode(info->endpoint_info.data(),
-                                                 info->endpoint_info.size())
+                              << base::HexEncode(info->endpoint_info)
                               << " because we've already "
                                  "reported this endpoint";
     return;
@@ -698,8 +696,7 @@ void NearbyConnectionsManagerImpl::OnEndpointFound(
 
   discovery_listener_->OnEndpointDiscovered(endpoint_id, info->endpoint_info);
   CD_LOG(INFO, Feature::NC)
-      << "Discovered "
-      << base::HexEncode(info->endpoint_info.data(), info->endpoint_info.size())
+      << "Discovered " << base::HexEncode(info->endpoint_info)
       << " over Nearby Connections";
 }
 

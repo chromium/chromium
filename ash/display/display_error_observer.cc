@@ -27,10 +27,8 @@ void DisplayErrorObserver::OnDisplayModeChangeFailed(
   for (display::DisplaySnapshot* display : displays) {
     const int64_t display_id = display->display_id();
     internal_display_failed |= display::IsInternalDisplayId(display_id);
-    LOG(ERROR) << "- Display with ID = " << display_id << ", and EDID = "
-               << base::HexEncode(display->edid().data(),
-                                  display->edid().size())
-               << ".";
+    LOG(ERROR) << "- Display with ID = " << display_id
+               << ", and EDID = " << base::HexEncode(display->edid()) << ".";
   }
 
   if (internal_display_failed && displays.size() == 1u) {

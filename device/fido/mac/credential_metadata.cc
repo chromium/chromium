@@ -111,7 +111,7 @@ std::string Cryptor::HmacForStorage(std::string_view data) const {
   // The keychain fields that store RP ID and User ID seem to only accept
   // NSString (not NSData), so we HexEncode to ensure the result to be
   // UTF-8-decodable.
-  return base::HexEncode(digest.data(), digest.size());
+  return base::HexEncode(digest);
 }
 
 // static
@@ -457,7 +457,7 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
   // HexEncode to ensure that the result is valid UTF-8. The result of this
   // function will be converted to an NSString via SysUTF8ToNSString and
   // therefore must be valid for that.
-  return base::HexEncode(ct.data(), ct.size());
+  return base::HexEncode(ct);
 }
 
 absl::optional<std::string> DecodeRpId(const std::string& secret,
