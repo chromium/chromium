@@ -232,6 +232,26 @@ bool IntersectionGeometry::RootGeometry::operator==(
          root_to_view_transform == other.root_to_view_transform;
 }
 
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+String IntersectionGeometry::CachedRects::ToString() const {
+  return String::Format(
+      "local_target_rect: %s target_rect: %s local_root_rect: %s root_rect: %s "
+      "intersection_rect: %s %s %s min_scroll_delta_to_update %s %s"
+      "target_transform: %s root_transform: %s does_intersect: %d "
+      "relationship: %d root_scrolls_target: %d",
+      local_target_rect.ToString().c_str(), target_rect.ToString().c_str(),
+      local_root_rect.ToString().c_str(), root_rect.ToString().c_str(),
+      unscrolled_unclipped_intersection_rect.ToString().c_str(),
+      unclipped_intersection_rect.ToString().c_str(),
+      intersection_rect.ToString().c_str(),
+      computed_min_scroll_delta_to_update.ToString().c_str(),
+      min_scroll_delta_to_update.ToString().c_str(),
+      target_to_view_transform.ToString().c_str(),
+      root_to_view_transform.ToString().c_str(), does_intersect, relationship,
+      root_scrolls_target);
+}
+#endif
+
 const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
     const Node& root_node) {
   if (!root_node.isConnected()) {
@@ -647,6 +667,20 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
         root_and_target, target_to_view_transform,
         root_geometry.root_to_view_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
+
+#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
+    cached_rects->computed_min_scroll_delta_to_update =
+        cached_rects->min_scroll_delta_to_update;
+    cached_rects->local_root_rect = root_geometry.local_root_rect;
+    cached_rects->root_rect = root_rect_;
+    cached_rects->target_rect = target_rect_;
+    cached_rects->intersection_rect = intersection_rect_;
+    cached_rects->unclipped_intersection_rect = unclipped_intersection_rect_;
+    cached_rects->target_to_view_transform = target_to_view_transform;
+    cached_rects->root_to_view_transform = root_geometry.root_to_view_transform;
+    cached_rects->relationship = static_cast<int>(root_and_target.relationship);
+    cached_rects->root_scrolls_target = root_and_target.root_scrolls_target;
+#endif
   }
 }
 
