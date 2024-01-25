@@ -1196,10 +1196,9 @@ HRESULT DoUpdate(UpdaterScope scope,
   EXPECT_HRESULT_SUCCEEDED(
       app_bundle_web_create_mode == AppBundleWebCreateMode::kCreateInstalledApp
           ? bundle->createInstalledApp(appid.Get())
-          : bundle->createApp(appid.Get(),
-                              base::win::ScopedBstr(L"brand").Get(),
+          : bundle->createApp(appid.Get(), base::win::ScopedBstr(L"BRND").Get(),
                               base::win::ScopedBstr(L"en").Get(),
-                              base::win::ScopedBstr(L"ap").Get()));
+                              base::win::ScopedBstr(L"DoUpdateAP").Get()));
   EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
   bool done = false;
   static const base::TimeDelta kExpirationTimeout =
