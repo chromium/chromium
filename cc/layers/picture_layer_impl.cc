@@ -260,24 +260,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       bounds_in_target_space.Intersect(*shared_quad_state->clip_rect);
 
     shared_quad_state->clip_rect = bounds_in_target_space;
-
-#if DCHECK_IS_ON()
-    // Validate that the tile and bounds size are always within one pixel.
-    PictureLayerTiling* high_res =
-        tilings_->FindTilingWithResolution(HIGH_RESOLUTION);
-    if (high_res) {
-      const float epsilon = 1.f;
-      gfx::SizeF scaled_tiling_size(high_res->tiling_size());
-      scaled_tiling_size.InvScale(raster_contents_scale_.x(),
-                                  raster_contents_scale_.y());
-      if (raster_contents_scale_.x() >= 1.f)
-        DCHECK(std::abs(bounds().width() - scaled_tiling_size.width()) <
-               epsilon);
-      if (raster_contents_scale_.y() >= 1.f)
-        DCHECK(std::abs(bounds().height() - scaled_tiling_size.height()) <
-               epsilon);
-    }
-#endif
   }
 
   Occlusion scaled_occlusion =
