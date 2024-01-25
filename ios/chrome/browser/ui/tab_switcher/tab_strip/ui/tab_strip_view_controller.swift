@@ -318,6 +318,17 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
 
   func collectionView(
     _ collectionView: UICollectionView,
+    contextMenuConfiguration configuration: UIContextMenuConfiguration,
+    highlightPreviewForItemAt indexPath: IndexPath
+  ) -> UITargetedPreview? {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
+      return nil
+    }
+    return UITargetedPreview(view: cell, parameters: cell.dragPreviewParameters)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
     contextMenuConfigurationForItemAt indexPath: IndexPath,
     point: CGPoint
   ) -> UIContextMenuConfiguration? {
@@ -370,10 +381,10 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     dragPreviewParametersForItemAt indexPath: IndexPath
   ) -> UIDragPreviewParameters? {
-    guard let draggedCell = (collectionView.cellForItem(at: indexPath) as? TabStripCell) else {
+    guard let cell = collectionView.cellForItem(at: indexPath) as? TabStripCell else {
       return nil
     }
-    return draggedCell.dragPreviewParameters
+    return cell.dragPreviewParameters
   }
 
   func collectionView(
