@@ -633,7 +633,6 @@ bool CopyExecutionModeFromIdlToMojo(const ExecutionContext& execution_context,
                               input.executionMode());
   }
 
-  // TODO(crbug.com/1330341): Support "frozen-context".
   if (input.executionMode() == "compatibility") {
     output.execution_mode =
         mojom::blink::InterestGroup::ExecutionMode::kCompatibilityMode;

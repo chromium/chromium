@@ -1093,8 +1093,6 @@ void SellerWorklet::V8State::ScoreAd(
                             total_timeout.get(), errors_out);
   if (!success) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "score_ad", trace_id);
-    // Keep debug loss reports and Private Aggregation API requests since
-    // `scoreAd()` might use them to detect script timeout or failures.
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*reject_reason=*/mojom::RejectReason::kNotAvailable,
