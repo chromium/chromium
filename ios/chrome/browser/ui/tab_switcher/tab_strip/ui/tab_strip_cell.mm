@@ -32,7 +32,7 @@ const CGFloat kSeparatorWidth = 2;
 const CGFloat kSeparatorCornerRadius = 1;
 const CGFloat kSeparatorHeight = 18;
 const CGFloat kSeparatorHorizontalInset = 2;
-const CGFloat kSeparatorGradientWidth = 8;
+const CGFloat kSeparatorGradientWidth = 4;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
@@ -85,12 +85,17 @@ UIImage* DefaultFavicon() {
   // Gradient view's constraints.
   NSLayoutConstraint* _titleGradientViewLeadingConstraint;
   NSLayoutConstraint* _titleGradientViewTrailingConstraint;
+
+  // Separator height constraints.
+  NSArray<NSLayoutConstraint*>* _separatorHeightConstraints;
+  CGFloat _separatorHeight;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.layer.masksToBounds = NO;
     _decorationLayersUpdated = NO;
+    _separatorHeight = 0;
 
     UIView* contentView = self.contentView;
     contentView.layer.masksToBounds = YES;
@@ -238,6 +243,22 @@ UIImage* DefaultFavicon() {
   _topRightCornerView.hidden = !selected;
 
   [self updateCollapsedState];
+}
+
+- (void)setSeparatorsHeight:(CGFloat)height {
+  if (_separatorHeight == height) {
+    return;
+  }
+  _separatorHeight = height;
+
+  if (_separatorHeightConstraints) {
+    [NSLayoutConstraint deactivateConstraints:_separatorHeightConstraints];
+  }
+  _separatorHeightConstraints = @[
+    [_leadingSeparatorView.heightAnchor constraintEqualToConstant:height],
+    [_trailingSeparatorView.heightAnchor constraintEqualToConstant:height],
+  ];
+  [NSLayoutConstraint activateConstraints:_separatorHeightConstraints];
 }
 
 #pragma mark - UICollectionViewCell
@@ -472,8 +493,6 @@ UIImage* DefaultFavicon() {
                        constant:-kSeparatorHorizontalInset],
     [_leadingSeparatorView.widthAnchor
         constraintEqualToConstant:kSeparatorWidth],
-    [_leadingSeparatorView.heightAnchor
-        constraintEqualToConstant:kSeparatorHeight],
     [_leadingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
@@ -485,11 +504,11 @@ UIImage* DefaultFavicon() {
                        constant:kSeparatorHorizontalInset],
     [_trailingSeparatorView.widthAnchor
         constraintEqualToConstant:kSeparatorWidth],
-    [_trailingSeparatorView.heightAnchor
-        constraintEqualToConstant:kSeparatorHeight],
     [_trailingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
+
+  [self setSeparatorsHeight:kSeparatorHeight];
 
   /// `_leadingSeparatorGradientView` constraints.
   [NSLayoutConstraint activateConstraints:@[

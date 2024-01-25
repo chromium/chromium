@@ -45,6 +45,9 @@
 // Sets the favicon for the page. Passing nil sets the default image.
 - (void)setFaviconImage:(UIImage*)image;
 
+// Sets the height of the separators.
+- (void)setSeparatorsHeight:(CGFloat)height;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_CELL_H_

@@ -37,4 +37,13 @@ struct TabStripConstants {
     static let symbolPointSize: CGFloat = 16
   }
 
+  /// Animated separator constants.
+  struct AnimatedSeparator {
+    static let regularSeparatorHeight: CGFloat = 18
+    static let minSeparatorHeight: CGFloat = 12
+    // The Cell separator is animated below this threshold.
+    static let collapseHorizontalInsetThreshold: CGFloat = 8
+    static let collapseHorizontalInset: CGFloat = 6
+  }
+
 }
