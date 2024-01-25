@@ -887,10 +887,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
         MenuItem addTohomescreenItem = menu.findItem(R.id.add_to_homescreen_id);
         MenuItem installWebAppItem = menu.findItem(R.id.install_webapp_id);
+        MenuItem universalInstallItem = menu.findItem(R.id.universal_install);
         MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
 
         addTohomescreenItem.setVisible(false);
         installWebAppItem.setVisible(false);
+        universalInstallItem.setVisible(false);
         openWebApkItem.setVisible(false);
 
         if (currentTab != null && shouldShowHomeScreenMenuItem) {
@@ -915,8 +917,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     addTohomescreenItem.setTitle(installStrings.titleTextId);
                     addTohomescreenItem.setVisible(true);
                 } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                    installWebAppItem.setTitle(installStrings.titleTextId);
-                    installWebAppItem.setVisible(true);
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
+                        universalInstallItem.setVisible(true);
+                    } else {
+                        installWebAppItem.setTitle(installStrings.titleTextId);
+                        installWebAppItem.setVisible(true);
+                    }
                 }
             }
         }

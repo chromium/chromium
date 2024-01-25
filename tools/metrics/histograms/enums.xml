@@ -16524,6 +16524,7 @@ from previous Chrome versions.
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
   <int value="-1874908826" label="enable-instant-search-clicks"/>
   <int value="-1874842483" label="FeedLoadingPlaceholder:disabled"/>
+  <int value="-1874349308" label="PwaUniversalInstallUi:enabled"/>
   <int value="-1874141108" label="NewOmniboxAnswerTypes:enabled"/>
   <int value="-1872989945" label="enable-webview-based-signin"/>
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
@@ -17280,7 +17281,6 @@ from previous Chrome versions.
   <int value="-1514717827" label="ConvertTrackpadEventsToMouse:enabled"/>
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
   <int value="-1513112313" label="AudioSettingsPage:enabled"/>
-  <int value="-1513034305" label="UniversalInstallUi:enabled"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
   <int value="-1511549741" label="verbose-logging-in-nacl"/>
@@ -19442,7 +19442,6 @@ from previous Chrome versions.
   <int value="-518104091" label="NewAudioRenderingMixingStrategy:enabled"/>
   <int value="-518037829" label="ProjectorExcludeTranscript:disabled"/>
   <int value="-517913118" label="OmahaMinSdkVersionAndroid:enabled"/>
-  <int value="-517279198" label="UniversalInstallUi:disabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>
@@ -20647,6 +20646,7 @@ from previous Chrome versions.
   <int value="41881657" label="MessagesForAndroidAdsBlocked:enabled"/>
   <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>
+  <int value="42780498" label="PwaUniversalInstallUi:disabled"/>
   <int value="42844603" label="AndroidSurfaceControl:disabled"/>
   <int value="42881842" label="EnablePenetratingImageSelection:disabled"/>
   <int value="43949416" label="Journeys:enabled"/>

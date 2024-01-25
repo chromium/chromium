@@ -190,6 +190,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -218,6 +219,7 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
+import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstallBottomSheetCoordinator;
 import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.DeviceUtils;
@@ -2757,6 +2759,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
+        if (id == R.id.universal_install) {
+            RecordUserAction.record("UniversalInstallFromMenu");
+            return doUniversalInstall(
+                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_UNIVERSAL_INSTALL);
+        }
+
         if (id == R.id.open_webapk_id) {
             RecordUserAction.record("MobileMenuOpenWebApk");
             return doOpenWebApk(currentTab);
@@ -3095,6 +3103,29 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Returns a {@link CompositorViewHolder} instance for testing. */
     public CompositorViewHolder getCompositorViewHolderForTesting() {
         return mCompositorViewHolderSupplier.get();
+    }
+
+    private boolean doUniversalInstall(Tab currentTab, int menuItemType) {
+        BottomSheetController controller = BottomSheetControllerProvider.from(getWindowAndroid());
+        if (controller == null) {
+            // We have three options when this function fails. One is to abort the operation and do
+            // nothing (by returning false), or we can make one of the two options of the Universal
+            // Install dialog the default and go with that in case of errors. Since Install App is
+            // the menu item that would have been shown, if Universal Install was disabled, we
+            // fall back to the Install App option.
+            return doAddToHomescreenOrInstallWebApp(
+                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+        }
+
+        PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
+                new PwaUniversalInstallBottomSheetCoordinator(this, controller);
+        if (!pwaUniversalInstallBottomSheetCoordinator.show()) {
+            // Fall back to install method for the PWA.
+            return doAddToHomescreenOrInstallWebApp(
+                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
+        }
+
+        return true;
     }
 
     /**

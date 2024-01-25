@@ -36,6 +36,12 @@ android_library("java") {
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetView.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetViewBinder.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreProperties.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetContent.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetMediator.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetView.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetViewBinder.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallProperties.java",
   ]
   deps = [
     ":java_resources",
@@ -114,6 +120,7 @@ android_resources("java_resources") {
     "java/res/layout/pwa_restore_bottom_sheet_preview.xml",
     "java/res/layout/pwa_restore_list_item_app.xml",
     "java/res/layout/pwa_restore_list_item_label.xml",
+    "java/res/layout/pwa_universal_install_bottom_sheet_content.xml",
     "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
@@ -186,6 +193,8 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/webapps/AddToHomescreenViewBinderTest.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetContentTest.java",
     "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetCoordinatorTest.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetContentTest.java",
+    "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinatorTest.java",
   ]
   deps = [
     ":java",

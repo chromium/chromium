@@ -676,7 +676,7 @@ BASE_FEATURE(kPriceChangeModule,
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaUniversalInstallUi,
-             "UniversalInstallUi",
+             "PwaUniversalInstallUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureActivityTabProvider,

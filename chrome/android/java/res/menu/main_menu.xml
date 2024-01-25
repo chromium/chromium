@@ -116,6 +116,9 @@ found in the LICENSE file.
         <item android:id="@+id/install_webapp_id"
             android:title="@string/menu_install_webapp"
             android:icon="@drawable/ic_install_webapp" />
+        <item android:id="@+id/universal_install"
+            android:title="@string/menu_add_to_homescreen"
+            android:icon="@drawable/ic_add_to_home_screen" />
         <item android:id="@+id/open_webapk_id"
             android:title="@string/menu_open_webapk"
             android:icon="@drawable/ic_open_webapk" />
