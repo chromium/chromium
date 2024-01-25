@@ -1312,6 +1312,11 @@ bool ContentBrowserClient::ShouldBlockRendererDebugURL(
   return false;
 }
 
+std::optional<base::TimeDelta>
+ContentBrowserClient::GetSpareRendererDelayForSiteURL(const GURL& site_url) {
+  return std::nullopt;
+}
+
 ui::AXMode ContentBrowserClient::GetAXModeForBrowserContext(
     BrowserContext* browser_context) {
   return BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();

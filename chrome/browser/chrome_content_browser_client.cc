@@ -5330,6 +5330,29 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
   return expiration_times;
 }
 
+std::optional<base::TimeDelta>
+ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
+    const GURL& site_url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDeferredSpareRendererForTopChromeWebUI)) {
+    return std::nullopt;
+  }
+
+  if (!IsTopChromeWebUIURL(site_url)) {
+    return std::nullopt;
+  }
+
+  // Prevent new spare renderer creation until page loading completes, signaled
+  // by WebContentsImpl::DidStopLoading. When enabled, delay spare renderer
+  // creation indefinitely by returning the maximum TimeDelta value.
+  if (features::kSpareRendererWarmupDelayUntilPageStopsLoading.Get()) {
+    return base::TimeDelta::Max();
+  }
+
+  // Otherwise, schedule new spare renderer creation after a predefined delay.
+  return features::kSpareRendererWarmupDelay.Get();
+}
+
 content::TracingDelegate* ChromeContentBrowserClient::GetTracingDelegate() {
   return new ChromeTracingDelegate();
 }

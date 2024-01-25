@@ -3145,10 +3145,15 @@ void RenderProcessHostImpl::RemoveExpectedNavigationToSite(
 }
 
 // static
-void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-    BrowserContext* browser_context) {
+void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+    SiteInstance* site_instance,
+    bool ignore_delay) {
   SpareRenderProcessHostManager::GetInstance().PrepareForFutureRequests(
-      browser_context);
+      site_instance->GetBrowserContext(),
+      ignore_delay
+          ? std::nullopt
+          : GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+                site_instance->GetSiteURL()));
 }
 
 // static
@@ -4831,7 +4836,10 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // PrepareForFutureRequests will be postponed until later (e.g. until the
   // navigation commits or a cross-site redirect happens).
   if (spare_was_taken) {
-    spare_process_manager.PrepareForFutureRequests(browser_context);
+    spare_process_manager.PrepareForFutureRequests(
+        browser_context,
+        GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+            site_instance->GetSiteURL()));
   }
 
   if (is_unmatched_service_worker) {

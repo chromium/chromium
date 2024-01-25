@@ -482,6 +482,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::Time expiration_time) override;
   base::flat_map<int, base::Time> GetDevToolsBackgroundServiceExpirations(
       content::BrowserContext* browser_context) override;
+  std::optional<base::TimeDelta> GetSpareRendererDelayForSiteURL(
+      const GURL& site_url) override;
   content::TracingDelegate* GetTracingDelegate() override;
   bool IsPluginAllowedToCallRequestOSFileHandle(
       content::BrowserContext* browser_context,

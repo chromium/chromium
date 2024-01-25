@@ -3407,8 +3407,8 @@ void NavigationRequest::OnRequestRedirected(
   // the spare at this time (note that the actual behavior depends on
   // RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes).
   if (!site_instance->HasProcess()) {
-    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-        site_instance->GetBrowserContext());
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+        site_instance.get());
   }
 
   // Check what the process of the SiteInstance is. It will be passed to the
@@ -6019,8 +6019,8 @@ void NavigationRequest::CommitNavigation() {
   // Give SpareRenderProcessHostManager a heads-up about the most recently used
   // BrowserContext.  This is mostly needed to make sure the spare is warmed-up
   // if it wasn't done in RenderProcessHostImpl::GetProcessHostForSiteInstance.
-  RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-      GetRenderFrameHost()->GetSiteInstance()->GetBrowserContext());
+  RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+      GetRenderFrameHost()->GetSiteInstance());
 
   SendDeferredConsoleMessages();
 }

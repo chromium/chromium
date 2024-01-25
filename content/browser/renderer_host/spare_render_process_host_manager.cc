@@ -76,6 +76,20 @@ void SpareRenderProcessHostManager::WarmupSpareRenderProcessHost(
   // process changed" callback in RenderProcessReady().
 }
 
+void SpareRenderProcessHostManager::DeferredWarmupSpareRenderProcessHost(
+    BrowserContext* browser_context,
+    base::TimeDelta delay) {
+  if (delay == base::TimeDelta::Max()) {
+    return;
+  }
+
+  deferred_warmup_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(
+          &SpareRenderProcessHostManager::WarmupSpareRenderProcessHost,
+          base::Unretained(this), browser_context));
+}
+
 RenderProcessHost*
 SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
     BrowserContext* browser_context,
@@ -181,11 +195,16 @@ SpareRenderProcessHostManager::MaybeTakeSpareRenderProcessHost(
 }
 
 void SpareRenderProcessHostManager::PrepareForFutureRequests(
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    std::optional<base::TimeDelta> delay) {
   if (RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     // Always keep around a spare process for the most recently requested
     // |browser_context|.
-    WarmupSpareRenderProcessHost(browser_context);
+    if (delay.has_value()) {
+      DeferredWarmupSpareRenderProcessHost(browser_context, *delay);
+    } else {
+      WarmupSpareRenderProcessHost(browser_context);
+    }
   } else {
     // Discard the ignored (probably non-matching) spare so as not to waste
     // resources.

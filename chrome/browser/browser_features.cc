@@ -21,6 +21,22 @@ BASE_FEATURE(kClosedTabCache,
              "ClosedTabCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a new spare renderer is created at a later time if the previous
+// spare renderer was taken by top chrome WebUI.
+BASE_FEATURE(kDeferredSpareRendererForTopChromeWebUI,
+             "DeferredSpareRendererForTopChromeWebUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The delay time to create a new spare renderer since the previous spare
+// renderer is taken. This is not effective when
+// `delay_until_page_stopped_loading` is true.
+const base::FeatureParam<base::TimeDelta> kSpareRendererWarmupDelay{
+    &kDeferredSpareRendererForTopChromeWebUI, "delay", base::Seconds(1)};
+// If true, a new spare renderer is not created until the last page stops
+// loading.
+const base::FeatureParam<bool> kSpareRendererWarmupDelayUntilPageStopsLoading{
+    &kDeferredSpareRendererForTopChromeWebUI, "delay_until_page_stops_loading",
+    false};
+
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 // On Lacros the feature is enabled only for secondary profiles, check the

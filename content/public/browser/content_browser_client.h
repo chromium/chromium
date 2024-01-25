@@ -1316,6 +1316,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual base::flat_map<int, base::Time>
   GetDevToolsBackgroundServiceExpirations(BrowserContext* browser_context);
 
+  // Returns the delay to create a new spare renderer after the previous spare
+  // renderer is taken by `site_url`. This is used to avoid potential resource
+  // contention.
+  // If `delay` is nullopt, the spare renderer will be created immediately.
+  // Otherwise if `delay` is base::TimeDelta::Max(), the creation is delayed
+  // until the page finishes loading.
+  virtual std::optional<base::TimeDelta> GetSpareRendererDelayForSiteURL(
+      const GURL& site_url);
+
   // Creates a new TracingDelegate. The caller owns the returned value.
   // It's valid to return nullptr.
   virtual TracingDelegate* GetTracingDelegate();

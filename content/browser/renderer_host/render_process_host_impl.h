@@ -463,14 +463,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static RenderProcessHost* GetProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance);
 
-  // Should be called when |browser_context| is used in a navigation.
+  // Should be called when `site_instance` is used in a navigation.
   //
   // The SpareRenderProcessHostManager can decide how to respond (for example,
   // by shutting down the spare process to conserve resources, or alternatively
   // by making sure that the spare process belongs to the same BrowserContext as
   // the most recent navigation).
-  static void NotifySpareManagerAboutRecentlyUsedBrowserContext(
-      BrowserContext* browser_context);
+  //
+  // If `ignore_delay` is false, delays new spare renderer creation as per
+  // embedder's setting. Otherwise, the spare renderer creation might have been
+  // deferred previously, and this is a signal that it should now be started
+  // immediately.
+  static void NotifySpareManagerAboutRecentlyUsedSiteInstance(
+      SiteInstance* site_instance,
+      bool ignore_delay = false);
 
   // This enum backs a histogram, so do not change the order of entries or
   // remove entries and update enums.xml if adding new entries.

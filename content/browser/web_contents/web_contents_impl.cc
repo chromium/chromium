@@ -93,6 +93,7 @@
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -8251,6 +8252,19 @@ void WebContentsImpl::DidStopLoading() {
           manager->DidStopLoading();
         }
       });
+
+  // The spare renderer creation might have been delayed until the page stops
+  // loading. Notify the spare renderer manager about the page loading
+  // completion. This is a no-op if a spare rendere already exists.
+  //
+  // TODO(crbug.com/1517067): replace the implicit treatment of TimeDelta::Max()
+  // with an enum and optional TimeDelta if we decide to launch deferred spare
+  // renderer.
+  bool immediately_warmup_spare_renderer =
+      GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
+          GetURL()) == base::TimeDelta::Max();
+  RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
+      GetSiteInstance(), /* ignore_delay */ immediately_warmup_spare_renderer);
 }
 
 void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
