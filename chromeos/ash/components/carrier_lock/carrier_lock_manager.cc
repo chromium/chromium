@@ -299,7 +299,7 @@ void CarrierLockManager::OnSessionStateChanged() {
   // Once the OOBE is over, disable observer and wait for network connectivity.
   session_manager_->RemoveObserver(this);
   session_manager_ = nullptr;
-  configuration_state_ = ConfigurationState::kInitialize;
+  network_state_handler_->AddObserver(this, FROM_HERE);
   DefaultNetworkChanged(nullptr);
 }
 
@@ -320,7 +320,6 @@ void CarrierLockManager::Initialize() {
 
   configuration_state_ = ConfigurationState::kNone;
   error_counter_ = local_state_->GetInteger(kErrorCounterPref);
-  network_state_handler_->AddObserver(this, FROM_HERE);
 
   // Check Disable flag.
   if (local_state_->GetBoolean(kDisableManagerPref)) {
@@ -394,10 +393,6 @@ void CarrierLockManager::Initialize() {
 }
 
 void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
-  if (configuration_state_ == ConfigurationState::kNone) {
-    return;
-  }
-
   if (retry_backoff_.ShouldRejectRequest()) {
     // Ignore this event.
     VLOG(2) << "Change of default network skipped because of backoff timer.";
@@ -415,15 +410,16 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
   }
 
   if (network && network->IsConnectedState() &&
-      configuration_state_ == ConfigurationState::kInitialize) {
+      configuration_state_ == ConfigurationState::kNone) {
     // Ready to start configuration process.
+    configuration_state_ = ConfigurationState::kInitialize;
     retry_backoff_.InformOfRequest(/*succeeded=*/true);
     RunStep(configuration_state_);
     return;
   }
 
   retry_backoff_.InformOfRequest(/*succeeded=*/false);
-  VLOG_IF(2, configuration_state_ != ConfigurationState::kInitialize)
+  VLOG_IF(2, configuration_state_ != ConfigurationState::kNone)
       << "Network connection was interrupted.";
   VLOG_IF(2, !network || !network->IsConnectedState())
       << "No network connectivity.";
@@ -533,7 +529,7 @@ bool CarrierLockManager::RetryStep() {
                << ConfigurationStateToStringView(configuration_state_)
                << " failed " << (kMaxRetries + 1) << " times. Exiting...";
     // Wait for new connection and retry...
-    configuration_state_ = ConfigurationState::kInitialize;
+    configuration_state_ = ConfigurationState::kNone;
     return false;
   }
   remaining_retries_--;
