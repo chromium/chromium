@@ -186,6 +186,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       const blink::MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const std::string& label,
                                    const blink::MediaStreamDevice& device);
+  void OnZoomLevelChange(const std::string& label,
+                         const blink::MediaStreamDevice& device,
+                         int zoom_level);
 
   void SetWebContentsObserver(
       std::unique_ptr<MediaStreamWebContentsObserver,

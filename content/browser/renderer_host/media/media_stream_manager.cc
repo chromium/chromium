@@ -537,11 +537,13 @@ base::TimeDelta GetConditionalFocusWindow() {
 
 MediaStreamManager::CapturedSurfaceControllerFactoryCallback
 MakeDefaultCapturedSurfaceControllerFactory() {
-  return base::BindRepeating([](GlobalRenderFrameHostId capturer_rfh_id,
-                                WebContentsMediaCaptureId captured_wc_id) {
-    return std::make_unique<CapturedSurfaceController>(capturer_rfh_id,
-                                                       captured_wc_id);
-  });
+  return base::BindRepeating(
+      [](GlobalRenderFrameHostId capturer_rfh_id,
+         WebContentsMediaCaptureId captured_wc_id,
+         base::RepeatingCallback<void(int)> on_zoom_level_change_callback) {
+        return std::make_unique<CapturedSurfaceController>(
+            capturer_rfh_id, captured_wc_id, on_zoom_level_change_callback);
+      });
 }
 #endif
 
@@ -928,6 +930,9 @@ class MediaStreamManager::DeviceRequest {
     CHECK(!captured_surface_controller_);
     captured_surface_controller_ = std::move(controller);
   }
+
+  // If capturing a tab, zoom-level updates are received through this callback.
+  virtual void OnZoomLevelChange(const std::string& label, int zoom_level) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // The render frame host id that requested this stream to be generated and
@@ -967,7 +972,6 @@ class MediaStreamManager::DeviceRequest {
 
   PermissionController::SubscriptionId video_subscription_id;
 
- protected:
   virtual base::WeakPtr<DeviceRequest> GetWeakPtr() = 0;
 
  private:
@@ -1113,7 +1117,8 @@ class MediaStreamManager::CreateDeviceRequest
       DeviceRequestStateChangeCallback device_request_state_change_cb,
       DeviceCaptureConfigurationChangeCallback
           device_capture_configuration_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb)
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      ZoomLevelChangeCallback zoom_level_change_callback)
       : DeviceRequest(requesting_render_frame_host_id,
                       requester_id,
                       page_request_id,
@@ -1129,7 +1134,8 @@ class MediaStreamManager::CreateDeviceRequest
         device_capture_configuration_change_cb_(
             std::move(device_capture_configuration_change_cb)),
         device_capture_handle_change_cb_(
-            std::move(device_capture_handle_change_cb)) {}
+            std::move(device_capture_handle_change_cb)),
+        zoom_level_change_callback_(std::move(zoom_level_change_callback)) {}
 
   void FinalizeChangeDevice(const std::string& label) override {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -1255,12 +1261,47 @@ class MediaStreamManager::CreateDeviceRequest
     }
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void OnZoomLevelChange(const std::string& label, int zoom_level) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+    if (!zoom_level_change_callback_) {
+      return;
+    }
+
+    if (stream_devices_set.stream_devices.size() != 1u) {
+      return;
+    }
+
+    const blink::mojom::StreamDevices& devices =
+        *stream_devices_set.stream_devices[0];
+
+    if (!devices.video_device.has_value()) {
+      return;
+    }
+
+    const MediaStreamDevice* device = &devices.video_device.value();
+    if (!device) {
+      return;
+    }
+
+    if (!device->display_media_info) {
+      DVLOG(1) << "Tab capture without a DisplayMediaInformation (" << label
+               << ").";
+      return;
+    }
+
+    zoom_level_change_callback_.Run(label, *device, zoom_level);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
  private:
   DeviceChangedCallback device_changed_cb_;
   DeviceRequestStateChangeCallback device_request_state_change_cb_;
   DeviceCaptureConfigurationChangeCallback
       device_capture_configuration_change_cb_;
   DeviceCaptureHandleChangeCallback device_capture_handle_change_cb_;
+  ZoomLevelChangeCallback zoom_level_change_callback_;
 };
 
 class MediaStreamManager::GenerateStreamsRequest
@@ -1280,6 +1321,7 @@ class MediaStreamManager::GenerateStreamsRequest
       DeviceCaptureConfigurationChangeCallback
           device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      ZoomLevelChangeCallback zoom_level_change_callback,
       GenerateStreamsCallback generate_streams_cb)
       : CreateDeviceRequest(requesting_render_frame_host_id,
                             requester_id,
@@ -1293,7 +1335,8 @@ class MediaStreamManager::GenerateStreamsRequest
                             std::move(device_changed_cb),
                             std::move(device_request_state_change_cb),
                             std::move(device_capture_configuration_change_cb),
-                            std::move(device_capture_handle_change_cb)),
+                            std::move(device_capture_handle_change_cb),
+                            std::move(zoom_level_change_callback)),
         generate_streams_cb_(std::move(generate_streams_cb)) {
     DCHECK(generate_streams_cb_);
   }
@@ -1349,6 +1392,7 @@ class MediaStreamManager::GetOpenDeviceRequest
       DeviceCaptureConfigurationChangeCallback
           device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      ZoomLevelChangeCallback zoom_level_change_callback,
       GetOpenDeviceCallback get_open_device_cb)
       : CreateDeviceRequest(requesting_render_frame_host_id,
                             requester_id,
@@ -1362,7 +1406,8 @@ class MediaStreamManager::GetOpenDeviceRequest
                             std::move(device_changed_cb),
                             std::move(device_request_state_change_cb),
                             std::move(device_capture_configuration_change_cb),
-                            std::move(device_capture_handle_change_cb)),
+                            std::move(device_capture_handle_change_cb),
+                            std::move(zoom_level_change_callback)),
         get_open_device_cb_(std::move(get_open_device_cb)) {
     DCHECK(get_open_device_cb_);
   }
@@ -1704,7 +1749,8 @@ void MediaStreamManager::GenerateStreams(
     DeviceRequestStateChangeCallback device_request_state_change_cb,
     DeviceCaptureConfigurationChangeCallback
         device_capture_configuration_change_cb,
-    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
+    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+    ZoomLevelChangeCallback zoom_level_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SendLogMessage(GetGenerateStreamsLogString(render_frame_host_id, requester_id,
                                              page_request_id));
@@ -1717,6 +1763,7 @@ void MediaStreamManager::GenerateStreams(
           std::move(device_request_state_change_cb),
           std::move(device_capture_configuration_change_cb),
           std::move(device_capture_handle_change_cb),
+          std::move(zoom_level_change_callback),
           std::move(generate_streams_cb));
   DeviceRequests::const_iterator request_it = AddRequest(std::move(request));
   const std::string& label = request_it->first;
@@ -1758,7 +1805,8 @@ void MediaStreamManager::GetOpenDevice(
     DeviceRequestStateChangeCallback device_request_state_change_cb,
     DeviceCaptureConfigurationChangeCallback
         device_capture_configuration_change_cb,
-    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
+    DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+    ZoomLevelChangeCallback zoom_level_change_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
 
@@ -1770,7 +1818,7 @@ void MediaStreamManager::GetOpenDevice(
           std::move(device_request_state_change_cb),
           std::move(device_capture_configuration_change_cb),
           std::move(device_capture_handle_change_cb),
-          std::move(get_open_device_cb));
+          std::move(zoom_level_change_callback), std::move(get_open_device_cb));
 
   DeviceRequests::const_iterator request_it = AddRequest(std::move(request));
   const std::string& new_label = request_it->first;
@@ -3007,7 +3055,9 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   if (!captured_tab_id.is_null()) {
     request->SetCapturedSurfaceController(
         captured_surface_controller_factory_.Run(
-            request->requesting_render_frame_host_id, captured_tab_id));
+            request->requesting_render_frame_host_id, captured_tab_id,
+            base::BindRepeating(&DeviceRequest::OnZoomLevelChange,
+                                request->GetWeakPtr(), label)));
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

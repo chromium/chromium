@@ -12,7 +12,9 @@ namespace content {
 MockCapturedSurfaceController::MockCapturedSurfaceController(
     GlobalRenderFrameHostId capturer_rfh_id,
     WebContentsMediaCaptureId captured_wc_id)
-    : CapturedSurfaceController(capturer_rfh_id, captured_wc_id) {}
+    : CapturedSurfaceController(capturer_rfh_id,
+                                captured_wc_id,
+                                base::DoNothing()) {}
 
 MockCapturedSurfaceController::~MockCapturedSurfaceController() = default;
 

@@ -124,6 +124,11 @@ class CONTENT_EXPORT MediaStreamManager
       base::RepeatingCallback<void(const std::string& label,
                                    const blink::MediaStreamDevice& device)>;
 
+  using ZoomLevelChangeCallback =
+      base::RepeatingCallback<void(const std::string& label,
+                                   const blink::MediaStreamDevice& device,
+                                   int zoom_level)>;
+
   using GetOpenDeviceCallback =
       base::OnceCallback<void(blink::mojom::MediaStreamRequestResult result,
                               blink::mojom::GetOpenDeviceResponsePtr response)>;
@@ -133,10 +138,13 @@ class CONTENT_EXPORT MediaStreamManager
       base::OnceCallback<bool(const blink::StreamControls&)>;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Callback for creating a CapturedSurfaceController. Used to override the
+  // default CapturedSurfaceController in tests.
   using CapturedSurfaceControllerFactoryCallback =
       ::base::RepeatingCallback<std::unique_ptr<CapturedSurfaceController>(
           GlobalRenderFrameHostId,
-          WebContentsMediaCaptureId)>;
+          WebContentsMediaCaptureId,
+          base::RepeatingCallback<void(int)> on_zoom_level_change_callback)>;
 #endif
 
   // Adds |message| to native logs for outstanding device requests, for use by
@@ -224,7 +232,8 @@ class CONTENT_EXPORT MediaStreamManager
       DeviceRequestStateChangeCallback device_request_state_change_cb,
       DeviceCaptureConfigurationChangeCallback
           device_capture_configuration_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      ZoomLevelChangeCallback zoom_level_change_callback);
 
   // Accesses an existing open device, identified by |device_session_id|,
   // and associates it with a new DeviceRequest. This device is then returned by
@@ -242,7 +251,8 @@ class CONTENT_EXPORT MediaStreamManager
       DeviceRequestStateChangeCallback device_request_state_change_cb,
       DeviceCaptureConfigurationChangeCallback
           device_capture_configuration_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+      ZoomLevelChangeCallback zoom_level_change_callback);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
   // Must be called on the IO thread.

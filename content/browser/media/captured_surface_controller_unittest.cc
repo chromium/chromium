@@ -9,9 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "content/browser/host_zoom_map_impl.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +25,7 @@ using CapturedWheelAction = ::blink::mojom::CapturedWheelAction;
 using CapturedWheelActionPtr = ::blink::mojom::CapturedWheelActionPtr;
 using CSCResult = ::blink::mojom::CapturedSurfaceControlResult;
 using CSCPermissionResult =
-    ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
+    CapturedSurfaceControlPermissionManager::PermissionResult;
 
 // Make an arbitrary valid CapturedWheelAction.
 CapturedWheelActionPtr MakeCapturedWheelActionPtr() {
@@ -263,6 +263,9 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
         capturer_->web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
         tab.GetWebContentsMediaCaptureId(), std::move(permission_manager),
         base::BindRepeating(
+            &CapturedSurfaceControllerTestBase::OnZoomLevelChange,
+            base::Unretained(this)),
+        base::BindRepeating(
             &CapturedSurfaceControllerTestBase::OnWebContentsResolved,
             base::Unretained(this)));
   }
@@ -283,6 +286,20 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
     wc_resolution_run_loop_.reset();
   }
 
+  void AwaitOnZoomLevelChange() {
+    CHECK(!on_zoom_level_change_run_loop_);
+    on_zoom_level_change_run_loop_ = std::make_unique<base::RunLoop>();
+    on_zoom_level_change_run_loop_->Run();
+    on_zoom_level_change_run_loop_.reset();
+  }
+
+  void OnZoomLevelChange(int zoom_level) {
+    if (on_zoom_level_change_run_loop_) {
+      on_zoom_level_change_run_loop_->Quit();
+    }
+    zoom_level_ = zoom_level;
+  }
+
   void OnWebContentsResolved(base::WeakPtr<WebContents> wc) {
     if (wc_resolution_run_loop_) {
       wc_resolution_run_loop_->Quit();
@@ -296,7 +313,9 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<TestTab> capturer_;
   std::unique_ptr<TestTab> capturee_;
   std::unique_ptr<base::RunLoop> wc_resolution_run_loop_;
-  absl::optional<base::WeakPtr<WebContents>> last_resolved_web_contents_;
+  std::unique_ptr<base::RunLoop> on_zoom_level_change_run_loop_;
+  std::optional<base::WeakPtr<WebContents>> last_resolved_web_contents_;
+  std::optional<int> zoom_level_;
 };
 
 class CapturedSurfaceControllerSendWheelTest
@@ -414,8 +433,8 @@ class CapturedSurfaceControllerGetZoomLevelTest
 };
 
 TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelSuccess) {
-  content::HostZoomMap::SetZoomLevel(capturee_->web_contents(),
-                                     blink::PageZoomFactorToZoomLevel(0.9));
+  HostZoomMap::SetZoomLevel(capturee_->web_contents(),
+                            blink::PageZoomFactorToZoomLevel(0.9));
   base::RunLoop run_loop;
   controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
       &run_loop, 90, CSCResult::kSuccess));
@@ -428,6 +447,53 @@ TEST_F(CapturedSurfaceControllerGetZoomLevelTest, GetZoomLevelUnknownError) {
   controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
       &run_loop, std::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
   run_loop.Run();
+}
+
+class CapturedSurfaceControllerZoomEventTest
+    : public CapturedSurfaceControllerTestBase {
+ public:
+  ~CapturedSurfaceControllerZoomEventTest() override = default;
+
+  void SetUp() override {
+    CapturedSurfaceControllerTestBase::SetUp();
+    new_capturee_ = std::make_unique<TestTab>(GetBrowserContext());
+  }
+
+  void TearDown() override {
+    new_capturee_.reset();
+    CapturedSurfaceControllerTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestTab> new_capturee_;
+};
+
+TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventTest) {
+  HostZoomMap::SetZoomLevel(capturee_->web_contents(),
+                            blink::PageZoomFactorToZoomLevel(0.9));
+  AwaitOnZoomLevelChange();
+  ASSERT_TRUE(zoom_level_);
+  EXPECT_EQ(zoom_level_, 90);
+}
+
+TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTargetTest) {
+  const RenderFrameHost* const new_main_rfh =
+      new_capturee_->web_contents()->GetPrimaryMainFrame();
+  const WebContentsMediaCaptureId new_wc_id(new_main_rfh->GetProcess()->GetID(),
+                                            new_main_rfh->GetRoutingID());
+  controller_->UpdateCaptureTarget(new_wc_id);
+
+  AwaitWebContentsResolution();
+
+  // Set a temporary zoom level so only the second WebContents is affected.
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::GetForWebContents(new_capturee_->web_contents()));
+  host_zoom_map->SetTemporaryZoomLevel(new_main_rfh->GetGlobalId(),
+                                       blink::PageZoomFactorToZoomLevel(1.1));
+
+  AwaitOnZoomLevelChange();
+  ASSERT_TRUE(zoom_level_);
+  EXPECT_EQ(zoom_level_, 110);
 }
 
 class CapturedSurfaceControllerSetZoomLevelTest
@@ -452,10 +518,9 @@ TEST_P(CapturedSurfaceControllerSetZoomLevelTest, SetZoomLevelSuccess) {
       zoom_level_, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
   run_loop.Run();
 
-  EXPECT_EQ(zoom_level_,
-            std::round(100 * blink::PageZoomLevelToZoomFactor(
-                                 content::HostZoomMap::GetZoomLevel(
-                                     capturee_->web_contents()))));
+  EXPECT_EQ(zoom_level_, std::round(100 * blink::PageZoomLevelToZoomFactor(
+                                              HostZoomMap::GetZoomLevel(
+                                                  capturee_->web_contents()))));
 }
 
 enum class CapturedSurfaceControlAPI {

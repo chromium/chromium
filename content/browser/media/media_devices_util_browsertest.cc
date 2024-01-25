@@ -152,7 +152,8 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
             /*device_changed_cb=*/base::DoNothing(),
             /*device_request_state_change_cb*/ base::DoNothing(),
             /*device_capture_configuration_change_cb=*/base::DoNothing(),
-            /*device_capture_handle_change_cb=*/base::DoNothing()));
+            /*device_capture_handle_change_cb=*/base::DoNothing(),
+            /*zoom_level_change_callback=*/base::DoNothing()));
   }
 
   GlobalRenderFrameHostId frame_id_;

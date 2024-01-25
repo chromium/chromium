@@ -325,6 +325,17 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
 }
 
+void MediaStreamDispatcherHost::OnZoomLevelChange(
+    const std::string& label,
+    const blink::MediaStreamDevice& device,
+    int zoom_level) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(device.display_media_info);
+
+  // TODO(crbug.com/1466247): Implement
+  // GetMediaStreamDeviceObserver()->OnZoomLevelChange(label, device);
+}
+
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -349,7 +360,9 @@ void MediaStreamDispatcherHost::OnWebContentsFocused() {
             weak_factory_.GetWeakPtr()),
         base::BindRepeating(
             &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                            weak_factory_.GetWeakPtr()));
     pending_requests_.pop_front();
   }
 }
@@ -540,7 +553,9 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void MediaStreamDispatcherHost::CancelRequest(int page_request_id) {
@@ -842,7 +857,9 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&MediaStreamDispatcherHost::OnZoomLevelChange,
+                          weak_factory_.GetWeakPtr()));
 }
 
 std::optional<bad_message::BadMessageReason>
