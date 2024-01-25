@@ -173,8 +173,8 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
 };
 
 const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
-    &kPartitionAllocBackupRefPtr, "brp-mode", BackupRefPtrMode::kEnabled,
-    &kBackupRefPtrModeOptions};
+    &kPartitionAllocBackupRefPtr, "brp-mode",
+    BackupRefPtrMode::kEnabledInSameSlotMode, &kBackupRefPtrModeOptions};
 
 BASE_FEATURE(kPartitionAllocMemoryTagging,
              "PartitionAllocMemoryTagging",
