@@ -47,15 +47,6 @@ class TabManager::ResourceCoordinatorSignalObserver
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
-  // Determines if a message should still be dispatched for the given
-  // |tab_manager|, |contents_proxy| and |navigation_id|. If so, returns the
-  // WebContents, otherwise returns nullptr. This should only be called on the
-  // UI thread.
-  static content::WebContents* GetContentsForDispatch(
-      const base::WeakPtr<TabManager>& tab_manager,
-      const WebContentsProxy& contents_proxy,
-      int64_t navigation_id);
-
   // Posted to the UI thread from the GraphObserver functions above.
   static void OnPageStoppedLoadingOnUi(const WebContentsProxy& contents_proxy);
 

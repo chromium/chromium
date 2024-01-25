@@ -232,8 +232,6 @@ static_library("performance_manager") {
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
     "web_contents_proxy.cc",
-    "web_contents_proxy_impl.cc",
-    "web_contents_proxy_impl.h",
     "worker_watcher.cc",
     "worker_watcher.h",
   ]

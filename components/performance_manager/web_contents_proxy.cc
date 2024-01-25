@@ -4,53 +4,31 @@
 
 #include "components/performance_manager/public/web_contents_proxy.h"
 
-#include "components/performance_manager/web_contents_proxy_impl.h"
+#include <utility>
+
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
 
 WebContentsProxy::WebContentsProxy() = default;
-
-WebContentsProxy::WebContentsProxy(const WebContentsProxy& other)
-    : impl_(other.impl_) {}
-
-WebContentsProxy::WebContentsProxy(WebContentsProxy&& other)
-    : impl_(std::move(other.impl_)) {}
+WebContentsProxy::WebContentsProxy(const WebContentsProxy& other) = default;
+WebContentsProxy::WebContentsProxy(WebContentsProxy&& other) = default;
 
 WebContentsProxy::~WebContentsProxy() = default;
 
-WebContentsProxy& WebContentsProxy::operator=(const WebContentsProxy& other) {
-  impl_ = other.impl_;
-  return *this;
-}
-
-WebContentsProxy& WebContentsProxy::operator=(WebContentsProxy&& other) {
-  impl_ = std::move(other.impl_);
-  return *this;
-}
+WebContentsProxy& WebContentsProxy::operator=(const WebContentsProxy& other) =
+    default;
+WebContentsProxy& WebContentsProxy::operator=(WebContentsProxy&& other) =
+    default;
 
 content::WebContents* WebContentsProxy::Get() const {
-  auto* proxy = impl_.get();
-  if (!proxy)
-    return nullptr;
-  return proxy->GetWebContents();
-}
-
-int64_t WebContentsProxy::LastNavigationId() const {
-  auto* proxy = impl_.get();
-  if (!proxy)
-    return 0;
-  return proxy->LastNavigationId();
-}
-
-int64_t WebContentsProxy::LastNewDocNavigationId() const {
-  auto* proxy = impl_.get();
-  if (!proxy)
-    return 0;
-  return proxy->LastNewDocNavigationId();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return web_contents_.get();
 }
 
 WebContentsProxy::WebContentsProxy(
-    const base::WeakPtr<WebContentsProxyImpl>& impl)
-    : impl_(impl) {}
+    base::WeakPtr<content::WebContents> web_contents)
+    : web_contents_(std::move(web_contents)) {}
 
 }  // namespace performance_manager
