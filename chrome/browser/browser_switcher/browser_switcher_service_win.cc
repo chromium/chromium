@@ -147,8 +147,7 @@ std::optional<std::string>* IeemSitelistUrlForTesting() {
 bool IsLBSExtensionEnabled(Profile* profile) {
   auto* reg = extensions::ExtensionRegistry::Get(profile);
   DCHECK(reg);
-  return reg->GetExtensionById(kLBSExtensionId,
-                               extensions::ExtensionRegistry::ENABLED);
+  return reg->enabled_extensions().Contains(kLBSExtensionId);
 }
 
 }  // namespace
