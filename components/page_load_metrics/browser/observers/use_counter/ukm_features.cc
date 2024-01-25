@@ -379,6 +379,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
               kThirdPartyCookieDeprecation_AllowByEnterprisePolicyCookieAllowedForUrls,
           WebFeature::kUserFeatureNgAfterRender,
           WebFeature::kUserFeatureNgHydration,
+          WebFeature::kUserFeatureNextThirdPartiesGA,
+          WebFeature::kUserFeatureNextThirdPartiesGTM,
+          WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed,
+          WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed,
       }));
   return *opt_in_features;
 }

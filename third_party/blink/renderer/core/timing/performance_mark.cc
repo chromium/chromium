@@ -146,6 +146,12 @@ PerformanceMark::GetUseCounterMapping() {
         {"NgOptimizedImage", WebFeature::kUserFeatureNgOptimizedImage},
         {"NgAfterRender", WebFeature::kUserFeatureNgAfterRender},
         {"NgHydration", WebFeature::kUserFeatureNgHydration},
+        {"next-third-parties-ga", WebFeature::kUserFeatureNextThirdPartiesGA},
+        {"next-third-parties-gtm", WebFeature::kUserFeatureNextThirdPartiesGTM},
+        {"next-third-parties-YouTubeEmbed",
+         WebFeature::kUserFeatureNextThirdPartiesYouTubeEmbed},
+        {"next-third-parties-GoogleMapsEmbed",
+         WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed},
     };
   }
   return *map;
