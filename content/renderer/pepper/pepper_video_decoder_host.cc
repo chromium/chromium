@@ -557,7 +557,6 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
       viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-          gpu::SHARED_IMAGE_USAGE_RASTER_READ |
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
       "PepperVideoDecoder", gpu::SurfaceHandle());
   CHECK(client_shared_image);
