@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="New session with selected text opened"/>
 </enum>
 
+<enum name="ComposeInnerTextNodeOffset">
+  <int value="0" label="Inner Text Node Offset not found"/>
+  <int value="1" label="Inner Text Node Offset found"/>
+</enum>
+
 <enum name="ComposeMSBBSessionCloseReasonType">
   <int value="0"
       label="Session implicitly closed, often by web contents destruction"/>

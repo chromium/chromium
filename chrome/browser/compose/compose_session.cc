@@ -770,6 +770,7 @@ void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
       inner_text.erase(config.inner_text_max_bytes);
     }
     node_offset = result->node_offset;
+    compose::LogComposeDialogInnerTextOffsetFound(node_offset.has_value());
   }
   AddPageContentToSession(std::move(inner_text), node_offset);
   if (!continue_compose_.is_null()) {
