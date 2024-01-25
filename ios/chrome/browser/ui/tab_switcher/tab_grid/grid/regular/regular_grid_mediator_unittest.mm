@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 
 #import "base/containers/contains.h"
+#import "base/memory/raw_ptr.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -50,7 +51,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
 
  protected:
   RegularGridMediator* mediator_ = nullptr;
-  sessions::TabRestoreService* tab_restore_service_ = nullptr;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
 };
 
 #pragma mark - Command tests

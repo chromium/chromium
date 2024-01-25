@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
@@ -84,7 +85,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                                     SnapshotStorageObserver,
                                     WebStateListObserving> {
   // The list of inactive tabs.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   // The snapshot storage of _webStateList.
   __weak SnapshotStorage* _snapshotStorage;
   // The observers of _webStateList.
@@ -94,7 +95,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<ScopedWebStateObservation> _scopedWebStateObservation;
   // Preference service from the application context.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
