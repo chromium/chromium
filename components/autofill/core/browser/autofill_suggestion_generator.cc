@@ -402,27 +402,31 @@ bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
 }
 
 // Adds address related child suggestions to build autofill popup submenu.
-// The param `type` refers to the triggering field type (clicked by the users)
-// and is used to define  whether the `PopupItemId::kFillFullAddress` suggestion
-// will be available.
+// The param `trigger_field_type_group` refers to the type of the field clicked
+// by the user and is used to define whether the `PopupItemId::kFillFullAddress`
+// suggestion will be available. Note that `FieldTypeGroup::kCompany` is also
+// included into the address group.
 void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
-  if (trigger_field_type_group == FieldTypeGroup::kAddress) {
+  if (trigger_field_type_group == FieldTypeGroup::kAddress ||
+      trigger_field_type_group == FieldTypeGroup::kCompany) {
     // Note that this suggestion can only be added if address infos exist in the
     // profile.
     suggestion.children.push_back(
         GetFillFullAddressSuggestion(Suggestion::Guid(profile.guid())));
   }
 
+  bool added_company = AddAddressFieldByFieldSuggestions(
+      {COMPANY_NAME}, profile, app_locale, suggestion.children);
   bool added_any_address_line =
       AddAddressLineChildSuggestions(profile, app_locale, suggestion.children);
   bool added_city = AddAddressFieldByFieldSuggestions(
       {ADDRESS_HOME_CITY}, profile, app_locale, suggestion.children);
   bool added_zip = AddAddressFieldByFieldSuggestions(
       {ADDRESS_HOME_ZIP}, profile, app_locale, suggestion.children);
-  if (added_any_address_line || added_zip || added_city) {
+  if (added_company || added_any_address_line || added_zip || added_city) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }

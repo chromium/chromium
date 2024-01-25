@@ -548,6 +548,7 @@ Called by update_autofill_enums.py.-->
   <int value="13" label="Credir card expiration year"/>
   <int value="14" label="Credit card expiration month"/>
   <int value="15" label="City"/>
+  <int value="16" label="Company"/>
 </enum>
 
 <enum name="AutofillFieldPredictionQuality">
