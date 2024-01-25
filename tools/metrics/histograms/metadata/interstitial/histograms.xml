@@ -22,8 +22,54 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AdditionalSecurityInterstitialSBType">
+  <variant name="billing." summary=""/>
+  <variant name="billing_subresource." summary=""/>
+  <variant name="origin_policy." summary=""/>
+</variants>
+
+<variants name="RepeatVisit">
+  <variant name=".repeat_visit"
+      summary=", on a site that the user had previously visited"/>
+</variants>
+
 <variants name="SecurityInterstitialLookalikeType">
   <variant name="lookalike." summary=""/>
+</variants>
+
+<variants name="SecurityInterstitialSBType">
+  <variant name="harmful." summary=""/>
+  <variant name="harmful_subresource." summary=""/>
+  <variant name="malware." summary=""/>
+  <variant name="malware_subresource." summary=""/>
+  <variant name="phishing." summary=""/>
+  <variant name="phishing_subresource." summary=""/>
+</variants>
+
+<variants name="SecurityInterstitialSBWithSourceType">
+  <variant name=".from_android_safebrowsing"
+      summary="Interstitial for a resource classified as unsafe by the
+               Android Safe Browsing local blocklist API."/>
+  <variant name=".from_android_safebrowsing_real_time"
+      summary="Interstitial for a resource classified as unsafe by the
+               Android Safe Browsing hash-prefix real-time API."/>
+  <variant name=".from_client_side_detection"
+      summary="Interstitial for a resource classified as unsafe by the client
+               side detection."/>
+  <variant name=".from_device"
+      summary="Interstitial for a resource classified as unsafe by the Safe
+               Browsing database via either
+               {Local,Remote}SafeBrowsingDatabaseManager."/>
+  <variant name=".from_device_v4"
+      summary="Interstitial for a resource classified as unsafe by the Safe
+               Browsing database version 4 via either
+               {Local,Remote}SafeBrowsingDatabaseManager."/>
+  <variant name=".from_hash_prefix_real_time_check_v5"
+      summary="Interstitial for a resource classified as unsafe by the Safe
+               Browsing hash-prefix real-time API version 5."/>
+  <variant name=".from_real_time_check"
+      summary="Interstitial for a resource classified as unsafe by the Safe
+               Browsing URL real-time API."/>
 </variants>
 
 <histogram name="interstitial.captive_portal"
@@ -181,6 +227,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="interstitial.{AdditionalSecurityInterstitialSBType}decision{RepeatVisit}"
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User decision when presented with a security interstitial{RepeatVisit}. As
+    of M44, subresource interstitials were split into their own entries. As of
+    M52, social_engineering_ads* and social_engineering_landing* interstitial
+    reasons are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+
+    This metric is used to populate a dashboard on go/crca-site.
+    {AdditionalSecurityInterstitialSBType}
+  </summary>
+  <token key="AdditionalSecurityInterstitialSBType"
+      variants="AdditionalSecurityInterstitialSBType"/>
+  <token key="RepeatVisit" variants="RepeatVisit">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{AdditionalSecurityInterstitialSBType}interaction"
+    enum="SecurityInterstitialInteraction" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User interactions with a security interstitial. As of M44, subresource
+    interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+    {AdditionalSecurityInterstitialSBType}
+  </summary>
+  <token key="AdditionalSecurityInterstitialSBType"
+      variants="AdditionalSecurityInterstitialSBType"/>
+</histogram>
+
 <histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
@@ -196,7 +287,6 @@ chromium-metrics-reviews@google.com.
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
 
-    This metric is used to populate a dashboard on go/crsb-site.
     {SecurityInterstitialLookalikeType}
   </summary>
   <token key="SecurityInterstitialLookalikeType"
@@ -244,6 +334,59 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="SecurityInterstitialLookalikeType"
       variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{SecurityInterstitialSBWithSourceType}"
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User decision when presented with a security interstitial{RepeatVisit}. As
+    of M44, subresource interstitials were split into their own entries. As of
+    M52, social_engineering_ads* and social_engineering_landing* interstitial
+    reasons are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+
+    This metric is used to populate a dashboard on go/crca-site.
+    {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
+  </summary>
+  <token key="SecurityInterstitialSBType"
+      variants="SecurityInterstitialSBType"/>
+  <token key="SecurityInterstitialSBWithSourceType"
+      variants="SecurityInterstitialSBWithSourceType">
+    <variant name=""/>
+  </token>
+  <token key="RepeatVisit" variants="RepeatVisit">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{SecurityInterstitialSBType}interaction{SecurityInterstitialSBWithSourceType}"
+    enum="SecurityInterstitialInteraction" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User interactions with a security interstitial. As of M44, subresource
+    interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+    {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
+  </summary>
+  <token key="SecurityInterstitialSBType"
+      variants="SecurityInterstitialSBType"/>
+  <token key="SecurityInterstitialSBWithSourceType"
+      variants="SecurityInterstitialSBWithSourceType">
     <variant name=""/>
   </token>
 </histogram>
