@@ -21,6 +21,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/session_usage.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/transport_security_state.h"
@@ -1300,7 +1301,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     CHECK(proxy_info_.proxy_chain().is_direct());
     QuicSessionKey session_key(
         HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
-        proxy_info_.proxy_chain(), QuicSessionKey::IsProxySession::kFalse,
+        proxy_info_.proxy_chain(), SessionUsage::kDestination,
         request_info.socket_tag, request_info.network_anonymization_key,
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false);
 

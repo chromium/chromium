@@ -15,6 +15,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/session_usage.h"
 #include "net/quic/quic_session_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
@@ -51,8 +52,7 @@ class QuicSessionPoolPeer {
       const quic::QuicServerId& server_id,
       const NetworkAnonymizationKey& network_anonymization_key,
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession is_proxy_session =
-          QuicSessionKey::IsProxySession::kFalse);
+      SessionUsage session_usage = SessionUsage::kDestination);
 
   static bool HasActiveJob(QuicSessionPool* factory,
                            const quic::QuicServerId& server_id,

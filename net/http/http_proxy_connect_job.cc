@@ -24,6 +24,7 @@
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
@@ -700,7 +701,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
       // converted to contain scheme.
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
                           proxy_server.port()),
-      quic_version, ProxyChain::Direct(), QuicSessionKey::IsProxySession::kTrue,
+      quic_version, ProxyChain::Direct(), SessionUsage::kProxy,
       ssl_params->privacy_mode(), kH2QuicTunnelPriority, socket_tag(),
       params_->network_anonymization_key(), params_->secure_dns_policy(),
       /*require_dns_https_alpn=*/false,
@@ -862,11 +863,10 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   if (params_->proxy_chain_index() == 0) {
     DCHECK(session_key_proxy_chain.is_direct());
   }
-  return SpdySessionKey(params_->proxy_server().host_port_pair(),
-                        session_key_proxy_chain, PRIVACY_MODE_DISABLED,
-                        SpdySessionKey::IsProxySession::kTrue, socket_tag(),
-                        params_->network_anonymization_key(),
-                        params_->secure_dns_policy());
+  return SpdySessionKey(
+      params_->proxy_server().host_port_pair(), session_key_proxy_chain,
+      PRIVACY_MODE_DISABLED, SessionUsage::kProxy, socket_tag(),
+      params_->network_anonymization_key(), params_->secure_dns_policy());
 }
 
 }  // namespace net

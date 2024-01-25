@@ -11,6 +11,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
@@ -129,7 +130,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::ProxyChain direct_connect(net::ProxyChain::Direct());
   net::SpdySessionKey session_key(
       net::HostPortPair("127.0.0.1", 80), direct_connect,
-      net::PRIVACY_MODE_DISABLED, net::SpdySessionKey::IsProxySession::kFalse,
+      net::PRIVACY_MODE_DISABLED, net::SessionUsage::kDestination,
       net::SocketTag(), net::NetworkAnonymizationKey(),
       net::SecureDnsPolicy::kAllow);
   base::WeakPtr<net::SpdySession> spdy_session(net::CreateSpdySession(

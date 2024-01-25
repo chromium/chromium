@@ -22,6 +22,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -246,9 +247,9 @@ class QuicProxyClientSocketTest
         &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                       ProxyChain::Direct(),
-                       QuicSessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
+                       SocketTag(), NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,

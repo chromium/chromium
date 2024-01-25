@@ -29,6 +29,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -348,8 +349,8 @@ class WebSocketHandshakeStreamCreateHelperTest
             SpdySessionDependencies::SpdyCreateSession(&session_deps);
         const SpdySessionKey key(
             HostPortPair::FromURL(url), ProxyChain::Direct(),
-            PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
-            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+            PRIVACY_MODE_DISABLED, SessionUsage::kDestination, SocketTag(),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
         base::WeakPtr<SpdySession> spdy_session =
             CreateSpdySession(http_network_session.get(), key, net_log);
         std::unique_ptr<WebSocketHandshakeStreamBase> handshake =
@@ -482,9 +483,9 @@ class WebSocketHandshakeStreamCreateHelperTest
             &transport_security_state, &ssl_config_service,
             /*server_info=*/nullptr,
             QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                           ProxyChain::Direct(),
-                           QuicSessionKey::IsProxySession::kFalse, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           ProxyChain::Direct(), SessionUsage::kDestination,
+                           SocketTag(), NetworkAnonymizationKey(),
+                           SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false),
             /*require_confirmation=*/false,
             /*migrate_session_early_v2=*/false,

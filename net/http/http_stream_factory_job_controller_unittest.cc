@@ -30,6 +30,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -3716,9 +3717,9 @@ void HttpStreamFactoryJobControllerTestBase::
   // Put a SpdySession in the pool.
   HostPortPair host_port_pair("www.google.com", 443);
   SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
-                     PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
   // Handshake will fail asynchronously after mock data is unpaused.
@@ -3841,11 +3842,11 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   // Sanity check - make sure the SpdySession was created.
   base::WeakPtr<SpdySession> spdy_session =
       session_->spdy_session_pool()->FindAvailableSession(
-          SpdySessionKey(
-              HostPortPair::FromURL(request_info.url), ProxyChain::Direct(),
-              request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-              request_info.socket_tag, request_info.network_anonymization_key,
-              request_info.secure_dns_policy),
+          SpdySessionKey(HostPortPair::FromURL(request_info.url),
+                         ProxyChain::Direct(), request_info.privacy_mode,
+                         SessionUsage::kDestination, request_info.socket_tag,
+                         request_info.network_anonymization_key,
+                         request_info.secure_dns_policy),
           false /* enable_ip_based_pooling */, /*is_websocket=*/false,
           NetLogWithSource());
   EXPECT_TRUE(spdy_session);
@@ -3922,8 +3923,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
         session_->spdy_session_pool()->FindAvailableSession(
             SpdySessionKey(HostPortPair::FromURL(request_info.url),
                            ProxyChain::Direct(), request_info.privacy_mode,
-                           SpdySessionKey::IsProxySession::kFalse,
-                           request_info.socket_tag,
+                           SessionUsage::kDestination, request_info.socket_tag,
                            request_info.network_anonymization_key,
                            request_info.secure_dns_policy),
             /*enable_ip_based_pooling=*/false, /*is_websocket=*/false,
@@ -3956,7 +3956,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   {
     const SpdySessionKey spdy_session_key = SpdySessionKey(
         HostPortPair::FromURL(other_request_info.url), ProxyChain::Direct(),
-        other_request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
+        other_request_info.privacy_mode, SessionUsage::kDestination,
         other_request_info.socket_tag,
         other_request_info.network_anonymization_key,
         other_request_info.secure_dns_policy);
@@ -4988,7 +4988,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  scheme_host_port,
                  require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
                                         : version_,
-                 ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
+                 ProxyChain::Direct(), SessionUsage::kDestination,
                  PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
                  NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                  require_dns_https_alpn,
@@ -5427,7 +5427,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // Put a SpdySession in the pool.
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
@@ -5672,7 +5672,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // Put a SpdySession in the pool.
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     SessionUsage::kDestination, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 

@@ -30,6 +30,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/base/proxy_server.h"
+#include "net/base/session_usage.h"
 #include "net/cert/cert_database.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_server_properties.h"
@@ -139,12 +140,12 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
   // `destination` will be resolved and resulting IPEndPoint used to open a
   // quic::QuicConnection.  This can be different than
   // HostPortPair::FromURL(url).
-  // When `is_proxy_session` is false, any DNS aliases found in host resolution
-  // are stored in the `dns_aliases_by_session_key_` map.
+  // When `session_usage` is `kDestination`, any DNS aliases found in host
+  // resolution are stored in the `dns_aliases_by_session_key_` map.
   int Request(url::SchemeHostPort destination,
               quic::ParsedQuicVersion quic_version,
               const ProxyChain& proxy_chain,
-              QuicSessionKey::IsProxySession is_proxy_session,
+              SessionUsage session_usage,
               PrivacyMode privacy_mode,
               RequestPriority priority,
               const SocketTag& socket_tag,
@@ -222,7 +223,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
       const GURL& url,
       const ProxyChain& proxy_chain,
       PrivacyMode privacy_mode,
-      QuicSessionKey::IsProxySession is_proxy_session,
+      SessionUsage session_usage,
       const SocketTag& socket_tag,
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,

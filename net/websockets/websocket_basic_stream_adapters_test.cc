@@ -33,6 +33,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -355,7 +356,7 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
         key_(HostPortPair::FromURL(url_),
              ProxyChain::Direct(),
              PRIVACY_MODE_DISABLED,
-             SpdySessionKey::IsProxySession::kFalse,
+             SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow),
@@ -1266,9 +1267,9 @@ class WebSocketQuicStreamAdapterTest
         &transport_security_state_, &ssl_config_service_,
         /*server_info=*/nullptr,
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                       ProxyChain::Direct(),
-                       QuicSessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                       ProxyChain::Direct(), SessionUsage::kDestination,
+                       SocketTag(), NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,

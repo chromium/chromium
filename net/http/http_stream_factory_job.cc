@@ -22,6 +22,7 @@
 #include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/session_usage.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -343,17 +344,17 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   }
   bool require_dns_https_alpn =
       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
-  QuicSessionKey::IsProxySession is_proxy_session;
+  SessionUsage session_usage;
   ProxyChain proxy_chain;
   // TODO(https://crbug.com/1520929): Remove support for sending GET requests to
   // the proxy server when proxying HTTP requests and instead always tunnel
   // them.
   CHECK(!proxy_info_.proxy_chain().is_multi_proxy());
   if (IsGetToProxy(proxy_info_.proxy_chain(), origin_url_)) {
-    is_proxy_session = QuicSessionKey::IsProxySession::kTrue;
+    session_usage = SessionUsage::kProxy;
     proxy_chain = ProxyChain::Direct();
   } else {
-    is_proxy_session = QuicSessionKey::IsProxySession::kFalse;
+    session_usage = SessionUsage::kDestination;
     proxy_chain = proxy_info_.proxy_chain();
     // TODO(https://crbug.com/1495793): Proxying QUIC over QUIC is not currently
     // supported, but when it is we can remove this CHECK.
@@ -361,7 +362,7 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   }
 
   return quic_request_.CanUseExistingSession(
-      origin_url_, proxy_chain, request_info_.privacy_mode, is_proxy_session,
+      origin_url_, proxy_chain, request_info_.privacy_mode, session_usage,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn, destination_);
 }
@@ -473,14 +474,13 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
         proxy_chain.SplitLast();
     const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
     return SpdySessionKey(last_proxy_host_port_pair, last_proxy_partial_chain,
-                          PRIVACY_MODE_DISABLED,
-                          SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                          network_anonymization_key, secure_dns_policy);
+                          PRIVACY_MODE_DISABLED, SessionUsage::kProxy,
+                          socket_tag, network_anonymization_key,
+                          secure_dns_policy);
   }
   return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_chain,
-                        privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-                        socket_tag, network_anonymization_key,
-                        secure_dns_policy);
+                        privacy_mode, SessionUsage::kDestination, socket_tag,
+                        network_anonymization_key, secure_dns_policy);
 }
 
 // static
@@ -920,7 +920,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
   int cert_verifier_flags;
-  QuicSessionKey::IsProxySession is_proxy_session;
+  SessionUsage session_usage;
 
   if (proxy_info_.is_quic()) {
     DCHECK(url.SchemeIs(url::kHttpScheme));
@@ -942,13 +942,13 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
     destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
                                       proxy_endpoint.port());
     url = destination.GetURL();
-    is_proxy_session = QuicSessionKey::IsProxySession::kTrue;
+    session_usage = SessionUsage::kProxy;
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
     cert_verifier_flags = server_cert_verifier_flags;
     // This connection is to the destination and not to an intermediate proxy.
-    is_proxy_session = QuicSessionKey::IsProxySession::kFalse;
+    session_usage = SessionUsage::kDestination;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
@@ -956,7 +956,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
 
   int rv = quic_request_.Request(
       std::move(destination), quic_version_, ProxyChain::Direct(),
-      is_proxy_session, request_info_.privacy_mode, priority_,
+      session_usage, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
       cert_verifier_flags, url, net_log_, &net_error_details_,

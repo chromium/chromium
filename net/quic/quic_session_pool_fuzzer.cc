@@ -13,6 +13,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -158,10 +159,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   request.Request(
       env->scheme_host_port, version, ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-      DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false,
-      kCertVerifyFlags, GURL(kUrl), env->net_log, &net_error_details,
+      SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false, kCertVerifyFlags, GURL(kUrl),
+      env->net_log, &net_error_details,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

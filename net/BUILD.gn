@@ -261,6 +261,7 @@ component("net") {
     "base/scheme_host_port_matcher_rule.h",
     "base/schemeful_site.cc",
     "base/schemeful_site.h",
+    "base/session_usage.h",
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
     "base/sys_addrinfo.h",

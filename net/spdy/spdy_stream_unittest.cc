@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/request_priority.h"
+#include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_event_type.h"
@@ -83,9 +84,9 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
 
   base::WeakPtr<SpdySession> CreateDefaultSpdySession() {
     SpdySessionKey key(HostPortPair::FromURL(url_), ProxyChain::Direct(),
-                       PRIVACY_MODE_DISABLED,
-                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                       PRIVACY_MODE_DISABLED, SessionUsage::kDestination,
+                       SocketTag(), NetworkAnonymizationKey(),
+                       SecureDnsPolicy::kAllow);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());
   }
 

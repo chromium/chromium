@@ -30,6 +30,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -409,7 +410,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
                        PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                       QuicSessionKey::IsProxySession::kFalse, SocketTag(),
+                       SessionUsage::kDestination, SocketTag(),
                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                        /*require_dns_https_alpn=*/false),
         /*require_confirmation=*/false,

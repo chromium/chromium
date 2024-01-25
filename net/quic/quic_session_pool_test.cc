@@ -36,6 +36,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/session_usage.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -355,13 +356,12 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession is_proxy_session =
-          QuicSessionKey::IsProxySession::kFalse) {
+      SessionUsage session_usage = SessionUsage::kDestination) {
     quic::QuicServerId server_id(scheme_host_port.host(),
                                  scheme_host_port.port(), false);
     return QuicSessionPoolPeer::HasActiveSession(factory_.get(), server_id,
                                                  network_anonymization_key,
-                                                 proxy_chain, is_proxy_session);
+                                                 proxy_chain, session_usage);
   }
 
   bool HasActiveJob(const url::SchemeHostPort& scheme_host_port,
@@ -413,15 +413,15 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     QuicSessionRequest request(factory_.get());
     GURL url("https://" + destination.host() + "/");
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  destination, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            destination, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
 
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
     std::unique_ptr<HttpStream> stream = CreateStream(&request);
@@ -555,15 +555,15 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     // Create request and QuicHttpStream.
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
 
     EXPECT_EQ(OK, callback_.WaitForResult());
 
@@ -777,10 +777,9 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
               request.Request(
                   url::SchemeHostPort(url::kHttpsScheme, quic_server_id1.host(),
                                       quic_server_id1.port()),
-                  version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), network_anonymization_key1,
-                  SecureDnsPolicy::kAllow,
+                  version_, ProxyChain::Direct(), SessionUsage::kDestination,
+                  privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                  network_anonymization_key1, SecureDnsPolicy::kAllow,
                   /*require_dns_https_alpn=*/false,
                   /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                   failed_on_default_network_callback_, callback_.callback()));
@@ -823,10 +822,9 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
         request2.Request(
             url::SchemeHostPort(url::kHttpsScheme, quic_server_id2.host(),
                                 quic_server_id2.port()),
-            version_, ProxyChain::Direct(),
-            QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-            DEFAULT_PRIORITY, SocketTag(), network_anonymization_key2,
-            SecureDnsPolicy::kAllow,
+            version_, ProxyChain::Direct(), SessionUsage::kDestination,
+            privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+            network_anonymization_key2, SecureDnsPolicy::kAllow,
             /*require_dns_https_alpn=*/false,
             /*cert_verify_flags=*/0,
             vary_network_anonymization_key ? url_
@@ -1026,9 +1024,8 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1043,9 +1040,8 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1060,9 +1056,8 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   EXPECT_EQ(OK,
             request3.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1087,9 +1082,8 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1104,9 +1098,8 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1121,9 +1114,8 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   EXPECT_EQ(OK,
             request3.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1159,9 +1151,8 @@ TEST_P(QuicSessionPoolTest, SyncCreateZeroRtt) {
   EXPECT_EQ(OK,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1193,8 +1184,8 @@ TEST_P(QuicSessionPoolTest, AsyncCreateZeroRtt) {
   QuicSessionRequest request(factory_.get());
   int rv = request.Request(
       scheme_host_port_, version_, ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession::kFalse, privacy_mode_, DEFAULT_PRIORITY,
-      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
       /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
       failed_on_default_network_callback_, callback_.callback());
@@ -1232,9 +1223,8 @@ TEST_P(QuicSessionPoolTest, AsyncZeroRtt) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1266,9 +1256,8 @@ TEST_P(QuicSessionPoolTest, DefaultInitialRtt) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1297,9 +1286,8 @@ TEST_P(QuicSessionPoolTest, FactoryDestroyedWhenJobPending) {
   EXPECT_EQ(ERR_IO_PENDING,
             request->Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1333,9 +1321,8 @@ TEST_P(QuicSessionPoolTest, RequireConfirmation) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1376,9 +1363,8 @@ TEST_P(QuicSessionPoolTest, RequireConfirmationAsyncQuicSession) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1423,9 +1409,8 @@ TEST_P(QuicSessionPoolTest, DontRequireConfirmationFromSameIP) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1464,9 +1449,8 @@ TEST_P(QuicSessionPoolTest, CachedInitialRtt) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1532,15 +1516,15 @@ TEST_P(QuicSessionPoolTest, CachedInitialRttWithNetworkAnonymizationKey) {
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), network_anonymization_key,
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), network_anonymization_key, SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
 
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
     std::unique_ptr<HttpStream> stream = CreateStream(&request);
@@ -1579,9 +1563,8 @@ TEST_P(QuicSessionPoolTest, 2gInitialRtt) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1615,9 +1598,8 @@ TEST_P(QuicSessionPoolTest, 3gInitialRtt) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1646,9 +1628,8 @@ TEST_P(QuicSessionPoolTest, GoAway) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1717,15 +1698,15 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), kNetworkAnonymizationKeys[i],
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), kNetworkAnonymizationKeys[i], SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
 
     EXPECT_THAT(callback_.WaitForResult(), IsOk());
     std::unique_ptr<HttpStream> stream = CreateStream(&request);
@@ -1773,15 +1754,15 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     socket_data.AddSocketDataToFactory(socket_factory_.get());
 
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), kNetworkAnonymizationKeys[i],
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), kNetworkAnonymizationKeys[i], SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
 
     EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_QUIC_HANDSHAKE_FAILED));
 
@@ -1871,9 +1852,8 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1889,9 +1869,8 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   EXPECT_EQ(OK,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback.callback()));
@@ -1905,9 +1884,8 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   EXPECT_EQ(OK,
             request3.Request(
                 server3, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url3_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback.callback()));
@@ -1921,9 +1899,8 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   EXPECT_EQ(ERR_IO_PENDING,
             request4.Request(
                 server4, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url4_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -1939,15 +1916,15 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   // Without pooling, the DNS response is insufficient to start a QUIC
   // connection, so the connection will fail.
   QuicSessionRequest request5(factory_.get());
-  EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
-            request5.Request(
-                server5, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/true,
-                /*cert_verify_flags=*/0, url5_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(
+      ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
+      request5.Request(
+          server5, quic::ParsedQuicVersion::Unsupported(), ProxyChain::Direct(),
+          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+          /*require_dns_https_alpn=*/true,
+          /*cert_verify_flags=*/0, url5_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
@@ -1998,9 +1975,8 @@ TEST_P(QuicSessionPoolTest, PoolingWithServerMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback.callback()));
@@ -2044,9 +2020,8 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2059,9 +2034,8 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
   EXPECT_EQ(OK,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback.callback()));
@@ -2078,9 +2052,8 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
   EXPECT_EQ(ERR_IO_PENDING,
             request3.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback3.callback()));
@@ -2118,9 +2091,8 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 server1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2132,9 +2104,8 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
   EXPECT_EQ(OK,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2174,9 +2145,8 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 server1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2188,9 +2158,8 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   EXPECT_EQ(OK,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2246,9 +2215,8 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 server1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2261,9 +2229,8 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2299,9 +2266,8 @@ TEST_P(QuicSessionPoolTest, Goaway) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2323,9 +2289,8 @@ TEST_P(QuicSessionPoolTest, Goaway) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2387,7 +2352,7 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
     QuicSessionRequest request(factory_.get());
     int rv = request.Request(
         scheme_host_port_, version_, ProxyChain::Direct(),
-        QuicSessionKey::IsProxySession::kFalse, privacy_mode_, DEFAULT_PRIORITY,
+        SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
         SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false,
         /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
@@ -2410,9 +2375,8 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
   EXPECT_EQ(OK,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, CompletionOnceCallback()));
@@ -2453,9 +2417,8 @@ TEST_P(QuicSessionPoolTest, ResolutionErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2480,9 +2443,8 @@ TEST_P(QuicSessionPoolTest, SyncConnectErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2504,9 +2466,8 @@ TEST_P(QuicSessionPoolTest, AsyncConnectErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2528,15 +2489,15 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -2545,9 +2506,8 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2568,15 +2528,15 @@ TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
   {
     QuicSessionRequest request(factory_.get());
-    EXPECT_EQ(ERR_IO_PENDING,
-              request.Request(
-                  scheme_host_port_, version_, ProxyChain::Direct(),
-                  QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                  SecureDnsPolicy::kAllow,
-                  /*require_dns_https_alpn=*/false,
-                  /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                  failed_on_default_network_callback_, callback_.callback()));
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, ProxyChain::Direct(),
+            SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -2585,9 +2545,8 @@ TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2626,9 +2585,8 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2655,9 +2613,8 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2696,9 +2653,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2721,9 +2677,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2767,9 +2722,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2792,9 +2746,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2843,9 +2796,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2868,9 +2820,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2916,9 +2867,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -2942,9 +2892,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3003,9 +2952,8 @@ TEST_P(QuicSessionPoolTest, CloseSessionDuringCreation) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3064,9 +3012,8 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3102,9 +3049,8 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3164,9 +3110,8 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3214,9 +3159,8 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3263,9 +3207,8 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3291,9 +3234,8 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3379,9 +3321,8 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3539,9 +3480,8 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3650,9 +3590,8 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3780,9 +3719,8 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3857,9 +3795,8 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -3978,9 +3915,8 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4044,9 +3980,8 @@ TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4143,9 +4078,8 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4225,9 +4159,8 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNoOpenStreams(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4300,9 +4233,8 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkDisconnected(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4437,9 +4369,8 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4624,9 +4555,8 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4790,9 +4720,8 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -4933,9 +4862,8 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5070,9 +4998,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5215,9 +5142,8 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5350,9 +5276,8 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5439,9 +5364,8 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5527,9 +5451,8 @@ TEST_P(QuicSessionPoolTest, PortMigrationDisabledOnPathDegrading) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5646,9 +5569,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5804,9 +5726,8 @@ TEST_P(
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 server1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5819,9 +5740,8 @@ TEST_P(
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5920,9 +5840,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -5987,9 +5906,8 @@ TEST_P(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6059,9 +5977,8 @@ TEST_P(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6144,9 +6061,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6226,9 +6142,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6303,9 +6218,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6416,9 +6330,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6567,9 +6480,8 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6706,9 +6618,8 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -6920,9 +6831,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7076,9 +6986,8 @@ TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7221,9 +7130,8 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7368,9 +7276,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7499,9 +7406,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 server1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7514,9 +7420,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7636,9 +7541,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithNoNewNetwork) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7771,9 +7675,8 @@ void QuicSessionPoolTestBase::TestMigrateSessionEarlyNonMigratableStream(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7850,9 +7753,8 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -7980,9 +7882,8 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8005,9 +7906,8 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -8145,9 +8045,8 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8289,9 +8188,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8357,9 +8255,8 @@ void QuicSessionPoolTestBase::TestNoAlternateNetworkBeforeHandshake(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8503,9 +8400,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8617,9 +8513,8 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8642,9 +8537,8 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8724,9 +8618,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8799,9 +8692,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteError(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -8917,9 +8809,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9083,9 +8974,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9108,9 +8998,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -9239,9 +9128,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9264,9 +9152,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -9406,9 +9293,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9431,9 +9317,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -9557,9 +9442,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNonMigratableStream(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9649,9 +9533,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMigrationDisabled(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9758,9 +9641,8 @@ void QuicSessionPoolTestBase::TestMigrationOnMultipleWriteErrors(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9856,9 +9738,8 @@ TEST_P(QuicSessionPoolTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -9899,9 +9780,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10057,9 +9937,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10223,9 +10102,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10380,9 +10258,8 @@ TEST_P(QuicSessionPoolTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10501,9 +10378,8 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10634,9 +10510,8 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10833,9 +10708,8 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -10999,9 +10873,8 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11133,9 +11006,8 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11262,9 +11134,8 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11393,9 +11264,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11524,9 +11394,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11618,9 +11487,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11773,9 +11641,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -11888,9 +11755,8 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(OK,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12067,9 +11933,8 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12255,9 +12120,8 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12341,9 +12205,8 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12488,9 +12351,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationNonMigratableStream) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12639,9 +12501,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv6ToIPv4Fails) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12723,9 +12584,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv6Fails) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12785,9 +12645,8 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12813,9 +12672,8 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12859,9 +12717,8 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -12887,9 +12744,8 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13018,9 +12874,8 @@ TEST_P(QuicSessionPoolTest, EnableNotLoadFromDiskCache) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13074,9 +12929,8 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13115,9 +12969,8 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 server2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -13492,7 +13345,7 @@ TEST_P(QuicSessionPoolTest,
     int rv = request.Request(
         url::SchemeHostPort(url::kHttpsScheme, kDefaultServerHostName,
                             kDefaultServerPort),
-        version_, ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
+        version_, ProxyChain::Direct(), SessionUsage::kDestination,
         privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
         network_anonymization_keys[i], SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false,
@@ -13556,9 +13409,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterPackets) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13608,9 +13460,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterDuration) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13652,9 +13503,8 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 destination1, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13669,9 +13519,8 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
   EXPECT_EQ(OK,
             request2.Request(
                 destination2, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -13828,9 +13677,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, InvalidCertificate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13871,9 +13719,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -13889,9 +13736,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
   EXPECT_EQ(OK,
             request2.Request(
                 destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -13950,15 +13796,15 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
   QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request1.Request(
+          destination, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
   EXPECT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
   EXPECT_TRUE(stream1.get());
@@ -13966,15 +13812,15 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
 
   TestCompletionCallback callback2;
   QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_ENABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request2.Request(
+          destination, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, PRIVACY_MODE_ENABLED, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback2.callback()));
   EXPECT_EQ(OK, callback2.WaitForResult());
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
@@ -14037,15 +13883,15 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSecureDnsPolicy) {
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
   QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request1.Request(
+          destination, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
   EXPECT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
   EXPECT_TRUE(stream1.get());
@@ -14053,15 +13899,15 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSecureDnsPolicy) {
 
   TestCompletionCallback callback2;
   QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request2.Request(
+          destination, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback2.callback()));
   EXPECT_EQ(OK, callback2.WaitForResult());
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
@@ -14121,10 +13967,9 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
       ProxyServer::SCHEME_QUIC, "proxy1", 443);
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
-                destination, version_, proxy_chain1,
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                destination, version_, proxy_chain1, SessionUsage::kDestination,
+                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14140,10 +13985,9 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
       ProxyServer::SCHEME_QUIC, "proxy2", 443);
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
-                destination, version_, proxy_chain2,
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kDisable,
+                destination, version_, proxy_chain2, SessionUsage::kDestination,
+                PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -14164,8 +14008,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
 }
 
-// QuicSessionRequest is not pooled if the IsProxySession field differs.
-TEST_P(QuicSessionPoolWithDestinationTest, DifferentIsProxySession) {
+// QuicSessionRequest is not pooled if the SessionUsage field differs.
+TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   Initialize();
 
   GURL url1("https://www.example.org/");
@@ -14202,15 +14046,15 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentIsProxySession) {
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
   QuicSessionRequest request1(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request1.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request1.Request(
+          destination, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+          SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
   EXPECT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
   EXPECT_TRUE(stream1.get());
@@ -14218,20 +14062,20 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentIsProxySession) {
 
   TestCompletionCallback callback2;
   QuicSessionRequest request2(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request2.Request(
-                destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kTrue, PRIVACY_MODE_DISABLED,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback2.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request2.Request(
+          destination, version_, ProxyChain::Direct(), SessionUsage::kProxy,
+          PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
+          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback2.callback()));
   EXPECT_EQ(OK, callback2.WaitForResult());
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
 
-  // `request2` does not pool to the first session, because `is_proxy_session`
+  // `request2` does not pool to the first session, because `session_usage`
   // does not match.
   QuicChromiumClientSession::Handle* session1 =
       QuicHttpStreamPeer::GetSessionHandle(stream1.get());
@@ -14290,9 +14134,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
                 destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url1, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14306,9 +14149,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 destination, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback2.callback()));
@@ -14427,9 +14269,8 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesRequestPriority) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                MAXIMUM_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, MAXIMUM_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14458,9 +14299,8 @@ TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                MAXIMUM_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, MAXIMUM_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14472,9 +14312,8 @@ TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url2_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14511,15 +14350,15 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesParams) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   QuicSessionRequest request(factory_.get());
-  EXPECT_EQ(ERR_IO_PENDING,
-            request.Request(
-                scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), kNetworkAnonymizationKey,
-                SecureDnsPolicy::kDisable,
-                /*require_dns_https_alpn=*/false,
-                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
-                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          scheme_host_port_, version_, ProxyChain::Direct(),
+          SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), kNetworkAnonymizationKey, SecureDnsPolicy::kDisable,
+          /*require_dns_https_alpn=*/false,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
 
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
@@ -14565,9 +14404,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterQuicSessionCreationCallbackFail) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14605,9 +14443,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterQuicSessionCreationCallbackSuccessSync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14647,9 +14484,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14689,9 +14525,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncSync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14746,9 +14581,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackAsyncAsync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14800,9 +14634,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncSync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14842,9 +14675,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackSyncAsync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14879,9 +14711,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackFailSync) {
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14908,9 +14739,8 @@ TEST_P(QuicSessionPoolTest, ResultAfterHostResolutionCallbackFailAsync) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -14963,8 +14793,8 @@ TEST_P(QuicSessionPoolTest, Tag) {
   QuicSessionRequest request1(factory_.get());
   int rv = request1.Request(
       scheme_host_port_, version_, ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession::kFalse, privacy_mode_, DEFAULT_PRIORITY,
-      tag1, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY, tag1,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
       /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
       failed_on_default_network_callback_, callback_.callback());
@@ -14981,8 +14811,8 @@ TEST_P(QuicSessionPoolTest, Tag) {
   QuicSessionRequest request2(factory_.get());
   rv = request2.Request(
       scheme_host_port_, version_, ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession::kFalse, privacy_mode_, DEFAULT_PRIORITY,
-      tag1, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY, tag1,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
       /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
       failed_on_default_network_callback_, callback_.callback());
@@ -14997,8 +14827,8 @@ TEST_P(QuicSessionPoolTest, Tag) {
   QuicSessionRequest request3(factory_.get());
   rv = request3.Request(
       scheme_host_port_, version_, ProxyChain::Direct(),
-      QuicSessionKey::IsProxySession::kFalse, privacy_mode_, DEFAULT_PRIORITY,
-      tag2, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY, tag2,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
       /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
       failed_on_default_network_callback_, callback_.callback());
@@ -15034,9 +14864,8 @@ TEST_P(QuicSessionPoolTest, ReadErrorClosesConnection) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15071,9 +14900,8 @@ TEST_P(QuicSessionPoolTest, MessageTooBigReadErrorDoesNotCloseConnection) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15108,9 +14936,8 @@ TEST_P(QuicSessionPoolTest, ZeroLengthReadDoesNotCloseConnection) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15148,9 +14975,8 @@ TEST_P(QuicSessionPoolTest, DnsAliasesCanBeAccessedFromStream) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15187,9 +15013,8 @@ TEST_P(QuicSessionPoolTest, NoAdditionalDnsAliases) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15227,9 +15052,8 @@ TEST_P(QuicSessionPoolTest, DoNotUseDnsAliases) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kTrue, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kProxy, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15263,9 +15087,8 @@ TEST_P(QuicSessionPoolTest, ConnectErrorInCreateWithDnsAliases) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15358,9 +15181,9 @@ void QuicSessionPoolTestBase::TestRequireDnsHttpsAlpn(
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                ProxyChain::Direct(), SessionUsage::kDestination, privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/true,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15525,15 +15348,15 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   QuicSessionRequest request1(factory_.get());
-  QuicSessionKey::IsProxySession is_proxy_session;
+  SessionUsage session_usage;
   if (use_dns_aliases_) {
-    is_proxy_session = QuicSessionKey::IsProxySession::kFalse;
+    session_usage = SessionUsage::kDestination;
   } else {
-    is_proxy_session = QuicSessionKey::IsProxySession::kTrue;
+    session_usage = SessionUsage::kProxy;
   }
   EXPECT_EQ(ERR_IO_PENDING,
             request1.Request(
-                kOrigin1, version_, ProxyChain::Direct(), is_proxy_session,
+                kOrigin1, version_, ProxyChain::Direct(), session_usage,
                 privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
                 NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false, /*cert_verify_flags=*/0,
@@ -15544,13 +15367,13 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
   std::unique_ptr<HttpStream> stream1 = CreateStream(&request1);
   EXPECT_TRUE(stream1.get());
   EXPECT_TRUE(HasActiveSession(kOrigin1, NetworkAnonymizationKey(),
-                               ProxyChain::Direct(), is_proxy_session));
+                               ProxyChain::Direct(), session_usage));
 
   TestCompletionCallback callback2;
   QuicSessionRequest request2(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request2.Request(
-                kOrigin2, version_, ProxyChain::Direct(), is_proxy_session,
+                kOrigin2, version_, ProxyChain::Direct(), session_usage,
                 privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
                 NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false, /*cert_verify_flags=*/0,
@@ -15561,7 +15384,7 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
   EXPECT_TRUE(HasActiveSession(kOrigin2, NetworkAnonymizationKey(),
-                               ProxyChain::Direct(), is_proxy_session));
+                               ProxyChain::Direct(), session_usage));
 
   QuicChromiumClientSession::Handle* session1 =
       QuicHttpStreamPeer::GetSessionHandle(stream1.get());
@@ -15595,9 +15418,8 @@ TEST_P(QuicSessionPoolTest, EchGrease) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15637,9 +15459,8 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromAltSvc) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15680,9 +15501,9 @@ TEST_P(QuicSessionPoolTest, EchWithQuicFromHttpsRecord) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                ProxyChain::Direct(), SessionUsage::kDestination, privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/true,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15728,9 +15549,9 @@ TEST_P(QuicSessionPoolTest, EchDisabled) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
-                ProxyChain::Direct(), QuicSessionKey::IsProxySession::kFalse,
-                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
-                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                ProxyChain::Direct(), SessionUsage::kDestination, privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/true,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15775,9 +15596,8 @@ TEST_P(QuicSessionPoolTest, EchSvcbReliant) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
@@ -15819,9 +15639,8 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
                 scheme_host_port_, version_, ProxyChain::Direct(),
-                QuicSessionKey::IsProxySession::kFalse, privacy_mode_,
-                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
+                SessionUsage::kDestination, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 /*require_dns_https_alpn=*/false,
                 /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
                 failed_on_default_network_callback_, callback_.callback()));
