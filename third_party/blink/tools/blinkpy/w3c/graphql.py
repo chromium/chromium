@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Google Inc. All rights reserved.
+# Copyright (C) 2024 Google Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from typing import Any, List, Optional
+
 import requests
 
 
@@ -38,17 +40,18 @@ class GraphQL:
         return {"Authorization": f"token {self.token}"}
 
     def run_mutation(self, mutation):
-        request = requests.post('https://api.github.com/graphql',
-                                json={'query': mutation},
-                                headers=self.headers())
-        if request.status_code == 200:
-            return request.json()
+        response = requests.post('https://api.github.com/graphql',
+                                 json={'query': mutation},
+                                 headers=self.headers())
+        if response.status_code == 200:
+            return response.json()
         else:
-            raise Exception(
+            raise GraphQLError(
                 "Query failed to run by returning code of {}. {}".format(
-                    request.status_code, mutation))
+                    response.status_code, mutation))
 
     def mark_ready_for_review(self, pull_request_id):
+        """Idempotently mark a PR as "ready for review" (non-draft state)."""
         mutation = """
            mutation {
               markPullRequestReadyForReview(input:{pullRequestId: "%s"}) {
@@ -56,6 +59,23 @@ class GraphQL:
               }
            }
         """ % pull_request_id
+        # See https://spec.graphql.org/June2018/#sec-Response-Format for the
+        # response payload format, which is unwrapped here.
+        payload = self.run_mutation(mutation)
+        errors = payload.get('errors', [])
+        if errors:
+            raise GraphQLError('failed to mark PR ready for review', errors)
+        data = payload['data']
+        pull_request = data['markPullRequestReadyForReview']['pullRequest']
+        assert not pull_request['isDraft']
+        return pull_request
 
-        result = self.run_mutation(mutation)
-        return result
+
+class GraphQLError(Exception):
+
+    def __init__(self, msg: str, errors: Optional[List[Any]] = None):
+        super().__init__(msg, errors or [])
+
+    @property
+    def errors(self) -> List[Any]:
+        return self.args[1]
