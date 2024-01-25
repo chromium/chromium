@@ -2241,7 +2241,7 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
 
   scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner =
       base::SingleThreadTaskRunner::GetCurrentDefault();
-  std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverride>
+  std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       single_thread_task_runner_current_handle_override;
   if (scheduling_settings().mbi_override_task_runner_handle &&
       next_task_runner != previous_task_runner) {
@@ -2255,10 +2255,10 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
     // returning an unexpected task runner from STTR/STR::GetCurrentDefault() in
     // this specific case.
     single_thread_task_runner_current_handle_override =
-        std::unique_ptr<base::SingleThreadTaskRunner::CurrentHandleOverride>(
-            new base::SingleThreadTaskRunner::CurrentHandleOverride(
-                next_task_runner,
-                /*allow_nested_runloop=*/true));
+        std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>(
+            new base::SingleThreadTaskRunner::CurrentDefaultHandle(
+                next_task_runner, base::SingleThreadTaskRunner::
+                                      CurrentDefaultHandle::MayAlreadyExist{}));
   }
 
   main_thread_only().agent_group_scheduler_scope_stack.emplace_back(
