@@ -323,6 +323,23 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                                        chaps::AttributeList attributes,
                                        uint32_t result_code);
 
+  struct GetCertProvisioningIdTask {
+    GetCertProvisioningIdTask(
+        PrivateKeyHandle in_key,
+        Kcer::GetCertProvisioningProfileIdCallback in_callback);
+    GetCertProvisioningIdTask(GetCertProvisioningIdTask&& other);
+    ~GetCertProvisioningIdTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetCertProvisioningProfileIdCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetCertProvisioningIdImpl(GetCertProvisioningIdTask task);
+  void GetCertProvisioningIdWithAttributes(GetCertProvisioningIdTask task,
+                                           std::optional<Error> kcer_error,
+                                           chaps::AttributeList attributes,
+                                           uint32_t result_code);
+
   struct SetKeyAttributeTask {
     SetKeyAttributeTask(PrivateKeyHandle in_key,
                         HighLevelChapsClient::AttributeId in_attribute_id,

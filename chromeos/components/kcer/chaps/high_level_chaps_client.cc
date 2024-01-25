@@ -43,6 +43,10 @@ int GetDefaultLength(AttributeId attribute_id) {
       return sizeof(chromeos::PKCS11_CK_BBOOL);
     case AttributeId::kKeyPermissions:
       return sizeof(chaps::KeyPermissions);
+    case AttributeId::kCertProvisioningId:
+      // An arbitrary length, the id is just a user readable string. In same
+      // cases it contains a GUID (38 characters).
+      return 40;
   }
 }
 

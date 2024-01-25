@@ -49,6 +49,8 @@ class HighLevelChapsClient {
     // Stored on the private key.
     kKeyInSoftware = chaps::kKeyInSoftwareAttribute,
     kKeyPermissions = pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,
+    kCertProvisioningId =
+        pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
   };
 
   HighLevelChapsClient() = default;

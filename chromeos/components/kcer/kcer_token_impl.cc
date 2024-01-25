@@ -1859,10 +1859,88 @@ void KcerTokenImpl::GetKeyPermissionsWithAttributes(
 
 //==============================================================================
 
+KcerTokenImpl::GetCertProvisioningIdTask::GetCertProvisioningIdTask(
+    PrivateKeyHandle in_key,
+    Kcer::GetCertProvisioningProfileIdCallback in_callback)
+    : key(std::move(in_key)), callback(std::move(in_callback)) {}
+KcerTokenImpl::GetCertProvisioningIdTask::GetCertProvisioningIdTask(
+    GetCertProvisioningIdTask&& other) = default;
+KcerTokenImpl::GetCertProvisioningIdTask::~GetCertProvisioningIdTask() =
+    default;
+
 void KcerTokenImpl::GetCertProvisioningProfileId(
     PrivateKeyHandle key,
     Kcer::GetCertProvisioningProfileIdCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::GetCertProvisioningProfileId,
+        weak_factory_.GetWeakPtr(), std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking
+  // task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  GetCertProvisioningIdImpl(GetCertProvisioningIdTask(
+      std::move(key), std::move(unblocking_callback)));
+}
+
+void KcerTokenImpl::GetCertProvisioningIdImpl(GetCertProvisioningIdTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  PrivateKeyHandle key = task.key;
+  GetKeyAttributes(
+      std::move(key), {AttributeId::kCertProvisioningId},
+      base::BindOnce(&KcerTokenImpl::GetCertProvisioningIdWithAttributes,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void KcerTokenImpl::GetCertProvisioningIdWithAttributes(
+    GetCertProvisioningIdTask task,
+    std::optional<Error> kcer_error,
+    chaps::AttributeList attributes,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (kcer_error.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
+  }
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GetCertProvisioningIdImpl(std::move(task));
+  }
+  if (result_code == chromeos::PKCS11_CKR_ATTRIBUTE_TYPE_INVALID) {
+    // Cert provisioning profile id was never set on this key.
+    return std::move(task.callback).Run(std::nullopt);
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToReadAttribute));
+  }
+  if (attributes.attributes_size() != 1) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+  const chaps::Attribute& attr = attributes.attributes(0);
+  if ((attr.type() !=
+       static_cast<uint32_t>(AttributeId::kCertProvisioningId)) ||
+      !attr.has_value() || attr.value().empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+  return std::move(task.callback).Run(attr.value());
 }
 
 //==============================================================================
@@ -2016,7 +2094,22 @@ void KcerTokenImpl::SetCertProvisioningProfileId(
     PrivateKeyHandle key,
     std::string profile_id,
     Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(
+        base::BindOnce(&KcerTokenImpl::SetCertProvisioningProfileId,
+                       weak_factory_.GetWeakPtr(), std::move(key),
+                       std::move(profile_id), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  return SetKeyAttribute(
+      std::move(key), HighLevelChapsClient::AttributeId::kCertProvisioningId,
+      std::vector<uint8_t>(profile_id.begin(), profile_id.end()),
+      std::move(unblocking_callback));
 }
 
 //==============================================================================

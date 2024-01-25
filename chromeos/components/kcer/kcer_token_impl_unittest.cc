@@ -2105,6 +2105,150 @@ TEST_F(KcerTokenImplTest, GetKeyPermissionsRetryToReadAttributes) {
   EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that GetCertProvisioningProfileId can successfully get cert provisioning
+// profile id.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  std::string expected_cert_prov_id = "new_cert_prov_id";
+  chaps::AttributeList cert_prov_id_attrs;
+  AddAttribute(
+      cert_prov_id_attrs,
+      pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
+      base::as_byte_span(expected_cert_prov_id));
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(
+          RunOnceCallback<3>(cert_prov_id_attrs, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_TRUE(result_waiter.Get().has_value());
+  EXPECT_EQ(expected_cert_prov_id, result_waiter.Get().value());
+}
+
+// Test that GetCertProvisioningProfileId correctly fails when it fails to find
+// the key.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdFailToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that GetCertProvisioningProfileId correctly fails when it fails to read
+// attributes.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdFailToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(RunOnceCallback<3>(chaps::AttributeList(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kFailedToReadAttribute);
+}
+
+// Test that GetCertProvisioningProfileId correctly fails when retrieved
+// attributes are invalid.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdBadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(
+          RunOnceCallback<3>(chaps::AttributeList(), chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kFailedToDecodeKeyAttributes);
+}
+
+// Test that GetCertProvisioningProfileId retries several times when Chaps fails
+// to find the key with a session error.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdRetryToFindKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that GetCertProvisioningProfileId retries several times when Chaps fails
+// to read attributes with a session error.
+TEST_F(KcerTokenImplTest, GetCertProvisioningProfileIdRetryToReadAttributes) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+  ObjectHandle key_handle(1);
+  std::vector<ObjectHandle> key_handles{key_handle};
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(
+          RunOnceCallbackRepeatedly<2>(key_handles, chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
+          chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<std::optional<std::string>, Error>>
+      result_waiter;
+  token_.GetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      result_waiter.GetCallback());
+
+  ASSERT_FALSE(result_waiter.Get().has_value());
+  EXPECT_EQ(result_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that SetKeyNickname can successfully set a nickname.
 TEST_F(KcerTokenImplTest, SetKeyNicknameSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
@@ -2297,6 +2441,42 @@ TEST_F(KcerTokenImplTest, SetKeyPermissionsSuccess) {
       key_permissions_attrs,
       static_cast<uint32_t>(AttributeId::kKeyPermissions),
       base::as_bytes(base::make_span(serialized_key_permissions))));
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
+// Test that SetCertProvisioningProfileId can successfully set a new value. The
+// implementation is largely shared with SetKeyNickname and the tests for it
+// cover the fail cases.
+TEST_F(KcerTokenImplTest, SetCertProvisioningProfileIdSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
+
+  ObjectHandle key_handle{1};
+  std::vector<ObjectHandle> key_handles{key_handle};
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&find_key_attrs),
+                RunOnceCallback<2>(key_handles, chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList cert_prov_id_attrs;
+  EXPECT_CALL(chaps_client_,
+              SetAttributeValue(pkcs11_slot_id_, key_handle, _, _))
+      .WillOnce(DoAll(MoveArg<2>(&cert_prov_id_attrs),
+                      RunOnceCallback<3>(chromeos::PKCS11_CKR_OK)));
+
+  std::string new_profile_id = "new_profile_id";
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.SetCertProvisioningProfileId(PrivateKeyHandle(public_key),
+                                      new_profile_id, waiter.GetCallback());
+
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(
+      FindAttribute(cert_prov_id_attrs,
+                    static_cast<uint32_t>(AttributeId::kCertProvisioningId),
+                    base::as_byte_span(new_profile_id)));
   EXPECT_TRUE(waiter.Get().has_value());
 }
 
