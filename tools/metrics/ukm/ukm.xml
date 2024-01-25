@@ -8553,12 +8553,12 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Cookies.FirstPartyPartitionedInCrossSiteContext">
+<event name="Cookies.FirstPartyPartitionedInCrossSiteContextV2">
   <owner>selya@chromium.org</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
-    Recorded when a page loads that has a first-party partitioned cookie present
-    and is in a cross site context.
+    Recorded when a page loads that has a first-party partitioned cookie
+    present.
   </summary>
   <metric name="CookiePresent" enum="Boolean">
     <summary>
