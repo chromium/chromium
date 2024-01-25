@@ -38,7 +38,7 @@ class AddressDataCleaner {
   void MaybeCleanupAddressDataAfterSyncChange(syncer::ModelType model_type);
 
  private:
-  friend class AddressDataCleanerTest;
+  friend class AddressDataCleanerTestApi;
 
   // Shared implementation of `MaybeCleanupAddressData()` and
   // `MaybeCleanupAddressDataAfterSyncChange()`

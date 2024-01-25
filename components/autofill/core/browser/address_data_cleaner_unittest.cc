@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -28,25 +29,15 @@ class AddressDataCleanerTest : public testing::Test {
  public:
   AddressDataCleanerTest()
       : prefs_(test::PrefServiceForTesting()),
-        address_data_cleaner_(&test_pdm_,
-                              /*alternative_state_name_map_updater=*/nullptr,
-                              prefs_.get()) {}
+        data_cleaner_(&test_pdm_,
+                      /*alternative_state_name_map_updater=*/nullptr,
+                      prefs_.get()) {}
 
-  void ApplyAddressDedupingRoutine() {
-    address_data_cleaner_.ApplyAddressDedupingRoutine();
-  }
-
-  void DeleteDisusedAddresses() {
-    address_data_cleaner_.DeleteDisusedAddresses();
-  }
-
-  TestPersonalDataManager& personal_data() { return test_pdm_; }
-
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;
   TestPersonalDataManager test_pdm_;
-  AddressDataCleaner address_data_cleaner_;
+  AddressDataCleaner data_cleaner_;
 };
 
 // Tests that ApplyAddressDedupingRoutine merges the profile values correctly,
@@ -61,7 +52,7 @@ TEST_F(AddressDataCleanerTest,
   profile1.SetRawInfo(ADDRESS_HOME_LINE1, u"742. Evergreen Terrace");
   profile1.set_use_count(10);
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
-  personal_data().AddProfile(profile1);
+  test_pdm_.AddProfile(profile1);
 
   AutofillProfile profile2(AddressCountryCode(""));
   profile2.SetRawInfo(NAME_MIDDLE, u"Jay");
@@ -69,7 +60,7 @@ TEST_F(AddressDataCleanerTest,
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"12345678910");
   profile2.set_use_count(5);
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
-  personal_data().AddProfile(profile2);
+  test_pdm_.AddProfile(profile2);
 
   AutofillProfile profile3(AddressCountryCode(""));
   profile3.SetRawInfo(NAME_MIDDLE, u"J");
@@ -77,16 +68,16 @@ TEST_F(AddressDataCleanerTest,
   profile3.SetRawInfo(COMPANY_NAME, u"Fox");
   profile3.set_use_count(3);
   profile3.set_use_date(AutofillClock::Now() - base::Days(5));
-  personal_data().AddProfile(profile3);
+  test_pdm_.AddProfile(profile3);
 
   base::HistogramTester histogram_tester;
-  ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
 
   // `profile1` should have been merged into `profile2` which should then have
   // been merged into `profile3`. Therefore there should only be 1 saved
   // profile.
-  ASSERT_EQ(1U, personal_data().GetProfiles().size());
-  AutofillProfile deduped_profile = *personal_data().GetProfiles()[0];
+  ASSERT_EQ(1U, test_pdm_.GetProfiles().size());
+  AutofillProfile deduped_profile = *test_pdm_.GetProfiles()[0];
 
   // Since profiles with higher ranking scores are merged into profiles with
   // lower ranking scores, the result of the merge should be contained in
@@ -125,23 +116,23 @@ TEST_F(AddressDataCleanerTest, ApplyAddressDedupingRoutine_UnrelatedProfile) {
   // `StandardProfile()`, but the `UpdateableStandardProfile()` remains
   // unaffected.
   AutofillProfile standard_profile = test::StandardProfile();
-  personal_data().AddProfile(standard_profile);
-  personal_data().AddProfile(test::UpdateableStandardProfile());
+  test_pdm_.AddProfile(standard_profile);
+  test_pdm_.AddProfile(test::UpdateableStandardProfile());
   AutofillProfile different_profile = test::DifferentFromStandardProfile();
-  personal_data().AddProfile(different_profile);
+  test_pdm_.AddProfile(different_profile);
 
-  ApplyAddressDedupingRoutine();
-  EXPECT_THAT(personal_data().GetProfiles(),
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  EXPECT_THAT(test_pdm_.GetProfiles(),
               UnorderedElementsAre(Pointee(standard_profile),
                                    Pointee(different_profile)));
 }
 
 TEST_F(AddressDataCleanerTest, ApplyAddressDedupingRoutine_Metrics) {
-  personal_data().AddProfile(test::StandardProfile());
-  personal_data().AddProfile(test::UpdateableStandardProfile());
+  test_pdm_.AddProfile(test::StandardProfile());
+  test_pdm_.AddProfile(test::UpdateableStandardProfile());
 
   base::HistogramTester histogram_tester;
-  ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
   histogram_tester.ExpectUniqueSample(
       "Autofill.NumberOfProfilesConsideredForDedupe", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -154,28 +145,28 @@ TEST_F(AddressDataCleanerTest,
        ApplyAddressDedupingRoutine_OncePerVersion) {
   // The deduping routine should be run a first time and merge the
   // `UpdateableStandardProfile()` (subset) into the `StandardProfile()`.
-  personal_data().AddProfile(test::StandardProfile());
-  personal_data().AddProfile(test::UpdateableStandardProfile());
-  ApplyAddressDedupingRoutine();
-  EXPECT_EQ(1U, personal_data().GetProfiles().size());
+  test_pdm_.AddProfile(test::StandardProfile());
+  test_pdm_.AddProfile(test::UpdateableStandardProfile());
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  EXPECT_EQ(1U, test_pdm_.GetProfiles().size());
 
   // Add another duplicate profile and expect that the routine isn't run again.
-  personal_data().AddProfile(test::StandardProfile());
-  ApplyAddressDedupingRoutine();
-  EXPECT_EQ(2U, personal_data().GetProfiles().size());
+  test_pdm_.AddProfile(test::StandardProfile());
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  EXPECT_EQ(2U, test_pdm_.GetProfiles().size());
 }
 
 // Tests that `kAccount` profiles are not deduplicated against each other.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
   AutofillProfile account_profile1 = test::StandardProfile();
   account_profile1.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().AddProfile(account_profile1);
+  test_pdm_.AddProfile(account_profile1);
   AutofillProfile account_profile2 = test::StandardProfile();
   account_profile2.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().AddProfile(account_profile2);
+  test_pdm_.AddProfile(account_profile2);
 
-  ApplyAddressDedupingRoutine();
-  EXPECT_THAT(personal_data().GetProfiles(),
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  EXPECT_THAT(test_pdm_.GetProfiles(),
               UnorderedElementsAre(Pointee(account_profile1),
                                    Pointee(account_profile2)));
 }
@@ -190,14 +181,13 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
   account_profile.set_initial_creator_id(non_chrome_service);
   account_profile.set_last_modifier_id(non_chrome_service);
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().AddProfile(account_profile);
-  personal_data().AddProfile(test::SubsetOfStandardProfile());
+  test_pdm_.AddProfile(account_profile);
+  test_pdm_.AddProfile(test::SubsetOfStandardProfile());
 
   // Expect that only the account profile remains and that it became a Chrome-
   // originating profile.
-  ApplyAddressDedupingRoutine();
-  std::vector<AutofillProfile*> deduped_profiles =
-      personal_data().GetProfiles();
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
+  std::vector<AutofillProfile*> deduped_profiles = test_pdm_.GetProfiles();
   ASSERT_THAT(deduped_profiles, UnorderedElementsAre(Pointee(account_profile)));
   EXPECT_EQ(deduped_profiles[0]->initial_creator_id(),
             AutofillProfile::kInitialCreatorOrModifierChrome);
@@ -210,13 +200,13 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().AddProfile(account_profile);
+  test_pdm_.AddProfile(account_profile);
   AutofillProfile local_profile = test::StandardProfile();
-  personal_data().AddProfile(local_profile);
+  test_pdm_.AddProfile(local_profile);
 
-  ApplyAddressDedupingRoutine();
+  test_api(data_cleaner_).ApplyAddressDedupingRoutine();
   EXPECT_THAT(
-      personal_data().GetProfiles(),
+      test_pdm_.GetProfiles(),
       UnorderedElementsAre(Pointee(account_profile), Pointee(local_profile)));
 }
 
@@ -224,16 +214,15 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
   // Create a disused address (deletable).
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.set_use_date(AutofillClock::Now() - base::Days(400));
-  personal_data().AddProfile(profile1);
+  test_pdm_.AddProfile(profile1);
 
   // Create a recently-used address (not deletable).
   AutofillProfile profile2 = test::GetFullCanadianProfile();
   profile1.set_use_date(AutofillClock::Now() - base::Days(4));
-  personal_data().AddProfile(profile2);
+  test_pdm_.AddProfile(profile2);
 
-  DeleteDisusedAddresses();
-  EXPECT_THAT(personal_data().GetProfiles(),
-              UnorderedElementsAre(Pointee(profile2)));
+  test_api(data_cleaner_).DeleteDisusedAddresses();
+  EXPECT_THAT(test_pdm_.GetProfiles(), UnorderedElementsAre(Pointee(profile2)));
 }
 
 }  // namespace autofill

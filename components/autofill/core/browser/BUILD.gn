@@ -787,6 +787,7 @@ static_library("legal_message_line") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "address_data_cleaner_test_api.h",
     "autofill_form_test_utils.cc",
     "autofill_form_test_utils.h",
     "autofill_manager_test_api.h",
