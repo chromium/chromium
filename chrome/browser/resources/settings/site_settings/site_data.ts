@@ -14,12 +14,12 @@ import '/shared/settings/controls/settings_radio_group.js';
 import '../privacy_page/collapse_radio_button.js';
 import './site_list.js';
 
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import type {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
+import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_data.html.js';

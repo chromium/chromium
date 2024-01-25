@@ -18,19 +18,20 @@ import '../site_favicon.js';
 import '../i18n_setup.js';
 import './security_keys_pin_field.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Credential, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, StartCredentialManagementResponse} from './security_keys_browser_proxy.js';
+import type {Credential, SecurityKeysCredentialBrowserProxy, StartCredentialManagementResponse} from './security_keys_browser_proxy.js';
+import {SecurityKeysCredentialBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {getTemplate} from './security_keys_credential_management_dialog.html.js';
-import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
+import type {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
 export enum CredentialManagementDialogPage {
   INITIAL = 'initial',

@@ -15,12 +15,13 @@ import './live_caption_section.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
+import {FontsBrowserProxyImpl} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
+import type {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
-import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 
 import {getTemplate} from './captions_subpage.html.js';
 

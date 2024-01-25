@@ -6,7 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router, SettingsRoutes} from './router.js';
+import type {SettingsRoutes} from './router.js';
+import {Route, Router} from './router.js';
 
 /**
  * Add all of the child routes that originate from the privacy route,

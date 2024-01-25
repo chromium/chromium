@@ -41,10 +41,11 @@ import {Router} from '../router.js';
 // </if>
 
 import {getTemplate} from './about_page.html.js';
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import type {AboutPageBrowserProxy, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxyImpl, UpdateStatus} from './about_page_browser_proxy.js';
 // clang-format off
 // <if expr="_google_chrome and is_macosx">
-import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+import type {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
 // </if>
 // clang-format on
 

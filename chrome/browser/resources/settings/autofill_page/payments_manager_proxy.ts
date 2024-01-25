@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
+import type {PersonalDataChangedListener} from './autofill_manager_proxy.js';
 
 /**
  * Interface for all callbacks to the payments autofill API.

@@ -17,13 +17,15 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubCardState, SafetyHubModuleType, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy, SafetyHubCardState} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SafetyHubModuleType, SafetyHubSurfaces} from '../metrics_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
-import {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
-import {SiteInfo} from './safety_hub_module.js';
+import type {CardInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
+import type {SiteInfo} from './safety_hub_module.js';
 import {getTemplate} from './safety_hub_page.html.js';
 
 export interface SettingsSafetyHubPageElement {

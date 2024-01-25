@@ -17,13 +17,14 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
 
-import {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PageVisibility} from '../page_visibility.js';
-import {Route, RouteObserverMixin, Router, SettingsRoutes} from '../router.js';
+import type {PageVisibility} from '../page_visibility.js';
+import type {Route, SettingsRoutes} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
 

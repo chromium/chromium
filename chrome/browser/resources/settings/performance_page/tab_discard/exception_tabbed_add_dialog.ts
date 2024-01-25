@@ -9,15 +9,16 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './exception_add_input.js';
 import './exception_current_sites_list.js';
 
-import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+import type {PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExceptionAddInputElement} from './exception_add_input.js';
-import {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
+import type {ExceptionAddInputElement} from './exception_add_input.js';
+import type {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
 import {getTemplate} from './exception_tabbed_add_dialog.html.js';
 
 export enum ExceptionAddDialogTabs {

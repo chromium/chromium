@@ -16,9 +16,10 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
+import type {ContentSetting} from './constants.js';
+import {ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
+import type {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list.html.js';
 
 export interface StorageAccessSiteListElement {

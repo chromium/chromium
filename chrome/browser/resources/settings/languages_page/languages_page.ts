@@ -27,14 +27,15 @@ import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="is_win">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
@@ -43,11 +44,13 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin} from '../router.js';
+import type {Route} from '../router.js';
+import { RouteObserverMixin} from '../router.js';
 
 import {getTemplate} from './languages_page.html.js';
-import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
+import type { LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
+import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
+import type {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
 // clang-format on
 

@@ -10,18 +10,19 @@ import '/shared/settings/controls/settings_radio_group.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {ControlledRadioButtonElement} from '/shared/settings/controls/controlled_radio_button.js';
+import type {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './battery_page.html.js';
-import {BatterySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
+import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
+import {BatterySaverModeState, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 
 export const BATTERY_SAVER_MODE_PREF =
     'performance_tuning.battery_saver_mode.state';

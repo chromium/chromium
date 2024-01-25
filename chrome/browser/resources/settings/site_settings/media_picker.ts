@@ -16,7 +16,7 @@ import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 
 import {getTemplate} from './media_picker.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
+import type {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
 
 interface MediaPickerElement {
   $: {

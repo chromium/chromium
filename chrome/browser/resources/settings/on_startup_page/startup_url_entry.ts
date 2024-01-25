@@ -15,14 +15,15 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './startup_url_entry.html.js';
-import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
+import type {StartupPageInfo} from './startup_urls_page_browser_proxy.js';
+import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 /**
  * The name of the event fired from this element when the "Edit" option is

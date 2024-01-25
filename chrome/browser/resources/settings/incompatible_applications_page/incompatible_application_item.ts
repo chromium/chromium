@@ -41,7 +41,8 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './incompatible_application_item.html.js';
-import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
+import type {IncompatibleApplicationsBrowserProxy} from './incompatible_applications_browser_proxy.js';
+import {ActionTypes, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
 const IncompatibleApplicationItemElementBase = I18nMixin(PolymerElement);
 

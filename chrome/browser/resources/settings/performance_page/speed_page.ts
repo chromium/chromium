@@ -11,13 +11,13 @@ import '../privacy_page/collapse_radio_button.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 
-import {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
+import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {NetworkPredictionOptions} from './constants.js';
 import {getTemplate} from './speed_page.html.js';

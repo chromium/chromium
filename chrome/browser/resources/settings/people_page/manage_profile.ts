@@ -17,9 +17,9 @@ import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
-import {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,7 +28,8 @@ import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './manage_profile.html.js';
-import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
+import type {ManageProfileBrowserProxy} from './manage_profile_browser_proxy.js';
+import {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 
 const SettingsManageProfileElementBase =
     RouteObserverMixin(WebUiListenerMixin(PolymerElement));

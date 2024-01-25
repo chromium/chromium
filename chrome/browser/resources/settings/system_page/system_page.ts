@@ -17,7 +17,7 @@ import '/shared/settings/controls/settings_toggle_button.js';
 import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -16,7 +16,7 @@ import '../incompatible_applications_page/incompatible_applications_page.js';
 
 // </if>
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,10 +26,11 @@ import {loadTimeData} from '../i18n_setup.js';
 // </if>
 
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './reset_page.html.js';
-import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
+import type {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 
 export interface SettingsResetPageElement {
   $: {

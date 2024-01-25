@@ -14,7 +14,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
+import type {PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_interest_item.html.js';
 
 const PrivacySandboxInterestItemElementBase = I18nMixin(PolymerElement);

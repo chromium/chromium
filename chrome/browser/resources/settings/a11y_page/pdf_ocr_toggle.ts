@@ -12,7 +12,7 @@
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -21,7 +21,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl, ScreenAiInstallStatus} from './a11y_browser_proxy.js';
+import type {AccessibilityBrowserProxy} from './a11y_browser_proxy.js';
+import {AccessibilityBrowserProxyImpl, ScreenAiInstallStatus} from './a11y_browser_proxy.js';
 import {getTemplate} from './pdf_ocr_toggle.html.js';
 
 const SettingsPdfOcrToggleBaseElement =

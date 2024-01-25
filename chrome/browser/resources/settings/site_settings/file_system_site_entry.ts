@@ -22,7 +22,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './file_system_site_entry.html.js';
-import {OriginFileSystemGrants} from './file_system_site_list.js';
+import type {OriginFileSystemGrants} from './file_system_site_list.js';
 
 const FileSystemSiteEntryElementBase = BaseMixin(PolymerElement);
 

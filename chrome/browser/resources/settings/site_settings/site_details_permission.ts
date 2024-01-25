@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {getTemplate} from './site_details_permission.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {ChooserException, RawChooserException, RawSiteException} from './site_settings_prefs_browser_proxy.js';
+import type {ChooserException, RawChooserException, RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {

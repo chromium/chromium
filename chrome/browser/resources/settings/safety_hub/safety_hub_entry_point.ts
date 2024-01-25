@@ -13,11 +13,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {routes} from '../route.js';
 import {Router, RouteObserverMixin} from '../router.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import { MetricsBrowserProxyImpl, SafetyHubEntryPoint} from '../metrics_browser_proxy.js';
 
-import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
+import type {SafetyHubBrowserProxy} from './safety_hub_browser_proxy.js';
+import { SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_entry_point.html.js';
-import { SettingsSafetyHubModuleElement } from './safety_hub_module.js';
+import type { SettingsSafetyHubModuleElement } from './safety_hub_module.js';
 // clang-format on
 
 export interface SettingsSafetyHubEntryPointElement {

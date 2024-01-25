@@ -17,14 +17,15 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import type {SecurityKeysPinBrowserProxy} from './security_keys_browser_proxy.js';
+import {SecurityKeysPinBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {getTemplate} from './security_keys_set_pin_dialog.html.js';
 
 export enum SetPinDialogPage {

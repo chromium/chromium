@@ -24,30 +24,31 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 // </if>
 
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PageStatus, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 // <if expr="chromeos_lacros">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 // </if>
 
-import {FocusConfig} from '../focus_config.js';
+import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="chromeos_ash">
-import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
+import type {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
 import {RouteObserverMixin, Router} from '../router.js';
 
 // <if expr="chromeos_ash">
-import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
+import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
 
 import {getTemplate} from './sync_page.html.js';

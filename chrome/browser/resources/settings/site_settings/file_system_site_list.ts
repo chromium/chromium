@@ -16,7 +16,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin} from '../router.js';
+import type {Route} from '../router.js';
+import {RouteObserverMixin} from '../router.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './file_system_site_list.html.js';

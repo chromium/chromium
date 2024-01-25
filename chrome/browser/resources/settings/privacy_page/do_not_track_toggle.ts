@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 
-import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
