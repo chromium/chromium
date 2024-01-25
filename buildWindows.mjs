@@ -10,5 +10,5 @@ try {
   spawnChecked("git", [
     "checkout",
     "media/audio/win/audio_low_latency_input_win.cc",
-  ]);
+  ], { stdio: "inherit" });
 }

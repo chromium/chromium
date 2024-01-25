@@ -142,7 +142,13 @@ if (!process.env["BUILDKITE"]) {
 
 console.log(`Building...`);
 const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
-spawnChecked(autoninja, ["-C", outdir, "chrome"], { stdio: "inherit" });
+// make the windows build verbose so we can see what's going on
+const platformAutoNinjaArgs = currentPlatform() == "windows" ? ["-v"] : [];
+spawnChecked(
+  autoninja,
+  [...platformAutoNinjaArgs, "-C", outdir, "chrome"],
+  { stdio: "inherit" }
+);
 
 console.log(`Build finished.`);
 
