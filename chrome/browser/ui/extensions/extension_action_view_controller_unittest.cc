@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -923,6 +924,91 @@ TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetHoverCardStatus) {
             HoverCardState::SiteAccess::kExtensionHasAccess);
   EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
             HoverCardState::SiteAccess::kExtensionRequestsAccess);
+}
+
+// Tests correct tooltip text after changing user site settings and site access.
+TEST_F(ExtensionActionViewControllerFeatureUnitTest, GetTooltip) {
+  std::u16string extension_name = u"Extension";
+  std::string requested_url_string = "https://requested.com/";
+  auto extension = CreateAndAddExtensionWithGrantedHostPermissions(
+      base::UTF16ToUTF8(extension_name), extensions::ActionInfo::TYPE_ACTION,
+      {requested_url_string});
+
+  // Navigate to a site the extension requests access to.
+  AddTab(browser(), GURL(requested_url_string));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto requested_url = url::Origin::Create(web_contents->GetLastCommittedURL());
+
+  ExtensionActionViewController* const controller =
+      GetViewControllerForId(extension->id());
+  ASSERT_TRUE(controller);
+
+  // By default, user site setting is "customize by extension" and site access
+  // is granted to every extension that requests them. Verify extension tooltip
+  // is "has access".
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser()->profile());
+  ASSERT_EQ(permissions_manager->GetUserSiteSetting(requested_url),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(
+      controller->GetTooltip(web_contents),
+      base::JoinString(
+          {extension_name,
+           l10n_util::GetStringUTF16(
+               IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_HAS_ACCESS_TOOLTIP)},
+          u"\n"));
+
+  // Withhold extension host permissions. Verify extension tooltip is "requests
+  // access".
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+  EXPECT_EQ(
+      controller->GetTooltip(web_contents),
+      base::JoinString(
+          {extension_name,
+           l10n_util::GetStringUTF16(
+               IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_REQUESTS_TOOLTIP)},
+          u"\n"));
+
+  // Block all extensions access to requested.com. Verify extension tooltip is
+  // "blocked access".
+  permissions_manager->UpdateUserSiteSetting(
+      requested_url, UserSiteSetting::kBlockAllExtensions);
+  EXPECT_EQ(
+      controller->GetTooltip(web_contents),
+      base::JoinString(
+          {extension_name,
+           l10n_util::GetStringUTF16(
+               IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_BLOCKED_ACCESS_TOOLTIP)},
+          u"\n"));
+
+  // Navigate to a site that the extension didn't request access to.
+  AddTab(browser(), GURL(u"https://not-requested.com/"));
+  web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto non_requested_url =
+      url::Origin::Create(web_contents->GetLastCommittedURL());
+
+  // By default, user site setting is "customize by extension". Verify extension
+  // tooltip is just the extension name since extension didn't request access
+  // to this site.
+  ASSERT_EQ(permissions_manager->GetUserSiteSetting(non_requested_url),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(controller->GetTooltip(web_contents), extension_name);
+
+  // Block all extensions access to non-requested.com. Verify extension tooltip
+  // is "blocked access" regardless of extension not requesting access to this
+  // site.
+  permissions_manager->UpdateUserSiteSetting(
+      non_requested_url, UserSiteSetting::kBlockAllExtensions);
+  EXPECT_EQ(
+      controller->GetTooltip(web_contents),
+      base::JoinString(
+          {extension_name,
+           l10n_util::GetStringUTF16(
+               IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_BLOCKED_ACCESS_TOOLTIP)},
+          u"\n"));
 }
 
 class ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest
