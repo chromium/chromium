@@ -23,7 +23,7 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
   if (!GetApplicationContext()->GetChromeBrowserStateManager())
     return;
 
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   signin_error_controller_observation_.Observe(signin_error_controller);
 

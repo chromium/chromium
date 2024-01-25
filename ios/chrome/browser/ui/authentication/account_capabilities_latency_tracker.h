@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_CAPABILITIES_LATENCY_TRACKER_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_CAPABILITIES_LATENCY_TRACKER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -36,7 +37,7 @@ class AccountCapabilitiesLatencyTracker {
  private:
   bool HasCapability() const;
 
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   base::ElapsedTimer timer_;
   bool capabilities_already_fetched_{false};
 };

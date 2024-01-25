@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -115,7 +116,7 @@ class TestGaiaAuthFetcherIOSNSURLSessionBridge
       id<NSURLSessionTaskDelegate> url_session_delegate) override;
 
  protected:
-  GaiaAuthFetcherIOSNSURLSessionBridgeTest* test_;
+  raw_ptr<GaiaAuthFetcherIOSNSURLSessionBridgeTest> test_;
 };
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_bridge.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -106,7 +107,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
       id<NSURLSessionTaskDelegate> url_session_delegate);
 
   // Browser state associated with the bridge.
-  web::BrowserState* browser_state_;
+  raw_ptr<web::BrowserState> browser_state_;
 
   // Request currently processed by the bridge.
   Request request_;

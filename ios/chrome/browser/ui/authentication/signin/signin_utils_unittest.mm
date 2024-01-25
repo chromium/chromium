@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -93,7 +94,7 @@ class SigninUtilsTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  ChromeAccountManagerService* account_manager_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
 // Should show the sign-in upgrade for the first time, after FRE.

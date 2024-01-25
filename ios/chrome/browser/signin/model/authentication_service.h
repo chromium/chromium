@@ -9,6 +9,7 @@
 #include <vector>
 
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -226,11 +227,11 @@ class AuthenticationService : public KeyedService,
   std::unique_ptr<AuthenticationServiceDelegate> delegate_;
 
   // Pointer to the KeyedServices used by AuthenticationService.
-  PrefService* pref_service_ = nullptr;
-  SyncSetupService* sync_setup_service_ = nullptr;
-  ChromeAccountManagerService* account_manager_service_ = nullptr;
-  signin::IdentityManager* identity_manager_ = nullptr;
-  syncer::SyncService* sync_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<SyncSetupService> sync_setup_service_ = nullptr;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   base::ObserverList<AuthenticationServiceObserver, true> observer_list_;
   // Whether Initialized has been called.
   bool initialized_ = false;

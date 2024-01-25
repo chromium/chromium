@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -17,7 +18,7 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @implementation InstantSigninMediator {
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
   // YES if the sign-in is interrupted.

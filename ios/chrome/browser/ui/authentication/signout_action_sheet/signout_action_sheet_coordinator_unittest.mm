@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
@@ -116,7 +117,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
 
-  syncer::MockSyncService* sync_service_mock_ = nullptr;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
 };
 
 // Tests that a signed-in user with Sync enabled will have an action sheet with

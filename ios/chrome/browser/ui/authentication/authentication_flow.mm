@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/feature_list.cc"
 #import "base/ios/block_types.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -121,7 +122,7 @@ bool HasMachineLevelPolicies() {
   // YES if user is opted into bookmark and reading list account storage.
   BOOL _shouldShowSigninSnackbar;
 
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   id<SystemIdentity> _identityToSignIn;
   signin_metrics::AccessPoint _accessPoint;
   NSString* _identityToSignInHostedDomain;

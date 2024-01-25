@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -12,7 +13,7 @@
 
 @interface ConsistencyAccountChooserMediator () <
     ChromeAccountManagerServiceObserver> {
-  ChromeAccountManagerService* _accountManagerService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 }

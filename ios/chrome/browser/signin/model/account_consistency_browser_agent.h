@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_CONSISTENCY_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -60,7 +61,7 @@ class AccountConsistencyBrowserAgent
   UIViewController* base_view_controller_;
   id<ApplicationCommands> application_handler_;
   id<ApplicationSettingsCommands> settings_handler_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   // Bridge object to act as the delegate.
   ManageAccountsDelegateBridge* bridge_;

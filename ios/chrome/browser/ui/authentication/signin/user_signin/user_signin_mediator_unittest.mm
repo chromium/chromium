@@ -8,6 +8,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
@@ -281,7 +282,7 @@ class UserSigninMediatorTest : public PlatformTest {
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  consent_auditor::FakeConsentAuditor* fake_consent_auditor_ = nullptr;
+  raw_ptr<consent_auditor::FakeConsentAuditor> fake_consent_auditor_ = nullptr;
   const std::vector<int> consent_string_ids_;
 
   UserSigninMediator* mediator_ = nil;
@@ -289,8 +290,8 @@ class UserSigninMediatorTest : public PlatformTest {
   id<UserSigninMediatorDelegate> mediator_delegate_mock_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
   UIViewController* presenting_view_controller_mock_ = nil;
-  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
-  syncer::MockSyncService* sync_service_mock_ = nullptr;
+  raw_ptr<SyncSetupServiceMock> sync_setup_service_mock_ = nullptr;
+  raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   ProceduralBlock interrupted_completion_block_ = nil;
 };
 

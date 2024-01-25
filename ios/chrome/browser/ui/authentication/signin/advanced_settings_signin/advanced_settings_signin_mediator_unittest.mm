@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
@@ -107,7 +108,7 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
 
   AdvancedSettingsSigninMediator* mediator_ = nil;
 
-  AuthenticationService* authentication_service_ = nullptr;
+  raw_ptr<AuthenticationService> authentication_service_ = nullptr;
 };
 
 // Tests that a user's authentication does not change when sign-in is

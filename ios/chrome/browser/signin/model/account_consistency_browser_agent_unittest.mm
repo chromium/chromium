@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -61,7 +62,7 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  AccountConsistencyBrowserAgent* agent_;
+  raw_ptr<AccountConsistencyBrowserAgent> agent_;
   id<ApplicationCommands> application_commands_mock_;
   id<ApplicationSettingsCommands> settings_commands_mock_;
   UIViewController* base_view_controller_mock_;

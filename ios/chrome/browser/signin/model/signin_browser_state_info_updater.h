@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_BROWSER_STATE_INFO_UPDATER_H_
 
 #include "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,8 +43,8 @@ class SigninBrowserStateInfoUpdater : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  signin::IdentityManager* identity_manager_ = nullptr;
-  SigninErrorController* signin_error_controller_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<SigninErrorController> signin_error_controller_ = nullptr;
   const base::FilePath browser_state_path_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
