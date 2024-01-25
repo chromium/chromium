@@ -108,10 +108,7 @@ public class MimeUtils {
      */
     public static List<ResolveInfo> getPdfIntentHandlers() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(
-                Uri.fromFile(
-                        new File(ContextUtils.getApplicationContext().getCacheDir(), "empty.pdf")),
-                "application/pdf");
+        intent.setDataAndType(Uri.fromFile(new File("/empty.pdf")), "application/pdf");
         return PackageManagerUtils.queryIntentActivities(intent, 0);
     }
 
