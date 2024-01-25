@@ -266,13 +266,20 @@ void TabContentManager::CaptureThumbnail(
     }
     return;
   }
-  if (write_to_cache && !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
-                            tab_id, tab_android->GetURL())) {
+  if (write_to_cache &&
+      !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+          tab_id, tab_android->GetURL(), /*force_update=*/false)) {
     return;
+  }
+  std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
+      tracker(nullptr, base::OnTaskRunnerDeleter(
+                           base::SequencedTaskRunner::GetCurrentDefault()));
+  if (write_to_cache) {
+    tracker = TrackCapture(tab_id);
   }
   TabReadbackCallback readback_done_callback =
       base::BindOnce(&TabContentManager::OnTabReadback,
-                     weak_factory_.GetWeakPtr(), tab_id, TrackCapture(tab_id),
+                     weak_factory_.GetWeakPtr(), tab_id, std::move(tracker),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
                      write_to_cache, return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
@@ -292,8 +299,13 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
   SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
   skbitmap.setImmutable();
 
-  if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(tab_id, url)) {
-    OnTabReadback(tab_id, TrackCapture(tab_id), nullptr, true,
+  // Native pages have their own throttling behavior so force the update if that
+  // happens.
+  if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+          tab_id, url, tab_android->IsNativePage())) {
+    OnTabReadback(tab_id, TrackCapture(tab_id),
+                  /*j_callback=*/nullptr,
+                  /*write_to_cache=*/true,
                   /*return_bitmap=*/false, thumbnail_scale, skbitmap);
   }
 }
@@ -391,6 +403,8 @@ void TabContentManager::OnTabReadback(
 
   if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty()) {
     thumbnail_cache_->Put(tab_id, std::move(tracker), bitmap, thumbnail_scale);
+  } else if (tracker) {
+    tracker->MarkCaptureFailed();
   }
 }
 
