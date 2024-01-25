@@ -40,8 +40,8 @@ public interface ModuleDelegate {
     /** Called when a module has no data to show. */
     void onDataFetchFailed(@ModuleType int moduleType);
 
-    /** Called when the user wants to hide a module from the magic stack. */
-    void onHideModuleFromContextMenu(@ModuleType int moduleType);
+    /** Removes a module from the magic stack. */
+    void removeModule(@ModuleType int moduleType);
 
     /** Called when the user wants to open the settings to customize modules. */
     void customizeSettings();

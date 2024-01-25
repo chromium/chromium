@@ -213,10 +213,10 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
-    public void onHideModuleFromContextMenu(@ModuleType int moduleType) {
-        mMediator.remove(moduleType);
+    public void removeModule(@ModuleType int moduleType) {
+        boolean isModuleRemoved = mMediator.remove(moduleType);
 
-        if (mModel.size() < mItemPerScreen) {
+        if (isModuleRemoved && mModel.size() < mItemPerScreen) {
             mRecyclerView.invalidateItemDecorations();
         }
     }
