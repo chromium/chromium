@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -37,7 +38,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -707,12 +707,7 @@ void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
   TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
 
   // The desks widget should no longer process events at this point.
-  desks_widget->SetVisibilityChangedAnimationsEnabled(false);
-  desks_widget->widget_delegate()->SetCanActivate(false);
-  desks_widget->GetNativeWindow()->SetEventTargetingPolicy(
-      aura::EventTargetingPolicy::kNone);
-  desks_widget->GetContentsView()->SetCanProcessEventsWithinSubtree(false);
-  desks_widget->GetFocusManager()->set_shortcut_handling_suspended(true);
+  PrepareWidgetForOverviewShutdown(desks_widget.get());
 
   gfx::Transform transform;
   transform.Translate(0, -desks_widget->GetWindowBoundsInScreen().height());
