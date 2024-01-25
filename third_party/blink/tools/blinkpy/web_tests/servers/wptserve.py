@@ -132,6 +132,9 @@ class WPTServe(server_base.ServerBase):
         finder = PathFinder(fs)
         template_path = finder.path_from_wpt_tests('config.json')
         config = json.loads(fs.read_text_file(template_path))
+        for alias in config['aliases']:
+            if alias['url-path'] == "/resources/testdriver-vendor.js":
+                alias['local-dir'] = "resources"
         config['aliases'].append({
             'url-path':
             '/gen/',
