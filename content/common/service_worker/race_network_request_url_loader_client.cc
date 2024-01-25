@@ -415,6 +415,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
         // The data pipe consumer is aborted.
         TransitionState(State::kAborted);
         Abort();
@@ -433,6 +434,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
         TransitionState(State::kAborted);
         Abort();
         return;
@@ -476,6 +478,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
         TransitionState(State::kAborted);
         Abort();
         return;
@@ -497,6 +500,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       case MOJO_RESULT_OK:
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
         TransitionState(State::kAborted);
         Abort();
         return;
