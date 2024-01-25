@@ -1328,6 +1328,16 @@ void BluetoothAdapterFloss::RegisterAdvertisement(
   advertisements_.emplace_back(advertisement);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool BluetoothAdapterFloss::IsExtendedAdvertisementsAvailable() const {
+  if (!IsPresent()) {
+    return false;
+  }
+
+  return FlossDBusManager::Get()->GetAdapterClient()->IsExtAdvSupported();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothAdapterFloss::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,

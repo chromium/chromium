@@ -5317,6 +5317,16 @@ TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupport) {
             BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
                 kUndetermined);
 }
+
+TEST_F(BluetoothBlueZTest, IsExtendedAdvertisementsAvailable) {
+  GetAdapter();
+
+  BluetoothAdapterBlueZ* adapter_bluez =
+      static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
+
+  // TODO(b/310269227): update test logic once BlueZ extension is ready.
+  EXPECT_EQ(false, adapter_bluez->IsExtendedAdvertisementsAvailable());
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace bluez

@@ -339,6 +339,10 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindRepeating(&FlossAdapterClient::OnDiscoverableChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
+  property_ext_adv_supported_.Init(this, bus_, service_name_, adapter_path_,
+                                   dbus::ObjectPath(exported_callback_path_),
+                                   base::DoNothing());
+
   UpdateDiscoverableTimeout();
 
   pending_register_calls_ = 2;

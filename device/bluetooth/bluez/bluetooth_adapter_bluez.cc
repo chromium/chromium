@@ -670,6 +670,13 @@ void BluetoothAdapterBlueZ::RegisterAdvertisement(
   advertisements_.emplace_back(advertisement);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool BluetoothAdapterBlueZ::IsExtendedAdvertisementsAvailable() const {
+  // TODO(b/310269227): wires this to BlueZ extension.
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothAdapterBlueZ::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,

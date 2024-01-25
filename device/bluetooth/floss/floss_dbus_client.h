@@ -78,6 +78,8 @@ inline constexpr char kSetName[] = "SetName";
 inline constexpr char kGetDiscoverable[] = "GetDiscoverable";
 inline constexpr char kGetDiscoverableTimeout[] = "GetDiscoverableTimeout";
 inline constexpr char kSetDiscoverable[] = "SetDiscoverable";
+inline constexpr char kIsLeExtendedAdvertisingSupported[] =
+    "IsLeExtendedAdvertisingSupported";
 inline constexpr char kStartDiscovery[] = "StartDiscovery";
 inline constexpr char kCancelDiscovery[] = "CancelDiscovery";
 inline constexpr char kCreateBond[] = "CreateBond";

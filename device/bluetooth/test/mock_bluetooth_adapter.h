@@ -181,6 +181,9 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_CONST_METHOD0(IsExtendedAdvertisementsAvailable, bool());
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,

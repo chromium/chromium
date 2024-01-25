@@ -235,6 +235,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // discoverable state changes.
   uint32_t GetDiscoverableTimeout() const { return discoverable_timeout_; }
 
+  // Indicates if LE extended advertising is supported.
+  bool IsExtAdvSupported() const { return property_ext_adv_supported_.Get(); }
+
   // Start a discovery session.
   virtual void StartDiscovery(ResponseCallback<Void> callback);
 
@@ -481,6 +484,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   FlossProperty<bool> property_discoverable_{
       kAdapterInterface, adapter::kCallbackInterface, adapter::kGetDiscoverable,
       adapter::kOnDiscoverableChanged};
+
+  FlossProperty<bool> property_ext_adv_supported_{
+      kAdapterInterface, adapter::kCallbackInterface,
+      adapter::kIsLeExtendedAdvertisingSupported, nullptr};
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];
