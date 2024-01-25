@@ -223,9 +223,7 @@ V4L2StatelessVideoDecoderBackend::CreateSecureSurface(uint64_t secure_handle) {
   DVLOGF(4);
 
   // Request V4L2 input and output buffers.
-  auto input_buf =
-      secure_handle ? input_queue_->GetFreeBufferForSecureHandle(secure_handle)
-                    : input_queue_->GetFreeBuffer();
+  auto input_buf = input_queue_->GetFreeBuffer();
   auto output_buf = output_queue_->GetFreeBuffer();
   if (!input_buf || !output_buf) {
     DVLOGF(3) << "There is no free V4L2 buffer.";
