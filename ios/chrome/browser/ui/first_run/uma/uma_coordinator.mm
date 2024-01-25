@@ -42,15 +42,13 @@
       initWithRootViewController:self.viewController];
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   navigationController.presentationController.delegate = self;
-  if (@available(iOS 15, *)) {
-    UISheetPresentationController* presentationController =
-        navigationController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
+  UISheetPresentationController* presentationController =
+      navigationController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
