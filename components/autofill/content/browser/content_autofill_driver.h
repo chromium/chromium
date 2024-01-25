@@ -299,14 +299,13 @@ class ContentAutofillDriver : public AutofillDriver,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box) override;
 
-  // Sets parameters of |form| and |optional_field| that can be extracted from
-  // |render_frame_host_|. |optional_field| is treated as if it is a field of
-  // |form|.
+  // Sets parameters of |form| and |field| that can be extracted from
+  // |render_frame_host_|. |field| is treated as if it is a field of |form|.
   //
   // These functions must be called for every FormData and FormFieldData
   // received from the renderer.
   void SetFrameAndFormMetaData(FormData& form,
-                               FormFieldData* optional_field) const;
+                               base::optional_ref<FormFieldData> field) const;
   // Returns a copy of `form` after applying `SetFormAndFormMetaData` to it.
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
   [[nodiscard]] std::optional<FormData> GetFormWithFrameAndFormMetaData(

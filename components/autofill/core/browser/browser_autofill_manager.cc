@@ -605,12 +605,12 @@ BrowserAutofillManager::FillingContext::FillingContext(
     const AutofillField& field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    const std::u16string* optional_cvc)
+    base::optional_ref<const std::u16string> cvc)
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_origin(field.origin) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
-         !optional_cvc);
+         !cvc.has_value());
 
   if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
     profile_or_credit_card_with_cvc =
@@ -619,7 +619,7 @@ BrowserAutofillManager::FillingContext::FillingContext(
                  profile_or_credit_card)) {
     profile_or_credit_card_with_cvc =
         std::make_pair(*absl::get<const CreditCard*>(profile_or_credit_card),
-                       optional_cvc ? *optional_cvc : std::u16string());
+                       cvc.has_value() ? *cvc : std::u16string());
   }
 }
 
@@ -1392,7 +1392,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   }
 
   FillOrPreviewDataModelForm(action_persistence, form, field, &credit_card_,
-                             /*optional_cvc=*/nullptr, form_structure,
+                             /*cvc=*/std::nullopt, form_structure,
                              autofill_field, trigger_details);
 }
 
@@ -1407,7 +1407,7 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
   FillOrPreviewDataModelForm(action_persistence, form, field, &profile,
-                             /*optional_cvc=*/nullptr, form_structure,
+                             /*cvc=*/std::nullopt, form_structure,
                              autofill_field, trigger_details);
 }
 
@@ -2195,7 +2195,8 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
     const FormFieldData& trigger_field,
     const Section& filling_section,
     const FieldTypeSet& field_types_to_fill,
-    const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
+    base::optional_ref<const DenseSet<FieldTypeGroup>>
+        type_groups_originally_filled,
     FillingProduct filling_product,
     bool skip_unrecognized_autocomplete_fields,
     bool is_refill,
@@ -2279,9 +2280,8 @@ BrowserAutofillManager::GetFieldFillingSkipReasons(
 
     // On a refill, only fill fields from type groups that were present during
     // the initial fill.
-    if (is_refill && optional_type_groups_originally_filled &&
-        !base::Contains(*optional_type_groups_originally_filled,
-                        field_group_type)) {
+    if (is_refill && type_groups_originally_filled.has_value() &&
+        !base::Contains(*type_groups_originally_filled, field_group_type)) {
       skip_reasons[field_id] = FieldFillingSkipReason::kRefillNotInInitialFill;
       continue;
     }
@@ -2418,7 +2418,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const FormFieldData& field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    const std::u16string* optional_cvc,
+    base::optional_ref<const std::u16string> cvc,
     FormStructure* form_structure,
     AutofillField* autofill_trigger_field,
     const AutofillTriggerDetails& trigger_details,
@@ -2426,7 +2426,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   bool is_credit_card =
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card);
 
-  DCHECK(is_credit_card || !optional_cvc);
+  DCHECK(is_credit_card || !cvc.has_value());
   DCHECK(form_structure);
   DCHECK(autofill_trigger_field);
 
@@ -2465,7 +2465,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     SetFillingContext(
         form_structure->global_id(),
         std::make_unique<FillingContext>(*autofill_trigger_field,
-                                         profile_or_credit_card, optional_cvc));
+                                         profile_or_credit_card, cvc));
   }
 
   // Only record the types that are filled for an eventual refill if all the
@@ -2568,7 +2568,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                                 : std::map<FieldGlobalId, std::u16string>();
             const FieldFillingData filling_content = GetFieldFillingData(
                 *autofill_field, profile_or_credit_card, forced_fill_values,
-                result_form.fields[i], optional_cvc ? *optional_cvc : u"",
+                result_form.fields[i], cvc.has_value() ? *cvc : u"",
                 action_persistence, &failure_to_fill);
             if (!filling_content.value_to_fill.empty()) {
               return base::FastHash(
@@ -2616,12 +2616,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // FillField() may also fill a field if it had been autofilled or manually
     // filled before, and also returns true in such a case; however, such fields
     // don't reach this code.
-    const bool is_newly_autofilled =
-        FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
-                  result_form.fields[i], should_notify,
-                  optional_cvc ? *optional_cvc : u"",
-                  data_util::DetermineGroups(*form_structure),
-                  action_persistence, &failure_to_fill);
+    const bool is_newly_autofilled = FillField(
+        *autofill_field, profile_or_credit_card, forced_fill_values,
+        result_form.fields[i], should_notify, cvc.has_value() ? *cvc : u"",
+        data_util::DetermineGroups(*form_structure), action_persistence,
+        &failure_to_fill);
     if (is_newly_autofilled)
       newly_filled_field_ids.insert(result_form.fields[i].global_id());
 
@@ -2928,7 +2927,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                           *last_address_fields_to_fill_for_section,
                           trigger_autofill_field->Type().GetStorableType())
                     : kAllFieldTypes,
-                /*optional_type_groups_originally_filled=*/nullptr,
+                /*type_groups_originally_filled=*/std::nullopt,
                 FillingProduct::kAddress,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
                     AutofillSuggestionTriggerSource::kManualFallbackAddress,
@@ -3577,8 +3576,7 @@ void BrowserAutofillManager::TriggerRefill(
         mojom::ActionPersistence::kFill, form, field,
         &absl::get<AutofillProfile>(
             filling_context->profile_or_credit_card_with_cvc),
-        /*optional_cvc=*/nullptr, form_structure, autofill_field,
-        trigger_details,
+        /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details,
         /*is_refill=*/true);
   } else {
     NOTREACHED();

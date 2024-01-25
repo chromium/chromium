@@ -151,9 +151,10 @@ void AutofillDriverRouter::FormsSeen(
 void AutofillDriverRouter::SetFormToBeProbablySubmitted(
     AutofillDriver* source,
     std::optional<FormData> form,
-    void (*callback)(AutofillDriver* target, const FormData* optional_form)) {
+    void (*callback)(AutofillDriver* target,
+                     base::optional_ref<const FormData> form)) {
   if (!form) {
-    callback(source, nullptr);
+    callback(source, std::nullopt);
     return;
   }
 

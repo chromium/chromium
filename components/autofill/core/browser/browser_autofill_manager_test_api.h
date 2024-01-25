@@ -106,11 +106,11 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      const std::u16string* optional_cvc,
+      base::optional_ref<const std::u16string> cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field) {
     return manager_->FillOrPreviewDataModelForm(
-        action_persistence, form, field, profile_or_credit_card, optional_cvc,
+        action_persistence, form, field, profile_or_credit_card, cvc,
         form_structure, autofill_field,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }

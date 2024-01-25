@@ -421,9 +421,9 @@ void ContentAutofillDriver::SetFormToBeProbablySubmitted(
   }
   router().SetFormToBeProbablySubmitted(
       this, GetFormWithFrameAndFormMetaData(form),
-      [](autofill::AutofillDriver* target, const FormData* optional_form) {
-        cast(target)->potentially_submitted_form_ =
-            base::OptionalFromPtr(optional_form);
+      [](autofill::AutofillDriver* target,
+         base::optional_ref<const FormData> form) {
+        cast(target)->potentially_submitted_form_ = form.CopyAsOptional();
       });
 }
 
@@ -435,7 +435,7 @@ void ContentAutofillDriver::FormsSeen(
   }
   std::vector<FormData> updated_forms = raw_updated_forms;
   for (FormData& form : updated_forms)
-    SetFrameAndFormMetaData(form, nullptr);
+    SetFrameAndFormMetaData(form, std::nullopt);
 
   std::vector<FormGlobalId> removed_forms;
   removed_forms.reserve(raw_removed_forms.size());
@@ -487,7 +487,7 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().TextFieldDidChange(
       this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(bounding_box), timestamp,
@@ -507,7 +507,7 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().TextFieldDidScroll(
       this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(bounding_box),
@@ -527,7 +527,7 @@ void ContentAutofillDriver::SelectControlDidChange(
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().SelectControlDidChange(
       this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(bounding_box),
@@ -548,7 +548,7 @@ void ContentAutofillDriver::AskForValuesToFill(
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().AskForValuesToFill(
       this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(bounding_box), trigger_source,
@@ -590,7 +590,7 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().FocusOnFormField(
       this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(bounding_box),
@@ -650,7 +650,7 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
   }
   FormData form = raw_form;
   FormFieldData field = raw_field;
-  SetFrameAndFormMetaData(form, &field);
+  SetFrameAndFormMetaData(form, field);
   router().JavaScriptChangedAutofilledValue(
       this, std::move(form), field, old_value,
       [](autofill::AutofillDriver* target, const FormData& form,
@@ -693,7 +693,7 @@ ContentAutofillDriver::GetAutofillAgent() {
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(
     FormData& form,
-    FormFieldData* optional_field) const {
+    base::optional_ref<FormFieldData> field) const {
   form.host_frame = GetFrameToken();
 
   // GetLastCommittedURL doesn't include URL updates due to document.open() and
@@ -712,23 +712,25 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
   // The form signature must not be calculated before setting FormData::url.
   FormSignature form_signature = CalculateFormSignature(form);
 
-  auto SetFieldMetaData = [&](FormFieldData& field) {
-    field.host_frame = form.host_frame;
-    field.host_form_id = form.unique_renderer_id;
-    field.origin = render_frame_host_->GetLastCommittedOrigin();
-    field.host_form_signature = form_signature;
-    field.bounds = TransformBoundingBoxToViewportCoordinates(field.bounds);
+  auto SetFieldMetaData = [&](FormFieldData& f) {
+    f.host_frame = form.host_frame;
+    f.host_form_id = form.unique_renderer_id;
+    f.origin = render_frame_host_->GetLastCommittedOrigin();
+    f.host_form_signature = form_signature;
+    f.bounds = TransformBoundingBoxToViewportCoordinates(f.bounds);
   };
 
-  for (FormFieldData& field : form.fields)
-    SetFieldMetaData(field);
-  if (optional_field)
-    SetFieldMetaData(*optional_field);
+  for (FormFieldData& f : form.fields) {
+    SetFieldMetaData(f);
+  }
+  if (field.has_value()) {
+    SetFieldMetaData(*field);
+  }
 }
 
 FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
     FormData form) const {
-  SetFrameAndFormMetaData(form, nullptr);
+  SetFrameAndFormMetaData(form, std::nullopt);
   return form;
 }
 

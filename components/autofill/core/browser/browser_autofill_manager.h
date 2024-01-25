@@ -413,7 +413,7 @@ class BrowserAutofillManager : public AutofillManager {
     FillingContext(const AutofillField& field,
                    absl::variant<const AutofillProfile*, const CreditCard*>
                        profile_or_credit_card,
-                   const std::u16string* optional_cvc);
+                   base::optional_ref<const std::u16string> optional_cvc);
     ~FillingContext();
 
     // Whether a refill attempt was made.
@@ -466,17 +466,17 @@ class BrowserAutofillManager : public AutofillManager {
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
   // a FieldTypeSet.
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>
-  GetFieldFillingSkipReasons(
-      const FormData& form,
-      const FormStructure& form_structure,
-      const FormFieldData& trigger_field,
-      const Section& filling_section,
-      const FieldTypeSet& field_types_to_fill,
-      const DenseSet<FieldTypeGroup>* optional_type_groups_originally_filled,
-      FillingProduct filling_product,
-      bool skip_unrecognized_autocomplete_fields,
-      bool is_refill,
-      bool is_expired_credit_card) const;
+  GetFieldFillingSkipReasons(const FormData& form,
+                             const FormStructure& form_structure,
+                             const FormFieldData& trigger_field,
+                             const Section& filling_section,
+                             const FieldTypeSet& field_types_to_fill,
+                             base::optional_ref<const DenseSet<FieldTypeGroup>>
+                                 type_groups_originally_filled,
+                             FillingProduct filling_product,
+                             bool skip_unrecognized_autocomplete_fields,
+                             bool is_refill,
+                             bool is_expired_credit_card) const;
 
   // When `FillOrPreviewCreditCardForm()` fetches a credit card, this gets
   // called once the fetching has finished. If successful, the `credit_card` is
@@ -522,7 +522,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      const std::u16string* optional_cvc,
+      base::optional_ref<const std::u16string> optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
       const AutofillTriggerDetails& trigger_details,

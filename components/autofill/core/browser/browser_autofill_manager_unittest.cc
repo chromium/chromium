@@ -2957,9 +2957,9 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
       .WillOnce((DoAll(SaveArg<2>(&response_data),
                        Return(std::vector<FieldGlobalId>{}))));
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form,
-                                  form.fields.front(), profile, nullptr,
-                                  form_structure, autofill_field);
+      .FillOrPreviewDataModelForm(
+          mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
+          /*cvc=*/std::nullopt, form_structure, autofill_field);
   std::vector<FormFieldData> filled_fields(response_data.fields.begin(),
                                            response_data.fields.begin() + 2);
   std::vector<FormFieldData> skipped_fields(response_data.fields.begin() + 2,
@@ -2991,9 +2991,9 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormChanged) {
   FormData response_data;
   EXPECT_CALL(*autofill_driver_, ApplyFormAction).Times(0);
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form,
-                                  form.fields.front(), profile, nullptr,
-                                  form_structure, autofill_field);
+      .FillOrPreviewDataModelForm(
+          mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
+          /*cvc=*/std::nullopt, form_structure, autofill_field);
 }
 
 TEST_F(BrowserAutofillManagerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
@@ -3026,9 +3026,9 @@ TEST_F(BrowserAutofillManagerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
       .WillOnce((DoAll(SaveArg<2>(&filled_form),
                        Return(std::vector<FieldGlobalId>{}))));
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form,
-                                  form.fields.front(), profile, nullptr,
-                                  form_structure, autofill_field);
+      .FillOrPreviewDataModelForm(
+          mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
+          /*cvc=*/std::nullopt, form_structure, autofill_field);
 
   auto expect_hash = [&](const FormFieldData& field,
                          std::optional<size_t> expected_hash) {
@@ -3098,9 +3098,9 @@ TEST_F(BrowserAutofillManagerTest,
       .WillOnce((DoAll(SaveArg<2>(&filled_form),
                        Return(std::vector<FieldGlobalId>{}))));
   test_api(*browser_autofill_manager_)
-      .FillOrPreviewDataModelForm(mojom::ActionPersistence::kFill, form,
-                                  form.fields.front(), profile, nullptr,
-                                  form_structure, autofill_field);
+      .FillOrPreviewDataModelForm(
+          mojom::ActionPersistence::kFill, form, form.fields.front(), profile,
+          /*cvc=*/std::nullopt, form_structure, autofill_field);
 
   const auto& filled_fields = filled_form.fields;
   EXPECT_TRUE(filled_fields[0].is_autofilled);
@@ -3129,7 +3129,7 @@ TEST_F(BrowserAutofillManagerTest, UndoSavesFormFillingData) {
   test_api(*browser_autofill_manager_)
       .FillOrPreviewDataModelForm(
           mojom::ActionPersistence::kFill, form, form.fields.front(),
-          personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
+          personal_data().GetProfiles().front(), /*cvc=*/std::nullopt,
           form_structure, autofill_field);
 
   // Undo early returns if it has no filling history for the trigger field,
@@ -3203,7 +3203,7 @@ TEST_F(BrowserAutofillManagerTest,
   test_api(*browser_autofill_manager_)
       .FillOrPreviewDataModelForm(
           mojom::ActionPersistence::kFill, form, form.fields.front(),
-          personal_data().GetCreditCards()[0], /*optional_cvc=*/nullptr,
+          personal_data().GetCreditCards()[0], /*cvc=*/std::nullopt,
           form_structure, autofill_field);
 }
 
