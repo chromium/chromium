@@ -252,6 +252,8 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('Filter'):
       action_runner.Wait(2)
+      action_runner.WaitForJavaScriptCondition(
+          'window.benchmarkRunnerClient.results._results')
 
     # Navigate to about:blank to stop rendering frames and let the device
     # cool down while the trace data for the story is processed.
@@ -271,8 +273,8 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
         '&test-name=%s'
         '&complexity=%d'
         '&test-interval=2'
-        '&warmup-length=2000'
-        '&warmup-frame-count=30'
+        '&warmup-length=100'
+        '&warmup-frame-count=10'
         '&first-frame-minimum-length=0'
         '&display=minimal'
         '&tiles=big'
