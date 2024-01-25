@@ -199,22 +199,13 @@ void FormStructure::DetermineHeuristicTypes(
                          log_manager);
 
   // The active heuristic source might not be a pattern source.
+  std::optional<FieldCandidatesMap> active_predictions;
   if (std::optional<PatternSource> pattern_source = GetActivePatternSource()) {
     context.pattern_source = *pattern_source;
-    AssignBestFieldTypes(ParseFieldTypesWithPatterns(context), *pattern_source);
+    active_predictions = ParseFieldTypesWithPatterns(context);
+    AssignBestFieldTypes(*active_predictions, *pattern_source);
   }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillDisableShadowHeuristics)) {
-    for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
-      if (auto shadow_source =
-              HeuristicSourceToPatternSource(heuristic_source)) {
-        context.pattern_source = *shadow_source;
-        AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
-                             *shadow_source);
-      }
-    }
-  }
+  DetermineNonActiveHeuristicTypes(std::move(active_predictions), context);
 
   UpdateAutofillCount();
   IdentifySections(/*ignore_autocomplete=*/false);
@@ -246,6 +237,34 @@ void FormStructure::DetermineHeuristicTypes(
   }
 
   LogDetermineHeuristicTypesMetrics();
+}
+
+void FormStructure::DetermineNonActiveHeuristicTypes(
+    std::optional<FieldCandidatesMap> active_predictions,
+    ParsingContext& context) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDisableShadowHeuristics)) {
+    return;
+  }
+  std::optional<PatternSource> active_pattern_source =
+      HeuristicSourceToPatternSource(GetActiveHeuristicSource());
+  for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
+    std::optional<PatternSource> pattern_source =
+        HeuristicSourceToPatternSource(heuristic_source);
+    if (!pattern_source) {
+      continue;
+    }
+    if (active_pattern_source &&
+        AreMatchingPatternsEqual(*active_pattern_source, *pattern_source,
+                                 context.page_language)) {
+      // No need to recompute the predictions - just copy the results.
+      AssignBestFieldTypes(*active_predictions, *pattern_source);
+    } else {
+      // Run heuristics.
+      context.pattern_source = *pattern_source;
+      ParseFieldTypesWithPatterns(context);
+    }
+  }
 }
 
 // static

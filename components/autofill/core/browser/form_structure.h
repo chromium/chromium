@@ -390,6 +390,16 @@ class FormStructure {
   // Sets the rank of each field in the form.
   void DetermineFieldRanks();
 
+  // Considers all `GetNonActiveHeuristicSources()` and computes predictions
+  // for the PatternSources among them. If some of them match the
+  // `active_predictions`, applying the regexes is skipped entirely.
+  // `active_predictions` is nullopt if the active HeuristicSource is not a
+  // PatternSource.
+  // Reuses the `context` used to compute the main predictions for caching.
+  void DetermineNonActiveHeuristicTypes(
+      std::optional<FieldCandidatesMap> active_predictions,
+      ParsingContext& context);
+
   // Classifies each field using the regular expressions. The classifications
   // are returned, but not assigned to the `fields_` yet. Use
   // `AssignBestFieldTypes()` to do so.

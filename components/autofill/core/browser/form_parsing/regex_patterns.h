@@ -118,6 +118,13 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 // pattern name.
 bool IsSupportedLanguageCode(LanguageCode language_code);
 
+// Checks if all the matching patterns for the given PatternSources and
+// language are the same - meaning that computing predictions for both is
+// unnecessary, since it will yield the same result.
+bool AreMatchingPatternsEqual(PatternSource a,
+                              PatternSource b,
+                              LanguageCode language_code);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
