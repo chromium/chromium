@@ -29,7 +29,11 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-yaml
       - id: end-of-file-fixer
-        exclude: '.browser'
+        exclude: |
+          (?x)^(
+              .browser|
+              .nvmrc
+          )$
       - id: name-tests-test
         args: [--pytest-test-first]
         exclude: tests/tools/.*
