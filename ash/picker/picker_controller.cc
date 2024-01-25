@@ -21,7 +21,10 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 namespace {
@@ -63,6 +66,19 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
 // TODO: b/316936687 - Use the icons from real search results.
 const gfx::VectorIcon& kPlaceholderIcon = kCheckIcon;
 
+// Gets the current caret bounds in universal screen coordinates in DIP
+// (Density Independent Pixels). Returns an empty rect if there is no active
+// caret or the caret bounds can't be determined (e.g. no focused input field).
+gfx::Rect GetCaretBounds() {
+  const ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (!input_method || !input_method->GetTextInputClient()) {
+    return gfx::Rect();
+  }
+
+  return input_method->GetTextInputClient()->GetCaretBounds();
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -102,7 +118,8 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(this, trigger_event_timestamp);
+    widget_ = PickerView::CreateWidget(GetCaretBounds(), this,
+                                       trigger_event_timestamp);
     widget_->Show();
 
     feature_usage_metrics_.StartUsage();

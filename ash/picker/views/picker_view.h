@@ -42,7 +42,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   METADATA_HEADER(PickerView);
 
   // `delegate` must remain valid for the lifetime of this class.
-  explicit PickerView(PickerViewDelegate* delegate,
+  explicit PickerView(const gfx::Rect& caret_bounds,
+                      PickerViewDelegate* delegate,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
@@ -54,10 +55,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // timestamp is the time this function is called.
   // `delegate` must remain valid for the lifetime of the created Widget.
   static views::UniqueWidgetPtr CreateWidget(
+      const gfx::Rect& caret_bounds,
       PickerViewDelegate* delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
+  void Layout() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
@@ -95,6 +98,16 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void PublishCategoryResults(const PickerSearchResults& results);
 
   void OnClickOutsideWidget();
+
+  // True if the Picker widget bounds have yet to be set. The preferred position
+  // of the Picker widget depends on the bounds of the search field within
+  // PickerView, so we only set the widget bounds after the view's initial
+  // layout has finished.
+  bool widget_needs_positioning_ = true;
+
+  // Caret bounds in screen coordinates from the time the PickerView was
+  // created.
+  gfx::Rect caret_bounds_;
 
   std::optional<PickerCategory> selected_category_;
 
