@@ -3290,12 +3290,7 @@
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "android_weblayer",
                 "chromeos",
-                "chromeos_lacros",
-                "linux",
                 "mac"
             ],
             "experiments": [
