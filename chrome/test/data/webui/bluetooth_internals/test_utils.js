@@ -20,11 +20,15 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
    */
   constructor(handle) {
     super([
-      'getAdapter',
-      'getDebugLogsChangeHandler',
       'checkSystemPermissions',
+      // <if expr="chromeos_ash">
+      'completeRestartSystemBluetooth',
+      // </if>
+      'getAdapter', 'getDebugLogsChangeHandler', 'requestLocationServices',
       'requestSystemPermissions',
-      'requestLocationServices',
+      // <if expr="chromeos_ash">
+      'restartSystemBluetooth',
+      // </if>
     ]);
 
     this.receiver_ = new BluetoothInternalsHandlerReceiver(this);
@@ -33,6 +37,9 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
     this.needNearbyDevicesPermission = false;
     this.needLocationServices = false;
     this.canRequestPermissions = false;
+    // <if expr="chromeos_ash">
+    this.pendingRestartSystemBluetoothRequest_ = null;
+    // </if>
   }
 
   async getAdapter() {
@@ -64,6 +71,24 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
     this.methodCalled('requestLocationServices');
     return {};
   }
+
+  // <if expr="chromeos_ash">
+  restartSystemBluetooth() {
+    this.methodCalled('restartSystemBluetooth');
+    return new Promise((resolve, reject) => {
+      this.pendingRestartSystemBluetoothRequest_ = {
+        callback: resolve,
+      };
+    });
+  }
+
+  completeRestartSystemBluetooth() {
+    assert(!!this.pendingRestartSystemBluetoothRequest_);
+    this.pendingRestartSystemBluetoothRequest_.callback();
+    this.pendingRestartSystemBluetoothRequest_ = null;
+    this.methodCalled('completeRestartSystemBluetooth');
+  }
+  // </if>
 
   setAdapterForTesting(adapter) {
     this.adapter = adapter;

@@ -41,6 +41,14 @@ export class AdapterPage extends Page {
       this.refreshBtn_.disabled = true;
       this.pageDiv.dispatchEvent(new CustomEvent('refreshpressed'));
     });
+
+    // <if expr="chromeos_ash">
+    const restartBluetoothBtn = $('restart-bluetooth-btn');
+    restartBluetoothBtn.addEventListener('click', () => {
+      restartBluetoothBtn.disabled = true;
+      this.pageDiv.dispatchEvent(new CustomEvent('restart-bluetooth-click'));
+    });
+    // </if>
   }
 
   /**

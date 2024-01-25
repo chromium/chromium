@@ -19,8 +19,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -29,15 +30,35 @@
 namespace {
 using content::RenderFrameHost;
 using content::WebContents;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using ash::bluetooth_config::mojom::BluetoothSystemState;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 BluetoothInternalsHandler::BluetoothInternalsHandler(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver)
     : render_frame_host_(*render_frame_host),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config_->ObserveSystemProperties(
+      cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
-BluetoothInternalsHandler::~BluetoothInternalsHandler() = default;
+BluetoothInternalsHandler::~BluetoothInternalsHandler() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!turning_bluetooth_off_ && !turning_bluetooth_on_) {
+    return;
+  }
+
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(
+      bluetooth_initial_state_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 void BluetoothInternalsHandler::GetAdapter(GetAdapterCallback callback) {
   if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
@@ -130,3 +151,59 @@ void BluetoothInternalsHandler::RequestLocationServices(
 #endif  // BUILDFLAG(IS_ANDROID)
   std::move(callback).Run();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void BluetoothInternalsHandler::RestartSystemBluetooth(
+    RestartSystemBluetoothCallback callback) {
+  if (bluetooth_system_state_ == BluetoothSystemState::kUnavailable) {
+    std::move(callback).Run();
+    return;
+  }
+
+  restart_system_bluetooth_callback_ = std::move(callback);
+  bool enable = false;
+  turning_bluetooth_off_ = true;
+
+  if (bluetooth_system_state_ == BluetoothSystemState::kDisabled ||
+      bluetooth_system_state_ == BluetoothSystemState::kDisabling) {
+    enable = true;
+    turning_bluetooth_on_ = true;
+    turning_bluetooth_off_ = false;
+  }
+
+  bluetooth_initial_state_ = !enable;
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(enable);
+}
+
+void BluetoothInternalsHandler::OnPropertiesUpdated(
+    ash::bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
+  bluetooth_system_state_ = properties->system_state;
+  if (bluetooth_system_state_ == BluetoothSystemState::kUnavailable) {
+    return;
+  }
+
+  if (!turning_bluetooth_off_ && !turning_bluetooth_on_) {
+    return;
+  }
+
+  if (bluetooth_system_state_ == BluetoothSystemState::kDisabling ||
+      bluetooth_system_state_ == BluetoothSystemState::kEnabling) {
+    return;
+  }
+
+  CHECK(restart_system_bluetooth_callback_);
+  if (bluetooth_system_state_ == BluetoothSystemState::kDisabled &&
+      turning_bluetooth_off_) {
+    turning_bluetooth_off_ = false;
+    turning_bluetooth_on_ = true;
+    remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
+  }
+
+  if (bluetooth_system_state_ == BluetoothSystemState::kEnabled &&
+      turning_bluetooth_on_) {
+    turning_bluetooth_on_ = false;
+    turning_bluetooth_off_ = false;
+    std::move(restart_system_bluetooth_callback_).Run();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -13,6 +13,11 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
@@ -24,7 +29,13 @@ class DebugLogsManager;
 
 // Handles API requests from chrome://bluetooth-internals page by implementing
 // mojom::BluetoothInternalsHandler.
-class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
+class BluetoothInternalsHandler
+    : public mojom::BluetoothInternalsHandler
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ,
+      public ash::bluetooth_config::mojom::SystemPropertiesObserver
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+{
  public:
   explicit BluetoothInternalsHandler(
       content::RenderFrameHost* render_frame_host,
@@ -52,17 +63,42 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
       RequestSystemPermissionsCallback callback) override;
   void RequestLocationServices(
       RequestLocationServicesCallback callback) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void RestartSystemBluetooth(RestartSystemBluetoothCallback callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   void OnGetAdapter(GetAdapterCallback callback,
                     scoped_refptr<device::BluetoothAdapter> adapter);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // bluetooth_config::mojom::SystemPropertiesObserver
+  void OnPropertiesUpdated(
+      ash::bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties)
+      override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   raw_ref<content::RenderFrameHost> render_frame_host_;
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<ash::bluetooth::DebugLogsManager> debug_logs_manager_ = nullptr;
-#endif
+
+  bool turning_bluetooth_off_ = false;
+  bool turning_bluetooth_on_ = false;
+  bool bluetooth_initial_state_ = false;
+
+  RestartSystemBluetoothCallback restart_system_bluetooth_callback_;
+
+  ash::bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
+      ash::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+
+  mojo::Receiver<ash::bluetooth_config::mojom::SystemPropertiesObserver>
+      cros_system_properties_observer_receiver_{this};
+
+  mojo::Remote<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};
 };
