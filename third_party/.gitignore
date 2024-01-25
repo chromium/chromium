@@ -35,7 +35,6 @@
 /apache-windows-arm64/
 /arcore-android-sdk/src/
 /arcore-android-sdk/test-apks/arcore/*.apk
-/asan
 /bison
 /bouncycastle/lib/
 /byte_buddy/android_sdk_build_tools_25_0_2
@@ -157,11 +156,9 @@
 /tfhub_models/*.tar.gz
 /tfhub_models/models/
 /tint/src
-/tsan/
 /turbine/*.jar
 /usb_ids
 /v8-i18n
-/valgrind
 /webdriver/python/selenium
 /webgl
 /webpagereplay
