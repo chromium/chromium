@@ -77,8 +77,8 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope{
     &kDevToolsConsoleInsights, "aida_scope", /*default*/ ""};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
     &kDevToolsConsoleInsights, "aida_endpoint", /*default*/ ""};
-const base::FeatureParam<std::string> kDevToolsConsoleInsightsApiKey{
-    &kDevToolsConsoleInsights, "aida_api_key", /*default*/ ""};
+const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
+    &kDevToolsConsoleInsights, "aida_model_id", /*default*/ ""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 

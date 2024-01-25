@@ -362,7 +362,7 @@ std::string SanitizeFrontendQueryParam(
     if (key == "enableAida" && value == "true") {
       return value;
     }
-    if (key == "aidaApiKey") {
+    if (key == "aidaModelId") {
       return value;
     }
     if (key == "aidaTemperature") {

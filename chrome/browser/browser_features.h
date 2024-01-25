@@ -34,7 +34,7 @@ BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
 extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsAidaEndpoint;
-extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsApiKey;
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
