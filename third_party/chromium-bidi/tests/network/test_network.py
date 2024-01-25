@@ -20,6 +20,12 @@ from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           subscribe, wait_for_event)
 
 
+def compute_response_headers_size(headers) -> int:
+    return sum(
+        len(header['name']) + len(header['value']['value']) + 4
+        for header in headers)
+
+
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_emitted(
         websocket, context_id):
@@ -350,12 +356,6 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
             "timestamp": ANY_TIMESTAMP
         }
     }
-
-
-def compute_response_headers_size(headers) -> int:
-    return sum(
-        len(header['name']) + len(header['value']['value']) + 4
-        for header in headers)
 
 
 @pytest.mark.asyncio

@@ -109,8 +109,8 @@ export class Realm {
         this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
       } else {
         // No need to await for the object to be released.
-        void this.#releaseObject(objectId).catch(
-          (error) => this.#logger?.(LogType.debugError, error)
+        void this.#releaseObject(objectId).catch((error) =>
+          this.#logger?.(LogType.debugError, error)
         );
       }
     }
