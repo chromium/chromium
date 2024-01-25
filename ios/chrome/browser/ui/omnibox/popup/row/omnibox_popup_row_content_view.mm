@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_view.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
@@ -37,6 +39,9 @@ const CGFloat kLeadingSpacePopout = 23.0;
 const CGFloat kTextIconSpace = 14.0f;
 /// Top color opacity of the `_selectedBackgroundView`.
 const CGFloat kTopGradientColorOpacity = 0.85;
+/// Name of the histogram recording the number of lines in search suggestions.
+const char kOmniboxSearchSuggestionNumberOfLines[] =
+    "IOS.Omnibox.SearchSuggestionNumberOfLines";
 
 }  // namespace
 
@@ -289,6 +294,11 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   // Primary Label.
   _primaryLabel.attributedText = configuration.primaryText;
   _primaryLabel.numberOfLines = configuration.primaryTextNumberOfLines;
+  if (configuration.primaryTextNumberOfLines > 1) {
+    // Currently only search suggestions are allowed to be multiline.
+    CHECK(!configuration.secondaryTextDisplayAsURL);
+    [self logNumberOfLinesInSearchSuggestion:configuration.primaryText];
+  }
 
   // Secondary Label.
   _secondaryLabelFading.hidden = YES;
@@ -357,6 +367,16 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   [self.configuration.delegate
       omniboxPopupRowWithConfiguration:self.configuration
        didTapTrailingButtonAtIndexPath:self.configuration.indexPath];
+}
+
+/// Log the number of lines of a seach suggestion.
+- (void)logNumberOfLinesInSearchSuggestion:
+    (NSAttributedString*)attributedString {
+  CGFloat width = CGRectGetWidth(_textStackView.frame);
+  NSInteger numberOfLines =
+      NumberOfLinesOfAttributedString(attributedString, width);
+  base::UmaHistogramExactLinear(kOmniboxSearchSuggestionNumberOfLines,
+                                static_cast<int>(numberOfLines), 10);
 }
 
 @end
