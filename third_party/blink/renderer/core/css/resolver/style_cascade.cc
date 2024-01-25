@@ -182,6 +182,7 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
+  ProcessPendingSignals();
   state_.UpdateLengthConversionData();
 
   CascadeResolver resolver(filter, ++generation_);
@@ -400,6 +401,14 @@ void StyleCascade::AnalyzeMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
+    // We expect signals to be very rare, so to avoid the cost of checking
+    // against Signal::kNone for every *declaration*, we check once for
+    // every declaration *block* (i.e. rule), and then use a separate call to
+    // ExpandCascade (via ExpandSignals) to handle the signals.
+    if (Signal signal = static_cast<Signal>(properties.types_.signal);
+        signal != Signal::kNone) {
+      ExpandSignals(properties, index, signal);
+    }
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,
@@ -1407,6 +1416,77 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (value.IsRevertValue()) {
     CountUse(WebFeature::kCSSKeywordRevert);
+  }
+}
+
+void StyleCascade::ExpandSignals(const MatchedProperties& properties,
+                                 int index,
+                                 Signal signal) {
+  ExpandCascade(
+      properties, GetDocument(), index,
+      [this, signal](CascadePriority cascade_priority,
+                     const AtomicString& custom_property_name) {
+        MaybeAddPendingSignal(CSSPropertyName(custom_property_name),
+                              cascade_priority, signal);
+      },
+      [this, signal](CascadePriority cascade_priority,
+                     CSSPropertyID property_id) {
+        if (kSurrogateProperties.Has(property_id)) {
+          const CSSProperty& property =
+              ResolveSurrogate(CSSProperty::Get(property_id));
+          MaybeAddPendingSignal(property.GetCSSPropertyName(), cascade_priority,
+                                signal);
+        } else {
+          MaybeAddPendingSignal(CSSPropertyName(property_id), cascade_priority,
+                                signal);
+        }
+      });
+}
+
+void StyleCascade::MaybeAddPendingSignal(const CSSPropertyName& name,
+                                         CascadePriority priority,
+                                         Signal signal) {
+  CHECK_NE(signal, Signal::kNone);
+
+  const CascadePriority* existing_priority = map_.Find(name);
+
+  bool add_would_change_value =
+      !existing_priority ||
+      (ValueAt(match_result_, existing_priority->GetPosition()) !=
+       ValueAt(match_result_, priority.GetPosition()));
+
+  // We only add a pending signal if the declaration actually makes
+  // a difference to the cascade. The pending signals then either get
+  // converted to actual use-counting during `ProcessPendingSignals`
+  // if they end up winning the cascade, or they just get ignored.
+  if (add_would_change_value) {
+    wtf_size_t index = static_cast<wtf_size_t>(signal) - 1;
+    CHECK_LT(index, static_cast<wtf_size_t>(Signal::kMax));
+    pending_signals_[index].Set(name, priority);
+  }
+}
+
+void StyleCascade::ProcessPendingSignals() {
+  static_assert(static_cast<int>(Signal::kBareDeclarationShift) == 1);
+  static_assert(static_cast<int>(Signal::kNestedGroupRuleSpecificity) == 2);
+  static_assert(static_cast<int>(Signal::kMax) == 2);
+  ProcessPendingSignals(WebFeature::kCSSBareDeclarationShift,
+                        pending_signals_[0]);
+  pending_signals_[0].clear();
+  ProcessPendingSignals(WebFeature::kCSSNestedGroupRuleSpecificity,
+                        pending_signals_[1]);
+  pending_signals_[1].clear();
+}
+
+void StyleCascade::ProcessPendingSignals(
+    WebFeature feature,
+    const HashMap<CSSPropertyName, CascadePriority>& signals) {
+  for (const auto& [name, signal_priority] : signals) {
+    // Only trigger the use-counter if the signaling declaration
+    // won the cascade.
+    if (signal_priority == map_.At(name)) {
+      CountUse(feature);
+    }
   }
 }
 

@@ -4144,6 +4144,8 @@ enum WebFeature {
   kCapturedSurfaceControl = 4780,
   kElementGetHTML = 4781,
   kElementAttachSerializableShadow = 4782,
+  kCSSBareDeclarationShift = 4783,
+  kCSSNestedGroupRuleSpecificity = 4784,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -1085,6 +1085,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
              AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
          .valid_property_filter =
              rule_data->GetValidPropertyFilter(matching_ua_rules_),
+         .signal = rule_data->Selector().GetSignal(),
          .layer_order = matched_rule.LayerOrder(),
          .is_inline_style = is_vtt_embedded_style});
   }

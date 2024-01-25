@@ -11175,6 +11175,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4780" label="CapturedSurfaceControl"/>
   <int value="4781" label="ElementGetHTML"/>
   <int value="4782" label="ElementAttachSerializableShadow"/>
+  <int value="4783" label="CSSBareDeclarationShift"/>
+  <int value="4784" label="CSSNestedGroupRuleSpecificity"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

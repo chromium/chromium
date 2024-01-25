@@ -242,5 +242,22 @@ CSSSelectorList* ParseSelectorList(const String& string,
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 
+StyleRule* MakeSignalingRule(StyleRule* style_rule,
+                             CSSSelector::Signal signal) {
+  CHECK(style_rule);
+  HeapVector<CSSSelector> selectors;
+  const CSSSelector* selector = style_rule->FirstSelector();
+  CHECK(selector);
+  while (true) {
+    selectors.push_back(*selector);
+    selectors.back().SetSignal(signal);
+    if (selector->IsLastInSelectorList()) {
+      break;
+    }
+    ++selector;
+  }
+  return StyleRule::Create(selectors, std::move(*style_rule));
+}
+
 }  // namespace css_test_helpers
 }  // namespace blink

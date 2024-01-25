@@ -66,6 +66,7 @@ class CORE_EXPORT StyleCascade {
   STACK_ALLOCATED();
 
   using CSSPendingSubstitutionValue = cssvalue::CSSPendingSubstitutionValue;
+  using Signal = CSSSelector::Signal;
 
  public:
   StyleCascade(StyleResolverState& state) : state_(state) {}
@@ -435,6 +436,21 @@ class CORE_EXPORT StyleCascade {
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
 
+  // Expands the cascade for the incoming `MatchedProperties`, and adds
+  // pending signals (via `MaybeAddPendingSignal`) for the declarations
+  // that actually change the cascade map.
+  void ExpandSignals(const MatchedProperties&, int index, Signal);
+  void MaybeAddPendingSignal(const CSSPropertyName& name,
+                             CascadePriority priority,
+                             Signal signal);
+
+  // Looks at pending signals produced by `ExpandSignals`, and either triggers
+  // a real use-count for the signals (if the signaling declaration ended up
+  // winning the cascade), or ignores them.
+  void ProcessPendingSignals();
+  void ProcessPendingSignals(WebFeature,
+                             const HashMap<CSSPropertyName, CascadePriority>&);
+
   StyleResolverState& state_;
   MatchResult match_result_;
   CascadeInterpolations interpolations_;
@@ -484,6 +500,10 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
+  // Properties that had a signal (see CSSSelector::Signal) which changed
+  // the value of the cascade map.
+  HashMap<CSSPropertyName, CascadePriority>
+      pending_signals_[static_cast<wtf_size_t>(Signal::kMax)];
 };
 
 }  // namespace blink

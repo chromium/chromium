@@ -545,6 +545,43 @@ class CORE_EXPORT CSSSelector {
   // position like :first-of-type and :nth-child().
   bool IsChildIndexedSelector() const;
 
+  // Signaling Rules
+  // ================
+  //
+  // Signaling rules are style rules whose declarations trigger
+  // a certain use-counter. The use-counter is triggered by StyleCascade
+  // when a signaling declaration satisfies all of the following:
+  //
+  //  - The declaration is added to the cascade map.
+  //  - Adding the declaration to the map actually changed the value,
+  //    i.e. the cascaded value before/after isn't the same.
+  //  - The declaration ultimately won the cascade, i.e. nothing else
+  //    overwrote it.
+  //
+  // Note: the final goal of signaling rules is to hopefully unblock
+  // the following CSSWG issues:
+  //
+  //  - https://github.com/w3c/csswg-drafts/issues/8738
+  //  - https://github.com/w3c/csswg-drafts/issues/9492
+  //
+  // TODO(crbug.com/1517290): Remove signaling rules when we're done
+  // use-counting.
+
+  enum class Signal {
+    kNone = 0,
+
+    // WebFeature::kCSSBareDeclarationShift
+    kBareDeclarationShift = 1,
+
+    // WebFeature::kCSSNestedGroupRuleSpecificity
+    kNestedGroupRuleSpecificity = 2,
+
+    kMax = kNestedGroupRuleSpecificity,
+  };
+
+  void SetSignal(Signal signal) { signal_ = static_cast<unsigned>(signal); }
+  Signal GetSignal() const { return static_cast<Signal>(signal_); }
+
   void Trace(Visitor* visitor) const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
@@ -577,6 +614,7 @@ class CORE_EXPORT CSSSelector {
   // This always starts out false, and is set when we bucket a given
   // RuleData (by calling MarkAsCoveredByBucketing()).
   unsigned is_covered_by_bucketing_ : 1;
+  unsigned signal_ : 2 = static_cast<unsigned>(Signal::kNone);
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -786,6 +824,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       is_for_page_(o.is_for_page_),
       is_implicitly_added_(o.is_implicitly_added_),
       is_covered_by_bucketing_(o.is_covered_by_bucketing_),
+      signal_(o.signal_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);

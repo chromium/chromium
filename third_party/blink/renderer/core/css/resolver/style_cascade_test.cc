@@ -86,6 +86,7 @@ class TestCascadeResolver {
 struct AddOptions {
   CascadeOrigin origin = CascadeOrigin::kAuthor;
   unsigned link_match_type = CSSSelector::kMatchAll;
+  CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   bool is_inline_style = false;
   bool is_fallback_style = false;
 };
@@ -136,6 +137,7 @@ class TestCascade {
     cascade_.MutableMatchResult().AddMatchedProperties(
         set, options.origin,
         {.link_match_type = options.link_match_type,
+         .signal = options.signal,
          .is_inline_style = options.is_inline_style,
          .is_fallback_style = options.is_fallback_style});
   }
@@ -405,6 +407,15 @@ class StyleCascadeTest : public PageTestBase {
       const HeapHashMap<CSSPropertyName, Member<const CSSValue>>& map,
       String name) {
     return CssText(map.at(PropertyName(name)));
+  }
+
+  bool IsUseCounted(mojom::WebFeature feature) {
+    return GetDocument().IsUseCounted(feature);
+  }
+
+  void ClearUseCounter(mojom::WebFeature feature) {
+    GetDocument().ClearUseCounterForTesting(feature);
+    DCHECK(!IsUseCounted(feature));
   }
 };
 
@@ -3844,6 +3855,90 @@ TEST_F(StyleCascadeTest, SubstitutingLhCycles) {
 
   EXPECT_EQ("0px", cascade.ComputedValue("--y"));
   EXPECT_EQ("0px", cascade.ComputedValue("--z"));
+}
+
+TEST_F(StyleCascadeTest, SignalBareDeclarationShift_NoSignal) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green");
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Overwritten) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kBareDeclarationShift});
+  cascade.Add("color:red");  // Overwrites signal.
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleCascadeTest, SignalBareDeclarationShift_NoChange) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green");
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kBareDeclarationShift});
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Uncontested) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kBareDeclarationShift});
+  cascade.Apply();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Winning) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:red");
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kBareDeclarationShift});
+  cascade.Apply();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
+}
+
+TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_NoSignal) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green");
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Overwritten) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
+  cascade.Add("color:red");  // Overwrites signal.
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_NoChange) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green");
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
+  cascade.Apply();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Uncontested) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
+  cascade.Apply();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
+}
+
+TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Winning) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:red");
+  cascade.Add("color:green",
+              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
+  cascade.Apply();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
 }
 
 }  // namespace blink
