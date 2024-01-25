@@ -23,15 +23,29 @@ class RenderFrameHost;
 
 namespace autofill {
 
-class ContentAutofillClient;
 class ContentAutofillDriver;
 class ScopedAutofillManagersObservation;
+
+// Creates an BrowserAutofillManager and attaches it to the `driver`.
+//
+// This hook is to be passed to CreateForWebContentsAndDelegate().
+// It is the glue between ContentAutofillDriver[Factory] and
+// BrowserAutofillManager.
+//
+// Other embedders (which don't want to use BrowserAutofillManager) shall use
+// other implementations.
+void BrowserDriverInitHook(AutofillClient* client,
+                           const std::string& app_locale,
+                           ContentAutofillDriver* driver);
 
 // Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
 // therefore one Factory per WebContents. Creates one Driver per
 // RenderFrameHost.
 class ContentAutofillDriverFactory : public content::WebContentsObserver {
  public:
+  using DriverInitCallback =
+      base::RepeatingCallback<void(ContentAutofillDriver*)>;
+
   // Observer of ContentAutofillDriverFactory events.
   //
   // Using this observer is preferable over registering a WebContentsObserver
@@ -67,7 +81,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver);
 
   ContentAutofillDriverFactory(content::WebContents* web_contents,
-                               ContentAutofillClient* client);
+                               AutofillClient* client,
+                               DriverInitCallback driver_init_hook);
   ContentAutofillDriverFactory(ContentAutofillDriverFactory&) = delete;
   ContentAutofillDriverFactory& operator=(ContentAutofillDriverFactory&) =
       delete;
@@ -86,7 +101,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  ContentAutofillClient* client() { return client_; }
+  AutofillClient* client() { return client_; }
 
   AutofillDriverRouter& router() { return router_; }
 
@@ -105,7 +120,11 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
-  raw_ptr<ContentAutofillClient> client_;
+  std::unique_ptr<ContentAutofillDriver> CreateDriver(
+      content::RenderFrameHost* rfh);
+
+  raw_ptr<AutofillClient> client_;
+  DriverInitCallback driver_init_hook_;
 
   // Routes events between different ContentAutofillDrivers.
   // Must be destroyed after |driver_map_|'s elements.

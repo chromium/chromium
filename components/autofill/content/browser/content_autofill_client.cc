@@ -6,9 +6,13 @@
 
 namespace autofill {
 
-ContentAutofillClient::ContentAutofillClient(content::WebContents* web_contents)
+ContentAutofillClient::ContentAutofillClient(
+    content::WebContents* web_contents,
+    ContentAutofillDriverFactory::DriverInitCallback driver_init_hook)
     : content::WebContentsUserData<ContentAutofillClient>(*web_contents),
-      autofill_driver_factory_(web_contents, this) {}
+      autofill_driver_factory_(web_contents,
+                               this,
+                               std::move(driver_init_hook)) {}
 
 ContentAutofillClient::~ContentAutofillClient() = default;
 

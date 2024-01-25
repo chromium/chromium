@@ -331,7 +331,9 @@ void AndroidAutofillClient::SuggestionSelected(
 AndroidAutofillClient::AndroidAutofillClient(
     WebContents* contents,
     base::FunctionRef<void(const JavaRef<jobject>&)> notify_client_created)
-    : autofill::ContentAutofillClient(contents) {
+    : autofill::ContentAutofillClient(
+          contents,
+          base::BindRepeating(&autofill::AndroidDriverInitHook, this)) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate(
       Java_AndroidAutofillClient_create(env, reinterpret_cast<intptr_t>(this)));
@@ -397,21 +399,6 @@ content::WebContents& AndroidAutofillClient::GetWebContents() const {
   // cast is the lesser of two evils.
   return const_cast<content::WebContents&>(
       ContentAutofillClient::GetWebContents());
-}
-
-std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
-    base::PassKey<autofill::ContentAutofillDriver> pass_key,
-    autofill::ContentAutofillDriver& driver) {
-  return base::WrapUnique(new autofill::AndroidAutofillManager(&driver, this));
-}
-
-void AndroidAutofillClient::InitAgent(
-    base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-    const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>& agent) {
-  agent->SetUserGestureRequired(false);
-  agent->SetSecureContextRequired(true);
-  agent->SetFocusRequiresScroll(false);
-  agent->SetQueryPasswordSuggestion(true);
 }
 
 }  // namespace android_autofill

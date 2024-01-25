@@ -83,9 +83,7 @@ ContentAutofillDriver* cast(autofill::AutofillDriver* driver) {
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     ContentAutofillDriverFactory* owner)
-    : render_frame_host_(*render_frame_host), owner_(*owner) {
-  autofill_manager_ = owner_->client()->CreateManager(/*pass_key=*/{}, *this);
-}
+    : render_frame_host_(*render_frame_host), owner_(*owner) {}
 
 ContentAutofillDriver::~ContentAutofillDriver() {
   owner_->router().UnregisterDriver(this,
