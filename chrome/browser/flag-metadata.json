@@ -7384,11 +7384,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "shopping-list-track-by-default",
-    "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "shopping-page-types",
     "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 120
