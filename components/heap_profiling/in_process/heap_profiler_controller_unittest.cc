@@ -264,23 +264,37 @@ class HeapProfilerControllerTest
 
   void StartHeapProfiling(version_info::Channel channel,
                           ProcessType process_type,
-                          ProfileCollectorCallback collector_callback) {
+                          ProfileCollectorCallback collector_callback,
+                          bool expect_enabled = true) {
     ASSERT_FALSE(controller_) << "StartHeapProfiling called twice";
+
+    auto first_snapshot_callback = base::BindLambdaForTesting(
+        [quit_closure = task_environment_.QuitClosure()](bool will_snapshot) {
+          // If `collector_callback` will run, it will quit the runloop.
+          // Otherwise quit now.
+          if (!will_snapshot) {
+            std::move(quit_closure).Run();
+          }
+        });
+    auto done_snapshot_callback =
+        std::move(collector_callback).Then(task_environment_.QuitClosure());
+
     switch (process_type) {
       case ProcessType::kBrowser:
         expected_process_ = metrics::Process::BROWSER_PROCESS;
         metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-            std::move(collector_callback));
+            std::move(done_snapshot_callback));
         break;
       case ProcessType::kUtility:
         expected_process_ = metrics::Process::UTILITY_PROCESS;
-        ConnectRemoteProfileCollector(std::move(collector_callback));
+        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
         break;
       default:
         // Connect up the profile collector even though we expect the heap
         // profiler not to start, so that the test environment is complete.
         expected_process_ = metrics::Process::UNKNOWN_PROCESS;
-        ConnectRemoteProfileCollector(std::move(collector_callback));
+        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
+        break;
     }
 
     ASSERT_EQ(HeapProfilerController::GetProfilingEnabled(),
@@ -289,7 +303,14 @@ class HeapProfilerControllerTest
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
     controller_->SuppressRandomnessForTesting();
-    controller_->StartIfEnabled();
+    controller_->SetFirstSnapshotCallbackForTesting(
+        std::move(first_snapshot_callback));
+
+    EXPECT_EQ(controller_->StartIfEnabled(), expect_enabled);
+    EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+              expect_enabled
+                  ? HeapProfilerController::ProfilingEnabled::kEnabled
+                  : HeapProfilerController::ProfilingEnabled::kDisabled);
   }
 
   void AddOneSampleAndWait() {
@@ -297,9 +318,7 @@ class HeapProfilerControllerTest
     sampler->OnAllocation(AllocationNotificationData(
         reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
         AllocationSubsystem::kManualForTesting));
-    // Advance several days to be sure the sample isn't scheduled right on the
-    // boundary of the fast-forward.
-    task_environment_.FastForwardBy(base::Days(2));
+    task_environment_.RunUntilQuit();
     // Free the allocation so that other tests can re-use the address.
     sampler->OnFree(
         FreeNotificationData(reinterpret_cast<void*>(0x1337),
@@ -414,9 +433,7 @@ TEST_P(HeapProfilerControllerTest, UnhandledProcess) {
   // Starting the heap profiler in an unhandled process type should safely do
   // nothing.
   StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
-                     base::DoNothing());
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            HeapProfilerController::ProfilingEnabled::kDisabled);
+                     base::DoNothing(), /*expect_enabled=*/false);
   // The Enabled summary histogram should not be logged for unsupported
   // processes, because they're not included in the per-process histograms that
   // are aggregated into it.
@@ -467,11 +484,8 @@ TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().stable.expect_browser_sample, 1);
@@ -482,21 +496,12 @@ TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
   EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
 }
 
-// TODO(crbug.com/1302007): This test hangs on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_CanaryChannel DISABLED_CanaryChannel
-#else
-#define MAYBE_CanaryChannel CanaryChannel
-#endif
-TEST_P(HeapProfilerControllerChannelTest, MAYBE_CanaryChannel) {
+TEST_P(HeapProfilerControllerChannelTest, CanaryChannel) {
   StartHeapProfiling(
       version_info::Channel::CANARY, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().nonstable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().nonstable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().nonstable.expect_browser_sample, 1);
@@ -542,11 +547,8 @@ TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_browser_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_browser_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Browser",
       GetParam().stable.expect_browser_sample, 1);
@@ -561,11 +563,8 @@ TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kUtility,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
-  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
-            GetParam().stable.expect_child_sample
-                ? HeapProfilerController::ProfilingEnabled::kEnabled
-                : HeapProfilerController::ProfilingEnabled::kDisabled);
+                          base::Unretained(this)),
+      GetParam().stable.expect_child_sample);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled.Utility",
       GetParam().stable.expect_child_sample, 1);
@@ -592,22 +591,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerIncludeZeroTest,
                          ::testing::ValuesIn(kIncludeZeroConfigs));
 
-// TODO(crbug.com/1302007): This test is flaky on iPad device.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_EmptyProfile DISABLED_EmptyProfile
-#else
-#define MAYBE_EmptyProfile EmptyProfile
-#endif
-TEST_P(HeapProfilerControllerIncludeZeroTest, MAYBE_EmptyProfile) {
+TEST_P(HeapProfilerControllerIncludeZeroTest, EmptyProfile) {
   StartHeapProfiling(
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                           base::Unretained(this)));
-
-  // Advance several days to be sure the sample isn't scheduled right on the
-  // boundary of the fast-forward.
-  task_environment_.FastForwardBy(base::Days(2));
-
+  task_environment_.RunUntilQuit();
   EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
 }
 
