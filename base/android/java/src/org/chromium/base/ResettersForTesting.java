@@ -4,8 +4,13 @@
 
 package org.chromium.base;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.IntDef;
+
 import org.chromium.build.BuildConfig;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -79,6 +84,27 @@ import java.util.LinkedHashSet;
  * </code>
  */
 public class ResettersForTesting {
+
+    @IntDef({
+        State.NOT_ENABLED,
+        State.BETWEEN_TESTS,
+        State.CLASS_SCOPED,
+        State.METHOD_SCOPED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {
+        // Ignore calls to register() if the class has never been initialized (e.g. browsertests).
+        int NOT_ENABLED = 0; // Default state. Call enable() to move to BETWEEN_TESTS.
+        // Calls to register() result in IllegalStateException.
+        int BETWEEN_TESTS = 1; // Also the state for before/after all tests.
+        // Calls to register() use sClassResetters.
+        int CLASS_SCOPED = 2;
+        // Calls to register() use sMethodResetters.
+        int METHOD_SCOPED = 3;
+    }
+
+    private static final Object sLock = BuildConfig.IS_FOR_TEST ? new Object() : null;
+
     // LinkedHashSet is a set that provides ordering and enables one-shot resetters to only be
     // invoked once. For example, the following `sResetter` will only be in the set a single time.
     // <code>
@@ -86,13 +112,17 @@ public class ResettersForTesting {
     // ...
     // ResettersForTesting.register(sResetter);
     // </code>
-    private static final LinkedHashSet<Runnable> sClassResetters =
-            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
-    private static final LinkedHashSet<Runnable> sMethodResetters =
-            BuildConfig.IS_FOR_TEST ? new LinkedHashSet<>() : null;
-    // Starts in "class mode", since @BeforeClass runs before @Before.
-    // Test runners toggle this via setMethodMode(), then reset it via onAfterClass().
-    private static boolean sMethodMode;
+    @GuardedBy("sLock")
+    private static LinkedHashSet<Runnable> sClassResetters;
+
+    @GuardedBy("sLock")
+    private static LinkedHashSet<Runnable> sMethodResetters;
+
+    @GuardedBy("sLock")
+    private static @State int sState = State.NOT_ENABLED;
+
+    @GuardedBy("sLock")
+    private static boolean sIsFlushing;
 
     /**
      * Register a {@link Runnable} that will automatically execute during test tear down.
@@ -104,44 +134,89 @@ public class ResettersForTesting {
         if (!BuildConfig.IS_FOR_TEST) {
             return;
         }
-        if (sMethodMode) {
-            sMethodResetters.add(runnable);
-        } else {
-            sClassResetters.add(runnable);
+        synchronized (sLock) {
+            if (sIsFlushing) {
+                throw new IllegalStateException(
+                        "ResettersForTesting.register() called from within a resetting callback.");
+            }
+            switch (sState) {
+                case State.NOT_ENABLED -> {}
+                case State.BETWEEN_TESTS -> throw new IllegalStateException(
+                        "ResettersForTesting.register() called when no test is active");
+                case State.CLASS_SCOPED -> sClassResetters.add(runnable);
+                case State.METHOD_SCOPED -> sMethodResetters.add(runnable);
+            }
         }
     }
 
     /**
      * Execute and clear all the currently registered resetters.
      *
-     * This is not intended to be invoked manually, but is intended to be invoked by the test
+     * <p>This is not intended to be invoked manually, but is intended to be invoked by the test
      * runners automatically during tear down.
      */
-    private static void flushResetters(LinkedHashSet activeSet) {
+    @GuardedBy("sLock")
+    private static void flushResetters(LinkedHashSet<Runnable> activeSet) {
+        assert !sIsFlushing : "Re-entrancy detected in ResettersForTesting";
         ArrayList<Runnable> resetters = new ArrayList<>(activeSet);
         activeSet.clear();
 
         // Ensure that resetters are run in reverse order, enabling nesting of values as well as
         // being more similar to C++ destruction order.
         Collections.reverse(resetters);
-        for (Runnable resetter : resetters) {
-            resetter.run();
+
+        sIsFlushing = true;
+        try {
+            for (Runnable resetter : resetters) {
+                resetter.run();
+            }
+        } finally {
+            sIsFlushing = false;
+        }
+    }
+
+    /** Called by test runners before @BeforeClass methods. */
+    public static void beforeClassHooksWillExecute() {
+        synchronized (sLock) {
+            assert sState == State.BETWEEN_TESTS : "Invalid state transition from state " + sState;
+            sState = State.CLASS_SCOPED;
+        }
+    }
+
+    /** Called by test runners after @BeforeClass methods, but before @Before methods. */
+    public static void beforeHooksWillExecute() {
+        synchronized (sLock) {
+            assert sState == State.CLASS_SCOPED : "Invalid state transition from state " + sState;
+            sState = State.METHOD_SCOPED;
         }
     }
 
     /** Called by test runners after @After methods. */
-    public static void onAfterMethod() {
-        flushResetters(sMethodResetters);
+    public static void afterHooksDidExecute() {
+        synchronized (sLock) {
+            assert sState == State.METHOD_SCOPED : "Invalid state transition from state " + sState;
+            sState = State.CLASS_SCOPED;
+            flushResetters(sMethodResetters);
+        }
     }
 
     /** Called by test runners after @AfterClass methods. */
-    public static void onAfterClass() {
-        flushResetters(sClassResetters);
-        sMethodMode = false;
+    public static void afterClassHooksDidExecute() {
+        synchronized (sLock) {
+            assert sState == State.CLASS_SCOPED : "Invalid state transition from state " + sState;
+            sState = State.BETWEEN_TESTS;
+            flushResetters(sClassResetters);
+        }
     }
 
-    /** Called by test runners after @BeforeClass methods, but before @Before methods. */
-    public static void setMethodMode() {
-        sMethodMode = true;
+    /** Enables calls to register(). */
+    public static void enable() {
+        assert BuildConfig.IS_FOR_TEST;
+        synchronized (sLock) {
+            assert sState == State.NOT_ENABLED;
+            sState = State.BETWEEN_TESTS;
+            sMethodResetters = new LinkedHashSet<>();
+            sClassResetters = new LinkedHashSet<>();
+        }
     }
 }
