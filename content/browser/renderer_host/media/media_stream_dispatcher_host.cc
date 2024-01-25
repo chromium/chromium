@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
@@ -717,9 +718,8 @@ void MediaStreamDispatcherHost::SendWheel(
     SendWheelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(render_frame_host_id_.child_id,
-                       bad_message::MSDH_SEND_WHEEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
@@ -741,10 +741,8 @@ void MediaStreamDispatcherHost::GetZoomLevel(
     GetZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(
-        render_frame_host_id_.child_id,
-        bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(std::nullopt,
                             CapturedSurfaceControlResult::kUnknownError);
     return;
@@ -759,10 +757,8 @@ void MediaStreamDispatcherHost::SetZoomLevel(
     int32_t zoom_level,
     SetZoomLevelCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
-    ReceivedBadMessage(
-        render_frame_host_id_.child_id,
-        bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
     return;
   }
