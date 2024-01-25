@@ -726,28 +726,32 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                auto* const browser =
+                    chrome::FindBrowserWithUiElementContext(ctx);
                 if (!browser) {
                   return;
                 }
-                TabStripModel* tab_strip_model = browser->tab_strip_model();
-                if (tab_strip_model) {
-                  content::WebContents* web_contents =
-                      tab_strip_model->GetActiveWebContents();
-                  GURL final_url;
-                  const webapps::AppId* app_id =
-                      web_app::WebAppTabHelper::GetAppId(web_contents);
-                  CHECK(app_id);
-                  final_url =
-                      GURL(chrome::kChromeUIWebAppSettingsURL + *app_id);
-                  if (web_contents &&
-                      web_contents->GetURL() != browser->GetNewTabURL()) {
-                    NavigateParams params(browser->profile(), final_url,
-                                          ui::PAGE_TRANSITION_LINK);
-                    params.disposition =
-                        WindowOpenDisposition::NEW_FOREGROUND_TAB;
-                    Navigate(&params);
-                  }
+                TabStripModel* const tab_strip_model =
+                    browser->tab_strip_model();
+                if (!tab_strip_model) {
+                  return;
+                }
+                content::WebContents* const web_contents =
+                    tab_strip_model->GetActiveWebContents();
+                const webapps::AppId* app_id =
+                    web_app::WebAppTabHelper::GetAppId(web_contents);
+                if (!app_id) {
+                  return;
+                }
+                const GURL final_url(chrome::kChromeUIWebAppSettingsURL +
+                                     *app_id);
+                if (web_contents &&
+                    web_contents->GetURL() != browser->GetNewTabURL()) {
+                  NavigateParams params(browser->profile(), final_url,
+                                        ui::PAGE_TRANSITION_LINK);
+                  params.disposition =
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                  Navigate(&params);
                 }
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
