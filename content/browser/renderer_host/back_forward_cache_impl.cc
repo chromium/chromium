@@ -780,7 +780,7 @@ BackForwardCacheImpl::PopulateReasonsForPage(
   // This function can be called during eviction, and |rfh| can be in
   // back/forward cache, which is considered as non primary main frame.
   bool main_frame_in_bfcache =
-      rfh->IsInBackForwardCache() && rfh->IsOutermostMainFrame();
+      rfh->IsInBackForwardCache() && !rfh->GetParentOrOuterDocumentOrEmbedder();
 
   // Call the recursive function that adds the reasons from the subtree to the
   // flattened list, and return the tree if needed.
@@ -816,7 +816,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     BackForwardCacheCanStoreDocumentResult& result,
     RenderFrameHostImpl* rfh) {
   bool main_frame_in_bfcache =
-      rfh->IsInBackForwardCache() && rfh->IsOutermostMainFrame();
+      rfh->IsInBackForwardCache() && !rfh->GetParentOrOuterDocumentOrEmbedder();
   DCHECK(rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache);
 
   // If the the delegate doesn't support back forward cache, disable it.
@@ -1168,9 +1168,9 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
       eviction_info_(eviction_info) {
   // |root_rfh_| should be either primary main frame or back/forward cached
   // page's outermost main frame.
-  DCHECK(
-      root_rfh_->IsInPrimaryMainFrame() ||
-      (root_rfh_->IsInBackForwardCache() && root_rfh_->IsOutermostMainFrame()));
+  DCHECK(root_rfh_->IsInPrimaryMainFrame() ||
+         (root_rfh_->IsInBackForwardCache() &&
+          !root_rfh_->GetParentOrOuterDocumentOrEmbedder()));
   // Populate the reasons and build the tree.
   std::map<RenderFrameHostImpl*, BackForwardCacheCanStoreTreeResult*>
       parent_map;
@@ -1698,7 +1698,7 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     BackForwardCacheCanStoreDocumentResult& result_for_this_document)
     : document_result_(std::move(result_for_this_document)),
       is_same_origin_(IsSameOriginForTreeResult(rfh, main_document_origin)),
-      is_root_outermost_main_frame_(rfh->IsOutermostMainFrame()),
+      is_root_outermost_main_frame_(!rfh->GetParentOrOuterDocumentOrEmbedder()),
       id_(rfh->frame_tree_node()->html_id()),
       name_(rfh->frame_tree_node()->html_name()),
       src_(rfh->frame_tree_node()->html_src()),

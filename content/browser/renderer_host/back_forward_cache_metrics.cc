@@ -66,7 +66,9 @@ void BackForwardCacheMetrics::OverrideTimeForTesting(base::TickClock* clock) {
 // static
 bool BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
     NavigationRequest* navigation) {
-  return navigation->IsInPrimaryMainFrame() && !navigation->IsSameDocument() &&
+  return navigation->IsInPrimaryMainFrame() &&
+         !navigation->frame_tree_node()->GetParentOrOuterDocumentOrEmbedder() &&
+         !navigation->IsSameDocument() &&
          navigation->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK;
 }
 
