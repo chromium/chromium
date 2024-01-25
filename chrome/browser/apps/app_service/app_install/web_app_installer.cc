@@ -32,21 +32,28 @@ namespace {
 // Maximum size of the manifest file. 1MB.
 constexpr int kMaxManifestSizeInBytes = 1024 * 1024;
 
-// TODO(b/315077325): Rename annotation to be related to AppInstallService
-// instead of AppPreloadService.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("app_preload_service_web_installer",
+    net::DefineNetworkTrafficAnnotation("app_install_service_web_app_installer",
                                         R"(
       semantics {
-        sender: "App Preload Service"
+        sender: "App Install Service"
         description:
-          "Sends a request to a Google server to retrieve app installation"
-          "information."
+          "Sends a request to a Google server to retrieve web app installation"
+          "data."
         trigger:
-          "Requests are sent after the App Preload Service has performed an"
-          "initial request to get a list of apps to install."
+          "Requests are sent as part of App Install Service triggered installs "
+          "for web apps."
+        internal: {
+          contacts {
+            email: "cros-apps-foundation-system@google.com"
+          }
+        }
+        user_data: {
+          type: NONE
+        }
         data: "None"
         destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2024-01-02"
       }
       policy {
         cookies_allowed: NO

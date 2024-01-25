@@ -252,7 +252,6 @@ after discussions on the right group.
       <annotation id="chromeos_emoji_picker_categories_fetcher"/>
       <annotation id="chromeos_emoji_picker_featured_fetcher"/>
       <annotation id="chromeos_emoji_picker_search_fetcher"/>
-      <annotation id="app_preload_service_web_installer"/>
       <annotation id="network_diagnostics_stun"/>
       <annotation id="network_diagnostics_tls"/>
       <annotation id="chromeos_emoji_picker_posts_fetcher"/>
@@ -309,6 +308,7 @@ after discussions on the right group.
       <annotation id="essential_search_manager"/>
       <annotation id="pepper_tcp_socket"/>
       <annotation id="pepper_udp_socket"/>
+      <annotation id="app_install_service_web_app_installer"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
