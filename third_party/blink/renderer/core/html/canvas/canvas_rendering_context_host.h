@@ -27,9 +27,7 @@ class CanvasRenderingContext;
 class CanvasResource;
 class CanvasResourceDispatcher;
 class FontSelector;
-class ImageEncodeOptions;
 class KURL;
-class ScriptState;
 class StaticBitmapImage;
 
 class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
@@ -80,13 +78,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
                       const SkIRect& damage_rect);
 
   virtual UkmParameters GetUkmParameters() = 0;
-
-  // For deferred canvases this will have the side effect of drawing recorded
-  // commands in order to finalize the frame.
-  ScriptPromise convertToBlob(ScriptState*,
-                              const ImageEncodeOptions*,
-                              ExceptionState&,
-                              const CanvasRenderingContext* const context);
 
   bool IsPaintable() const;
 

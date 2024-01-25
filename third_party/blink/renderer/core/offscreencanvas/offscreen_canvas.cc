@@ -190,13 +190,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   }
 }
 
-ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
-                                             const ImageEncodeOptions* options,
-                                             ExceptionState& exception_state) {
-  return CanvasRenderingContextHost::convertToBlob(script_state, options,
-                                                   exception_state, context_);
-}
-
 void OffscreenCanvas::RecordTransfer() {
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.Transferred", true);
 }
@@ -312,6 +305,77 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
           ? MakeGarbageCollected<ImageBitmap>(this, crop_rect, options)
           : nullptr,
       options, exception_state);
+}
+
+ScriptPromise OffscreenCanvas::convertToBlob(ScriptState* script_state,
+                                             const ImageEncodeOptions* options,
+                                             ExceptionState& exception_state) {
+  DCHECK(IsOffscreenCanvas());
+  WTF::String object_name = "OffscreenCanvas";
+  std::stringstream error_msg;
+
+  if (is_neutered_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "OffscreenCanvas object is detached.");
+    return ScriptPromise();
+  }
+
+  if (ContextHasOpenLayers(context_)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`convertToBlob()` cannot be called while layers are opened.");
+    return ScriptPromise();
+  }
+
+  if (!OriginClean()) {
+    error_msg << "Tainted " << object_name << " may not be exported.";
+    exception_state.ThrowSecurityError(error_msg.str().c_str());
+    return ScriptPromise();
+  }
+
+  // It's possible that there are recorded commands that have not been resolved
+  // Finalize frame will be called in GetImage, but if there's no
+  // resourceProvider yet then the IsPaintable check will fail
+  if (context_) {
+    context_->FinalizeFrame(FlushReason::kToBlob);
+  }
+
+  if (!IsPaintable() || Size().IsEmpty()) {
+    error_msg << "The size of " << object_name << " is zero.";
+    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
+                                      error_msg.str().c_str());
+    return ScriptPromise();
+  }
+
+  if (!context_) {
+    error_msg << object_name << " has no rendering context.";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      error_msg.str().c_str());
+    return ScriptPromise();
+  }
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  scoped_refptr<StaticBitmapImage> image_bitmap =
+      context_->GetImage(FlushReason::kToBlob);
+  if (image_bitmap) {
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
+    CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
+        CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
+    auto* execution_context = ExecutionContext::From(script_state);
+    auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
+        image_bitmap, options, function_type, start_time, execution_context,
+        IdentifiabilityStudySettings::Get()->ShouldSampleType(
+            IdentifiableSurface::Type::kCanvasReadback)
+            ? IdentifiabilityInputDigest(context_)
+            : 0,
+        resolver);
+    async_creator->ScheduleAsyncBlobCreation(options->quality());
+    return resolver->Promise();
+  }
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotReadableError,
+                                    "Readback of the source image has failed.");
+  return ScriptPromise();
 }
 
 bool OffscreenCanvas::IsOpaque() const {
