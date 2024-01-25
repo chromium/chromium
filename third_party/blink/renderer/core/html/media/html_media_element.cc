@@ -184,7 +184,8 @@ String UrlForLoggingMedia(const KURL& url) {
 
   if (url.GetString().length() < kMaximumURLLengthForLogging)
     return url.GetString();
-  return url.GetString().Substring(0, kMaximumURLLengthForLogging) + "...";
+  return url.GetString().GetString().Substring(0, kMaximumURLLengthForLogging) +
+         "...";
 }
 
 const char* BoolString(bool val) {

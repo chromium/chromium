@@ -819,7 +819,8 @@ static String FrameDescription(const Frame& frame) {
   // origin instead.
   const LocalFrame* local_frame = DynamicTo<LocalFrame>(&frame);
   return local_frame
-             ? "with URL '" + local_frame->GetDocument()->Url().GetString() +
+             ? "with URL '" +
+                   local_frame->GetDocument()->Url().GetString().GetString() +
                    "'"
              : "with origin '" +
                    frame.GetSecurityContext()->GetSecurityOrigin()->ToString() +

@@ -126,8 +126,9 @@ void DocumentLoadTiming::MarkNavigationStart() {
 void DocumentLoadTiming::WriteNavigationStartDataIntoTracedValue(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("documentLoaderURL",
-           document_loader_ ? document_loader_->Url().GetString() : "");
+  dict.Add("documentLoaderURL", document_loader_
+                                    ? document_loader_->Url().GetString()
+                                    : g_empty_string);
   dict.Add("isLoadingMainFrame",
            GetFrame() ? GetFrame()->IsMainFrame() : false);
   dict.Add("isOutermostMainFrame",

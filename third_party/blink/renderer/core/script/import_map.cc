@@ -524,7 +524,7 @@ static void SpecifierMapToString(StringBuilder& builder,
     builder.Append(it.key.EncodeForDebugging());
     builder.Append(":");
     if (it.value.IsValid())
-      builder.Append(it.value.GetString().EncodeForDebugging());
+      builder.Append(it.value.GetString().GetString().EncodeForDebugging());
     else
       builder.Append("null");
   }
