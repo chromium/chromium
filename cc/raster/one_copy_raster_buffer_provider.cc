@@ -333,10 +333,6 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     const RasterSource::PlaybackSettings& playback_settings,
     uint64_t previous_content_id,
     uint64_t new_content_id) {
-  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
-  void* memory = nullptr;
-  size_t stride = 0;
-
   gfx::Rect playback_rect = raster_full_rect;
   if (use_partial_raster_ && previous_content_id) {
     // Reduce playback rect to dirty region if the content id of the staging
@@ -345,40 +341,39 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
       playback_rect.Intersect(raster_dirty_rect);
     }
   }
+  DCHECK(!playback_rect.IsEmpty())
+      << "Why are we rastering a tile that's not dirty?";
 
   CHECK(!staging_buffer->gpu_memory_buffer);
 
-  auto* sii = worker_context_provider_->SharedImageInterface();
-
-  // Allocate MappableSharedImage if necessary.
+  // Allocate mappable SharedImage if necessary.
   if (!staging_buffer->client_shared_image) {
+    auto* sii = worker_context_provider_->SharedImageInterface();
     staging_buffer->client_shared_image = sii->CreateSharedImage(
         format, staging_buffer->size, dst_color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
         "OneCopyRasterStaging", gpu::kNullSurfaceHandle,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
     if (!staging_buffer->client_shared_image) {
-      LOG(ERROR) << "Creation of MappableSharedImage failed.";
+      LOG(ERROR) << "Creation of StagingBuffer's SharedImage failed.";
       return false;
     }
   }
 
-  mapping = staging_buffer->client_shared_image->Map();
+  auto mapping = staging_buffer->client_shared_image->Map();
   if (!mapping) {
     LOG(ERROR) << "MapSharedImage Failed.";
     return false;
   }
-  memory = mapping->Memory(0);
-  stride = mapping->Stride(0);
   staging_buffer->is_shared_memory = mapping->IsSharedMemory();
 
-  DCHECK(!playback_rect.IsEmpty())
-      << "Why are we rastering a tile that's not dirty?";
+  void* memory = mapping->Memory(0);
+  size_t stride = mapping->Stride(0);
   RasterBufferProvider::PlaybackToMemory(
       memory, format, staging_buffer->size, stride, raster_source,
       raster_full_rect, playback_rect, transform, dst_color_space,
       /*gpu_compositing=*/true, playback_settings);
-  mapping.reset();
+
   staging_buffer->content_id = new_content_id;
 
   return true;
