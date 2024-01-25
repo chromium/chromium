@@ -3378,7 +3378,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSubmitFormTest, SubmitForm) {
   SimulateMouseClickAt(
       guest, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kLeft,
-      ConvertPageCoordToScreenCoord(guest_mainframe, {200, 200}));
+      ConvertPageCoordToScreenCoord(guest_mainframe, {210, 210}));
 
   run_loop->Run();
 }
