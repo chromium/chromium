@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 
 #include "base/test/task_environment.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -52,8 +53,10 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
                     history_clusters::testing::CreateClusterVisit(
                         visit4, /*normalized_url=*/std::nullopt, 0.3)};
 
+  HistoryClusterMetrics cluster_metrics = {.num_times_seen = 0,
+                                           .num_times_used = 0};
   HistoryClustersModuleRankingSignals signals(
-      /*active_carts=*/{}, /*category_boostlist=*/{}, cluster);
+      /*active_carts=*/{}, /*category_boostlist=*/{}, cluster, cluster_metrics);
   EXPECT_GT(signals.duration_since_most_recent_visit.InMinutes(), 0);
   // Even though it says boosted, there is no passed-in boostlist so it's false.
   EXPECT_FALSE(signals.belongs_to_boosted_category);
@@ -62,6 +65,8 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
   // github.com and search.com
   EXPECT_EQ(signals.num_unique_hosts, 2u);
   EXPECT_EQ(signals.num_abandoned_carts, 0u);
+  EXPECT_EQ(signals.num_times_seen_last_24h, 0u);
+  EXPECT_EQ(signals.num_times_used_last_24h, 0u);
 
   // Verify UKM.
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
@@ -126,8 +131,10 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
       {"merchant.com", cart_db::ChromeCartContentProto::default_instance()},
   };
   base::flat_set<std::string> category_boostlist = {"boosted"};
+  HistoryClusterMetrics cluster_metrics = {.num_times_seen = 1,
+                                           .num_times_used = 1};
   HistoryClustersModuleRankingSignals signals(active_carts, category_boostlist,
-                                              cluster);
+                                              cluster, cluster_metrics);
   EXPECT_GT(signals.duration_since_most_recent_visit.InMinutes(), 0);
   EXPECT_TRUE(signals.belongs_to_boosted_category);
   EXPECT_EQ(signals.num_visits_with_image, 2u);
@@ -136,6 +143,8 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
   EXPECT_EQ(signals.num_unique_hosts, 3u);
   // m.merchant.com and www.merchant.com should both match to merchant.com.
   EXPECT_EQ(signals.num_abandoned_carts, 1u);
+  EXPECT_EQ(signals.num_times_seen_last_24h, 1u);
+  EXPECT_EQ(signals.num_times_used_last_24h, 1u);
 
   // Verify UKM.
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
@@ -164,6 +173,42 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
   test_ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::NewTabPage_HistoryClusters::kNumAbandonedCartsName,
       1);
+}
+
+TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorWithMetrics) {
+  history::Cluster cluster;
+  cluster.cluster_id = 1;
+  history::AnnotatedVisit visit =
+      history_clusters::testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://github.com/"));
+  visit.visit_row.is_known_to_sync = true;
+  visit.content_annotations.has_url_keyed_image = true;
+  cluster.visits = {history_clusters::testing::CreateClusterVisit(
+      visit, /*normalized_url=*/std::nullopt, 1.0)};
+
+  HistoryClusterMetrics cluster_metrics = {.num_times_seen = 2,
+                                           .num_times_used = 1};
+  HistoryClustersModuleRankingSignals signals(
+      /*active_carts=*/{}, /*category_boostlist=*/{}, cluster, cluster_metrics);
+  EXPECT_EQ(signals.num_times_seen_last_24h, 2u);
+  EXPECT_EQ(signals.num_times_used_last_24h, 1u);
+
+  // Verify UKM.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ukm::builders::NewTabPage_HistoryClusters builder(ukm::NoURLSourceId());
+  signals.PopulateUkmEntry(&builder);
+  builder.Record(ukm::UkmRecorder::Get());
+
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  auto* entry = entries[0].get();
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesSeenLast24hName, 2);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::NewTabPage_HistoryClusters::kNumTimesUsedLast24hName, 1);
 }
 
 }  // namespace

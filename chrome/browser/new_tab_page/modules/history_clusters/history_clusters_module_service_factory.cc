@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_context.h"
 
@@ -39,6 +40,8 @@ HistoryClustersModuleServiceFactory::HistoryClustersModuleServiceFactory()
   DependsOn(CartServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
 HistoryClustersModuleServiceFactory::~HistoryClustersModuleServiceFactory() =
@@ -58,9 +61,12 @@ HistoryClustersModuleServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!tus) {
     return nullptr;
   }
+  auto* sps =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
   return std::make_unique<HistoryClustersModuleService>(
       hcs, CartServiceFactory::GetForProfile(profile), tus,
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile), sps);
 }
 
 bool HistoryClustersModuleServiceFactory::ServiceIsCreatedWithBrowserContext()

@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_cluster_metrics.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -14,7 +15,8 @@
 HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
     const std::vector<CartDB::KeyAndValue>& active_carts,
     const base::flat_set<std::string>& category_boostlist,
-    const history::Cluster& cluster)
+    const history::Cluster& cluster,
+    const HistoryClusterMetrics& metrics)
     : duration_since_most_recent_visit(
           base::Time::Now() -
           cluster.GetMostRecentVisit().annotated_visit.visit_row.visit_time),
@@ -23,7 +25,9 @@ HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
               ? false
               : history_clusters::IsClusterInCategories(cluster,
                                                         category_boostlist)),
-      num_total_visits(cluster.visits.size()) {
+      num_total_visits(cluster.visits.size()),
+      num_times_seen_last_24h(metrics.num_times_seen),
+      num_times_used_last_24h(metrics.num_times_used) {
   base::flat_set<std::string> hosts;
   base::flat_set<std::string> cart_tlds;
   for (const auto& visit : cluster.visits) {
@@ -69,4 +73,6 @@ void HistoryClustersModuleRankingSignals::PopulateUkmEntry(
   ukm_entry_builder->SetNumTotalVisits(num_total_visits);
   ukm_entry_builder->SetNumUniqueHosts(num_unique_hosts);
   ukm_entry_builder->SetNumAbandonedCarts(num_abandoned_carts);
+  ukm_entry_builder->SetNumTimesSeenLast24h(num_times_seen_last_24h);
+  ukm_entry_builder->SetNumTimesUsedLast24h(num_times_used_last_24h);
 }

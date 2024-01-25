@@ -84,6 +84,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleRankingMetricsQueryDays);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleTextOnly);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
@@ -189,6 +190,9 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // Parameter for setting the maximum number of candidate clusters for the
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
+// Parameter for setting the number of days to query for cluster metric data
+// that is used to compute metrics used cluster ranking.
+extern const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[];
 extern const char kNtpHistoryClustersModuleScoreThresholdParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleDataParam[];

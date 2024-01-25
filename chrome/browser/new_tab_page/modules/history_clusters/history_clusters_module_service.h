@@ -28,6 +28,10 @@ class HistoryClustersModuleRankingSignals;
 class OptimizationGuideKeyedService;
 class TemplateURLService;
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
+
 // Handles requests to get clusters for the History Clusters Module.
 class HistoryClustersModuleService : public KeyedService {
  public:
@@ -36,7 +40,9 @@ class HistoryClustersModuleService : public KeyedService {
       history_clusters::HistoryClustersService* history_clusters_service,
       CartService* cart_service,
       TemplateURLService* template_url_service,
-      OptimizationGuideKeyedService* optimization_guide_keyed_service);
+      OptimizationGuideKeyedService* optimization_guide_keyed_service,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service);
   ~HistoryClustersModuleService() override;
 
   using GetClustersCallback = base::OnceCallback<void(
