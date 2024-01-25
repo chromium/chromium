@@ -66,7 +66,7 @@ PickerController::PickerController()
   asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
       &PickerController::DownloadGifToString, weak_ptr_factory_.GetWeakPtr()));
   if (auto* manager = ash::input_method::InputMethodManager::Get()) {
-    observation_.Observe(manager->GetImeKeyboard());
+    keyboard_observation_.Observe(manager->GetImeKeyboard());
   }
 }
 
@@ -100,6 +100,9 @@ void PickerController::ToggleWidget(
   } else {
     widget_ = PickerView::CreateWidget(this, trigger_event_timestamp);
     widget_->Show();
+
+    feature_usage_metrics_.StartUsage();
+    widget_observation_.Observe(widget_.get());
   }
 }
 
@@ -167,6 +170,11 @@ PickerAssetFetcher* PickerController::GetAssetFetcher() {
 void PickerController::OnCapsLockChanged(bool enabled) {
   // TODO: b/319301963 - Remove this behaviour once the experiment is over.
   ToggleWidget();
+}
+
+void PickerController::OnWidgetDestroying(views::Widget* widget) {
+  feature_usage_metrics_.StopUsage();
+  widget_observation_.Reset();
 }
 
 void PickerController::DownloadGifToString(

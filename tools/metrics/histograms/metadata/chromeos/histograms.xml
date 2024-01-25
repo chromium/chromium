@@ -135,6 +135,10 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <owner>kenalba@google.com</owner>
     <owner>chromeos-tango@google.com</owner>
   </variant>
+  <variant name="Picker" summary="Picker">
+    <owner>shend@chromium.org</owner>
+    <owner>e14s-eng@google.com</owner>
+  </variant>
   <variant name="SmartLock" summary="Smart Lock">
     <owner>hansberry@chromium.org</owner>
     <owner>chromeos-cross-device-eng@google.com</owner>

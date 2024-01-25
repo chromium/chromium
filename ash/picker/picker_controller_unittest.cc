@@ -144,5 +144,36 @@ TEST_F(PickerControllerTest, InsertResultInsertsIntoInputFieldAfterFocus) {
   EXPECT_EQ(input_field.text(), u"abc");
 }
 
+TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
+  base::HistogramTester histogram_tester;
+  PickerController controller;
+  TestPickerClient client(&controller);
+
+  // Show the widget twice.
+  controller.ToggleWidget();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  controller.widget_for_testing()->CloseNow();
+  task_environment()->FastForwardBy(base::Seconds(2));
+  controller.ToggleWidget();
+  task_environment()->FastForwardBy(base::Seconds(3));
+  controller.widget_for_testing()->CloseNow();
+  task_environment()->FastForwardBy(base::Seconds(4));
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.Picker",
+      static_cast<int>(
+          feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess),
+      2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.Picker",
+      static_cast<int>(
+          feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure),
+      0);
+  histogram_tester.ExpectTimeBucketCount("ChromeOS.FeatureUsage.Picker.Usetime",
+                                         base::Seconds(1), 1);
+  histogram_tester.ExpectTimeBucketCount("ChromeOS.FeatureUsage.Picker.Usetime",
+                                         base::Seconds(3), 1);
+}
+
 }  // namespace
 }  // namespace ash
