@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/follow/model/follow_service.h"
 #include "ios/chrome/browser/follow/model/follow_service_observer.h"

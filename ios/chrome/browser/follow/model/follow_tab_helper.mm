@@ -58,7 +58,7 @@ FollowTabHelper::FollowTabHelper(web::WebState* web_state)
   // Ensure that follow is not enabled for incognito.
   DCHECK(web_state_);
   DCHECK(!web_state_->GetBrowserState()->IsOffTheRecord());
-  web_state_observation_.Observe(web_state_);
+  web_state_observation_.Observe(web_state_.get());
 }
 
 void FollowTabHelper::set_follow_iph_presenter(
