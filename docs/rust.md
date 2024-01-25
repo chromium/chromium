@@ -82,7 +82,7 @@ To use a third-party crate "bar" version 3 from first party code:
       * `./tools/crates/run_cargo.py install --git https://github.com/mozilla/cargo-vet cargo-vet`
       * We use `--git` to install cargo-vet from HEAD in order to use the `--cargo-arg` argument
         which is not released yet.
-   * `./tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crates_io/ vet check --cargo-arg=-Zbindeps --no-registry-suggestions`
+   * `./tools/crates/run_cargo_vet.py check`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
       * See [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md)
