@@ -12,3 +12,10 @@
 2023-07-11T23:45:21.686094Z WARNING kernel: (URL: 1)
 (URL: 2)
 file:/var/log/messages
+# GSC Memory Dump
+> md 0x4000 16
+md 0x4000 16
+[      46.371] (Memory Dump: 1)
+[      46.376] (Memory Dump: 2)
+[      46.380] (Memory Dump: 3)
+[      46.387] (Memory Dump: 4)

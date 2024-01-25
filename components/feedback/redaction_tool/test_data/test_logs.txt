@@ -12,3 +12,10 @@
 2023-07-11T23:45:21.686094Z WARNING kernel: file:///usr/local/home/iby/web%20page%20test.html
 file:///var/log/messages
 file:/var/log/messages
+# GSC Memory Dump
+> md 0x4000 16
+md 0x4000 16
+[      46.371] 0x00004000: 00098993 400e0ab7 068a8a93 00495593
+[      46.376] 0x00004010: a783c08c 07851609 16f9a023 00ef8526
+[      46.380] 0x00004020: 995209f0 93e30491 0537ff54 25834045
+[      46.387] 0x00004030: 051320c5 00ef20c5 759311b0 09370ff5

@@ -179,6 +179,23 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // which include a partial hash of the user id.
     {"UID", R"xxx(((?:cryptohome|dmcrypt)-+)([0-9a-fA-F]+)(-+))xxx",
      PIIType::kStableIdentifier},
+
+    // GSC device id unique to each chip.
+    {"Serial",
+     R"xxx((DEV_ID:\s+)(0x[0-9a-zA-Z-]{8}\s+0x[0-9a-zA-Z-]{8})(.*?))xxx",
+     PIIType::kSerial},
+
+    // Chromebook serial hash stored in GSC.
+    {"Serial",
+     R"xxx((SN:\s+)([0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8}))xxx"
+     R"xxx((.*?))xxx",
+     PIIType::kSerial},
+
+    // Memory dump from GSC log.
+    {"Memory Dump",
+     R"xxx((\[\s*[0-9]+\.[0-9]+\]\s+)(0x[0-9a-zA-Z-]{8}:\s+[0-9a-zA-Z-]{8})xxx"
+     R"xxx(\s+[0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8}\s+[0-9a-zA-Z-]{8})(.*?))xxx",
+     PIIType::kMemory},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {

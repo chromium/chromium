@@ -74,7 +74,9 @@ enum class PIIType {
   kIBAN = 16,
   // Crash ID is a hex number identifying an uploaded crash report.
   kCrashId = 17,
-  kMaxValue = kCrashId,
+  // Raw memory. May contain anything.
+  kMemory = 18,
+  kMaxValue = kMemory,
 };
 
 }  // namespace redaction
