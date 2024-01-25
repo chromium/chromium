@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 
 namespace blink {
