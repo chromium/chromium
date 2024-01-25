@@ -1766,12 +1766,12 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool IsFocusable() const {
-    // TODO: Maybe `display: contents` shouldn't prevent focusability, see
-    // discussion in https://github.com/whatwg/html/issues/1837
     // TODO: `visibility: hidden` shouldn't prevent focusability, see
     // https://html.spec.whatwg.org/multipage/interaction.html#focusable-area
-    return !IsEnsuredInDisplayNone() && Display() != EDisplay::kContents &&
-           !IsInert() && Visibility() == EVisibility::kVisible;
+    return !IsEnsuredInDisplayNone() && !IsInert() &&
+           Visibility() == EVisibility::kVisible &&
+           (Display() != EDisplay::kContents ||
+            RuntimeEnabledFeatures::DisplayContentsFocusableEnabled());
   }
 
   // Text decoration utility functions.

@@ -634,6 +634,14 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
     return layout_object->StyleRef().IsFocusable();
   }
 
+  if (HasDisplayContentsStyle() &&
+      RuntimeEnabledFeatures::DisplayContentsFocusableEnabled()) {
+    if (const ComputedStyle* style =
+            ComputedStyle::NullifyEnsured(GetComputedStyle())) {
+      return style->IsFocusable();
+    }
+  }
+
   // If a canvas represents embedded content, its descendants are not rendered.
   // But they are still allowed to be focusable as long as their style allows
   // focus, their canvas is rendered, and its style allows focus.

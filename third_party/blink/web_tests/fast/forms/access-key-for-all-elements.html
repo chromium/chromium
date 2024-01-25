@@ -28,7 +28,7 @@ function pressKey(key) {
   eventSender.keyDown(key, modifiers);
 }
 
-const nonFocusableTagNames = ['base', 'basefont', 'body', 'datalist', 'dialog', 'embed', 'head', 'link', 'meta', 'noembed', 'noframes', 'noscript', 'param', 'script', 'slot', 'style', 'template', 'title'];
+const nonFocusableTagNames = ['base', 'basefont', 'body', 'datalist', 'dialog', 'embed', 'head', 'link', 'meta', 'noembed', 'noframes', 'noscript', 'param', 'script', 'style', 'template', 'title'];
 const skipTagNames = ['input', 'legend', 'optgroup', 'option', 'select', 'textarea'];
 const old_and_new_elements = [...HTML5_ELEMENTS, ...HTML5_DEPRECATED_ELEMENTS];
 const focusableTagNames = old_and_new_elements.filter(x => !nonFocusableTagNames.includes(x) && !skipTagNames.includes(x));

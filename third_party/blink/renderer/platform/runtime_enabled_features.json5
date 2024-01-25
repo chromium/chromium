@@ -1385,6 +1385,12 @@
       base_feature: "DispatchHiddenVisibilityTransitions",
     },
     {
+      // Allowing elements with display:contents to have focus.
+      // See https://crbug.com/1366037
+      name: "DisplayContentsFocusable",
+      status: "experimental",
+    },
+    {
       name: "DisplayCutoutAPI",
       base_feature: "none",
       public: true,
