@@ -27,11 +27,15 @@ const int WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize = 128;
 
 WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
     MediaStreamComponent* component,
-    int context_sample_rate)
+    int context_sample_rate,
+    uint32_t context_buffer_size)
     : is_enabled_(false), component_(component), track_stopped_(false) {
   // Get the native audio output hardware sample-rate for the sink.
   // We need to check if there is a valid frame since the unittests
   // do not have one and they will inject their own |sink_params_| for testing.
+
+  // TODO(1502522): Use the parameter `context_buffer_size` to estimate the FIFO
+  // size.
   WebLocalFrame* const web_frame = WebLocalFrame::FrameForCurrentContext();
   if (web_frame) {
     sink_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,

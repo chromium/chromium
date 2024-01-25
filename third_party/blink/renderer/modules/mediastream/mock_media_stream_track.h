@@ -95,7 +95,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   bool HasPendingActivity() const override { return false; }
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override {
+      int context_sample_rate,
+      uint32_t context_buffer_size) override {
     return nullptr;
   }
 

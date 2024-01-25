@@ -145,7 +145,8 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   bool HasPendingActivity() const final;
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override;
+      int context_sample_rate,
+      uint32_t context_buffer_size) override;
 
   MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
 

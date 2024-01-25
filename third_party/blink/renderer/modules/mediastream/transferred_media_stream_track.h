@@ -108,7 +108,8 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   bool HasPendingActivity() const override;
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) override;
+      int context_sample_rate,
+      uint32_t context_buffer_size) override;
 
   ImageCapture* GetImageCapture() override;
   absl::optional<const MediaStreamDevice> device() const override;

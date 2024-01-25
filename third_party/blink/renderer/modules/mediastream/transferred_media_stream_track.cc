@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
@@ -364,9 +365,12 @@ bool TransferredMediaStreamTrack::HasPendingActivity() const {
 }
 
 std::unique_ptr<AudioSourceProvider>
-TransferredMediaStreamTrack::CreateWebAudioSource(int context_sample_rate) {
+TransferredMediaStreamTrack::CreateWebAudioSource(
+    int context_sample_rate,
+    uint32_t context_buffer_size) {
   if (track_) {
-    return track_->CreateWebAudioSource(context_sample_rate);
+    return track_->CreateWebAudioSource(context_sample_rate,
+                                        context_buffer_size);
   }
   // TODO(https://crbug.com/1288839): Create one based on transferred data?
   return nullptr;

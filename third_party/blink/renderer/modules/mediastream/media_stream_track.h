@@ -181,7 +181,8 @@ class MODULES_EXPORT MediaStreamTrack
 #endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate) = 0;
+      int context_sample_rate,
+      uint32_t context_buffer_size) = 0;
 
   virtual ImageCapture* GetImageCapture() = 0;
   virtual absl::optional<const MediaStreamDevice> device() const = 0;

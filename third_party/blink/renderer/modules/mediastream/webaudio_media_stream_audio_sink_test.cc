@@ -25,6 +25,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     source_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          media::ChannelLayoutConfig::Mono(), 48000, 480);
     const int context_sample_rate = 44100;
+    const int context_buffer_size = 100;
     sink_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                        media::ChannelLayoutConfig::Stereo(),
                        context_sample_rate,
@@ -38,7 +39,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
         String::FromUTF8("audio_track"), audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(
-        component_, context_sample_rate);
+        component_, context_sample_rate, context_buffer_size);
     source_provider_->SetSinkParamsForTesting(sink_params_);
     source_provider_->OnSetFormat(source_params_);
   }
