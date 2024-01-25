@@ -902,7 +902,8 @@ public class RootUiCoordinator
                             getBottomSheetController(),
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
-                            mWindowAndroid);
+                            mWindowAndroid,
+                            mActivityLifecycleDispatcher);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
