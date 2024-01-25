@@ -5146,8 +5146,6 @@ void Document::MarkViewportUnitsDirty() {
 }
 
 void Document::DynamicViewportUnitsChanged() {
-  if (!RuntimeEnabledFeatures::CSSViewportUnits4Enabled())
-    return;
   MediaQueryAffectingValueChanged(MediaValueChange::kDynamicViewport);
   if (media_query_matcher_)
     media_query_matcher_->DynamicViewportChanged();

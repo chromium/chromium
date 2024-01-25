@@ -3814,8 +3814,6 @@ TEST_F(StyleEngineTest, InternalForcedProperties) {
 }
 
 TEST_F(StyleEngineTest, HasViewportUnitFlags) {
-  ScopedCSSViewportUnits4ForTest flag(true);
-
   struct {
     const char* value;
     bool has_static;
@@ -3884,8 +3882,6 @@ TEST_F(StyleEngineTest, HasViewportUnitFlags) {
 }
 
 TEST_F(StyleEngineTest, DynamicViewportUnitInvalidation) {
-  ScopedCSSViewportUnits4ForTest flag(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
   <style>
     #target_px { width: 1px; }
@@ -3935,8 +3931,6 @@ TEST_F(StyleEngineTest, DynamicViewportUnitInvalidation) {
 }
 
 TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
-  ScopedCSSViewportUnits4ForTest flag(true);
-
   // Changes in the dynamic viewport should not affect NeedsActiveStyleUpdate
   // when we don't use dynamic viewport units.
   {
@@ -4098,8 +4092,6 @@ class TestMediaQueryListListener : public MediaQueryListListener {
 }  // namespace
 
 TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
-  ScopedCSSViewportUnits4ForTest flag(true);
-
   auto& matcher = GetDocument().GetMediaQueryMatcher();
   auto* listener = MakeGarbageCollected<TestMediaQueryListListener>();
   matcher.AddViewportListener(listener);
@@ -4566,35 +4558,6 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
-}
-
-TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
-  Vector<String> units = {"vi",  "vb",    "svi",   "svb",   "svw",
-                          "svh", "svmin", "svmax", "lvi",   "lvb",
-                          "lvw", "lvh",   "lvmin", "lvmax", "dvi",
-                          "dvb", "dvw",   "dvh",   "dvmin", "dvmax"};
-
-  for (const String& unit : units) {
-    String css = "top: 1" + unit;
-    SCOPED_TRACE(testing::Message() << unit);
-
-    {
-      ScopedCSSViewportUnits4ForTest flag(false);
-      const CSSPropertyValueSet* set =
-          css_test_helpers::ParseDeclarationBlock(css);
-      ASSERT_TRUE(set);
-      EXPECT_EQ(0u, set->PropertyCount());
-    }
-
-    {
-      ScopedCSSViewportUnits4ForTest flag(true);
-      const CSSPropertyValueSet* set =
-          css_test_helpers::ParseDeclarationBlock(css);
-      ASSERT_TRUE(set);
-      EXPECT_EQ(1u, set->PropertyCount());
-      EXPECT_TRUE(set->HasProperty(CSSPropertyID::kTop));
-    }
-  }
 }
 
 TEST_F(StyleEngineTest, VideoControlsReject) {

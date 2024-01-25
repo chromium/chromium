@@ -1184,14 +1184,6 @@
       base_feature: "none",
     },
     {
-      // Support for viewport units added by css-values-4.
-      //
-      // https://drafts.csswg.org/css-values-4/#viewport-relative-units
-      name: "CSSViewportUnits4",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       // The view-timeline shorthand includes the view-timeline-inset
       // property.
       //

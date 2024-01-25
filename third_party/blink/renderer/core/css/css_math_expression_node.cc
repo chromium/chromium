@@ -114,8 +114,6 @@ static CalculationResultCategory UnitCategory(
     case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
     case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
     case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
-      return RuntimeEnabledFeatures::CSSViewportUnits4Enabled() ? kCalcLength
-                                                                : kCalcOther;
     case CSSPrimitiveValue::UnitType::kContainerWidth:
     case CSSPrimitiveValue::UnitType::kContainerHeight:
     case CSSPrimitiveValue::UnitType::kContainerInlineSize:

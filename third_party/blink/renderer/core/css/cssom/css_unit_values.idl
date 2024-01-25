@@ -25,31 +25,31 @@
   [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue rcap(double value);
   [NewObject] CSSUnitValue vw(double value);
   [NewObject] CSSUnitValue vh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue vb(double value);
+  [NewObject] CSSUnitValue vi(double value);
+  [NewObject] CSSUnitValue vb(double value);
   [NewObject] CSSUnitValue vmin(double value);
   [NewObject] CSSUnitValue vmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue svmax(double value);
+  [NewObject] CSSUnitValue svw(double value);
+  [NewObject] CSSUnitValue svh(double value);
+  [NewObject] CSSUnitValue svi(double value);
+  [NewObject] CSSUnitValue svb(double value);
+  [NewObject] CSSUnitValue svmin(double value);
+  [NewObject] CSSUnitValue svmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue lvmax(double value);
+  [NewObject] CSSUnitValue lvw(double value);
+  [NewObject] CSSUnitValue lvh(double value);
+  [NewObject] CSSUnitValue lvi(double value);
+  [NewObject] CSSUnitValue lvb(double value);
+  [NewObject] CSSUnitValue lvmin(double value);
+  [NewObject] CSSUnitValue lvmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvw(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvh(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvi(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvb(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmin(double value);
-  [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmax(double value);
+  [NewObject] CSSUnitValue dvw(double value);
+  [NewObject] CSSUnitValue dvh(double value);
+  [NewObject] CSSUnitValue dvi(double value);
+  [NewObject] CSSUnitValue dvb(double value);
+  [NewObject] CSSUnitValue dvmin(double value);
+  [NewObject] CSSUnitValue dvmax(double value);
 
   [NewObject] CSSUnitValue cqw(double value);
   [NewObject] CSSUnitValue cqh(double value);
