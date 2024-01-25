@@ -153,6 +153,16 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
                                  const TransactionInfo& transaction_info,
                                  const DnsResponse* response);
 
+  void SortTransactionAndHandleResults(TransactionInfo transaction_info,
+                                       Results transaction_results);
+  void OnTransactionSorted(
+      std::set<TransactionInfo>::iterator transaction_info_it,
+      Results transaction_results,
+      bool success,
+      std::vector<IPEndPoint> sorted);
+  void HandleTransactionResults(TransactionInfo transaction_info,
+                                Results transaction_results);
+
   void OnTransactionsFinished();
 
   void OnSortComplete(base::TimeTicks sort_start_time,

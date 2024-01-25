@@ -805,6 +805,11 @@ void MockDnsClient::SetTransactionFactoryForTesting(
   NOTREACHED();
 }
 
+void MockDnsClient::SetAddressSorterForTesting(
+    std::unique_ptr<AddressSorter> address_sorter) {
+  address_sorter_ = std::move(address_sorter);
+}
+
 std::optional<std::vector<IPEndPoint>> MockDnsClient::GetPresetAddrs(
     const url::SchemeHostPort& endpoint) const {
   EXPECT_THAT(preset_endpoint_, testing::Optional(endpoint));

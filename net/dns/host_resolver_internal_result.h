@@ -50,9 +50,13 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
   }
 
   const HostResolverInternalDataResult& AsData() const;
+  HostResolverInternalDataResult& AsData();
   const HostResolverInternalMetadataResult& AsMetadata() const;
+  HostResolverInternalMetadataResult& AsMetadata();
   const HostResolverInternalErrorResult& AsError() const;
+  HostResolverInternalErrorResult& AsError();
   const HostResolverInternalAliasResult& AsAlias() const;
+  HostResolverInternalAliasResult& AsAlias();
 
   virtual base::Value ToValue() const = 0;
 
@@ -121,8 +125,15 @@ class NET_EXPORT_PRIVATE HostResolverInternalDataResult final
   }
 
   const std::vector<IPEndPoint>& endpoints() const { return endpoints_; }
+  void set_endpoints(std::vector<IPEndPoint> endpoints) {
+    endpoints_ = std::move(endpoints);
+  }
   const std::vector<std::string>& strings() const { return strings_; }
+  void set_strings(std::vector<std::string> strings) {
+    strings_ = std::move(strings);
+  }
   const std::vector<HostPortPair>& hosts() const { return hosts_; }
+  void set_hosts(std::vector<HostPortPair> hosts) { hosts_ = std::move(hosts); }
 
   base::Value ToValue() const override;
 
@@ -134,13 +145,13 @@ class NET_EXPORT_PRIVATE HostResolverInternalDataResult final
 
   // Corresponds to the `HostResolverEndpointResult::ip_endpoints` portion of
   // `HostResolver::ResolveHostRequest::GetEndpointResults()`.
-  const std::vector<IPEndPoint> endpoints_;
+  std::vector<IPEndPoint> endpoints_;
 
   // Corresponds to `HostResolver::ResolveHostRequest::GetTextResults()`.
-  const std::vector<std::string> strings_;
+  std::vector<std::string> strings_;
 
   // Corresponds to `HostResolver::ResolveHostRequest::GetHostnameResults()`.
-  const std::vector<HostPortPair> hosts_;
+  std::vector<HostPortPair> hosts_;
 };
 
 // Parsed and extracted connection metadata, but not usable on its own without

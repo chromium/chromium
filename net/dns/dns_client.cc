@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -238,6 +239,11 @@ class DnsClientImpl : public DnsClient {
   void SetTransactionFactoryForTesting(
       std::unique_ptr<DnsTransactionFactory> factory) override {
     factory_ = std::move(factory);
+  }
+
+  void SetAddressSorterForTesting(
+      std::unique_ptr<AddressSorter> address_sorter) override {
+    NOTIMPLEMENTED();
   }
 
  private:

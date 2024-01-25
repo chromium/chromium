@@ -203,10 +203,20 @@ const HostResolverInternalDataResult& HostResolverInternalResult::AsData()
   return *static_cast<const HostResolverInternalDataResult*>(this);
 }
 
+HostResolverInternalDataResult& HostResolverInternalResult::AsData() {
+  CHECK_EQ(type_, Type::kData);
+  return *static_cast<HostResolverInternalDataResult*>(this);
+}
+
 const HostResolverInternalMetadataResult&
 HostResolverInternalResult::AsMetadata() const {
   CHECK_EQ(type_, Type::kMetadata);
   return *static_cast<const HostResolverInternalMetadataResult*>(this);
+}
+
+HostResolverInternalMetadataResult& HostResolverInternalResult::AsMetadata() {
+  CHECK_EQ(type_, Type::kMetadata);
+  return *static_cast<HostResolverInternalMetadataResult*>(this);
 }
 
 const HostResolverInternalErrorResult& HostResolverInternalResult::AsError()
@@ -215,10 +225,20 @@ const HostResolverInternalErrorResult& HostResolverInternalResult::AsError()
   return *static_cast<const HostResolverInternalErrorResult*>(this);
 }
 
+HostResolverInternalErrorResult& HostResolverInternalResult::AsError() {
+  CHECK_EQ(type_, Type::kError);
+  return *static_cast<HostResolverInternalErrorResult*>(this);
+}
+
 const HostResolverInternalAliasResult& HostResolverInternalResult::AsAlias()
     const {
   CHECK_EQ(type_, Type::kAlias);
   return *static_cast<const HostResolverInternalAliasResult*>(this);
+}
+
+HostResolverInternalAliasResult& HostResolverInternalResult::AsAlias() {
+  CHECK_EQ(type_, Type::kAlias);
+  return *static_cast<HostResolverInternalAliasResult*>(this);
 }
 
 HostResolverInternalResult::HostResolverInternalResult(
