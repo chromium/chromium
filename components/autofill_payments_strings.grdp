@@ -356,9 +356,6 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC" desc="Error message that encourages the user to try to re-enter their credit card CVC after a previous failed attempt." formatter_data="android_java">
     Check your CVC and try again
   </message>
-  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION_V2" desc="Error message that encourages the user to try to re-enter their credit card CVC or update the expiration dates after a previous failed attempt, according to August 2019 UI guidelines.">
-    Check your CVC and try again or update the expiration date
-  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_SECURITY_CODE" desc="Text providing context to the user during virtual card security code authentication when they have entered an incorrect security code, such as CVC. It lets the user know that they need to look at the security code on their card again to make sure the one they entered into the form is correct, and that they need to try again.">
     Check the code on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph> and try again
   </message>
@@ -374,7 +371,22 @@
   <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_FRONT_OF_CARD" desc="Text explaining that the security code is located in the front of your card, specifically for the virtual card unmasking case.">
     front of your card
   </message>
-  <if expr="is_android">
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
+    The CVC is located behind your card.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION_FOR_AMEX" desc="Accessible description for the CVC image. It should describe where to find the CVC on an American Express credit card.">
+    The CVC is located on the front of your card.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_DEFAULT" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
+    To help keep your card secure, enter the CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_CARD" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling expired credit cards saved in their payments profile, and prompts them for the new expiration date and the CVC to unmask the card.">
+    Enter your new expiration date and CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
+    Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you
+  </message>
+  <if expr="is_android or is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
       Enter your CVC
     </message>
@@ -384,18 +396,6 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD" desc="Title for the credit card unmasking dialog. This dialog is triggered when users attempt autofilling expired credit cards saved in their payments profile, and prompts them for the new expiration date and the CVC to unmask the card.">
       Card expired
     </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_DATE" desc="Error message that encourages the user to try to re-enter their credit card expiration date after a previous failed attempt." formatter_data="android_java">
-      Check your expiration date and try again
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION" desc="Error message that encourages the user to try to re-enter their credit card expiration date and CVC after a previous failed attempt." formatter_data="android_java">
-      Check your expiration date and CVC and try again
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_MONTH" desc="Error message that encourages the user to try to re-enter their credit card expiration month after a previous failed attempt." formatter_data="android_java">
-      Check your expiration month and try again
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_YEAR" desc="Error message that encourages the user to try to re-enter their credit card expiration year after a previous failed attempt." formatter_data="android_java">
-      Check your expiration year and try again
-    </message>
   </if>
   <if expr="not is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
@@ -403,6 +403,9 @@
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE" desc="Title for the credit card unmasking dialog, specifically for the virtual card unmasking case.">
       Enter your security code for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
+      Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during specific card unmasking flows, for example VCN unmasking. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
       Verifying payment method
@@ -412,33 +415,6 @@
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_TITLE" desc="Title for the credit card unmasking progress dialog, also used as the title of challenge option selection dialog when only one challenge option available." formatter_data="android_java">
       Verify it's you
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE" desc="Title for the credit card unmasking dialog when the credit card is expired.">
-      Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph>
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_DEFAULT" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling credit cards saved in their payments profile, and prompts them for the CVC to unmask the card.">
-      To help keep your card secure, enter the CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_CARD" desc="Instructions for users shown on the credit card unmasking dialog. This dialog is triggered when users attempt autofilling expired credit cards saved in their payments profile, and prompts them for the new expiration date and the CVC to unmask the card.">
-      Enter your new expiration date and CVC on the <ph name="SIDE_OF_CARD">$1<ex>back of your card</ex></ph>
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_VIRTUAL_CARD" desc="Text providing instructions on how to unmask virtual card.">
-      Enter the <ph name="NUMBER_OF_DIGITS">$1<ex>3</ex></ph>-digit security code on the <ph name="SIDE_OF_CARD">$2<ex>back of your card</ex></ph> so your bank can verify it's you
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_V2" desc="Text explaining what the user should do in the card unmasking dialog, according to August 2019 UI guidelines.">
-      Confirm the security code to share your card details with this site
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
-      The CVC is located behind your card.
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION_FOR_AMEX" desc="Accessible description for the CVC image. It should describe where to find the CVC on an American Express credit card.">
-      The CVC is located on the front of your card.
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT" desc="Announcement for the CVC image. It describes where to find the CVC on a credit card.">
-      Your CVC is on the back of your card. It’s the last 3 digits at the top right of the signature box.
-    </message>
-    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT_AMEX" desc="Announcement for the CVC image. It describes where to find the CVC on an American Express credit card.">
-      Your CVC is on the front of your card. It’s the 4-digit code at the top right above your card number.
     </message>
     <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during server IBAN unmasking flows. The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
       Filling IBAN
@@ -480,6 +456,24 @@
     </if>
   </if>
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_DATE" desc="Error message that encourages the user to try to re-enter their credit card expiration date after a previous failed attempt." formatter_data="android_java">
+      Check your expiration date and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC_AND_EXPIRATION" desc="Error message that encourages the user to try to re-enter their credit card expiration date and CVC after a previous failed attempt." formatter_data="android_java">
+      Check your expiration date and CVC and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_MONTH" desc="Error message that encourages the user to try to re-enter their credit card expiration month after a previous failed attempt." formatter_data="android_java">
+      Check your expiration month and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_EXPIRATION_YEAR" desc="Error message that encourages the user to try to re-enter their credit card expiration year after a previous failed attempt." formatter_data="android_java">
+      Check your expiration year and try again
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT" desc="Announcement for the CVC image. It describes where to find the CVC on a credit card.">
+      Your CVC is on the back of your card. It’s the last 3 digits at the top right of the signature box.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT_AMEX" desc="Announcement for the CVC image. It describes where to find the CVC on an American Express credit card.">
+      Your CVC is on the front of your card. It’s the 4-digit code at the top right above your card number.
+    </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ENABLE_FIDO_AUTH_CHECKBOX" desc="Text for checkbox in card unmasking dialog that allows the use of fingerprint to unmask cards starting next time. If checked, then a fingerprint prompt will immediately follow." formatter_data="android_java">
       Use screen lock to confirm cards from now on
     </message>
