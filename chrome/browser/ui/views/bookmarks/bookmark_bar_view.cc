@@ -302,44 +302,7 @@ class BookmarkButton : public BookmarkButtonBase {
   BookmarkButton& operator=(const BookmarkButton&) = delete;
 
   void OnButtonPressed(const ui::Event& event) {
-    MayRecordHoverDuration(/*taken=*/true);
     callback_.Run(event);
-  }
-
-  void MayRecordHoverDuration(bool taken) {
-    // Record once. `mouse_entered_time_` should not be set if
-    // `OnButtonPressed` is called for keyboard events. We are not interested
-    // in such cases.
-    if (hover_duration_recorded_ || !mouse_entered_time_.has_value()) {
-      return;
-    }
-    hover_duration_recorded_ = true;
-    base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
-    base::UmaHistogramTimes(
-        taken ? "Prerender.Experimental.BookmarkBar.HoverDuration.Taken"
-              : "Prerender.Experimental.BookmarkBar.HoverDuration.NotTaken",
-        duration);
-    CHECK(mouse_move_time_.has_value());
-    base::TimeDelta duration_from_last_move =
-        base::TimeTicks::Now() - *mouse_move_time_;
-    base::UmaHistogramTimes(taken ? "Prerender.Experimental.BookmarkBar."
-                                    "HoverDuration.FromLastMouseMove.Taken"
-                                  : "Prerender.Experimental.BookmarkBar."
-                                    "HoverDuration.FromLastMouseMove.NotTaken",
-                            duration_from_last_move);
-
-    // Check `prerender_handle_` to know if we triggered prerendering for this
-    // bookmark button. The handle could be invalidated if the primary page
-    // navigates but we still need to count such a case as prerendered.
-    bool prerendered = prerender_handle_ || prerender_handle_.WasInvalidated();
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.BookmarkBar.PredictionResult",
-        prerendered
-            ? (taken ? PrerenderPredictionResult::kPrerenderedAndNavigated
-                     : PrerenderPredictionResult::kPrerenderedButNotNavigated)
-            : (taken ? PrerenderPredictionResult::kNotPrerenderedButNavigated
-                     : PrerenderPredictionResult::
-                           kNotPrerenderedAndNotNavigated));
   }
 
   // views::View:
@@ -379,10 +342,6 @@ class BookmarkButton : public BookmarkButtonBase {
 
   void OnMouseEntered(const ui::MouseEvent& event) override {
     // Reset source information for taking metrics for following mouse events.
-    mouse_entered_time_ = base::TimeTicks::Now();
-    mouse_move_time_ = *mouse_entered_time_;
-    hover_duration_recorded_ = false;
-    mouse_has_been_pressed_ = false;
 
     BookmarkButtonBase::OnMouseEntered(event);
 
@@ -415,7 +374,6 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    MayRecordHoverDuration(/*taken=*/false);
     BookmarkButtonBase::OnMouseExited(event);
     if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
       preloading_timer_.Stop();
@@ -435,22 +393,6 @@ class BookmarkButton : public BookmarkButtonBase {
       base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
                                     PreloadBookmarkMetricsEvent::kMouseDown);
     }
-    // Record duration if the event happens before PressedCallback invocation.
-    if (!mouse_has_been_pressed_) {
-      mouse_has_been_pressed_ = true;
-      auto now = base::TimeTicks::Now();
-      // It seems `mouse_entered_time_` could be empty, maybe OnMouseEntered()
-      // can be dropped sometime.
-      base::TimeDelta duration = now - mouse_entered_time_.value_or(now);
-      base::UmaHistogramTimes(
-          "Prerender.Experimental.BookmarkBar.EnterToPressDuration", duration);
-      if (event.IsOnlyLeftMouseButton()) {
-        base::UmaHistogramTimes(
-            "Prerender.Experimental.BookmarkBar.EnterToPressDuration."
-            "LeftButton",
-            duration);
-      }
-    }
     if (event.IsOnlyLeftMouseButton() &&
         base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
         kPrerenderBookmarkBarOnMousePressedTrigger.Get()) {
@@ -461,7 +403,6 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
   void OnMouseMoved(const ui::MouseEvent& event) override {
-    mouse_move_time_ = base::TimeTicks::Now();
     return BookmarkButtonBase::OnMouseMoved(event);
   }
 
@@ -525,12 +466,6 @@ class BookmarkButton : public BookmarkButtonBase {
   base::WeakPtr<content::PrerenderHandle> prerender_handle_;
   base::RetainingOneShotTimer preloading_timer_;
   base::WeakPtr<content::WebContents> prerender_web_contents_;
-
-  // Information for metrics.
-  std::optional<base::TimeTicks> mouse_entered_time_;
-  std::optional<base::TimeTicks> mouse_move_time_;
-  bool hover_duration_recorded_ = false;
-  bool mouse_has_been_pressed_ = false;
 };
 
 BEGIN_METADATA(BookmarkButton)
