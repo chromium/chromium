@@ -221,8 +221,6 @@ void NotificationViewBase::CreateOrUpdateViews(
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
     : MessageView(notification), for_ash_notification_(IsForAshNotification()) {
-  SetNotifyEnterExitOnChild(true);
-
   click_activator_ = std::make_unique<ClickActivator>(this);
   // Reasons to use pretarget handler instead of OnMousePressed:
   // - NotificationViewBase::OnMousePresssed would not fire on the inline reply

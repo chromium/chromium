@@ -1860,6 +1860,8 @@ component("ash") {
     "system/notification_center/notification_grouping_controller.h",
     "system/notification_center/notification_metrics_recorder.cc",
     "system/notification_center/notification_metrics_recorder.h",
+    "system/notification_center/notification_style_utils.cc",
+    "system/notification_center/notification_style_utils.h",
     "system/notification_center/session_state_notification_blocker.cc",
     "system/notification_center/session_state_notification_blocker.h",
     "system/notification_center/stacked_notification_bar.cc",

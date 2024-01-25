@@ -69,6 +69,8 @@ MessageView::MessageView(const Notification& notification)
       notifier_id_(notification.notifier_id()),
       timestamp_(notification.timestamp()),
       slide_out_controller_(this, this) {
+  SetNotifyEnterExitOnChild(true);
+
   if (features::IsNotificationGesturesUpdateEnabled()) {
     slide_out_controller_.set_trackpad_gestures_enabled(true);
   }

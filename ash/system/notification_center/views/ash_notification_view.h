@@ -255,9 +255,6 @@ class ASH_EXPORT AshNotificationView
   void UpdateMessageLabelInExpandedState(
       const message_center::Notification& notification);
 
-  // Update the background color with rounded corner.
-  void UpdateBackground(int top_radius, int bottom_radius);
-
   // Get the available space for `message_label_in_expanded_state_` width.
   int GetExpandedMessageLabelWidth();
 
@@ -267,10 +264,6 @@ class ASH_EXPORT AshNotificationView
 
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView(const message_center::Notification* notification);
-
-  // Calculate the color used for the app icon and action buttons.
-  SkColor CalculateIconAndButtonsColor(
-      const message_center::Notification* notification);
 
   // Update the color of icon and buttons.
   void UpdateIconAndButtonsColor(
