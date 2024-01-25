@@ -710,9 +710,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             new OneShotCallback<>(
                                     startSurface.getTabSwitcherCustomViewManagerSupplier(),
                                     (tabSwitcherCustomViewManager) -> {
-                                        if (incognitoReauthCoordinatorFactory
-                                                        .getTabSwitcherCustomViewManager()
-                                                == null) {
+                                        if (!incognitoReauthCoordinatorFactory
+                                                        .getTabSwitcherCustomViewManagerSupplier()
+                                                        .hasValue()
+                                                && tabSwitcherCustomViewManager != null) {
                                             incognitoReauthCoordinatorFactory
                                                     .setTabSwitcherCustomViewManager(
                                                             tabSwitcherCustomViewManager);
@@ -723,10 +724,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mIncognitoTabSwitcherSupplier.onAvailable(
                 mTabSwitcherCustomViewManagerCallbackController.makeCancelable(
                         (tabSwitcher) -> {
-                            if (incognitoReauthCoordinatorFactory.getTabSwitcherCustomViewManager()
-                                    == null) {
+                            var tabSwitcherCustomViewManager =
+                                    tabSwitcher.getTabSwitcherCustomViewManager();
+                            if (!incognitoReauthCoordinatorFactory
+                                            .getTabSwitcherCustomViewManagerSupplier()
+                                            .hasValue()
+                                    && tabSwitcherCustomViewManager != null) {
                                 incognitoReauthCoordinatorFactory.setTabSwitcherCustomViewManager(
-                                        tabSwitcher.getTabSwitcherCustomViewManager());
+                                        tabSwitcherCustomViewManager);
                             }
                         }));
 

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -60,10 +61,11 @@ public class IncognitoReauthCoordinatorFactory {
     private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
 
     /**
-     * This allows to pass the re-auth view to the tab switcher.
-     * Non-null for {@link TabSwitcherIncognitoReauthCoordinator}.
+     * This allows to pass the re-auth view to the tab switcher. Non-null contents for {@link
+     * TabSwitcherIncognitoReauthCoordinator}.
      */
-    private @Nullable TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
+    private final OneshotSupplierImpl<TabSwitcherCustomViewManager>
+            mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
 
     /**
      * This allows to show the regular overview mode.
@@ -130,15 +132,15 @@ public class IncognitoReauthCoordinatorFactory {
      */
     public void setTabSwitcherCustomViewManager(
             @NonNull TabSwitcherCustomViewManager tabSwitcherCustomViewManager) {
-        mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
+        mTabSwitcherCustomViewManagerSupplier.set(tabSwitcherCustomViewManager);
     }
 
     /**
-     * @return {@link TabSwitcherCustomViewManager} that is used to pass the re-auth screen to tab
-     *         switcher.
+     * Returns the {@link OneshotSupplier<TabSwitcherCustomViewManager>} that is used to pass the
+     * re-auth screen to tab switcher.
      */
-    public TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
-        return mTabSwitcherCustomViewManager;
+    public OneshotSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier() {
+        return mTabSwitcherCustomViewManagerSupplier;
     }
 
     /**
@@ -200,6 +202,15 @@ public class IncognitoReauthCoordinatorFactory {
     }
 
     /**
+     * @param showFullScreen The type of dependency to check for.
+     * @return whether the factory has all the dependencies ready to produce the requested type of
+     *     coordinator.
+     */
+    boolean areDependenciesReadyFor(boolean showFullScreen) {
+        return showFullScreen || mTabSwitcherCustomViewManagerSupplier.hasValue();
+    }
+
+    /**
      * @param incognitoReauthCallback The {@link IncognitoReauthCallback}
      *                               which would be executed after an authentication attempt.
      * @param showFullScreen A boolean indicating whether to show a fullscreen or tab switcher
@@ -215,6 +226,8 @@ public class IncognitoReauthCoordinatorFactory {
             @NonNull IncognitoReauthCallback incognitoReauthCallback,
             boolean showFullScreen,
             @NonNull OnBackPressedCallback backPressedCallback) {
+        assert areDependenciesReadyFor(showFullScreen)
+                : "Dependencies for the IncognitoReauthCoordinator were not ready.";
         return (showFullScreen)
                 ? new FullScreenIncognitoReauthCoordinator(
                         mContext,
@@ -230,7 +243,7 @@ public class IncognitoReauthCoordinatorFactory {
                         incognitoReauthCallback,
                         getSeeOtherTabsRunnable(),
                         getBackPressRunnable(),
-                        mTabSwitcherCustomViewManager,
+                        mTabSwitcherCustomViewManagerSupplier.get(),
                         mIncognitoReauthTopToolbarDelegate);
     }
 }

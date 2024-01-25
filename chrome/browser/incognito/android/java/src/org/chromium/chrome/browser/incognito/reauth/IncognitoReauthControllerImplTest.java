@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -66,6 +67,7 @@ public class IncognitoReauthControllerImplTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private Runnable mBackPressInReauthFullScreenRunnableMock;
     @Mock private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
+    @Mock private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
     @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
@@ -75,6 +77,9 @@ public class IncognitoReauthControllerImplTest {
 
     private IncognitoReauthControllerImpl mIncognitoReauthController;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
+    private OneshotSupplierImpl<TabSwitcherCustomViewManager>
+            mTabSwitcherCustomViewManagerOneshotSupplier;
+    private boolean mCustomViewManagerHasValue;
     private ObservableSupplierImpl<Profile> mProfileObservableSupplier;
 
     private boolean mIsIncognitoReauthPendingOnRestore;
@@ -125,8 +130,17 @@ public class IncognitoReauthControllerImplTest {
         doReturn(true).when(mIncognitoReauthCoordinatorFactoryMock).getIsTabbedActivity();
         doNothing().when(mIncognitoReauthCoordinatorMock).show();
 
+        mTabSwitcherCustomViewManagerOneshotSupplier = new OneshotSupplierImpl<>();
+        doReturn(mTabSwitcherCustomViewManagerOneshotSupplier)
+                .when(mIncognitoReauthCoordinatorFactoryMock)
+                .getTabSwitcherCustomViewManagerSupplier();
+        doReturn(true)
+                .when(mIncognitoReauthCoordinatorFactoryMock)
+                .areDependenciesReadyFor(anyBoolean());
+
         mLayoutStateProviderOneshotSupplier = new OneshotSupplierImpl<>();
         mLayoutStateProviderOneshotSupplier.set(mLayoutStateProviderMock);
+
         mProfileObservableSupplier = new ObservableSupplierImpl<>();
 
         mIncognitoReauthController =
@@ -263,9 +277,44 @@ public class IncognitoReauthControllerImplTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         assertTrue(
-                "IncognitoReauthCoordinator should be created for restored" + " Incognito tabs.",
+                "IncognitoReauthCoordinator should be created for restored Incognito tabs.",
                 mIncognitoReauthController.isReauthPageShowing());
         verify(mIncognitoReauthCoordinatorMock).show();
+    }
+
+    @Test
+    @MediumTest
+    public void testTabSwitcherCustomViewManagerSupplied_ShowsReauth() {
+        doReturn(true).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        doReturn(1).when(mIncognitoTabModelMock).getCount();
+        switchToIncognitoTabModel();
+        mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
+
+        mTabSwitcherCustomViewManagerOneshotSupplier.set(mTabSwitcherCustomViewManager);
+        assertTrue(
+                "IncognitoReauthCoordinator should be created for tab switcher custom view manager",
+                mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorFactoryMock).areDependenciesReadyFor(false);
+        verify(mIncognitoReauthCoordinatorMock).show();
+    }
+
+    @Test
+    @MediumTest
+    public void testTabSwitcherCustomViewManagerMissing_DoesNotShowsReauth() {
+        doReturn(false)
+                .when(mIncognitoReauthCoordinatorFactoryMock)
+                .areDependenciesReadyFor(anyBoolean());
+
+        doReturn(true).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
+        doReturn(1).when(mIncognitoTabModelMock).getCount();
+        switchToIncognitoTabModel();
+        mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
+
+        mIncognitoReauthController.onStartWithNative();
+        assertFalse(
+                "IncognitoReauthCoordinator should not be created if custom view manager missing.",
+                mIncognitoReauthController.isReauthPageShowing());
+        verify(mIncognitoReauthCoordinatorFactoryMock).areDependenciesReadyFor(false);
     }
 
     @Test
