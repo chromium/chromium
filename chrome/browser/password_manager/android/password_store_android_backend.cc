@@ -915,8 +915,6 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
   // Create and run a callbacks chain that updates the logins.
   base::OnceClosure callbacks_chain = base::DoNothing();
   for (PasswordForm& login : logins_to_update) {
-    CHECK(!login.blocked_by_user ||
-          (login.username_value.empty() && login.password_value.empty()));
     callbacks_chain = base::BindOnce(
         &PasswordStoreAndroidBackend::UpdateLoginInternal,
         weak_ptr_factory_.GetWeakPtr(), account, std::move(login),
