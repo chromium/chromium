@@ -18,11 +18,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowInsetsController;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -131,9 +128,10 @@ public class WebApkUtilsTest {
         when(mMockApplicationContext.getPackageManager()).thenReturn(mMockPackageManager);
         when(mMockPackageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE))
                 .thenReturn(true);
+        View rootView = testActivity.getWindow().getDecorView().getRootView();
 
         WebApkUtils.setStatusBarColor(testActivity, Color.RED);
-        WebApkUtils.setStatusBarIconColor(testActivity.getWindow(), false, testActivity);
+        WebApkUtils.setStatusBarIconColor(rootView, false, testActivity);
 
         // No matter what color the status bar is being set on other form factors, it should always
         // be black on automotive devices.
@@ -141,24 +139,11 @@ public class WebApkUtilsTest {
                 "Status bar should always be black in automotive devices.",
                 Color.BLACK,
                 testActivity.getWindow().getStatusBarColor());
-        assertIsUsingDarkIcons(testActivity.getWindow());
+        assertNotEquals(
+                "Status bar should NOT use dark icons in automotive devices.",
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR,
+                rootView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         testActivity.finish();
-    }
-
-    private void assertIsUsingDarkIcons(Window window) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            assertNotEquals(
-                    "Status bar should not use dark icons in automotive devices.",
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR,
-                    window.getDecorView().getRootView().getSystemUiVisibility()
-                            & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        } else {
-            assertNotEquals(
-                    "Status bar should not use dark icons in automotive devices.",
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                    window.getInsetsController().getSystemBarsAppearance()
-                            & WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
-        }
     }
 }

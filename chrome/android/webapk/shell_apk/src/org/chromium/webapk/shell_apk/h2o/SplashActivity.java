@@ -229,7 +229,8 @@ public class SplashActivity extends Activity {
                 this, WebApkUtils.inDarkMode(this) ? darkStatusBarColor : statusBarColor);
         boolean needsDarkStatusBarIcons =
                 !WebApkUtils.shouldUseLightForegroundOnBackground(statusBarColor);
-        WebApkUtils.setStatusBarIconColor(getWindow(), needsDarkStatusBarIcons, this);
+        WebApkUtils.setStatusBarIconColor(
+                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons, this);
     }
 
     /** Called once the host browser has been selected. */

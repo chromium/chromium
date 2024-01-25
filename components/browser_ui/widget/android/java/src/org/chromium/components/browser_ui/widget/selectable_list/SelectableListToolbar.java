@@ -643,7 +643,8 @@ public class SelectableListToolbar<E> extends Toolbar
         Window window = ((Activity) context).getWindow();
         UiUtils.setStatusBarColor(window, color);
         UiUtils.setStatusBarIconColor(
-                window, !ColorUtils.shouldUseLightForegroundOnBackground(color));
+                window.getDecorView().getRootView(),
+                !ColorUtils.shouldUseLightForegroundOnBackground(color));
     }
 
     public View getSearchViewForTests() {

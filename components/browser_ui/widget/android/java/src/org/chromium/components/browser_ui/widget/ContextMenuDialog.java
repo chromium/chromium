@@ -141,7 +141,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             // Apply the status bar color in case the website had override them.
             UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
             UiUtils.setStatusBarIconColor(
-                    dialogWindow,
+                    dialogWindow.getDecorView().getRootView(),
                     !ColorUtils.shouldUseLightForegroundOnBackground(
                             mActivity.getWindow().getStatusBarColor()));
         }
