@@ -196,6 +196,9 @@ interface MediaStreamDeviceObserver {
   // Informs the renderer-side that the device's capture handle has changed.
   OnDeviceCaptureHandleChange(string label,
                               MediaStreamDevice device);
+  // Informs the renderer-side that captured surface's the zoom-level has
+  // changed.
+  OnZoomLevelChange(string label, MediaStreamDevice device, int32 zoom_level);
 };
 
 // Contains devices that are assigned to a specific stream. At least one of

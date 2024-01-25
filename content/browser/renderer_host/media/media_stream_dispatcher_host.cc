@@ -332,8 +332,11 @@ void MediaStreamDispatcherHost::OnZoomLevelChange(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(device.display_media_info);
 
-  // TODO(crbug.com/1466247): Implement
-  // GetMediaStreamDeviceObserver()->OnZoomLevelChange(label, device);
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+    return;
+  }
+
+  GetMediaStreamDeviceObserver()->OnZoomLevelChange(label, device, zoom_level);
 }
 
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
