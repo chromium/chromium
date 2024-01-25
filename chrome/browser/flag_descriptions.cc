@@ -4501,6 +4501,13 @@ const char kTabGroupParityAndroidDescription[] =
     "Enables cross-platform tab group feature parity on Android, which "
     "includes colors and required titles.";
 
+const char kTabStripGroupIndicatorsAndroidName[] =
+    "Tab Strip Group Indicators Android";
+const char kTabStripGroupIndicatorsAndroidDescription[] =
+    "Enables tab strip to show tab group visual indicators, including outlines "
+    "for selected tab, tab group title indicator and bottom indicator. This is "
+    "M1 for Tab Group Parity";
+
 const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";

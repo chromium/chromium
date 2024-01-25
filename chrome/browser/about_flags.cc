@@ -9936,6 +9936,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},
+
+    {"tab-strip-group-indicators-android",
+     flag_descriptions::kTabStripGroupIndicatorsAndroidName,
+     flag_descriptions::kTabStripGroupIndicatorsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripGroupIndicatorsAndroid)},
 #endif
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,

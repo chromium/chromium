@@ -7808,6 +7808,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "tab-strip-group-indicators-android",
+    "owners": [ "twellington@google.com", "nemco@google.com", "zheliooo@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "tangible-sync",
     "owners": [ "aliceywang@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 120

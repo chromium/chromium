@@ -2633,6 +2633,9 @@ extern const char kSurfacePolishDescription[];
 extern const char kTabGroupParityAndroidName[];
 extern const char kTabGroupParityAndroidDescription[];
 
+extern const char kTabStripGroupIndicatorsAndroidName[];
+extern const char kTabStripGroupIndicatorsAndroidDescription[];
+
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 

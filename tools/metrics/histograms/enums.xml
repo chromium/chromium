@@ -17714,6 +17714,7 @@ from previous Chrome versions.
   <int value="-1324634193" label="EnablePalmOnMaxTouchMajor:disabled"/>
   <int value="-1324313449" label="ScreenSaverPreview:enabled"/>
   <int value="-1324029365" label="EnableTLS13EarlyData:enabled"/>
+  <int value="-1322997246" label="TabStripGroupIndicatorsAndroid:disabled"/>
   <int value="-1322882747" label="disable-datasaver-prompt"/>
   <int value="-1322830330" label="ContextualSearchNewSettings:enabled"/>
   <int value="-1321935621" label="WebAppsCrosapi:enabled"/>
@@ -18769,6 +18770,7 @@ from previous Chrome versions.
   <int value="-832058463" label="LaunchWindowsNativeHostsDirectly:disabled"/>
   <int value="-831855839"
       label="DeprecateOldKeyboardShortcutsAccelerator:enabled"/>
+  <int value="-831303896" label="TabStripGroupIndicatorsAndroid:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
