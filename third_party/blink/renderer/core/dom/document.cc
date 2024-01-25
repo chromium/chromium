@@ -5781,13 +5781,13 @@ void Document::NotifyAttributeChanged(const Element& element,
                                       const QualifiedName& name,
                                       const AtomicString& old_value,
                                       const AtomicString& new_value) {
-  if (LocalFrameView* frame_view = View()) {
-    if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor()) {
-      // There are other attributes (not to mention style changes) that could
-      // potentially make more content available to to the fragment anchor but
-      // this is a best effort heuristic, based on commonly seen patterns in the
-      // wild, so isn't meant to be comprehensive.
-      if (name == html_names::kHiddenAttr) {
+  // There are other attributes (not to mention style changes) that could
+  // potentially make more content available to the fragment anchor but
+  // this is a best effort heuristic, based on commonly seen patterns in the
+  // wild, so isn't meant to be comprehensive.
+  if (name == html_names::kHiddenAttr) {
+    if (LocalFrameView* frame_view = View()) {
+      if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor()) {
         anchor->NewContentMayBeAvailable();
       }
     }
