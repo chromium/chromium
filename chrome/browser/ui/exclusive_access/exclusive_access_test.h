@@ -88,7 +88,7 @@ class FullscreenNotificationObserver : public FullscreenObserver {
 };
 
 // Test fixture with convenience functions for fullscreen, keyboard lock, and
-// mouse lock.
+// pointer lock.
 class ExclusiveAccessTest : public InProcessBrowserTest {
  public:
   ExclusiveAccessTest(const ExclusiveAccessTest&) = delete;
@@ -104,10 +104,10 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override;
 
   bool RequestKeyboardLock(bool esc_key_locked);
-  void RequestToLockMouse(bool user_gesture, bool last_unlocked_by_target);
-  void SetWebContentsGrantedSilentMouseLockPermission();
+  void RequestToLockPointer(bool user_gesture, bool last_unlocked_by_target);
+  void SetWebContentsGrantedSilentPointerLockPermission();
   void CancelKeyboardLock();
-  void LostMouseLock();
+  void LostPointerLock();
   bool SendEscapeToExclusiveAccessManager();
   bool IsFullscreenForBrowser();
   bool IsWindowFullscreenForTabOrPending();
@@ -120,7 +120,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void EnterExtensionInitiatedFullscreen();
 
   static const char kFullscreenKeyboardLockHTML[];
-  static const char kFullscreenMouseLockHTML[];
+  static const char kFullscreenPointerLockHTML[];
   FullscreenController* GetFullscreenController();
   ExclusiveAccessManager* GetExclusiveAccessManager();
 
@@ -139,7 +139,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   int InitialBubbleDelayMs() const;
 
   std::vector<ExclusiveAccessBubbleHideReason>
-      mouse_lock_bubble_hide_reason_recorder_;
+      pointer_lock_bubble_hide_reason_recorder_;
 
   std::vector<ExclusiveAccessBubbleHideReason>
       keyboard_lock_bubble_hide_reason_recorder_;

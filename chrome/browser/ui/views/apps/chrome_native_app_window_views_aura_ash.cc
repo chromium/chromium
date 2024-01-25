@@ -572,7 +572,7 @@ void ChromeNativeAppWindowViewsAuraAsh::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool ChromeNativeAppWindowViewsAuraAsh::CanTriggerOnMouse() const {
+bool ChromeNativeAppWindowViewsAuraAsh::CanTriggerOnMousePointer() const {
   return true;
 }
 

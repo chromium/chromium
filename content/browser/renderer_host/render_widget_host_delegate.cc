@@ -102,12 +102,12 @@ gfx::Rect RenderWidgetHostDelegate::GetWindowsControlsOverlayRect() const {
   return gfx::Rect();
 }
 
-bool RenderWidgetHostDelegate::HasMouseLock(
+bool RenderWidgetHostDelegate::HasPointerLock(
     RenderWidgetHostImpl* render_widget_host) {
   return false;
 }
 
-RenderWidgetHostImpl* RenderWidgetHostDelegate::GetMouseLockWidget() {
+RenderWidgetHostImpl* RenderWidgetHostDelegate::GetPointerLockWidget() {
   return nullptr;
 }
 

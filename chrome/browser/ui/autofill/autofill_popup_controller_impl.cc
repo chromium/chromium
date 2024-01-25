@@ -234,7 +234,7 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
-  if (IsMouseLocked()) {
+  if (IsPointerLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
@@ -441,7 +441,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index,
     return;
   }
 
-  if (IsMouseLocked()) {
+  if (IsPointerLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
@@ -659,7 +659,7 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
 bool AutofillPopupControllerImpl::RemoveSuggestion(
     int list_index,
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
-  if (IsMouseLocked()) {
+  if (IsPointerLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return false;
   }
@@ -731,7 +731,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   CHECK_LT(index, static_cast<int>(suggestions_.size()));
 
-  if (IsMouseLocked()) {
+  if (IsPointerLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
@@ -824,11 +824,11 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
                      self_deletion_weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool AutofillPopupControllerImpl::IsMouseLocked() const {
+bool AutofillPopupControllerImpl::IsPointerLocked() const {
   content::RenderFrameHost* rfh;
   content::RenderWidgetHostView* rwhv;
   return web_contents() && (rfh = web_contents()->GetFocusedFrame()) &&
-         (rwhv = rfh->GetView()) && rwhv->IsMouseLocked();
+         (rwhv = rfh->GetView()) && rwhv->IsPointerLocked();
 }
 
 base::WeakPtr<AutofillPopupView>

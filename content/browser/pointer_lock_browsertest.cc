@@ -40,18 +40,18 @@ class MockPointerLockWebContentsDelegate : public WebContentsDelegate {
   MockPointerLockWebContentsDelegate() {}
   ~MockPointerLockWebContentsDelegate() override {}
 
-  void RequestToLockMouse(WebContents* web_contents,
+  void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override {
     if (user_gesture)
-      web_contents->GotResponseToLockMouseRequest(
+      web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kSuccess);
     else
-      web_contents->GotResponseToLockMouseRequest(
+      web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
   }
 
-  void LostMouseLock() override {}
+  void LostPointerLock() override {}
 };
 
 #ifdef USE_AURA
@@ -68,11 +68,12 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
       : RenderWidgetHostViewAura(host),
         host_(RenderWidgetHostImpl::From(host)) {}
   ~MockPointerLockRenderWidgetHostView() override {
-    if (IsMouseLocked())
-      UnlockMouse();
+    if (IsPointerLocked()) {
+      UnlockPointer();
+    }
   }
 
-  blink::mojom::PointerLockResult LockMouse(
+  blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override {
     event_handler()->mouse_locked_ = true;
     event_handler()->mouse_locked_unadjusted_movement_ =
@@ -82,14 +83,14 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
     return blink::mojom::PointerLockResult::kSuccess;
   }
 
-  void UnlockMouse() override {
-    host_->LostMouseLock();
+  void UnlockPointer() override {
+    host_->LostPointerLock();
     event_handler()->mouse_locked_ = false;
     event_handler()->mouse_locked_unadjusted_movement_.reset();
   }
 
-  bool GetIsMouseLockedUnadjustedMovementForTesting() override {
-    return IsMouseLocked() &&
+  bool GetIsPointerLockedUnadjustedMovementForTesting() override {
+    return IsPointerLocked() &&
            event_handler()->mouse_locked_unadjusted_movement_;
   }
 
@@ -98,7 +99,7 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
     // Ignore window focus events.
   }
 
-  bool IsMouseLocked() override { return event_handler()->mouse_locked(); }
+  bool IsPointerLocked() override { return event_handler()->mouse_locked(); }
 
   bool HasFocus() override { return has_focus_; }
 
@@ -409,17 +410,17 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockChildFrameDetached) {
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(root));
 
   // Root (platform) RenderWidgetHostView should have the pointer locked.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
   EXPECT_EQ(root->current_frame_host()->GetRenderWidgetHost(),
-            web_contents()->GetMouseLockWidget());
+            web_contents()->GetPointerLockWidget());
 
   // Detach the child frame.
   EXPECT_TRUE(ExecJs(root, "document.querySelector('iframe').remove()"));
 
   // Root (platform) RenderWidgetHostView should still have the pointer locked.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
   EXPECT_EQ(root->current_frame_host()->GetRenderWidgetHost(),
-            web_contents()->GetMouseLockWidget());
+            web_contents()->GetPointerLockWidget());
 }
 
 // Tests that the browser will unlock the pointer if a RenderWidgetHostView that
@@ -453,16 +454,17 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
                       inner_contents->GetPrimaryMainFrame()));
 
   // Root (platform) RenderWidgetHostView should have the pointer locked.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
 
   // The widget doing the lock is the one from the inner WebContents. A link
   // to that RWH is saved into the outer webcontents.
   RenderWidgetHost* expected_lock_widget =
       inner_contents->GetPrimaryMainFrame()->GetView()->GetRenderWidgetHost();
-  EXPECT_EQ(expected_lock_widget, web_contents()->GetMouseLockWidget());
-  EXPECT_EQ(expected_lock_widget, web_contents()->mouse_lock_widget_);
-  EXPECT_EQ(expected_lock_widget,
-            static_cast<WebContentsImpl*>(inner_contents)->mouse_lock_widget_);
+  EXPECT_EQ(expected_lock_widget, web_contents()->GetPointerLockWidget());
+  EXPECT_EQ(expected_lock_widget, web_contents()->pointer_lock_widget_);
+  EXPECT_EQ(
+      expected_lock_widget,
+      static_cast<WebContentsImpl*>(inner_contents)->pointer_lock_widget_);
 
   // Crash the subframe process.
   RenderProcessHost* crash_process =
@@ -477,9 +479,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   inner_contents = nullptr;
 
   // This should cancel the pointer lock.
-  EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-  EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
-  EXPECT_FALSE(web_contents()->HasMouseLock(
+  EXPECT_EQ(nullptr, web_contents()->GetPointerLockWidget());
+  EXPECT_EQ(nullptr, web_contents()->pointer_lock_widget_.get());
+  EXPECT_FALSE(web_contents()->HasPointerLock(
       root->current_frame_host()->GetRenderWidgetHost()));
 }
 
@@ -503,9 +505,9 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
     EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(lock_node));
 
     // Root (platform) RenderWidgetHostView should have the pointer locked.
-    EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+    EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
     EXPECT_EQ(lock_node->current_frame_host()->GetRenderWidgetHost(),
-              web_contents()->GetMouseLockWidget());
+              web_contents()->GetPointerLockWidget());
 
     // Crash the process of |crash_node|.
     RenderProcessHost* crash_process =
@@ -516,12 +518,12 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockOopifCrashes) {
     crash_observer.Wait();
 
     // This should cancel the pointer lock.
-    EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
-    EXPECT_EQ(nullptr, web_contents()->mouse_lock_widget_.get());
-    EXPECT_FALSE(web_contents()->HasMouseLock(
+    EXPECT_EQ(nullptr, web_contents()->GetPointerLockWidget());
+    EXPECT_EQ(nullptr, web_contents()->pointer_lock_widget_.get());
+    EXPECT_FALSE(web_contents()->HasPointerLock(
         root->current_frame_host()->GetRenderWidgetHost()));
     if (crash_depth != 0)
-      EXPECT_FALSE(root->current_frame_host()->GetView()->IsMouseLocked());
+      EXPECT_FALSE(root->current_frame_host()->GetView()->IsPointerLocked());
     else
       EXPECT_EQ(nullptr, root->current_frame_host()->GetView());
   }
@@ -669,14 +671,14 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, PointerLockWidgetHidden) {
   // Child frame should have been granted pointer lock.
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(child));
 
-  EXPECT_TRUE(child_view->IsMouseLocked());
-  EXPECT_EQ(child_view->host(), web_contents()->GetMouseLockWidget());
+  EXPECT_TRUE(child_view->IsPointerLocked());
+  EXPECT_EQ(child_view->host(), web_contents()->GetPointerLockWidget());
 
   child_view->Hide();
 
   // Child frame should've released the mouse lock when hidden.
-  EXPECT_FALSE(child_view->IsMouseLocked());
-  EXPECT_EQ(nullptr, web_contents()->GetMouseLockWidget());
+  EXPECT_FALSE(child_view->IsPointerLocked());
+  EXPECT_EQ(nullptr, web_contents()->GetPointerLockWidget());
 }
 
 #ifdef USE_AURA
@@ -733,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   // Root frame should have been granted pointer lock.
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(root));
   // Mouse is locked and unadjusted_movement is not set.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
 
   // Release pointer lock.
   EXPECT_EQ(true, PointerLockHelper::ExitPointerLock(root));
@@ -747,17 +749,17 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(root));
 
   // Mouse is locked and unadjusted_movement is set.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
   EXPECT_TRUE(root->current_frame_host()
                   ->GetView()
-                  ->GetIsMouseLockedUnadjustedMovementForTesting());
+                  ->GetIsPointerLockedUnadjustedMovementForTesting());
 
   // Release pointer lock, unadjusted_movement bit is reset.
   EXPECT_EQ(true, PointerLockHelper::ExitPointerLock(root));
 
   EXPECT_FALSE(root->current_frame_host()
                    ->GetView()
-                   ->GetIsMouseLockedUnadjustedMovementForTesting());
+                   ->GetIsPointerLockedUnadjustedMovementForTesting());
 #else
   // Request a pointer lock with unadjustedMovement.
   // On platform that does not support unadjusted movement yet, do not lock and
@@ -766,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
       false,
       PointerLockHelper::RequestPointerLockWithUnadjustedMovementOnBody(root));
   EXPECT_EQ(false, PointerLockHelper::IsPointerLockOnBody(root));
-  EXPECT_FALSE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_FALSE(root->current_frame_host()->GetView()->IsPointerLocked());
 #endif
 }
 
@@ -816,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, DISABLED_UnadjustedMovement) {
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(root));
 
   // Mouse is locked and unadjusted_movement is not set.
-  EXPECT_TRUE(root->current_frame_host()->GetView()->IsMouseLocked());
+  EXPECT_TRUE(root->current_frame_host()->GetView()->IsPointerLocked());
 
   mouse_event.SetPositionInWidget(10, 10);
   mouse_event.SetPositionInScreen(10, 10);
@@ -873,11 +875,11 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   // Child frame should have been granted pointer lock.
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(child));
 
-  EXPECT_TRUE(child_view->IsMouseLocked());
+  EXPECT_TRUE(child_view->IsPointerLocked());
   EXPECT_FALSE(root->current_frame_host()
                    ->GetView()
-                   ->GetIsMouseLockedUnadjustedMovementForTesting());
-  EXPECT_EQ(child_view->host(), web_contents()->GetMouseLockWidget());
+                   ->GetIsPointerLockedUnadjustedMovementForTesting());
+  EXPECT_EQ(child_view->host(), web_contents()->GetPointerLockWidget());
 
   // Request to change pointer lock options and wait for return.
   EXPECT_EQ(
@@ -888,11 +890,11 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
           .error);
 
   // The change errored out but the original lock should still be in place.
-  EXPECT_TRUE(child_view->IsMouseLocked());
+  EXPECT_TRUE(child_view->IsPointerLocked());
   EXPECT_FALSE(root->current_frame_host()
                    ->GetView()
-                   ->GetIsMouseLockedUnadjustedMovementForTesting());
-  EXPECT_EQ(child_view->host(), web_contents()->GetMouseLockWidget());
+                   ->GetIsPointerLockedUnadjustedMovementForTesting());
+  EXPECT_EQ(child_view->host(), web_contents()->GetPointerLockWidget());
 }
 #endif
 
@@ -921,11 +923,11 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
   // Child frame should have been granted pointer lock.
   EXPECT_EQ(true, PointerLockHelper::IsPointerLockOnBody(child));
 
-  EXPECT_TRUE(child_view->IsMouseLocked());
+  EXPECT_TRUE(child_view->IsPointerLocked());
   EXPECT_FALSE(root->current_frame_host()
                    ->GetView()
-                   ->GetIsMouseLockedUnadjustedMovementForTesting());
-  EXPECT_EQ(child_view->host(), web_contents()->GetMouseLockWidget());
+                   ->GetIsPointerLockedUnadjustedMovementForTesting());
+  EXPECT_EQ(child_view->host(), web_contents()->GetPointerLockWidget());
 
   // Request to change pointer lock options and wait for return.
   EXPECT_EQ(
@@ -934,11 +936,11 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest,
              "document.body.requestPointerLock({unadjustedMovement:true})"));
 
   // The new changed lock should now be in place.
-  EXPECT_TRUE(child_view->IsMouseLocked());
+  EXPECT_TRUE(child_view->IsPointerLocked());
   EXPECT_TRUE(root->current_frame_host()
                   ->GetView()
-                  ->GetIsMouseLockedUnadjustedMovementForTesting());
-  EXPECT_EQ(child_view->host(), web_contents()->GetMouseLockWidget());
+                  ->GetIsPointerLockedUnadjustedMovementForTesting());
+  EXPECT_EQ(child_view->host(), web_contents()->GetPointerLockWidget());
 }
 #endif  // WIN_OS
 #endif  // USE_AURA

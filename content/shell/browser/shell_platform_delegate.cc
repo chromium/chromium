@@ -28,7 +28,7 @@ ShellPlatformDelegate::CreateJavaScriptDialogManager(Shell* shell) {
   return nullptr;
 }
 
-bool ShellPlatformDelegate::HandleRequestToLockMouse(
+bool ShellPlatformDelegate::HandlePointerLockRequest(
     Shell* shell,
     WebContents* web_contents,
     bool user_gesture,

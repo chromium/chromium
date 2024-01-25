@@ -1106,19 +1106,19 @@ class WebContents : public PageNavigator,
   // Gets the preferred size of the contents.
   virtual gfx::Size GetPreferredSize() = 0;
 
-  // Called when the response to a pending mouse lock request has arrived.
+  // Called when the response to a pending pointer lock request has arrived.
   // Returns true if |allowed| is true and the mouse has been successfully
   // locked.
-  virtual bool GotResponseToLockMouseRequest(
+  virtual bool GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult result) = 0;
 
-  // Wrapper around GotResponseToLockMouseRequest to fit into
+  // Wrapper around GotResponseToPointerLockRequest to fit into
   // ChromeWebViewPermissionHelperDelegate's structure.
-  virtual void GotLockMousePermissionResponse(bool allowed) = 0;
+  virtual void GotPointerLockPermissionResponse(bool allowed) = 0;
 
   // Drop the mouse lock if it is currently locked, or reject an
   // outstanding request if it is pending.
-  virtual void DropMouseLockForTesting() = 0;
+  virtual void DropPointerLockForTesting() = 0;
 
   // Called when the response to a keyboard mouse lock request has arrived.
   // Returns false if the request is no longer valid, otherwise true.

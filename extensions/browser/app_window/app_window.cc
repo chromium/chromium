@@ -413,11 +413,11 @@ bool AppWindow::HandleKeyboardEvent(
   return native_app_window_->HandleKeyboardEvent(event);
 }
 
-void AppWindow::RequestToLockMouse(WebContents* web_contents,
+void AppWindow::RequestPointerLock(WebContents* web_contents,
                                    bool user_gesture,
                                    bool last_unlocked_by_target) {
   DCHECK_EQ(AppWindow::web_contents(), web_contents);
-  helper_->RequestToLockMouse();
+  helper_->RequestPointerLock();
 }
 
 bool AppWindow::PreHandleGestureEvent(WebContents* source,

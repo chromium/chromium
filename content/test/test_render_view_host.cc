@@ -206,17 +206,16 @@ void TestRenderWidgetHostView::TakeFallbackContentFrom(
   CopyBackgroundColorIfPresentFrom(*view);
 }
 
-blink::mojom::PointerLockResult TestRenderWidgetHostView::LockMouse(bool) {
+blink::mojom::PointerLockResult TestRenderWidgetHostView::LockPointer(bool) {
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-blink::mojom::PointerLockResult TestRenderWidgetHostView::ChangeMouseLock(
+blink::mojom::PointerLockResult TestRenderWidgetHostView::ChangePointerLock(
     bool) {
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-void TestRenderWidgetHostView::UnlockMouse() {
-}
+void TestRenderWidgetHostView::UnlockPointer() {}
 
 const viz::FrameSinkId& TestRenderWidgetHostView::GetFrameSinkId() const {
   return frame_sink_id_;

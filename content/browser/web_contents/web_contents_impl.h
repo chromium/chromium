@@ -504,10 +504,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   int GetMaximumZoomPercent() override;
   void SetPageScale(float page_scale_factor) override;
   gfx::Size GetPreferredSize() override;
-  bool GotResponseToLockMouseRequest(
+  bool GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult result) override;
-  void GotLockMousePermissionResponse(bool allowed) override;
-  void DropMouseLockForTesting() override;
+  void GotPointerLockPermissionResponse(bool allowed) override;
+  void DropPointerLockForTesting() override;
   bool GotResponseToKeyboardLockRequest(bool allowed) override;
   bool HasOpener() override;
   RenderFrameHostImpl* GetOpener() override;
@@ -1000,10 +1000,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderWidgetHostImpl* render_widget_host,
       base::RepeatingClosure hang_monitor_restarter) override;
   void RendererResponsive(RenderWidgetHostImpl* render_widget_host) override;
-  void RequestToLockMouse(RenderWidgetHostImpl* render_widget_host,
-                          bool user_gesture,
-                          bool last_unlocked_by_target,
-                          bool privileged) override;
+  void RequestToLockPointer(RenderWidgetHostImpl* render_widget_host,
+                            bool user_gesture,
+                            bool last_unlocked_by_target,
+                            bool privileged) override;
   bool RequestKeyboardLock(RenderWidgetHostImpl* render_widget_host,
                            bool esc_key_locked) override;
   void CancelKeyboardLock(RenderWidgetHostImpl* render_widget_host) override;
@@ -1013,9 +1013,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   blink::mojom::DisplayMode GetDisplayMode() const override;
   ui::WindowShowState GetWindowShowState() override;
   bool GetResizable() override;
-  void LostMouseLock(RenderWidgetHostImpl* render_widget_host) override;
-  bool HasMouseLock(RenderWidgetHostImpl* render_widget_host) override;
-  RenderWidgetHostImpl* GetMouseLockWidget() override;
+  void LostPointerLock(RenderWidgetHostImpl* render_widget_host) override;
+  bool HasPointerLock(RenderWidgetHostImpl* render_widget_host) override;
+  RenderWidgetHostImpl* GetPointerLockWidget() override;
   bool OnRenderFrameProxyVisibilityChanged(
       RenderFrameProxyHost* render_frame_proxy_host,
       blink::mojom::FrameVisibility visibility) override;
@@ -1387,7 +1387,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
   RenderWidgetHost* mouse_lock_widget_for_testing() {
-    return mouse_lock_widget_;
+    return pointer_lock_widget_;
   }
 
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
@@ -2263,7 +2263,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Stores the RenderWidgetHost that currently holds a mouse lock or nullptr if
   // there's no RenderWidgetHost holding a lock.
-  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> mouse_lock_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> pointer_lock_widget_ =
+      nullptr;
 
   // Stores the RenderWidgetHost that currently holds a keyboard lock or nullptr
   // if no RenderWidgetHost has the keyboard locked.

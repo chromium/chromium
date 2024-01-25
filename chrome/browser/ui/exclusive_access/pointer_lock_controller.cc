@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
+#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -28,30 +28,30 @@ constexpr base::TimeDelta kEffectiveUserEscapeDuration =
 
 }  // namespace
 
-MouseLockController::MouseLockController(ExclusiveAccessManager* manager)
+PointerLockController::PointerLockController(ExclusiveAccessManager* manager)
     : ExclusiveAccessControllerBase(manager),
-      mouse_lock_state_(MOUSELOCK_UNLOCKED),
-      fake_mouse_lock_for_test_(false),
+      pointer_lock_state_(POINTERLOCK_UNLOCKED),
+      fake_pointer_lock_for_test_(false),
       bubble_hide_callback_for_test_() {}
 
-MouseLockController::~MouseLockController() {
+PointerLockController::~PointerLockController() {
 }
 
-bool MouseLockController::IsMouseLocked() const {
-  return mouse_lock_state_ == MOUSELOCK_LOCKED ||
-         mouse_lock_state_ == MOUSELOCK_LOCKED_SILENTLY;
+bool PointerLockController::IsPointerLocked() const {
+  return pointer_lock_state_ == POINTERLOCK_LOCKED ||
+         pointer_lock_state_ == POINTERLOCK_LOCKED_SILENTLY;
 }
 
-bool MouseLockController::IsMouseLockedSilently() const {
-  return mouse_lock_state_ == MOUSELOCK_LOCKED_SILENTLY;
+bool PointerLockController::IsPointerLockedSilently() const {
+  return pointer_lock_state_ == POINTERLOCK_LOCKED_SILENTLY;
 }
 
-void MouseLockController::RequestToLockMouse(WebContents* web_contents,
+void PointerLockController::RequestToLockPointer(WebContents* web_contents,
                                              bool user_gesture,
                                              bool last_unlocked_by_target) {
-  DCHECK(!IsMouseLocked());
+  DCHECK(!IsPointerLocked());
 
-  // To prevent misbehaving sites from constantly re-locking the mouse, the
+  // To prevent misbehaving sites from constantly re-locking the pointer, the
   // lock-requesting page must have transient user activation and it must not
   // request for a lock within |kEffectiveUserEscapeDuration| time since the
   // user successfully escaped from a previous lock.  Exceptions are when the
@@ -59,7 +59,7 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
   // requires its own transient user activation).
   if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
     if (!user_gesture) {
-      web_contents->GotResponseToLockMouseRequest(
+      web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
       if (lock_state_callback_for_test_)
         std::move(lock_state_callback_for_test_).Run();
@@ -67,7 +67,7 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     }
     if (base::TimeTicks::Now() <
         last_user_escape_time_ + kEffectiveUserEscapeDuration) {
-      web_contents->GotResponseToLockMouseRequest(
+      web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kUserRejected);
       if (lock_state_callback_for_test_)
         std::move(lock_state_callback_for_test_).Run();
@@ -76,24 +76,24 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
   }
   SetTabWithExclusiveAccess(web_contents);
 
-  // Lock mouse.
-  if (fake_mouse_lock_for_test_ ||
-      web_contents->GotResponseToLockMouseRequest(
+  // Lock pointer.
+  if (fake_pointer_lock_for_test_ ||
+      web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kSuccess)) {
     if (last_unlocked_by_target &&
-        web_contents_granted_silent_mouse_lock_permission_ == web_contents) {
-      mouse_lock_state_ = MOUSELOCK_LOCKED_SILENTLY;
+        web_contents_granted_silent_pointer_lock_permission_ == web_contents) {
+      pointer_lock_state_ = POINTERLOCK_LOCKED_SILENTLY;
     } else {
-      mouse_lock_state_ = MOUSELOCK_LOCKED;
+      pointer_lock_state_ = POINTERLOCK_LOCKED;
     }
   } else {
     SetTabWithExclusiveAccess(nullptr);
-    mouse_lock_state_ = MOUSELOCK_UNLOCKED;
+    pointer_lock_state_ = POINTERLOCK_UNLOCKED;
   }
 
   if (!ShouldSuppressBubbleReshowForStateChange()) {
     exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        base::BindOnce(&MouseLockController::OnBubbleHidden,
+        base::BindOnce(&PointerLockController::OnBubbleHidden,
                        weak_ptr_factory_.GetWeakPtr(), web_contents));
   }
 
@@ -101,23 +101,23 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     std::move(lock_state_callback_for_test_).Run();
 }
 
-void MouseLockController::ExitExclusiveAccessIfNecessary() {
+void PointerLockController::ExitExclusiveAccessIfNecessary() {
   NotifyTabExclusiveAccessLost();
 }
 
-void MouseLockController::NotifyTabExclusiveAccessLost() {
+void PointerLockController::NotifyTabExclusiveAccessLost() {
   WebContents* tab = exclusive_access_tab();
   if (tab) {
-    UnlockMouse();
+    UnlockPointer();
     SetTabWithExclusiveAccess(nullptr);
-    mouse_lock_state_ = MOUSELOCK_UNLOCKED;
+    pointer_lock_state_ = POINTERLOCK_UNLOCKED;
     exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
         ExclusiveAccessBubbleHideCallback());
   }
 }
 
-bool MouseLockController::HandleUserPressedEscape() {
-  if (IsMouseLocked()) {
+bool PointerLockController::HandleUserPressedEscape() {
+  if (IsPointerLocked()) {
     ExitExclusiveAccessIfNecessary();
     last_user_escape_time_ = base::TimeTicks::Now();
     return true;
@@ -126,15 +126,15 @@ bool MouseLockController::HandleUserPressedEscape() {
   return false;
 }
 
-void MouseLockController::ExitExclusiveAccessToPreviousState() {
-  // Nothing to do for mouse lock.
+void PointerLockController::ExitExclusiveAccessToPreviousState() {
+  // Nothing to do for pointer lock.
 }
 
-void MouseLockController::LostMouseLock() {
+void PointerLockController::LostPointerLock() {
   if (lock_state_callback_for_test_)
     std::move(lock_state_callback_for_test_).Run();
 
-  mouse_lock_state_ = MOUSELOCK_UNLOCKED;
+  pointer_lock_state_ = POINTERLOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
 
   if (!ShouldSuppressBubbleReshowForStateChange()) {
@@ -143,41 +143,41 @@ void MouseLockController::LostMouseLock() {
   }
 }
 
-void MouseLockController::UnlockMouse() {
+void PointerLockController::UnlockPointer() {
   WebContents* tab = exclusive_access_tab();
 
   if (!tab)
     return;
 
-  content::RenderWidgetHostView* mouse_lock_view = nullptr;
+  content::RenderWidgetHostView* pointer_lock_view = nullptr;
   RenderViewHost* const rvh =
       exclusive_access_tab()->GetPrimaryMainFrame()->GetRenderViewHost();
   if (rvh)
-    mouse_lock_view = rvh->GetWidget()->GetView();
+    pointer_lock_view = rvh->GetWidget()->GetView();
 
-  if (mouse_lock_view)
-    mouse_lock_view->UnlockMouse();
+  if (pointer_lock_view)
+    pointer_lock_view->UnlockPointer();
 }
 
-void MouseLockController::OnBubbleHidden(
+void PointerLockController::OnBubbleHidden(
     WebContents* web_contents,
     ExclusiveAccessBubbleHideReason reason) {
   if (bubble_hide_callback_for_test_)
     bubble_hide_callback_for_test_.Run(reason);
 
-  // Allow silent mouse lock if the bubble has been display for a period of
+  // Allow silent pointer lock if the bubble has been display for a period of
   // time and dismissed due to timeout.
   if (reason == ExclusiveAccessBubbleHideReason::kTimeout)
-    web_contents_granted_silent_mouse_lock_permission_ = web_contents;
+    web_contents_granted_silent_pointer_lock_permission_ = web_contents;
 }
 
-bool MouseLockController::ShouldSuppressBubbleReshowForStateChange() {
+bool PointerLockController::ShouldSuppressBubbleReshowForStateChange() {
   ExclusiveAccessBubbleType bubble_type =
       exclusive_access_manager()->GetExclusiveAccessExitBubbleType();
-  return (mouse_lock_state_ == MOUSELOCK_LOCKED &&
+  return (pointer_lock_state_ == POINTERLOCK_LOCKED &&
           bubble_type ==
-              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION) ||
-         (mouse_lock_state_ == MOUSELOCK_UNLOCKED &&
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION) ||
+         (pointer_lock_state_ == POINTERLOCK_UNLOCKED &&
           bubble_type ==
               EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION);
 }

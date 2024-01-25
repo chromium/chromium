@@ -2255,19 +2255,19 @@ RenderWidgetHostViewAndroid::FilterInputEvent(
   return blink::mojom::InputEventResultState::kNotConsumed;
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockMouse(
+blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::LockPointer(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnsupportedOptions;
 }
 
-blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::ChangeMouseLock(
+blink::mojom::PointerLockResult RenderWidgetHostViewAndroid::ChangePointerLock(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnsupportedOptions;
 }
 
-void RenderWidgetHostViewAndroid::UnlockMouse() {
+void RenderWidgetHostViewAndroid::UnlockPointer() {
   NOTIMPLEMENTED();
 }
 

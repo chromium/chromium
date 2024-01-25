@@ -145,12 +145,12 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   }
   void set_window(aura::Window* window) { window_ = window; }
 
-  // Lock/Unlock processing of future mouse events.
-  blink::mojom::PointerLockResult LockMouse(bool request_unadjusted_movement);
+  // Lock/Unlock processing of future mouse pointer events.
+  blink::mojom::PointerLockResult LockPointer(bool request_unadjusted_movement);
   // Change the current lock to have the given unadjusted_movement.
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement);
-  void UnlockMouse();
+  void UnlockPointer();
 
   // Start/Stop processing of future system keyboard events.
   bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes);

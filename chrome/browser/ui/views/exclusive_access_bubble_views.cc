@@ -108,7 +108,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
       bubble_view_context_->GetExclusiveAccessManager()
           ->fullscreen_controller());
 
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
@@ -167,12 +167,12 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   popup_->SetBounds(GetPopupRect());
   Show();
 
-  // Stop watching the mouse even if UpdateMouseWatcher() will start watching
-  // it again so that the popup with the new content is visible for at least
-  // |kInitialDelayMs|.
-  StopWatchingMouse();
+  // Stop watching the mouse pointer even if UpdateMousePointerWatcher() will
+  // start watching it again so that the popup with the new content is visible
+  // for at least |kInitialDelayMs|.
+  StopWatchingMousePointer();
 
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
@@ -198,16 +198,18 @@ views::View* ExclusiveAccessBubbleViews::GetView() {
   return view_;
 }
 
-void ExclusiveAccessBubbleViews::UpdateMouseWatcher() {
-  bool should_watch_mouse = popup_->IsVisible() || CanTriggerOnMouse();
+void ExclusiveAccessBubbleViews::UpdateMousePointerWatcher() {
+  bool should_watch_pointer = popup_->IsVisible() || CanTriggerOnMousePointer();
 
-  if (should_watch_mouse == IsWatchingMouse())
+  if (should_watch_pointer == IsWatchingMousePointer()) {
     return;
+  }
 
-  if (should_watch_mouse)
-    StartWatchingMouse();
-  else
-    StopWatchingMouse();
+  if (should_watch_pointer) {
+    StartWatchingMousePointer();
+  } else {
+    StopWatchingMousePointer();
+  }
 }
 
 void ExclusiveAccessBubbleViews::UpdateBounds() {
@@ -336,12 +338,12 @@ bool ExclusiveAccessBubbleViews::IsAnimating() {
   return animation_->is_animating();
 }
 
-bool ExclusiveAccessBubbleViews::CanTriggerOnMouse() const {
-  return bubble_view_context_->CanTriggerOnMouse();
+bool ExclusiveAccessBubbleViews::CanTriggerOnMousePointer() const {
+  return bubble_view_context_->CanTriggerOnMousePointer();
 }
 
 void ExclusiveAccessBubbleViews::OnFullscreenStateChanged() {
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
@@ -364,7 +366,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
 void ExclusiveAccessBubbleViews::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {
-  UpdateMouseWatcher();
+  UpdateMousePointerWatcher();
 }
 
 void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(

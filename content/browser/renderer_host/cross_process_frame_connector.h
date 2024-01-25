@@ -186,17 +186,18 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Cause the root RenderWidgetHostView to become focused.
   void FocusRootView();
 
-  // Locks the mouse, if |request_unadjusted_movement_| is true, try setting the
-  // unadjusted movement mode. Returns true if mouse is locked.
-  blink::mojom::PointerLockResult LockMouse(bool request_unadjusted_movement);
+  // Locks the mouse pointer, if |request_unadjusted_movement_| is true, try
+  // setting the unadjusted movement mode. Returns true if mouse pointer is
+  // locked.
+  blink::mojom::PointerLockResult LockPointer(bool request_unadjusted_movement);
 
-  // Change the current mouse lock to match the unadjusted movement option
+  // Change the current pointer lock to match the unadjusted movement option
   // given.
-  blink::mojom::PointerLockResult ChangeMouseLock(
+  blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement);
 
-  // Unlocks the mouse if the mouse is locked.
-  void UnlockMouse();
+  // Unlocks the mouse pointer if it is locked.
+  void UnlockPointer();
 
   // Returns the state of the frame's intersection with the top-level viewport.
   const blink::mojom::ViewportIntersectionState& intersection_state() const {

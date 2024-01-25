@@ -315,26 +315,26 @@ void CrossProcessFrameConnector::FocusRootView() {
     root_view->Focus();
 }
 
-blink::mojom::PointerLockResult CrossProcessFrameConnector::LockMouse(
+blink::mojom::PointerLockResult CrossProcessFrameConnector::LockPointer(
     bool request_unadjusted_movement) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    return root_view->LockMouse(request_unadjusted_movement);
+    return root_view->LockPointer(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-blink::mojom::PointerLockResult CrossProcessFrameConnector::ChangeMouseLock(
+blink::mojom::PointerLockResult CrossProcessFrameConnector::ChangePointerLock(
     bool request_unadjusted_movement) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    return root_view->ChangeMouseLock(request_unadjusted_movement);
+    return root_view->ChangePointerLock(request_unadjusted_movement);
   return blink::mojom::PointerLockResult::kWrongDocument;
 }
 
-void CrossProcessFrameConnector::UnlockMouse() {
+void CrossProcessFrameConnector::UnlockPointer() {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   if (root_view)
-    root_view->UnlockMouse();
+    root_view->UnlockPointer();
 }
 
 void CrossProcessFrameConnector::OnSynchronizeVisualProperties(

@@ -31,12 +31,12 @@ class Insets;
 class Point;
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 enum class DomCode : uint32_t;
 class TextInputClient;
-}
+}  // namespace ui
 
 namespace viz {
 class ClientFrameSinkVideoCapturer;
@@ -162,23 +162,23 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void CopyBackgroundColorIfPresentFrom(
       const RenderWidgetHostView& other) = 0;
 
-  // Return value indicates whether the mouse is locked successfully or a
-  // reason why it failed.
-  virtual blink::mojom::PointerLockResult LockMouse(
+  // Return value indicates whether the mouse pointer is locked successfully or
+  // a reason why it failed.
+  virtual blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) = 0;
-  // Return value indicates whether the MouseLock was changed successfully
+  // Return value indicates whether the pointer lock was changed successfully
   // or a reason why the change failed.
-  virtual blink::mojom::PointerLockResult ChangeMouseLock(
+  virtual blink::mojom::PointerLockResult ChangePointerLock(
       bool request_unadjusted_movement) = 0;
-  virtual void UnlockMouse() = 0;
+  virtual void UnlockPointer() = 0;
   // Returns true if the mouse pointer is currently locked.
-  virtual bool IsMouseLocked() = 0;
+  virtual bool IsPointerLocked() = 0;
   // Get the pointer lock unadjusted movement setting for testing.
   // Returns true if mouse is locked and is in unadjusted movement mode.
-  virtual bool GetIsMouseLockedUnadjustedMovementForTesting() = 0;
+  virtual bool GetIsPointerLockedUnadjustedMovementForTesting() = 0;
   // Whether the view can trigger pointer lock. This is the same as `HasFocus`
   // on non-Mac platforms, but on Mac it also ensures that the window is key.
-  virtual bool CanBeMouseLocked() = 0;
+  virtual bool CanBePointerLocked() = 0;
   // Whether the view is focused in accessibility mode. This is the same as
   // `HasFocus` on non-Mac platforms, but on Mac it also ensures that the window
   // is key.

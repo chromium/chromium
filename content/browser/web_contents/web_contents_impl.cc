@@ -1219,19 +1219,19 @@ WebContentsImpl::~WebContentsImpl() {
     outermost->SetAsFocusedWebContentsIfNecessary();
   }
 
-  if (mouse_lock_widget_) {
-    mouse_lock_widget_->RejectMouseLockOrUnlockIfNecessary(
+  if (pointer_lock_widget_) {
+    pointer_lock_widget_->RejectPointerLockOrUnlockIfNecessary(
         blink::mojom::PointerLockResult::kElementDestroyed);
 
     // Normally, the call above clears mouse_lock_widget_ pointers on the
-    // entire WebContents chain, since it results in calling LostMouseLock()
+    // entire WebContents chain, since it results in calling LostPointerLock()
     // when the mouse lock is already active. However, this doesn't work for
     // <webview> guests if the mouse lock request is still pending while the
     // <webview> is destroyed. Hence, ensure that all mouse lock widget
     // pointers are cleared. See https://crbug.com/1346245.
     for (WebContentsImpl* current = this; current;
          current = current->GetOuterWebContents()) {
-      current->mouse_lock_widget_ = nullptr;
+      current->pointer_lock_widget_ = nullptr;
     }
   }
 
@@ -3692,8 +3692,8 @@ void WebContentsImpl::RenderWidgetDeleted(
     return;
   }
 
-  if (render_widget_host == mouse_lock_widget_) {
-    LostMouseLock(mouse_lock_widget_);
+  if (render_widget_host == pointer_lock_widget_) {
+    LostPointerLock(pointer_lock_widget_);
   }
 
   CancelKeyboardLock(render_widget_host);
@@ -4212,12 +4212,12 @@ blink::mojom::DisplayMode WebContentsImpl::GetDisplayMode() const {
                    : blink::mojom::DisplayMode::kBrowser;
 }
 
-void WebContentsImpl::RequestToLockMouse(
+void WebContentsImpl::RequestToLockPointer(
     RenderWidgetHostImpl* render_widget_host,
     bool user_gesture,
     bool last_unlocked_by_target,
     bool privileged) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestToLockMouse",
+  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestPointerLock",
                         "render_widget_host", render_widget_host, "privileged",
                         privileged);
   if (render_widget_host->frame_tree()->is_fenced_frame()) {
@@ -4230,8 +4230,8 @@ void WebContentsImpl::RequestToLockMouse(
   }
   for (WebContentsImpl* current = this; current;
        current = current->GetOuterWebContents()) {
-    if (current->mouse_lock_widget_) {
-      render_widget_host->GotResponseToLockMouseRequest(
+    if (current->pointer_lock_widget_) {
+      render_widget_host->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kAlreadyLocked);
       return;
     }
@@ -4239,8 +4239,8 @@ void WebContentsImpl::RequestToLockMouse(
 
   if (privileged) {
     DCHECK(!GetOuterWebContents());
-    mouse_lock_widget_ = render_widget_host;
-    render_widget_host->GotResponseToLockMouseRequest(
+    pointer_lock_widget_ = render_widget_host;
+    render_widget_host->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kSuccess);
     return;
   }
@@ -4257,49 +4257,51 @@ void WebContentsImpl::RequestToLockMouse(
   if (widget_in_frame_tree && delegate_) {
     for (WebContentsImpl* current = this; current;
          current = current->GetOuterWebContents()) {
-      current->mouse_lock_widget_ = render_widget_host;
+      current->pointer_lock_widget_ = render_widget_host;
     }
 
-    delegate_->RequestToLockMouse(this, user_gesture, last_unlocked_by_target);
+    delegate_->RequestPointerLock(this, user_gesture, last_unlocked_by_target);
   } else {
-    render_widget_host->GotResponseToLockMouseRequest(
+    render_widget_host->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kWrongDocument);
   }
 }
 
-void WebContentsImpl::LostMouseLock(RenderWidgetHostImpl* render_widget_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostMouseLock",
+void WebContentsImpl::LostPointerLock(
+    RenderWidgetHostImpl* render_widget_host) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostPointerLock",
                         "render_widget_host", render_widget_host);
-  CHECK(mouse_lock_widget_);
+  CHECK(pointer_lock_widget_);
 
-  if (WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_) != this) {
-    return mouse_lock_widget_->delegate()->LostMouseLock(render_widget_host);
+  if (WebContentsImpl::FromRenderWidgetHostImpl(pointer_lock_widget_) != this) {
+    return pointer_lock_widget_->delegate()->LostPointerLock(
+        render_widget_host);
   }
 
-  mouse_lock_widget_->SendMouseLockLost();
+  pointer_lock_widget_->SendPointerLockLost();
   for (WebContentsImpl* current = this; current;
        current = current->GetOuterWebContents()) {
-    current->mouse_lock_widget_ = nullptr;
+    current->pointer_lock_widget_ = nullptr;
   }
 
   if (delegate_) {
-    delegate_->LostMouseLock();
+    delegate_->LostPointerLock();
   }
 }
 
-bool WebContentsImpl::HasMouseLock(RenderWidgetHostImpl* render_widget_host) {
+bool WebContentsImpl::HasPointerLock(RenderWidgetHostImpl* render_widget_host) {
   // To verify if the mouse is locked, the mouse_lock_widget_ needs to be
   // assigned to the widget that requested the mouse lock, and the top-level
   // platform RenderWidgetHostView needs to hold the mouse lock from the OS.
   auto* widget_host = GetTopLevelRenderWidgetHostView();
-  return mouse_lock_widget_ == render_widget_host && widget_host &&
-         widget_host->IsMouseLocked();
+  return pointer_lock_widget_ == render_widget_host && widget_host &&
+         widget_host->IsPointerLocked();
 }
 
-RenderWidgetHostImpl* WebContentsImpl::GetMouseLockWidget() {
+RenderWidgetHostImpl* WebContentsImpl::GetPointerLockWidget() {
   auto* widget_host = GetTopLevelRenderWidgetHostView();
-  if (widget_host && widget_host->IsMouseLocked()) {
-    return mouse_lock_widget_;
+  if (widget_host && widget_host->IsPointerLocked()) {
+    return pointer_lock_widget_;
   }
 
   return nullptr;
@@ -5912,43 +5914,43 @@ gfx::Size WebContentsImpl::GetPreferredSize() {
   return IsBeingCaptured() ? preferred_size_for_capture_ : preferred_size_;
 }
 
-bool WebContentsImpl::GotResponseToLockMouseRequest(
+bool WebContentsImpl::GotResponseToPointerLockRequest(
     blink::mojom::PointerLockResult result) {
   OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::GotResponseToLockMouseRequest");
-  if (mouse_lock_widget_) {
+                        "WebContentsImpl::GotResponseToPointerLockRequest");
+  if (pointer_lock_widget_) {
     auto* web_contents =
-        WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_);
+        WebContentsImpl::FromRenderWidgetHostImpl(pointer_lock_widget_);
     if (web_contents != this) {
-      return web_contents->GotResponseToLockMouseRequest(result);
+      return web_contents->GotResponseToPointerLockRequest(result);
     }
 
-    if (mouse_lock_widget_->GotResponseToLockMouseRequest(result)) {
+    if (pointer_lock_widget_->GotResponseToPointerLockRequest(result)) {
       return true;
     }
   }
 
   for (WebContentsImpl* current = this; current;
        current = current->GetOuterWebContents()) {
-    current->mouse_lock_widget_ = nullptr;
+    current->pointer_lock_widget_ = nullptr;
   }
 
   return false;
 }
 
-void WebContentsImpl::GotLockMousePermissionResponse(bool allowed) {
-  GotResponseToLockMouseRequest(
+void WebContentsImpl::GotPointerLockPermissionResponse(bool allowed) {
+  GotResponseToPointerLockRequest(
       allowed ? blink::mojom::PointerLockResult::kSuccess
               : blink::mojom::PointerLockResult::kPermissionDenied);
 }
 
-void WebContentsImpl::DropMouseLockForTesting() {
-  if (mouse_lock_widget_) {
-    mouse_lock_widget_->RejectMouseLockOrUnlockIfNecessary(
+void WebContentsImpl::DropPointerLockForTesting() {
+  if (pointer_lock_widget_) {
+    pointer_lock_widget_->RejectPointerLockOrUnlockIfNecessary(
         blink::mojom::PointerLockResult::kUnknownError);
     for (WebContentsImpl* current = this; current;
          current = current->GetOuterWebContents()) {
-      current->mouse_lock_widget_ = nullptr;
+      current->pointer_lock_widget_ = nullptr;
     }
   }
 }
@@ -6098,7 +6100,7 @@ bool WebContentsImpl::WasEverAudible() {
 void WebContentsImpl::ExitFullscreen(bool will_cause_resize) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ExitFullscreen");
   // Clean up related state and initiate the fullscreen exit.
-  GetRenderViewHost()->GetWidget()->RejectMouseLockOrUnlockIfNecessary(
+  GetRenderViewHost()->GetWidget()->RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult::kUserRejected);
   ExitFullscreenMode(will_cause_resize);
 }

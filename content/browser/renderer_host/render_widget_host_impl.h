@@ -481,11 +481,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // https://www.chromium.org/developers/design-documents/aura/focus-and-activation.
   bool is_active() const { return is_active_; }
 
-  // Called to notify the RenderWidget that it has lost the mouse lock.
-  void LostMouseLock();
+  // Called to notify the RenderWidget that it has lost the pointer lock.
+  void LostPointerLock();
 
-  // Notifies the RenderWidget that it lost the mouse lock.
-  void SendMouseLockLost();
+  // Notifies the RenderWidget that it lost the pointer lock.
+  void SendPointerLockLost();
 
   bool is_last_unlocked_by_target() const {
     return is_last_unlocked_by_target_;
@@ -634,10 +634,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Whether forwarded WebInputEvents are being ignored.
   bool IsIgnoringInputEvents() const;
 
-  // Called when the response to a pending mouse lock request has arrived.
-  // Returns true if |allowed| is true and the mouse has been successfully
+  // Called when the response to a pending pointer lock request has arrived.
+  // Returns true if |allowed| is true and the pointer has been successfully
   // locked.
-  bool GotResponseToLockMouseRequest(blink::mojom::PointerLockResult result);
+  bool GotResponseToPointerLockRequest(blink::mojom::PointerLockResult result);
 
   // Called when the response to a pending keyboard lock request has arrived.
   // |allowed| should be true if the current tab is in tab initiated fullscreen
@@ -684,7 +684,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // or create it if it doesn't already exist.
   BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager();
 
-  void RejectMouseLockOrUnlockIfNecessary(
+  void RejectPointerLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult reason);
 
   // Store values received in a child frame RenderWidgetHost from a parent
@@ -977,7 +977,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                                blink::mojom::InputEventResultState ack_result);
   // ---------------------------------------------------------------------------
 
-  bool IsMouseLocked() const;
+  bool IsPointerLocked() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FullscreenDetectionTest,
                            EncompassingDivNotFullscreen);
@@ -1038,8 +1039,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                           blink::mojom::InputEventResultSource ack_source,
                           blink::mojom::InputEventResultState ack_result);
 
-  // Release the mouse lock
-  void UnlockMouse();
+  // Release the pointer lock
+  void UnlockPointer();
 
   // IPC message handlers
   void OnClose();
@@ -1263,7 +1264,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // One side of a pipe that is held open while the pointer is locked.
   // The other side is held be the renderer.
-  mojo::Receiver<blink::mojom::PointerLockContext> mouse_lock_context_{this};
+  mojo::Receiver<blink::mojom::PointerLockContext> pointer_lock_context_{this};
 
   // Tracks if LostFocus() has been called on this RenderWidgetHost since the
   // previous change in focus. This tracks behaviors like a user clicking out of
@@ -1378,8 +1379,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // back to the original tab, because the content may already have changed.
   bool suppress_events_until_keydown_ = false;
 
-  bool pending_mouse_lock_request_ = false;
-  bool mouse_lock_raw_movement_ = false;
+  bool pending_pointer_lock_request_ = false;
+  bool pointer_lock_raw_movement_ = false;
   // Stores the keyboard keys to lock while waiting for a pending lock request.
   std::optional<base::flat_set<ui::DomCode>> keyboard_keys_to_lock_;
   bool keyboard_lock_requested_ = false;
@@ -1489,7 +1490,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
-  InputRouterImpl::RequestMouseLockCallback request_mouse_callback_;
+  InputRouterImpl::RequestMouseLockCallback request_pointer_lock_callback_;
 
   // Parameters to pass to blink::mojom::Widget::WasShown after
   // `waiting_for_init_` becomes true. These are stored in a struct instead of

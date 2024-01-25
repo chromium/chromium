@@ -134,7 +134,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   bool IsImmersiveModeEnabled() const override;
   gfx::Rect GetTopContainerBoundsInScreen() override;
   void DestroyAnyExclusiveAccessBubble() override;
-  bool CanTriggerOnMouse() const override;
+  bool CanTriggerOnMousePointer() const override;
 
   // WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

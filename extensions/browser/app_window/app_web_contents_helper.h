@@ -45,8 +45,8 @@ class AppWebContentsHelper {
   content::WebContents* OpenURLFromTab(
       const content::OpenURLParams& params) const;
 
-  // Requests to lock the mouse. See WebContentsDelegate.
-  void RequestToLockMouse() const;
+  // Requests to lock the mouse pointer. See WebContentsDelegate.
+  void RequestPointerLock() const;
 
   // Asks permission to use the camera and/or microphone. See
   // WebContentsDelegate.

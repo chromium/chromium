@@ -44,22 +44,22 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
       hide_timeout_(
           FROM_HERE,
           base::Milliseconds(kInitialDelayMs),
-          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePointerPosition,
                               base::Unretained(this))),
       idle_timeout_(
           FROM_HERE,
           base::Milliseconds(kIdleTimeMs),
-          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePointerPosition,
                               base::Unretained(this))),
       suppress_notify_timeout_(
           FROM_HERE,
           base::Milliseconds(kSnoozeNotificationsTimeMs),
-          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePointerPosition,
                               base::Unretained(this))),
-      mouse_position_checker_(
+      mouse_pointer_position_checker_(
           FROM_HERE,
           base::Milliseconds(1000 / kPositionCheckHz),
-          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePointerPosition,
                               base::Unretained(this))) {
   DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type_);
 }
@@ -92,23 +92,23 @@ void ExclusiveAccessBubble::OnUserInput() {
   suppress_notify_timeout_.Reset();
 }
 
-void ExclusiveAccessBubble::StartWatchingMouse() {
-  // Start the initial delay timer and begin watching the mouse.
+void ExclusiveAccessBubble::StartWatchingMousePointer() {
+  // Start the initial delay timer and begin watching the pointer.
   ShowAndStartTimers();
-  mouse_position_checker_.Reset();
+  mouse_pointer_position_checker_.Reset();
 }
 
-void ExclusiveAccessBubble::StopWatchingMouse() {
+void ExclusiveAccessBubble::StopWatchingMousePointer() {
   hide_timeout_.Stop();
   idle_timeout_.Stop();
-  mouse_position_checker_.Stop();
+  mouse_pointer_position_checker_.Stop();
 }
 
-bool ExclusiveAccessBubble::IsWatchingMouse() const {
-  return mouse_position_checker_.IsRunning();
+bool ExclusiveAccessBubble::IsWatchingMousePointer() const {
+  return mouse_pointer_position_checker_.IsRunning();
 }
 
-void ExclusiveAccessBubble::CheckMousePosition() {
+void ExclusiveAccessBubble::CheckMousePointerPosition() {
   if (!hide_timeout_.IsRunning()) {
     // If no input has been detected yet and the cursor is still on a different
     // display than the bubble, set a flag to re-show the bubble once input is

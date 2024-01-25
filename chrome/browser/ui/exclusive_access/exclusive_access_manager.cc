@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
+#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -48,7 +48,7 @@ ExclusiveAccessManager::ExclusiveAccessManager(
     : exclusive_access_context_(exclusive_access_context),
       fullscreen_controller_(this),
       keyboard_lock_controller_(this),
-      mouse_lock_controller_(this) {}
+      pointer_lock_controller_(this) {}
 
 ExclusiveAccessManager::~ExclusiveAccessManager() = default;
 
@@ -65,24 +65,27 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
     if (!fullscreen_controller_.IsTabFullscreen())
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
 
-    if (mouse_lock_controller_.IsMouseLockedSilently()) {
+    if (pointer_lock_controller_.IsPointerLockedSilently()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
     }
 
     if (keyboard_lock_controller_.RequiresPressAndHoldEscToExit())
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
 
-    if (mouse_lock_controller_.IsMouseLocked())
-      return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION;
+    if (pointer_lock_controller_.IsPointerLocked()) {
+      return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION;
+    }
 
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
   }
 
-  if (mouse_lock_controller_.IsMouseLockedSilently())
+  if (pointer_lock_controller_.IsPointerLockedSilently()) {
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  }
 
-  if (mouse_lock_controller_.IsMouseLocked())
-    return EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION;
+  if (pointer_lock_controller_.IsPointerLocked()) {
+    return EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION;
+  }
 
   if (fullscreen_controller_.IsExtensionFullscreenOrPending())
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION;
@@ -106,7 +109,7 @@ void ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent(
 GURL ExclusiveAccessManager::GetExclusiveAccessBubbleURL() const {
   GURL result = fullscreen_controller_.GetURLForExclusiveAccessBubble();
   if (!result.is_valid())
-    result = mouse_lock_controller_.GetURLForExclusiveAccessBubble();
+    result = pointer_lock_controller_.GetURLForExclusiveAccessBubble();
   return result;
 }
 
@@ -124,19 +127,19 @@ void ExclusiveAccessManager::RecordLockStateOnEnteringBrowserFullscreen()
 void ExclusiveAccessManager::OnTabDeactivated(WebContents* web_contents) {
   fullscreen_controller_.OnTabDeactivated(web_contents);
   keyboard_lock_controller_.OnTabDeactivated(web_contents);
-  mouse_lock_controller_.OnTabDeactivated(web_contents);
+  pointer_lock_controller_.OnTabDeactivated(web_contents);
 }
 
 void ExclusiveAccessManager::OnTabDetachedFromView(WebContents* web_contents) {
   fullscreen_controller_.OnTabDetachedFromView(web_contents);
   keyboard_lock_controller_.OnTabDetachedFromView(web_contents);
-  mouse_lock_controller_.OnTabDetachedFromView(web_contents);
+  pointer_lock_controller_.OnTabDetachedFromView(web_contents);
 }
 
 void ExclusiveAccessManager::OnTabClosing(WebContents* web_contents) {
   fullscreen_controller_.OnTabClosing(web_contents);
   keyboard_lock_controller_.OnTabClosing(web_contents);
-  mouse_lock_controller_.OnTabClosing(web_contents);
+  pointer_lock_controller_.OnTabClosing(web_contents);
 }
 
 bool ExclusiveAccessManager::HandleUserKeyEvent(
@@ -155,7 +158,7 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
 
   bool handled = false;
   handled = fullscreen_controller_.HandleUserPressedEscape();
-  handled |= mouse_lock_controller_.HandleUserPressedEscape();
+  handled |= pointer_lock_controller_.HandleUserPressedEscape();
   handled |= keyboard_lock_controller_.HandleUserPressedEscape();
   return handled;
 }
@@ -167,19 +170,19 @@ void ExclusiveAccessManager::OnUserInput() {
 void ExclusiveAccessManager::ExitExclusiveAccess() {
   fullscreen_controller_.ExitExclusiveAccessToPreviousState();
   keyboard_lock_controller_.LostKeyboardLock();
-  mouse_lock_controller_.LostMouseLock();
+  pointer_lock_controller_.LostPointerLock();
 }
 
 void ExclusiveAccessManager::RecordLockStateOnEnteringFullscreen(
     const char histogram_name[]) const {
   LockState lock_state = LockState::kUnlocked;
   if (keyboard_lock_controller_.IsKeyboardLockActive()) {
-    if (mouse_lock_controller_.IsMouseLocked()) {
+    if (pointer_lock_controller_.IsPointerLocked()) {
       lock_state = LockState::kKeyboardAndPointerLocked;
     } else {
       lock_state = LockState::kKeyboardLocked;
     }
-  } else if (mouse_lock_controller_.IsMouseLocked()) {
+  } else if (pointer_lock_controller_.IsPointerLocked()) {
     lock_state = LockState::kPointerLocked;
   }
   base::UmaHistogramEnumeration(histogram_name, lock_state);

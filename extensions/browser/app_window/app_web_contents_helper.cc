@@ -82,7 +82,7 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
   return contents;
 }
 
-void AppWebContentsHelper::RequestToLockMouse() const {
+void AppWebContentsHelper::RequestPointerLock() const {
   const Extension* extension = GetExtension();
   if (!extension)
     return;
@@ -92,10 +92,10 @@ void AppWebContentsHelper::RequestToLockMouse() const {
       web_contents_->GetPrimaryMainFrame());
 
   if (has_permission)
-    web_contents_->GotResponseToLockMouseRequest(
+    web_contents_->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kSuccess);
   else
-    web_contents_->GotResponseToLockMouseRequest(
+    web_contents_->GotResponseToPointerLockRequest(
         blink::mojom::PointerLockResult::kPermissionDenied);
 }
 

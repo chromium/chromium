@@ -52,7 +52,7 @@ bool BrowserPluginEmbedder::HandleKeyboardEvent(
 
   GetBrowserPluginGuestManager()->ForEachGuest(
       web_contents_, [](WebContents* guest) {
-        guest->GotResponseToLockMouseRequest(
+        guest->GotResponseToPointerLockRequest(
             blink::mojom::PointerLockResult::kUserRejected);
 
         // Returns false to iterate over all guests.

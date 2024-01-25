@@ -404,7 +404,7 @@ void PresentationReceiverWindowView::DestroyAnyExclusiveAccessBubble() {
   exclusive_access_bubble_.reset();
 }
 
-bool PresentationReceiverWindowView::CanTriggerOnMouse() const {
+bool PresentationReceiverWindowView::CanTriggerOnMousePointer() const {
   return true;
 }
 

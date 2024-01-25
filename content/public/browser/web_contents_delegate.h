@@ -543,15 +543,15 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void ResizeDueToAutoResize(WebContents* web_contents,
                                      const gfx::Size& new_size) {}
 
-  // Requests to lock the mouse. Once the request is approved or rejected,
-  // GotResponseToLockMouseRequest() will be called on the requesting tab
-  // contents.
-  virtual void RequestToLockMouse(WebContents* web_contents,
+  // Requests to lock the mouse pointer. Once the request is approved or
+  // rejected, GotResponseToPointerLockRequest() will be called on the
+  // requesting tab contents.
+  virtual void RequestPointerLock(WebContents* web_contents,
                                   bool user_gesture,
                                   bool last_unlocked_by_target);
 
-  // Notification that the page has lost the mouse lock.
-  virtual void LostMouseLock() {}
+  // Notification that the page has lost the pointer lock.
+  virtual void LostPointerLock() {}
 
   // Requests keyboard lock. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on |web_contents|.

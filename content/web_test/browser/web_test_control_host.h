@@ -139,7 +139,7 @@ class WebTestControlHost : public WebContentsObserver,
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
       RenderFrameHost* frame,
       const BluetoothChooser::EventHandler& event_handler);
-  void RequestToLockMouse(WebContents* web_contents);
+  void RequestPointerLock(WebContents* web_contents);
 
   WebTestResultPrinter* printer() { return printer_.get(); }
   void set_printer(WebTestResultPrinter* printer) { printer_.reset(printer); }

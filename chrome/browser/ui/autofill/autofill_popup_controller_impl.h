@@ -243,7 +243,7 @@ class AutofillPopupControllerImpl
   // Returns true iff the focused frame has a pointer lock, which may be used to
   // trick the user into accepting some suggestion (crbug.com/1239496). In such
   // a case, we should hide the popup.
-  bool IsMouseLocked() const;
+  bool IsPointerLocked() const;
 
   // ExpandablePopupParentControllerImpl:
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(

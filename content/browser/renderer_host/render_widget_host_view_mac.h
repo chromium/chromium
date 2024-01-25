@@ -115,7 +115,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void WasUnOccluded() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
-  bool IsMouseLocked() override;
+  bool IsPointerLocked() override;
   void SetActive(bool active) override;
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
@@ -166,14 +166,14 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       const cc::RenderFrameMetadata& metadata) override;
   void DidNavigate() override;
 
-  blink::mojom::PointerLockResult LockMouse(bool) override;
-  blink::mojom::PointerLockResult ChangeMouseLock(bool) override;
-  void UnlockMouse() override;
+  blink::mojom::PointerLockResult LockPointer(bool) override;
+  blink::mojom::PointerLockResult ChangePointerLock(bool) override;
+  void UnlockPointer() override;
   // Checks if the window is key, in addition to "focused".
-  bool CanBeMouseLocked() override;
+  bool CanBePointerLocked() override;
   // Checks if the window is key, in addition to "focused".
   bool AccessibilityHasFocus() override;
-  bool GetIsMouseLockedUnadjustedMovementForTesting() override;
+  bool GetIsPointerLockedUnadjustedMovementForTesting() override;
   // Returns true when running on a recent enough OS for unaccelerated pointer
   // events.
   static bool IsUnadjustedMouseMovementSupported();
@@ -663,11 +663,11 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // mouse position just as mouse lock was entered; the movement they report
   // indicates what the change in position of the mouse would be had it not been
   // locked.
-  bool mouse_locked_ = false;
+  bool pointer_locked_ = false;
 
   // Tracks whether unaccelerated mouse motion events are sent while the mouse
   // is locked.
-  bool mouse_lock_unadjusted_movement_ = false;
+  bool pointer_lock_unadjusted_movement_ = false;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via

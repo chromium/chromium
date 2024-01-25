@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Fullscreen and Mouse Lock Scripts</title>
+<title>Fullscreen and Pointer Lock Scripts</title>
 <style type="text/css">
   #HTMLCursor {
       border: solid black 1px;
@@ -21,9 +21,10 @@ function enterFullscreen() {
 }
 
 // Wait for notification from JS, then notify test of success or failure
-// callback that the click has registered and the mouse lock state has changed.
-function lockMouse(callback) {
-  console.log("lockMouse()");
+// callback that the click has registered and the pointer lock state has
+// changed.
+function lockPointer(callback) {
+  console.log("lockPointer()");
   var target = document.getElementById("lockTarget1");
 
   function failure() {
@@ -50,8 +51,8 @@ function lockMouse(callback) {
 // wait state reading the value of lock_result. One of the two asynchronous
 // functions in the JS will be executed. The PyAuto code waits for lock_result
 // to return "success" or "failure". Sample PyAuto code:
-// lock_result = self._driver.execute_script('lockMouseAndSetLockResult()')
-function lockMouseAndSetLockResult(targetId) {
+// lock_result = self._driver.execute_script('lockPointerAndSetLockResult()')
+function lockPointerAndSetLockResult(targetId) {
   var target = document.getElementById(targetId);
   lock_result = "";
 
@@ -72,28 +73,28 @@ function lockMouseAndSetLockResult(targetId) {
   target.requestPointerLock();
 }
 
-function lockMouseAndSetLockResult() {
-  console.log("lockMouseAndSetLockResult()");
-  lockMouseAndSetLockResult("lockTarget1");
+function lockPointerAndSetLockResult() {
+  console.log("lockPointerAndSetLockResult()");
+  lockPointerAndSetLockResult("lockTarget1");
 }
 
-function delayedLockMouse() {
-  console.log("delayedLockMouse()");
-  window.setTimeout(lockMouse, 5050);
+function delayedLockPointer() {
+  console.log("delayedLockPointer()");
+  window.setTimeout(lockPointer, 5050);
   // To test a lock not associated with user activation, the delay must
   // be over 5 seconds so that the transient user activation expires
   // before locking.
 }
 
-function unlockMouse() {
-  console.log("unlockMouse()");
+function unlockPointer() {
+  console.log("unlockPointer()");
   document.exitPointerLock();
 }
 
-function enterFullscreenAndLockMouse() {
-  console.log("enterFullscreenAndLockMouse()");
+function enterFullscreenAndLockPointer() {
+  console.log("enterFullscreenAndLockPointer()");
   enterFullscreen();
-  lockMouse();
+  lockPointer();
 }
 
 function moveHTMLCursorTo(x, y) {
@@ -152,10 +153,10 @@ function init() {
 
   document.addEventListener("keypress", function (e) {
     switch (String.fromCharCode(e.charCode)) {
-    case "1": lockMouse(); break;
-    case "d": delayedLockMouse(); break;
-    case "u": unlockMouse(); break;
-    case "b": enterFullscreenAndLockMouse(); break;
+    case "1": lockPointer(); break;
+    case "d": delayedLockPointer(); break;
+    case "u": unlockPointer(); break;
+    case "b": enterFullscreenAndLockPointer(); break;
     default: moveHTMLCursorToCenter(); break;
     }
   });
@@ -166,18 +167,18 @@ function init() {
 <body onload="init()"
   title="This tooltip should not be shown if the mouse is locked.">
   <div id="container">
-    <button id="lockMouse" onclick="lockMouse();">
-      lockMouse() [1]
+    <button id="lockPointer" onclick="lockPointer();">
+      lockPointer() [1]
     </button><br>
-    <button id="delayedLockMouse" onclick="delayedLockMouse();">
-      delayedLockMouse() [d]
+    <button id="delayedLockPointer" onclick="delayedLockPointer();">
+      delayedLockPointer() [d]
     </button><br>
-    <button id="unlockMouse" onclick="unlockMouse();">
-      unlockMouse() [u]
+    <button id="unlockPointer" onclick="unlockPointer();">
+      unlockPointer() [u]
     </button><br>
-    <button id="enterFullscreenAndLockMouse"
-      onclick="enterFullscreenAndLockMouse()">
-      enterFullscreenAndLockMouse() [b]
+    <button id="enterFullscreenAndLockPointer"
+      onclick="enterFullscreenAndLockPointer()">
+      enterFullscreenAndLockPointer() [b]
     </button><br>
     <div id="lockTarget1">lockTarget1</div>
     <div id="lockTarget2">lockTarget2</div>
@@ -188,7 +189,7 @@ function init() {
       anchor link
     </a>
     navigates to an anchor on this page. The browser should not exit tab
-    fullscreen or mouse lock.</p>
+    fullscreen or pointer lock.</p>
   </div>
   <p>This text is outside of the container that is made fullscreen. This text
   should not be visible when fullscreen.</p>
