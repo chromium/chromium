@@ -408,7 +408,7 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
   // `seller_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.
   auction_worklet_manager_->RequestSellerWorklet(
-      *seller_info->auction_config->decision_logic_url,
+      devtools_auction_id_, *seller_info->auction_config->decision_logic_url,
       seller_info->auction_config->trusted_scoring_signals_url,
       seller_info->auction_config->seller_experiment_group_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
@@ -695,7 +695,7 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   // `bidder_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.
   auction_worklet_manager_->RequestBidderWorklet(
-      interest_group.bidding_url.value_or(GURL()),
+      devtools_auction_id_, interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
       interest_group.trusted_bidding_signals_url,
       /*needs_cors_for_additional_bid=*/

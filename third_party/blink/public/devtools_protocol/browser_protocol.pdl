@@ -9546,6 +9546,15 @@ experimental domain Storage
       started
       configResolved
 
+  # Enum of network fetches auctions can do.
+  type InterestGroupAuctionFetchType extends string
+    enum
+      bidderJs
+      bidderWasm
+      sellerJs
+      bidderTrustedSignals
+      sellerTrustedSignals
+
   # Ad advertising element inside an interest group.
   type InterestGroupAd extends object
     properties
@@ -9825,7 +9834,8 @@ experimental domain Storage
     parameters
       boolean enable
 
-  # Enables/Disables issuing of interestGroupAuctionEvent events.
+  # Enables/Disables issuing of interestGroupAuctionEventOccurred and
+  # interestGroupAuctionNetworkRequestCreated.
   experimental command setInterestGroupAuctionTracking
     parameters
       boolean enable
@@ -9965,6 +9975,19 @@ experimental domain Storage
       optional InterestGroupAuctionId parentAuctionId
       # Set for started and configResolved
       optional object auctionConfig
+
+  # Specifies which auctions a particular network fetch may be related to, and
+  # in what role. Note that it is not ordered with respect to
+  # Network.requestWillBeSent (but will happen before loadingFinished
+  # loadingFailed).
+  event interestGroupAuctionNetworkRequestCreated
+    parameters
+      InterestGroupAuctionFetchType type
+      Network.RequestId requestId
+      # This is the set of the auctions using the worklet that issued this
+      # request.  In the case of trusted signals, it's possible that only some of
+      # them actually care about the keys being queried.
+      array of InterestGroupAuctionId auctions
 
   # Shared storage was accessed by the associated page.
   # The following parameters are included in all events.

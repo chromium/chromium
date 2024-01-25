@@ -1536,6 +1536,17 @@ void OnInterestGroupAuctionEventOccurred(
       event_time, type, unique_auction_id, parent_auction_id, auction_config);
 }
 
+void OnInterestGroupAuctionNetworkRequestCreated(
+    int frame_tree_node_id,
+    content::InterestGroupAuctionFetchType type,
+    const std::string& request_id,
+    const std::vector<std::string>& devtools_auction_ids) {
+  DispatchToAgents(frame_tree_node_id,
+                   &protocol::StorageHandler::
+                       NotifyInterestGroupAuctionNetworkRequestCreated,
+                   type, request_id, devtools_auction_ids);
+}
+
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {
   // Note this intentionally deviates from the usual instrumentation signal

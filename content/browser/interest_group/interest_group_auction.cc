@@ -1067,7 +1067,7 @@ class InterestGroupAuction::BuyerHelper
       auto worklet_key = auction_->BidderWorkletKey(*bid_state);
       auction_->auction_metrics_recorder_->ReportBidderWorkletKey(worklet_key);
       auction_->auction_worklet_manager_->RequestWorkletByKey(
-          worklet_key,
+          worklet_key, auction_->devtools_auction_id_,
           base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
                          base::Unretained(this), bid_state.get()),
           base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
@@ -3929,8 +3929,8 @@ void InterestGroupAuction::RequestSellerWorklet() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
                                     *trace_id_);
   auction_worklet_manager_->RequestSellerWorklet(
-      *config_->decision_logic_url, config_->trusted_scoring_signals_url,
-      config_->seller_experiment_group_id,
+      devtools_auction_id_, *config_->decision_logic_url,
+      config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
