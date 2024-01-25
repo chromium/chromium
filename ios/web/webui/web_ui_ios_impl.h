@@ -55,11 +55,11 @@ class WebUIIOSImpl : public web::WebUIIOS,
       std::map<std::string, MessageCallback, std::less<>>;
   MessageCallbackMap message_callbacks_;
 
-  // The WebUIIOSMessageHandlers we own.
-  std::vector<std::unique_ptr<WebUIIOSMessageHandler>> handlers_;
-
   // Non-owning pointer to the WebState this WebUIIOS is associated with.
   raw_ptr<WebState> web_state_;
+
+  // A list of WebUIIOSMessageHandlers owned by this WebUIIOS implementation.
+  std::vector<std::unique_ptr<WebUIIOSMessageHandler>> handlers_;
 
   std::unique_ptr<WebUIIOSController> controller_;
 };
