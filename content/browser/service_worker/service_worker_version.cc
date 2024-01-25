@@ -3068,6 +3068,13 @@ bool ServiceWorkerVersion::IsStaticRouterEnabled() {
   return false;
 }
 
+bool ServiceWorkerVersion::HasRouterWithNonFetchEventSource() const {
+  if (!router_evaluator_) {
+    return false;
+  }
+  return router_evaluator_->has_non_fetch_event_source();
+}
+
 void ServiceWorkerVersion::GetAssociatedInterface(
     const std::string& name,
     mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>

@@ -734,6 +734,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // enabled or having a valid trial token.
   bool IsStaticRouterEnabled();
 
+  // Check if the static routing API is used for this worker and the registered
+  // routers have the sources other than 'fetch-event'.
+  bool HasRouterWithNonFetchEventSource() const;
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
