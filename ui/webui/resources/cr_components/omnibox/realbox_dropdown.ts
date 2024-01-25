@@ -203,10 +203,11 @@ export class RealboxDropdownElement extends PolymerElement {
       this.unselect();
       return;
     }
-    // If the updated selection is a new match, remove any remaining focus on
-    // the previous match.
+    // If the updated selection is a new match, remove any remaining selection
+    // on the previously selected match.
     if (oldSelection.line !== selection.line) {
-      this.selectableMatchElements[this.selectedMatchIndex]?.removeSelection();
+      this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
+          selection);
     }
     this.selectIndex(selection.line);
     this.selectableMatchElements[this.selectedMatchIndex]?.updateSelection(
