@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -27,6 +28,12 @@ inline constexpr FieldType kFieldTypeChildren_BR_ADDRESS_HOME_ADDRESS[] = {ADDRE
 inline constexpr FieldType kFieldTypeChildren_DE_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 inline constexpr FieldType kFieldTypeChildren_DE_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_OVERFLOW};
 inline constexpr FieldType kFieldTypeChildren_DE_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
+// Field types for country IN.
+inline constexpr FieldType kFieldTypeChildren_IN_ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_DEPENDENT_LOCALITY};
+inline constexpr FieldType kFieldTypeChildren_IN_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK[] = {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_DEPENDENT_LOCALITY};
+inline constexpr FieldType kFieldTypeChildren_IN_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_LANDMARK};
+inline constexpr FieldType kFieldTypeChildren_IN_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY, ADDRESS_HOME_LANDMARK, ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK, ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK};
+inline constexpr FieldType kFieldTypeChildren_IN_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country MX.
 inline constexpr FieldType kFieldTypeChildren_MX_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 inline constexpr FieldType kFieldTypeChildren_MX_ADDRESS_HOME_APT[] = {ADDRESS_HOME_APT_TYPE, ADDRESS_HOME_APT_NUM};
@@ -66,6 +73,13 @@ inline constexpr FieldTypeDescription kModel_DE[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_DE_ADDRESS_HOME_STREET_LOCATION},
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_DE_ADDRESS_HOME_STREET_ADDRESS},
     FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_DE_ADDRESS_HOME_ADDRESS}};
+// Node properties for country IN.
+inline constexpr FieldTypeDescription kModel_IN[] = {
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY, .children = kFieldTypeChildren_IN_ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK, .children = kFieldTypeChildren_IN_ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK, .children = kFieldTypeChildren_IN_ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_IN_ADDRESS_HOME_STREET_ADDRESS},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_IN_ADDRESS_HOME_ADDRESS}};
 // Node properties for country MX.
 inline constexpr FieldTypeDescription kModel_MX[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_MX_ADDRESS_HOME_STREET_LOCATION},
@@ -94,9 +108,18 @@ inline constexpr auto kAutofillModelRules =
     base::MakeFixedFlatMap<std::string_view, base::span<const FieldTypeDescription>>({
       {"BR", kModel_BR},
       {"DE", kModel_DE},
+      {"IN", kModel_IN},
       {"MX", kModel_MX},
       {"US", kModel_US},
       {"XX", kModel_XX}
+      });
+
+// Set of pairs (country_code, field_type) that represent collection of
+// synthesized nodes for all countries.
+inline constexpr auto kAutofillSynthesizeNodes =
+    base::MakeFixedFlatSet<std::pair<std::string_view, FieldType>>({
+      {"IN", ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
+      {"IN", ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK}
       });
 
 }  // namespace autofill::i18n_model_definition

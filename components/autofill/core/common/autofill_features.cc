@@ -333,6 +333,12 @@ BASE_FEATURE(kAutofillUseDEAddressModel,
              "AutofillUseDEAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using the a custom address model for India, overriding the legacy
+// one.
+BASE_FEATURE(kAutofillUseINAddressModel,
+             "AutofillUseINAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 
