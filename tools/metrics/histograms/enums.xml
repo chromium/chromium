@@ -11177,6 +11177,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4782" label="ElementAttachSerializableShadow"/>
   <int value="4783" label="CSSBareDeclarationShift"/>
   <int value="4784" label="CSSNestedGroupRuleSpecificity"/>
+  <int value="4785" label="CSSRuleWithSignalingChildModified"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

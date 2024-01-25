@@ -67,6 +67,7 @@ namespace blink {
 struct SameSizeAsStyleRuleBase final
     : public GarbageCollected<SameSizeAsStyleRuleBase> {
   uint8_t field;
+  bool has_signal;
 };
 
 ASSERT_SIZE(StyleRuleBase, SameSizeAsStyleRuleBase);
@@ -79,6 +80,12 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
 CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                            CSSRule* parent_rule) const {
   return CreateCSSOMWrapper(position_hint, nullptr, parent_rule);
+}
+
+bool StyleRuleBase::IsSignaling() const {
+  auto* style_rule = DynamicTo<StyleRule>(this);
+  return style_rule && (style_rule->FirstSelector()->GetSignal() !=
+                        CSSSelector::Signal::kNone);
 }
 
 void StyleRuleBase::Trace(Visitor* visitor) const {
@@ -453,6 +460,7 @@ StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
       child_rules_->push_back(child_rule->Copy());
     }
   }
+  SetHasSignalingChildRule(other.HasSignalingChildRule());
 }
 
 StyleRule::~StyleRule() {
@@ -479,6 +487,14 @@ MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
 
 bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
   return properties_ && properties_->HasFailedOrCanceledSubresources();
+}
+
+void StyleRule::AddChildRule(StyleRuleBase* child) {
+  EnsureChildRules();
+  child_rules_->push_back(child);
+  if (child->IsSignaling()) {
+    SetHasSignalingChildRule(true);
+  }
 }
 
 bool StyleRule::HasParsedProperties() const {
@@ -693,13 +709,20 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
-    : StyleRuleBase(type), child_rules_(std::move(rules)) {}
+    : StyleRuleBase(type), child_rules_(std::move(rules)) {
+  for (const StyleRuleBase* rule : child_rules_) {
+    if (rule->IsSignaling()) {
+      SetHasSignalingChildRule(true);
+    }
+  }
+}
 
 StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& group_rule)
     : StyleRuleBase(group_rule), child_rules_(group_rule.child_rules_.size()) {
   for (unsigned i = 0; i < child_rules_.size(); ++i) {
     child_rules_[i] = group_rule.child_rules_[i]->Copy();
   }
+  SetHasSignalingChildRule(group_rule.HasSignalingChildRule());
 }
 
 void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,

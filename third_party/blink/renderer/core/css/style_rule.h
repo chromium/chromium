@@ -135,9 +135,21 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void FinalizeGarbageCollectedObject();
 
+  // See CSSSelector::Signal.
+  bool IsSignaling() const;
+
+  bool HasSignalingChildRule() const { return has_signaling_child_rule_; }
+
  protected:
-  explicit StyleRuleBase(RuleType type) : type_(type) {}
-  StyleRuleBase(const StyleRuleBase& rule) : type_(rule.type_) {}
+  explicit StyleRuleBase(RuleType type)
+      : type_(type), has_signaling_child_rule_(false) {}
+  StyleRuleBase(const StyleRuleBase& rule)
+      : type_(rule.type_),
+        has_signaling_child_rule_(rule.has_signaling_child_rule_) {}
+
+  void SetHasSignalingChildRule(bool has_signaling_child_rule) {
+    has_signaling_child_rule_ = has_signaling_child_rule;
+  }
 
  private:
   CSSRule* CreateCSSOMWrapper(wtf_size_t position_hint,
@@ -145,6 +157,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
                               CSSRule* parent_rule) const;
 
   const uint8_t type_;
+  // See CSSSelector::Signal.
+  bool has_signaling_child_rule_;
 };
 
 // A single rule from a stylesheet. Contains a selector list (one or more
@@ -280,10 +294,7 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
       child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
     }
   }
-  void AddChildRule(StyleRuleBase* child) {
-    EnsureChildRules();
-    child_rules_->push_back(child);
-  }
+  void AddChildRule(StyleRuleBase*);
   void WrapperInsertRule(unsigned index, StyleRuleBase* rule) {
     EnsureChildRules();
     child_rules_->insert(index, rule);
@@ -546,7 +557,7 @@ class CORE_EXPORT StyleRuleMedia : public StyleRuleCondition {
   Member<const MediaQuerySet> media_queries_;
 };
 
-class StyleRuleSupports : public StyleRuleCondition {
+class CORE_EXPORT StyleRuleSupports : public StyleRuleCondition {
  public:
   StyleRuleSupports(const String& condition_text,
                     bool condition_is_supported,

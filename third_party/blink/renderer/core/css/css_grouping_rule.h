@@ -65,6 +65,8 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
   unsigned length() const;
   CSSRule* Item(unsigned index) const;
 
+  void UseCountForSignalAffected() override;
+
   void Trace(Visitor*) const override;
 
  protected:
