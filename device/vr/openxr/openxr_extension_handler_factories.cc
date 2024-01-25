@@ -14,6 +14,7 @@
 #include "device/vr/openxr/openxr_hand_tracker_meta.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager_msft.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
+#include "device/vr/openxr/openxr_unbounded_space_provider_msft.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
@@ -44,6 +45,8 @@ GetExtensionHandlerFactories() {
           new OpenXrHandTrackerFactory(),
 
           new OpenXrStageBoundsProviderBasicFactory(),
+
+          new OpenXrUnboundedSpaceProviderMSFTFactory(),
 
           new OpenXrSceneUnderstandingManagerMSFTFactory(),
 

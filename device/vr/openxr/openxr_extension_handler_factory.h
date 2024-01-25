@@ -21,6 +21,7 @@ class OpenXrHandTracker;
 enum class OpenXrHandednessType;
 class OpenXRSceneUnderstandingManager;
 class OpenXrStageBoundsProvider;
+class OpenXrUnboundedSpaceProvider;
 
 // The goal of this class is to serve as a base class for factories of our
 // various "OpenXrExtensionHandlers". Note that there is no base class for the
@@ -85,6 +86,10 @@ class OpenXrExtensionHandlerFactory {
   virtual std::unique_ptr<OpenXrStageBoundsProvider> CreateStageBoundsProvider(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session) const;
+
+  virtual std::unique_ptr<OpenXrUnboundedSpaceProvider>
+  CreateUnboundedSpaceProvider(
+      const OpenXrExtensionHelper& extension_helper) const;
 
  protected:
   bool AreAllRequestedExtensionsSupported(

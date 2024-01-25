@@ -50,6 +50,12 @@ OpenXrExtensionHandlerFactory::CreateStageBoundsProvider(
   return nullptr;
 }
 
+std::unique_ptr<OpenXrUnboundedSpaceProvider>
+OpenXrExtensionHandlerFactory::CreateUnboundedSpaceProvider(
+    const OpenXrExtensionHelper& extension_helper) const {
+  return nullptr;
+}
+
 bool OpenXrExtensionHandlerFactory::AreAllRequestedExtensionsSupported(
     const OpenXrExtensionEnumeration* extension_enum) const {
   return base::ranges::all_of(

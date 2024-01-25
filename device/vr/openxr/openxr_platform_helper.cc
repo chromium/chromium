@@ -136,11 +136,6 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
     }
   };
 
-  // XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME, is required for optional
-  // functionality (unbounded reference spaces) and thus only requested if it is
-  // available.
-  EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
-
   std::set<std::string> handled_extensions;
   for (const auto* factory : GetExtensionHandlerFactories()) {
     auto factory_extensions = factory->GetRequestedExtensions();

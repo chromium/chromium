@@ -167,6 +167,7 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::ANCHORS:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
+    case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
       return base::ranges::any_of(
           GetExtensionHandlerFactories(),
           [feature, &extension_enum](const auto* extension_handler_factory) {
@@ -241,6 +242,20 @@ OpenXrExtensionHelper::CreateStageBoundsProvider(XrSession session) const {
   for (const auto* factory : GetExtensionHandlerFactories()) {
     if (factory->IsEnabled(ExtensionEnumeration())) {
       auto ret = factory->CreateStageBoundsProvider(*this, session);
+      if (ret != nullptr) {
+        return ret;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<OpenXrUnboundedSpaceProvider>
+OpenXrExtensionHelper::CreateUnboundedSpaceProvider() const {
+  for (const auto* factory : GetExtensionHandlerFactories()) {
+    if (factory->IsEnabled(ExtensionEnumeration())) {
+      auto ret = factory->CreateUnboundedSpaceProvider(*this);
       if (ret != nullptr) {
         return ret;
       }
