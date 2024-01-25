@@ -3461,6 +3461,24 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
       autofill_metrics::CvcFillingFlowType::kNoInteractiveAuthentication, 0);
 }
 
+// Ensures that the masked server card risk-based authentication is not invoked
+// when the card is expired.
+TEST_F(
+    CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
+    RiskBasedMaskedServerCardUnmasking_RiskBasedAuthenticationNotInvoked_CardExpired) {
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/true, kTestServerId);
+  CreditCard* masked_server_card =
+      personal_data().GetCreditCardByGUID(kTestGUID);
+  masked_server_card->SetExpirationYearFromString(u"2010");
+
+  credit_card_access_manager().FetchCreditCard(
+      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                         accessor_->GetWeakPtr()));
+
+  // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
+  ASSERT_FALSE(autofill_client_.risk_based_authentication_invoked());
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Params of the
 // CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingPreflightCallReturnedTest:

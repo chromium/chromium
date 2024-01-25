@@ -348,8 +348,9 @@ void CreditCardAccessManager::FetchCreditCard(
 }
 
 bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableFpanRiskBasedAuthentication);
+  return !card_->IsExpired(AutofillClock::Now()) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableFpanRiskBasedAuthentication);
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
