@@ -494,6 +494,9 @@ config("compiler") {
     # linker_driver.py script runs dsymutil itself, which is set to be the
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
+
+    # TODO(crbug.com/1519899): Figure out how to remove this.
+    cflags += [ "-fno-define-target-os-macros" ]
   }
 
   # Linux/Android/Fuchsia common flags setup.
