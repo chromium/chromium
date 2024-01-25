@@ -36,6 +36,17 @@ ReadAnythingAppModel::~ReadAnythingAppModel() {
   SetActiveUkmSourceId(ukm::kInvalidSourceId);
 }
 
+ReadAnythingAppModel::ReadAloudCurrentGranularity::
+    ReadAloudCurrentGranularity() {
+  segments = std::map<ui::AXNodeID, ReadAloudTextSegment>();
+}
+
+ReadAnythingAppModel::ReadAloudCurrentGranularity::ReadAloudCurrentGranularity(
+    const ReadAloudCurrentGranularity& other) = default;
+
+ReadAnythingAppModel::ReadAloudCurrentGranularity::
+    ~ReadAloudCurrentGranularity() = default;
+
 void ReadAnythingAppModel::OnThemeChanged(
     read_anything::mojom::ReadAnythingThemePtr new_theme) {
   font_name_ = new_theme->font_name;

@@ -33,6 +33,42 @@ class ReadAnythingAppModel {
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
 
+  // A current segment of text that will be consumed by Read Aloud.
+  struct ReadAloudTextSegment {
+    // The AXNodeID associated with this particular text segment.
+    ui::AXNodeID id;
+
+    // The starting index for the text with the node of the given id.
+    int text_start;
+
+    // The ending index for the text with the node of the given id.
+    int text_end;
+  };
+
+  // A representation of multiple ReadAloudTextSegments that are processed
+  // by Read Aloud at a single moment. For example, when using sentence
+  // granularity, the list of ReadAloudTextSegments in a
+  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
+  // necessary to represent a single sentence.
+  struct ReadAloudCurrentGranularity {
+    ReadAloudCurrentGranularity();
+    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
+    ~ReadAloudCurrentGranularity();
+
+    // Adds a segment to the current granularity.
+    void AddSegment(ReadAloudTextSegment segment) {
+      segments[segment.id] = segment;
+      node_ids.push_back(segment.id);
+    }
+
+    // All of the ReadAloudTextSegments in the current granularity.
+    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
+
+    // Because GetNextText returns a vector of node ids to be used by
+    // TypeScript also store the node ids as a vector for easier retrieval.
+    std::vector<ui::AXNodeID> node_ids;
+  };
+
   bool requires_distillation() { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
   bool requires_post_process_selection() {

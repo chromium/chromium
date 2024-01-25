@@ -75,42 +75,6 @@ class ReadAnythingAppController
   // to page.
   static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
 
-  // A current segment of text that will be consumed by Read Aloud.
-  struct ReadAloudTextSegment {
-    // The AXNodeID associated with this particular text segment.
-    ui::AXNodeID id;
-
-    // The starting index for the text with the node of the given id.
-    int text_start;
-
-    // The ending index for the text with the node of the given id.
-    int text_end;
-  };
-
-  // A representation of multiple ReadAloudTextSegments that are processed
-  // by Read Aloud at a single moment. For example, when using sentence
-  // granularity, the list of ReadAloudTextSegments in a
-  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
-  // necessary to represent a single sentence.
-  struct ReadAloudCurrentGranularity {
-    ReadAloudCurrentGranularity();
-    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
-    ~ReadAloudCurrentGranularity();
-
-    // Adds a segment to the current granularity.
-    void AddSegment(ReadAloudTextSegment segment) {
-      segments[segment.id] = segment;
-      node_ids.push_back(segment.id);
-    }
-
-    // All of the ReadAloudTextSegments in the current granularity.
-    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
-
-    // Because GetNextText returns a vector of node ids to be used by
-    // TypeScript also store the node ids as a vector for easier retrieval.
-    std::vector<ui::AXNodeID> node_ids;
-  };
-
  private:
   friend ReadAnythingAppControllerTest;
 
@@ -151,8 +115,7 @@ class ReadAnythingAppController
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
   GetNextValidPositionFromCurrentPosition(
-      ReadAnythingAppController::ReadAloudCurrentGranularity
-          current_granularity);
+      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
 
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
@@ -174,8 +137,7 @@ class ReadAnythingAppController
   // process them as 5, 10. Without checking for previously spoken nodes,
   // id 5 will be spoken twice.
   bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppController::ReadAloudCurrentGranularity
-          current_granularity,
+      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
       ui::AXNodeID id);
 
   // gin templates:
@@ -290,7 +252,8 @@ class ReadAnythingAppController
   std::vector<ui::AXNodeID> GetNextText(int max_text_length);
 
   // Helper method for GetNextText.
-  ReadAloudCurrentGranularity GetNextNodes(int max_text_length);
+  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes(
+      int max_text_length);
 
   // Returns a list of triples representing the previous nodes that should be
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
@@ -361,7 +324,7 @@ class ReadAnythingAppController
   // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
   // backwards.
   // Previously processed granularities on the current page.
-  std::vector<ReadAloudCurrentGranularity>
+  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
       processed_granularities_on_current_page_;
 
   // Our current index within processed_granularities_on_current_page_. If it is

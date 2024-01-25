@@ -243,11 +243,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
     return controller_->GetNextValidPositionFromCurrentPosition(
-        ReadAnythingAppController::ReadAloudCurrentGranularity());
+        ReadAnythingAppModel::ReadAloudCurrentGranularity());
   }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
-      ReadAnythingAppController::ReadAloudCurrentGranularity granularity) {
+      ReadAnythingAppModel::ReadAloudCurrentGranularity granularity) {
     return controller_->GetNextValidPositionFromCurrentPosition(granularity);
   }
 
@@ -255,7 +255,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetNextText(160);
   }
 
-  ReadAnythingAppController::ReadAloudCurrentGranularity GetNextNodes() {
+  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes() {
     return controller_->GetNextNodes(160);
   }
 
@@ -2673,7 +2673,7 @@ TEST_F(
   OnAXTreeDistilled({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
-  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
       GetNextNodes();
   // Expect that current_granularity contains static_text1
   // Expect that the indices aren't returned correctly
