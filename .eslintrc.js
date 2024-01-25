@@ -66,6 +66,16 @@ module.exports = {
     'no-restricted-syntax': ['error', {
       'selector': 'CallExpression[callee.object.name=JSON][callee.property.name=parse] > CallExpression[callee.object.name=JSON][callee.property.name=stringify]',
       'message': 'Don\'t use JSON.parse(JSON.stringify(...)) to clone objects. Use structuredClone() instead.',
+    },
+    {
+      // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+      'selector': 'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
+      'message': 'Don\'t use \'querySelector(...) as Type\'. Use the type parameter, \'querySelector<Type>(...)\' instead',
+    },
+    {
+      // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+      'selector': 'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
+      'message': 'Don\'t use \'querySelectorAll(...) as Type\'. Use the type parameter, \'querySelectorAll<Type>(...)\' instead',
     }],
     'no-throw-literal': 'error',
     'no-trailing-spaces': 'error',
