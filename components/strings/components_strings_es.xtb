@@ -2658,7 +2658,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6340739886198108203">La política del administrador recomienda no hacer capturas de pantalla o grabaciones cuando se muestra contenido confidencial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La política del administrador recomienda no subir este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador recomienda no subir estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Protección frente al seguimiento</translation>
+<translation id="6344622098450209924">Protección Antirrastreo</translation>
 <translation id="634500758737709758">Indicaciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>

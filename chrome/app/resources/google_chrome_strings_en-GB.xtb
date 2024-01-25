@@ -12,7 +12,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1125124144982679672">Who's using Chrome?</translation>
 <translation id="1142745911746664600">Can't update Chrome</translation>
 <translation id="1149651794389918149">Sign in to Chrome. If you'd just like to sign in an account once, you can <ph name="GUEST_LINK_BEGIN" />use the device as guest<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">About Chrome OS</translation>
+<translation id="1152920704813762236">About ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
@@ -88,7 +88,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2401189691232800402">Chrome OS system</translation>
+<translation id="2401189691232800402">ChromeOS system</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chrome extensions}=1{1 HID device is being accessed by one or more Chrome extensions}other{# HID devices are being accessed by one or more Chrome extensions}}</translation>
 <translation id="2424440923901031101">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
@@ -108,7 +108,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
@@ -355,7 +355,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
-<translation id="6933858244219479645">Chrome OS system</translation>
+<translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>

@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Kas izmanto pārlūku Chrome?</translation>
 <translation id="1142745911746664600">Nevar atjaunināt Chrome</translation>
 <translation id="1149651794389918149">Pierakstieties pārlūkā Chrome. Ja vēlaties pierakstīties kontā tikai vienreiz, varat <ph name="GUEST_LINK_BEGIN" />izmantot ierīci viesa režīmā<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Par Chrome OS</translation>
+<translation id="1152920704813762236">Par ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Atvērt pārlūkā Chrome</translation>
 <translation id="1194807384646768652">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo šī tipa faili parasti netiek lejupielādēti un var būt bīstami.</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
@@ -86,7 +86,7 @@
 <translation id="234869673307233423">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="235650106824528204">Darba profila administrators var noņemt šī profila lietošanas laikā ģenerētos Chrome datus (piemēram, grāmatzīmes, vēsturi, paroles un citus iestatījumus). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Turpināt</translation>
-<translation id="2401189691232800402">Chrome OS sistēma</translation>
+<translation id="2401189691232800402">ChromeOS sistēma</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Vismaz viens Chrome paplašinājums piekļuva 1 HID ierīcei}=1{Vismaz viens Chrome paplašinājums piekļūst 1 HID ierīcei}zero{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcēm}one{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcei}other{Vismaz viens Chrome paplašinājums piekļūst # HID ierīcēm}}</translation>
 <translation id="2424440923901031101">Šis paplašinājums pārkāpj Chrome interneta veikala politiku, un, iespējams, tas nav drošs. Noņemiet to no pārlūka Chrome, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="2467438592969358367">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
@@ -106,7 +106,7 @@
 <translation id="2597976513418770460">Piekļūstiet savam Chrome saturam no konta <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="259935314519650377">Lejupielādēto instalēšanas programmu neizdevās saglabāt kešatmiņā. Kļūda: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Pārlūkprogrammā Chrome nevar pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regulāri pārbauda, vai jūsu pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
 <translation id="2665296953892887393">Palīdzēt uzlabot pārlūku Google Chrome, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
@@ -351,7 +351,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="683440813066116847">Ienākošo savienojumu kārtula pārlūkam Google Chrome Canary, lai atļautu mDNS datplūsmu.</translation>
 <translation id="6881299373831449287">Notiek Chrome atjaunināšana</translation>
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
-<translation id="6933858244219479645">Chrome OS sistēma</translation>
+<translation id="6933858244219479645">ChromeOS sistēma</translation>
 <translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>
 <translation id="6943584222992551122">Šī lietotāja pārlūkošanas dati tiks dzēsti no šīs ierīces. Lai atkoptu datus, pierakstieties pārlūkprogrammā Chrome kā lietotājs <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ienākošo savienojumu kārtula pārlūkam Google Chrome Beta, lai atļautu mDNS datplūsmu.</translation>

@@ -555,7 +555,8 @@
 <translation id="1428770807407000502">هل تريد إيقاف المزامنة؟</translation>
 <translation id="1429300045468813835">تم محو الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
-<translation id="1431188203598586230">التحديث الأخير للبرنامج</translation>
+<translation id="1431188203598586230">التحديث الأخير للبرامج
+</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433478348197382180">وضع القراءة</translation>
 <translation id="1433980411933182122">التشغيل</translation>
@@ -2184,7 +2185,7 @@
 <translation id="2643698698624765890">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في القائمة "نافذة".</translation>
 <translation id="2645047101481282803">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">جارٍ بث علامة التبويب هذه على "<ph name="DEVICE_NAME" />"</translation>
-<translation id="2645435784669275700">‏نظام التشغيل Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">غَطَشُ الأحمر</translation>
 <translation id="2649045351178520408">‏حفظ سلسلة شهادات بتشفير ASCII المرمّز باستخدام Base64</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
@@ -3182,7 +3183,7 @@
 <translation id="3446274660183028131">‏يُرجى تشغيل نظام Parallels Desktop لتثبيت نظام التشغيل Windows.</translation>
 <translation id="344630545793878684">قراءة بياناتك على عدد من المواقع الإلكترونية</translation>
 <translation id="3446548199318150462">‏يعمل هذا الإعداد على تفعيل تصميم سطح المكتب الجديد. ويجب أيضًا تفعيل خيار "تخصيص اللوحة الجانبية في Chrome".</translation>
-<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط للأطراف الثالثة</translation>
+<translation id="3447644283769633681">حظر جميع ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="3447797901512053632">جارٍ بث <ph name="TAB_NAME" /> على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">تعديل الحساب</translation>
 <translation id="3449393517661170867">نافذة ذات علامات تبويب جديدة</translation>
@@ -10298,7 +10299,7 @@
 <translation id="9056788090206401048">يجب تفعيل البلوتوث لتتمكَّن من استخدام مفتاح المرور الخاص بك على جهاز مختلف. يمكنك متى شئت إدارة هذه الميزة من خلال الإعدادات.</translation>
 <translation id="9056810968620647706">لم يتم العثور على نتائج مطابقة.</translation>
 <translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
-<translation id="9057354806206861646">تعديل الجدول الزمني</translation>
+<translation id="9057354806206861646">الجدول الزمني للتحديثات</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{إشعار واحد تقريبًا في اليوم}zero{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}two{إشعاران ({NUM_NOTIFICATION}) تقريبًا في اليوم}few{{NUM_NOTIFICATION} إشعارات تقريبًا في اليوم}many{{NUM_NOTIFICATION} إشعارًا تقريبًا في اليوم}other{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}}</translation>
 <translation id="9058760336383947367">‏الاطّلاع على ملف PPD للطابعة</translation>
 <translation id="9061694916020926968">‏يجب تسجيل الدخول إلى حساب Google لاستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). يُرجى تسجيل الدخول وإعادة المحاولة.</translation>

@@ -85,7 +85,7 @@
 <translation id="234869673307233423">Chrome kann deine Passwörter nicht prüfen. Versuche es später noch einmal.</translation>
 <translation id="235650106824528204">Alle Chrome-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Weiter</translation>
-<translation id="2401189691232800402">Chrome OS-System</translation>
+<translation id="2401189691232800402">ChromeOS-System</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chrome-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chrome-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chrome-Erweiterung zugegriffen}}</translation>
 <translation id="2424440923901031101">Diese Erweiterung verstößt gegen die Chrome Web Store-Richtlinien und ist möglicherweise nicht sicher. Entferne sie aus Chrome, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
 <translation id="2467438592969358367">Google Chrome möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
@@ -105,7 +105,7 @@
 <translation id="2597976513418770460">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chrome-Browserinhalte zugreifen</translation>
 <translation id="259935314519650377">Die heruntergeladene Installationsdatei konnte nicht im Cache gespeichert werden. Fehler: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfe deine Internetverbindung.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
@@ -277,7 +277,7 @@
 <translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5530733413481476019">Chrome noch schneller machen</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5572786658631721382">Wenn dies deaktiviert ist, werden weiterhin Vorschläge angezeigt, die Chrome lokal bereitstellt</translation>
+<translation id="5572786658631721382">Wenn dies deaktiviert ist, werden weiterhin Vorschläge angezeigt, die von Chrome lokal bereitgestellt werden</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen}=1{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="5686916850681061684">Du kannst Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
@@ -348,7 +348,7 @@
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
 <translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
-<translation id="6933858244219479645">Chrome OS-System</translation>
+<translation id="6933858244219479645">ChromeOS-System</translation>
 <translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>

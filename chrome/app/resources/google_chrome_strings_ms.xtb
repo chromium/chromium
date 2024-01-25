@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Siapakah yang sedang menggunakan Chrome?</translation>
 <translation id="1142745911746664600">Tidak dapat mengemas kini Chrome</translation>
 <translation id="1149651794389918149">Log masuk ke Chrome. Jika anda mahu log masuk akaun satu kali sahaja, anda boleh <ph name="GUEST_LINK_BEGIN" />menggunakan peranti sebagai tetamu<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Perihal Chrome OS</translation>
+<translation id="1152920704813762236">Perihal ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka dalam Chrome</translation>
 <translation id="1194807384646768652">Chrome menyekat muat turun ini kerana jenis fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
@@ -85,7 +85,7 @@
 <translation id="234869673307233423">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="235650106824528204">Sebarang data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Teruskan</translation>
-<translation id="2401189691232800402">Sistem Chrome OS</translation>
+<translation id="2401189691232800402">Sistem ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chrome}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chrome}}</translation>
 <translation id="2424440923901031101">Sambungan ini melanggar dasar Gedung Web Chrome dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2467438592969358367">Google Chrome mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
@@ -105,7 +105,7 @@
 <translation id="2597976513418770460">Dapatkan bahan penyemak imbas Chrome anda daripada <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
 <translation id="2665296953892887393">Bantu jadikan Google Chrome lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
@@ -348,7 +348,7 @@
 <translation id="683440813066116847">Peraturan masuk bagi Google Chrome Canary untuk membenarkan trafik mDNS.</translation>
 <translation id="6881299373831449287">Mengemas kini Chrome</translation>
 <translation id="6885412569789873916">Apl Chrome Beta</translation>
-<translation id="6933858244219479645">Sistem Chrome OS</translation>
+<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6943584222992551122">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Peraturan masuk bagi Google Chrome Beta untuk membenarkan trafik mDNS.</translation>

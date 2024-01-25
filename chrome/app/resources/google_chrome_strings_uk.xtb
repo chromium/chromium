@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Хто користується веб-переглядачем Chrome?</translation>
 <translation id="1142745911746664600">Не вдається оновити Chrome</translation>
 <translation id="1149651794389918149">Увійдіть у Chrome. Якщо ви хочете ввійти в цей обліковий запис лише один раз, <ph name="GUEST_LINK_BEGIN" />використовуйте пристрій у режимі гостя<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Про ОС Chrome</translation>
+<translation id="1152920704813762236">Про ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="1194807384646768652">Веб-переглядач Chrome заблокував завантаження, оскільки файли цього типу зазвичай не завантажують і вони можуть бути небезпечними</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
@@ -85,7 +85,7 @@
 <translation id="234869673307233423">Chrome не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="235650106824528204">Будь-які дані Chrome, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продовжити</translation>
-<translation id="2401189691232800402">ОС Chrome</translation>
+<translation id="2401189691232800402">ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Щонайменше одне розширення Chrome отримало доступ до 1 пристрою HID}=1{Щонайменше одне розширення Chrome має доступ до 1 пристрою HID}one{Щонайменше одне розширення Chrome має доступ до # пристрою HID}few{Щонайменше одне розширення Chrome має доступ до # пристроїв HID}many{Щонайменше одне розширення Chrome має доступ до # пристроїв HID}other{Щонайменше одне розширення Chrome має доступ до # пристрою HID}}</translation>
 <translation id="2424440923901031101">Це розширення порушує правила Веб-магазину Chrome і може бути небезпечним. Вилучіть його з Chrome, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
 <translation id="2467438592969358367">Google Chrome хоче експортувати ваші паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
@@ -105,7 +105,7 @@
 <translation id="2597976513418770460">Отримуйте доступ до своїх даних у веб-переглядачі Chrome через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
-<translation id="2645435784669275700">ОС Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome регулярно перевіряє, чи достатньо надійні налаштування вашого веб-переглядача. Ми повідомимо, якщо потрібно буде вжити заходів.</translation>
 <translation id="2652691236519827073">Відкрити посилання в новій &amp;вкладці Chrome</translation>
 <translation id="2665296953892887393">Допоможіть покращити Google Chrome, надсилаючи звіти про аварійне завершення роботи та <ph name="UMA_LINK" /> в Google</translation>
@@ -348,7 +348,7 @@
 <translation id="683440813066116847">Вхідне правило для Google Chrome Canary дозволяє трафік mDNS.</translation>
 <translation id="6881299373831449287">Оновлення Chrome</translation>
 <translation id="6885412569789873916">Бета-версія додатків Chrome</translation>
-<translation id="6933858244219479645">ОС Chrome</translation>
+<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.1.</translation>
 <translation id="6943584222992551122">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Вхідне правило для бета-версії Google Chrome дозволяє трафік mDNS.</translation>
