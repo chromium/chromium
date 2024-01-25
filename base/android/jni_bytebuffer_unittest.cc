@@ -33,7 +33,11 @@ TEST(JniByteBuffer, ConversionDoesNotCopy) {
   EXPECT_EQ(span.size(), sizeof(bytes));
 }
 
-TEST(JniByteBuffer, ConversionFromNonBuffer) {
+// Disabled pending diagnosis: https://crbug.com/1521406
+// Specifically, under test, env->GetDirectBufferAddress() is returning non-null
+// and env->GetDirectBufferCapacity() is returning >= 0, both of which they are
+// not supposed to do in this situation.
+TEST(JniByteBuffer, DISABLED_ConversionFromNonBuffer) {
   JNIEnv* env = AttachCurrentThread();
   jclass cls = env->FindClass("java/util/ArrayList");
   ASSERT_TRUE(cls);
