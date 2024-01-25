@@ -82,4 +82,8 @@
   <message name="IDS_SEARCH_ENGINE_CHOICE_CHEVRON_A11Y_LABEL" desc="Accessibility action to expand the search engine description.">
     Search engine details
   </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL" desc="This confirmation message is intended to help users understand that their choice is now saved. It appears after the user changes their default search engine in Chrome settings. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.)">
+    <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> is now your default search engine
+  </message>
 </grit-part>

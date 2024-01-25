@@ -2455,6 +2455,8 @@ void AddSearchStrings(content::WebUIDataSource* html_source
       {"searchEnginesSetAsDefaultButton",
        IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
       {"searchEnginesCancelButton", IDS_CANCEL},
+      {"searchEnginesConfirmationToastLabel",
+       IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
