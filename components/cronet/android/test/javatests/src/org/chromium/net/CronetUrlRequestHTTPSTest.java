@@ -17,14 +17,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.test.ServerCertificate;
 
 /** Test functionality of CronetUrlRequest when SSL is enabled. */
-@DoNotBatch(reason = "crbug/1459563")
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class CronetUrlRequestHTTPSTest {
     private static final String TAG = CronetUrlRequestHTTPSTest.class.getSimpleName();

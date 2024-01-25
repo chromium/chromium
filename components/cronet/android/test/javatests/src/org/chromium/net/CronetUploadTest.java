@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUploadDataStream;
@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * Tests that directly drive {@code CronetUploadDataStream} and {@code UploadDataProvider} to
  * simulate different ordering of reset, init, read, and rewind calls.
  */
-@DoNotBatch(reason = "crbug/1459563")
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
