@@ -1619,8 +1619,10 @@ void Document::SetContentFromDOMParser(const String& content) {
       auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
       auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
       html->AppendChild(head);
-      html->AppendChild(body);
       AppendChild(html);
+      // Append `body` last so that the newly created children of `body` only
+      // get one InsertedInto().
+      html->AppendChild(body);
       return;
     }
   }
