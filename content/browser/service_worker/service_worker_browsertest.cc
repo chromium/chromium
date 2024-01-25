@@ -4733,24 +4733,24 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWarmUpByVisibilityBrowserTest,
   }
 }
 
-class ServiceWorkerWarmUpOnIdleTimeoutBrowserTest
+class ServiceWorkerWarmUpBrowserOnStoppedTest
     : public ServiceWorkerWarmUpBrowserTestBase {
  public:
-  ServiceWorkerWarmUpOnIdleTimeoutBrowserTest() {
+  ServiceWorkerWarmUpBrowserOnStoppedTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kSpeculativeServiceWorkerWarmUp,
-          {{blink::features::kSpeculativeServiceWorkerWarmUpOnIdleTimeout.name,
+          {{blink::features::kSpeculativeServiceWorkerWarmUpOnStopped.name,
             "true"}}}},
         {features::kSpeculativeServiceWorkerStartup});
   }
-  ~ServiceWorkerWarmUpOnIdleTimeoutBrowserTest() override = default;
+  ~ServiceWorkerWarmUpBrowserOnStoppedTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpOnIdleTimeoutBrowserTest,
-                       DoNotWarmUpOnStopWithoutIdleTimeout) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpBrowserOnStoppedTest,
+                       WarmUpOnStopped) {
   base::HistogramTester histogram_tester;
   const GURL create_service_worker_url(embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html"));
@@ -4774,40 +4774,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpOnIdleTimeoutBrowserTest,
   StopServiceWorker(version.get());
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
 
-  // Check if the service worker doesn't warm-up automatically.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-}
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWarmUpOnIdleTimeoutBrowserTest,
-                       WarmUpOnIdleTimeout) {
-  base::HistogramTester histogram_tester;
-  const GURL create_service_worker_url(embedded_test_server()->GetURL(
-      "/service_worker/create_service_worker.html"));
-  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
-  const GURL in_scope_url(
-      embedded_test_server()->GetURL("/service_worker/empty.html"));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer1(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                           "register('fetch_event_respond_with_fetch.js');"));
-  observer1.WaitUntilRunning();
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer1.version_id());
-
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-
-  // Ask the service worker to trigger idle timeout.
-  version->TriggerIdleTerminationAsap();
-
-  // Automatically warm-up service worker after idle timeout.
+  // Automatically warm-up service worker.
   base::RunLoop run_loop;
   while (!version->IsWarmedUp()) {
     run_loop.RunUntilIdle();
   }
-
   EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
