@@ -681,9 +681,8 @@ class WebAppTabStripLinkCapturingBrowserTest
   // Returns [app_id, in_scope_1, in_scope_2, scope]
   std::tuple<webapps::AppId, GURL, GURL, GURL> InstallTestTabbedApp() {
     const auto [app_id, in_scope_1, in_scope_2, scope] =
-        WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
-    provider().sync_bridge_unsafe().SetAppUserDisplayMode(
-        app_id, mojom::UserDisplayMode::kTabbed, /*is_user_action=*/false);
+        WebAppLinkCapturingBrowserTest::InstallTestApp(
+            "/web_apps/tab_strip_customizations.html");
     return std::make_tuple(app_id, in_scope_1, in_scope_2, scope);
   }
 
