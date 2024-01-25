@@ -2548,6 +2548,31 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                      << GetSkipFieldFillLogMessage(
                             skip_reasons[autofill_field->global_id()]);
       if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
+        // This lambda calculates a hash of the value Autofill would have used
+        // if the field was skipped due to being pre-filled on page load. If the
+        // field was not skipped due to being pre-filled, `std::nullopt` is
+        // returned.
+        const auto value_that_would_have_been_filled_in_a_prefilled_field_hash =
+            [&]() -> std::optional<size_t> {
+          if (skip_reasons[autofill_field->global_id()] ==
+                  FieldFillingSkipReason::kValuePrefilled &&
+              action_persistence == mojom::ActionPersistence::kFill &&
+              !is_refill) {
+            std::string failure_to_fill;
+            const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
+                filling_context ? filling_context->forced_fill_values
+                                : std::map<FieldGlobalId, std::u16string>();
+            const FieldFillingData filling_content = GetFieldFillingData(
+                *autofill_field, profile_or_credit_card, forced_fill_values,
+                result_form.fields[i], optional_cvc ? *optional_cvc : u"",
+                action_persistence, &failure_to_fill);
+            if (!filling_content.value_to_fill.empty()) {
+              return base::FastHash(
+                  base::UTF16ToUTF8(filling_content.value_to_fill));
+            }
+          }
+          return std::nullopt;
+        };
         autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
             .fill_event_id = *fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
@@ -2556,6 +2581,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
             .filling_method = AutofillFillingMethod::kNone,
+            .value_that_would_have_been_filled_in_a_prefilled_field_hash =
+                value_that_would_have_been_filled_in_a_prefilled_field_hash(),
         });
       }
       continue;
@@ -3337,15 +3364,14 @@ void BrowserAutofillManager::DisambiguateNameUploadTypes(
   }
 }
 
-bool BrowserAutofillManager::FillField(
-    AutofillField& autofill_field,
-    absl::variant<const AutofillProfile*, const CreditCard*>
+BrowserAutofillManager::FieldFillingData
+BrowserAutofillManager::GetFieldFillingData(
+    const AutofillField& autofill_field,
+    const absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
-    FormFieldData& field_data,
-    bool should_notify,
+    const FormFieldData& field_data,
     const std::u16string& cvc,
-    uint32_t profile_form_bitmask,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   auto it = forced_fill_values.find(field_data.global_id());
@@ -3364,16 +3390,33 @@ bool BrowserAutofillManager::FillField(
                     app_locale_, action_persistence, autofill_field,
                     failure_to_fill),
                 autofill_field.Type().GetStorableType());
+  return {value_to_fill, filling_type, value_is_an_override};
+}
+
+bool BrowserAutofillManager::FillField(
+    AutofillField& autofill_field,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
+    FormFieldData& field_data,
+    bool should_notify,
+    const std::u16string& cvc,
+    uint32_t profile_form_bitmask,
+    mojom::ActionPersistence action_persistence,
+    std::string* failure_to_fill) {
+  const FieldFillingData filling_content = GetFieldFillingData(
+      autofill_field, profile_or_credit_card, forced_fill_values, field_data,
+      cvc, action_persistence, failure_to_fill);
 
   // Do not attempt to fill empty values as it would skew the metrics.
-  if (value_to_fill.empty()) {
+  if (filling_content.value_to_fill.empty()) {
     if (failure_to_fill) {
       *failure_to_fill += "No value to fill available. ";
     }
     return false;
   }
-  field_data.value = value_to_fill;
-  field_data.force_override = value_is_an_override;
+  field_data.value = filling_content.value_to_fill;
+  field_data.force_override = filling_content.value_is_an_override;
 
   if (failure_to_fill) {
     *failure_to_fill = "Decided to fill";
@@ -3386,7 +3429,7 @@ bool BrowserAutofillManager::FillField(
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field.set_autofill_source_profile_guid((*profile)->guid());
     }
-    autofill_field.set_autofilled_type(filling_type);
+    autofill_field.set_autofilled_type(filling_content.field_type);
   }
 
   // Mark the field as autofilled when a non-empty value is assigned to

@@ -3574,6 +3574,17 @@ chromium-metrics-reviews@google.com.
   <token key="FormType" variants="Autofill.Ablation.FormType"/>
 </histogram>
 
+<histogram name="Autofill.PreFilledValueStatus.{FormType}"
+    enum="AutofillPreFilledValueStatus" expires_after="2024-07-23">
+  <owner>bwolfgang@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records if the value of an autofillable, pre-filled field was changed until
+    form submission. Emitted on form submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.PreviouslyHiddenSuggestionNumber" units="suggestions"
     expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>

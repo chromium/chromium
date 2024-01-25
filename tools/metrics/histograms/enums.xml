@@ -1418,6 +1418,17 @@ Called by update_autofill_enums.py.-->
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
 </enum>
 
+<enum name="AutofillPreFilledValueStatus">
+  <int value="0" label="Not changed"/>
+  <int value="1" label="Pre-filled value manually restored after Autofill"/>
+  <int value="2" label="Pre-filled value restored by Autofill"/>
+  <int value="3" label="Changed to empty"/>
+  <int value="4" label="Manually changed to what would have been filled"/>
+  <int value="5"
+      label="Changed to another value of the corresponding field type"/>
+  <int value="6" label="Changed to a value of a different or unknown type"/>
+</enum>
+
 <enum name="AutofillProfileImportDecision">
   <int value="0" label="Undefined"/>
   <int value="1" label="UserNotAsked"/>
