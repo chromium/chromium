@@ -8823,40 +8823,6 @@
           }
         ]
       },
-      "lacros-amd64-generic-rel-renamed": {
-        "contact_team_email": "chrome-desktop-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "build_time": {
-                "p50_mins": 60
-              },
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
-            }
-          }
-        ]
-      },
       "lacros-amd64-generic-rel-tast": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
         "problem_specs": [

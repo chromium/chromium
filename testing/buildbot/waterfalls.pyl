@@ -1555,15 +1555,6 @@
         },
         'os_type': 'chromeos'
       },
-      'lacros-amd64-generic-rel-renamed': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
-        },
-        'os_type': 'chromeos'
-      },
       'lacros-amd64-generic-rel-tast': {
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel_tast',

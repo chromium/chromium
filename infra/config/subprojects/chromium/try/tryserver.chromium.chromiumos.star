@@ -244,25 +244,6 @@ try_.builder(
 )
 
 try_.orchestrator_builder(
-    name = "lacros-amd64-generic-rel-renamed",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    description_html = """\
-Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab""",
-    mirrors = [
-        "ci/lacros-amd64-generic-rel-renamed",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/lacros-amd64-generic-rel-renamed",
-            "dcheck_always_on",
-        ],
-    ),
-    compilator = "lacros-amd64-generic-rel-compilator",
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
     name = "lacros-amd64-generic-rel-gtest",
     branch_selector = branches.selector.CROS_BRANCHES,
     description_html = "This is a Lacros chrome builder which only runs gtest." +
@@ -327,22 +308,6 @@ try_.orchestrator_builder(
 )
 
 LACROS_SHARED_CACHE = "shared_lacros_amd64_generic_rel_cache"
-
-try_.compilator_builder(
-    name = "lacros-amd64-generic-rel-compilator",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builderless = not settings.is_main,
-    cores = 8,
-    caches = [
-        swarming.cache(
-            name = LACROS_SHARED_CACHE,
-            path = "builder",
-            wait_for_warm_cache = 4 * time.minute,
-        ),
-    ],
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
 
 try_.compilator_builder(
     name = "lacros-amd64-generic-rel-gtest-compilator",
