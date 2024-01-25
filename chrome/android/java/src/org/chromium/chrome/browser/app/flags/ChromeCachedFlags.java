@@ -18,6 +18,7 @@ import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.cached_flags.CachedFlagsSafeMode;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -81,6 +82,7 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter> fieldTrialsToCache =
                 List.of(
                         ChimeFeatures.ALWAYS_REGISTER,
+                        JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS,
                         FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                         HubFieldTrial.FLOATING_ACTION_BUTTON,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,

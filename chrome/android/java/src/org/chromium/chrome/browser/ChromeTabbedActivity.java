@@ -2056,7 +2056,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // Android FrameMetrics allow tracking of java views and their deadline misses (frame
         // drops/janks).
         if (ChromeFeatureList.sCollectAndroidFrameTimelineMetrics.isEnabled()) {
-            mJankTracker = new JankTrackerImpl(this);
+            // We delay initialization because we have noticed a impact on started up, but this
+            // metric collection isn't critical. Delaying gets us past start up and lets Chrome's
+            // scheduler decide its priority.
+            mJankTracker =
+                    new JankTrackerImpl(
+                            this, JankTrackerExperiment.JANK_TRACKER_DELAYED_START_MS.getValue());
         } else {
             mJankTracker = new PlaceholderJankTracker();
         }

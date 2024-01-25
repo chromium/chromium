@@ -7,6 +7,11 @@ package org.chromium.base.jank_tracker;
 import android.app.Activity;
 import android.os.Build;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+
+import java.lang.ref.WeakReference;
+
 /**
  * Class for recording janky frame metrics for a specific Activity.
  *
@@ -19,20 +24,50 @@ public class JankTrackerImpl implements JankTracker {
     private static final boolean IS_TRACKING_ENABLED =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
 
+    private boolean mIsInitalized;
     private JankTrackerStateController mController;
     private JankReportingScheduler mReportingScheduler;
+    private boolean mDestroyed;
 
     /**
      * Creates a new JankTracker instance tracking UI rendering of an activity. Metric recording
-     * starts when the activity starts, and it's paused when the activity stops.
+     * starts when the activity starts, and it's paused when the activity stops. Optionally the
+     * construction can be delayed by passing a value for {@param constructionDelayMs}. This allows
+     * for the impact on startup to be mitigated.
      */
-    public JankTrackerImpl(Activity activity) {
-        FrameMetricsStore metricsStore = new FrameMetricsStore();
-        if (!constructInternalPreController(new JankReportingScheduler(metricsStore))) return;
+    public JankTrackerImpl(Activity activity, int constructionDelayMs) {
+        // This class shouldn't keep the activity alive.
+        WeakReference<Activity> ref = new WeakReference<Activity>(activity);
+        Runnable init =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // If we've been destroyed or the Activity is gone early out.
+                        Activity innerActivity = ref.get();
+                        if (mDestroyed || innerActivity == null || innerActivity.isDestroyed()) {
+                            return;
+                        }
 
-        constructInternalFinal(
-                new JankActivityTracker(
-                        activity, new FrameMetricsListener(metricsStore), mReportingScheduler));
+                        // Initialize the system.
+                        FrameMetricsStore metricsStore = new FrameMetricsStore();
+                        if (!constructInternalPreController(
+                                new JankReportingScheduler(metricsStore))) {
+                            return;
+                        }
+
+                        constructInternalFinal(
+                                new JankActivityTracker(
+                                        innerActivity,
+                                        new FrameMetricsListener(metricsStore),
+                                        mReportingScheduler));
+                        mIsInitalized = true;
+                    }
+                };
+        if (constructionDelayMs <= 0) {
+            init.run();
+        } else {
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, init, constructionDelayMs);
+        }
     }
 
     /**
@@ -61,7 +96,7 @@ public class JankTrackerImpl implements JankTracker {
 
     @Override
     public void startTrackingScenario(JankScenario scenario) {
-        if (!IS_TRACKING_ENABLED) return;
+        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
 
         mReportingScheduler.startTrackingScenario(scenario);
     }
@@ -73,7 +108,7 @@ public class JankTrackerImpl implements JankTracker {
 
     @Override
     public void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
-        if (!IS_TRACKING_ENABLED) return;
+        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
 
         mReportingScheduler.finishTrackingScenario(scenario, endScenarioTimeNs);
     }
@@ -81,8 +116,8 @@ public class JankTrackerImpl implements JankTracker {
     /** Stops listening for Activity state changes. */
     @Override
     public void destroy() {
-        if (!IS_TRACKING_ENABLED) return;
-
+        mDestroyed = true;
+        if (!IS_TRACKING_ENABLED || !mIsInitalized) return;
         mController.destroy();
     }
 }
