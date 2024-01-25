@@ -131,7 +131,8 @@ void IncludeFinderPPCallbacks::FileChanged(
       current_files_.push(last_inclusion_directive_);
     } else {
       current_files_.push(std::string(
-          source_manager_->getFileEntryForID(source_manager_->getMainFileID())
+          source_manager_
+              ->getFileEntryRefForID(source_manager_->getMainFileID())
               ->getName()));
     }
   } else if (reason == ExitFile) {
@@ -216,8 +217,9 @@ string IncludeFinderPPCallbacks::DoubleSlashSystemHeaders(
 }
 
 void IncludeFinderPPCallbacks::EndOfMainFile() {
-  const clang::FileEntry* main_file =
-      source_manager_->getFileEntryForID(source_manager_->getMainFileID());
+  clang::OptionalFileEntryRef main_file =
+      source_manager_->getFileEntryRefForID(source_manager_->getMainFileID());
+  assert(main_file.has_value());
 
   SmallVector<char, 100> main_source_file_real_path;
   SmallVector<char, 100> main_file_name_real_path;
