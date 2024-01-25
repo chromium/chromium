@@ -42,6 +42,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -156,6 +157,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mRootView.addView(mCoordinatorView);
         activity.setContentView(mRootView);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSwitcher.SetupRecyclerView.Time");
         mCoordinator =
                 new TabSwitcherPaneCoordinator(
                         activity,
@@ -178,6 +182,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mOnTabClickedCallback,
                         TabListMode.GRID,
                         /* supportsEmptyState= */ true);
+        watcher.assertExpected();
 
         mCoordinator.initWithNative();
 

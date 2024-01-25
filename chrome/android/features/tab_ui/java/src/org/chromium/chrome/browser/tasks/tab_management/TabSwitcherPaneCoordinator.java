@@ -21,6 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils.UptimeMillisTimer;
+import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -112,136 +115,145 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull Callback<Integer> onTabClickCallback,
             @TabListMode int mode,
             boolean supportsEmptyState) {
-        mProfileProviderSupplier = profileProviderSupplier;
-        mIsVisibleSupplier = isVisibleSupplier;
-        isVisibleSupplier.addObserver(mOnVisibilityChanged);
-        assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
+        try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
+            mProfileProviderSupplier = profileProviderSupplier;
+            mIsVisibleSupplier = isVisibleSupplier;
+            isVisibleSupplier.addObserver(mOnVisibilityChanged);
+            assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
-        ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
+            ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
 
-        PropertyModel containerViewModel =
-                new PropertyModel.Builder(PANE_KEYS)
-                        .with(BROWSER_CONTROLS_STATE_PROVIDER, browserControlsStateProvider)
-                        .with(MODE, mode)
-                        .build();
-        mContainerViewModel = containerViewModel;
+            PropertyModel containerViewModel =
+                    new PropertyModel.Builder(PANE_KEYS)
+                            .with(BROWSER_CONTROLS_STATE_PROVIDER, browserControlsStateProvider)
+                            .with(MODE, mode)
+                            .build();
+            mContainerViewModel = containerViewModel;
 
-        mDialogControllerSupplier =
-                LazyOneshotSupplier.fromSupplier(
-                        () -> {
-                            mTabGridDialogCoordinator =
-                                    new TabGridDialogCoordinator(
-                                            activity,
-                                            browserControlsStateProvider,
-                                            tabModelFilterSupplier,
-                                            regularTabModelSupplier,
-                                            tabContentManager,
-                                            tabCreatorManager,
-                                            coordinatorView,
-                                            resetHandler,
-                                            getGridCardOnClickListenerProvider(),
-                                            TabSwitcherPaneCoordinator.this
-                                                    ::getTabGridDialogAnimationSourceView,
-                                            scrimCoordinator,
-                                            getTabGroupTitleEditor(),
-                                            /* rootView= */ coordinatorView);
-                            return mTabGridDialogCoordinator.getDialogController();
-                        });
+            mDialogControllerSupplier =
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                mTabGridDialogCoordinator =
+                                        new TabGridDialogCoordinator(
+                                                activity,
+                                                browserControlsStateProvider,
+                                                tabModelFilterSupplier,
+                                                regularTabModelSupplier,
+                                                tabContentManager,
+                                                tabCreatorManager,
+                                                coordinatorView,
+                                                resetHandler,
+                                                getGridCardOnClickListenerProvider(),
+                                                TabSwitcherPaneCoordinator.this
+                                                        ::getTabGridDialogAnimationSourceView,
+                                                scrimCoordinator,
+                                                getTabGroupTitleEditor(),
+                                                /* rootView= */ coordinatorView);
+                                return mTabGridDialogCoordinator.getDialogController();
+                            });
 
-        mMediator =
-                new TabSwitcherPaneMediator(
-                        resetHandler,
-                        tabModelFilterSupplier,
-                        mDialogControllerSupplier,
-                        containerViewModel,
-                        parentView,
-                        this::onTabSwitcherShown,
-                        isVisibleSupplier,
-                        isAnimatingSupplier,
-                        onTabClickCallback);
+            mMediator =
+                    new TabSwitcherPaneMediator(
+                            resetHandler,
+                            tabModelFilterSupplier,
+                            mDialogControllerSupplier,
+                            containerViewModel,
+                            parentView,
+                            this::onTabSwitcherShown,
+                            isVisibleSupplier,
+                            isAnimatingSupplier,
+                            onTabClickCallback);
 
-        mMultiThumbnailCardProvider =
-                new MultiThumbnailCardProvider(
-                        activity,
-                        browserControlsStateProvider,
-                        tabContentManager,
-                        tabModelFilterSupplier);
+            mMultiThumbnailCardProvider =
+                    new MultiThumbnailCardProvider(
+                            activity,
+                            browserControlsStateProvider,
+                            tabContentManager,
+                            tabModelFilterSupplier);
 
-        @DrawableRes
-        int emptyImageResId =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                        ? R.drawable.tablet_tab_switcher_empty_state_illustration
-                        : R.drawable.phone_tab_switcher_empty_state_illustration;
-        TabListCoordinator tabListCoordinator =
-                new TabListCoordinator(
-                        mode,
-                        activity,
-                        browserControlsStateProvider,
-                        tabModelFilterSupplier,
-                        regularTabModelSupplier,
-                        mMultiThumbnailCardProvider,
-                        titleProvider,
-                        /* actionOnRelatedTabs= */ true,
-                        getGridCardOnClickListenerProvider(),
-                        /* dialogHandler= */ null,
-                        TabProperties.UiType.CLOSABLE,
-                        /* selectionDelegateProvider= */ null,
-                        this::getPriceWelcomeMessageController,
-                        parentView,
-                        /* attachToParent= */ true,
-                        COMPONENT_NAME,
-                        /* rootView= */ parentView,
-                        /* onModelTokenChange= */ null,
-                        /* hasEmptyView= */ supportsEmptyState,
-                        supportsEmptyState ? emptyImageResId : Resources.ID_NULL,
-                        supportsEmptyState
-                                ? R.string.tabswitcher_no_tabs_empty_state
-                                : Resources.ID_NULL,
-                        supportsEmptyState
-                                ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
-                                : Resources.ID_NULL);
-        mTabListCoordinator = tabListCoordinator;
+            var recyclerViewTimer = new UptimeMillisTimer();
 
-        TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
-        recyclerView.setVisibility(View.VISIBLE);
-        mContainerViewChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        containerViewModel, recyclerView, TabListContainerViewBinder::bind);
+            @DrawableRes
+            int emptyImageResId =
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                            ? R.drawable.tablet_tab_switcher_empty_state_illustration
+                            : R.drawable.phone_tab_switcher_empty_state_illustration;
+            TabListCoordinator tabListCoordinator =
+                    new TabListCoordinator(
+                            mode,
+                            activity,
+                            browserControlsStateProvider,
+                            tabModelFilterSupplier,
+                            regularTabModelSupplier,
+                            mMultiThumbnailCardProvider,
+                            titleProvider,
+                            /* actionOnRelatedTabs= */ true,
+                            getGridCardOnClickListenerProvider(),
+                            /* dialogHandler= */ null,
+                            TabProperties.UiType.CLOSABLE,
+                            /* selectionDelegateProvider= */ null,
+                            this::getPriceWelcomeMessageController,
+                            parentView,
+                            /* attachToParent= */ true,
+                            COMPONENT_NAME,
+                            /* rootView= */ parentView,
+                            /* onModelTokenChange= */ null,
+                            /* hasEmptyView= */ supportsEmptyState,
+                            supportsEmptyState ? emptyImageResId : Resources.ID_NULL,
+                            supportsEmptyState
+                                    ? R.string.tabswitcher_no_tabs_empty_state
+                                    : Resources.ID_NULL,
+                            supportsEmptyState
+                                    ? R.string.tabswitcher_no_tabs_open_to_visit_different_pages
+                                    : Resources.ID_NULL);
+            mTabListCoordinator = tabListCoordinator;
 
-        TabListEditorManager tabListEditorManager =
-                new TabListEditorManager(
-                        activity,
-                        coordinatorView,
-                        /* rootView= */ parentView,
-                        browserControlsStateProvider,
-                        tabModelFilterSupplier,
-                        regularTabModelSupplier,
-                        tabContentManager,
-                        tabListCoordinator,
-                        mode);
-        mTabListEditorManager = tabListEditorManager;
-        mMediator.setTabListEditorControllerSupplier(mTabListEditorManager.getControllerSupplier());
+            TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
+            recyclerView.setVisibility(View.VISIBLE);
+            mContainerViewChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            containerViewModel, recyclerView, TabListContainerViewBinder::bind);
 
-        var tabListEditorControllerSupplier =
-                LazyOneshotSupplier.fromSupplier(
-                        () -> {
-                            tabListEditorManager.initTabListEditor();
-                            return tabListEditorManager.getControllerSupplier().get();
-                        });
+            RecordHistogram.recordTimesHistogram(
+                    "Android.TabSwitcher.SetupRecyclerView.Time",
+                    recyclerViewTimer.getElapsedMillis());
 
-        mMessageManager =
-                new TabSwitcherMessageManager(
-                        activity,
-                        lifecycleDispatcher,
-                        tabModelFilterSupplier,
-                        parentView,
-                        multiWindowModeStateDispatcher,
-                        snackbarManager,
-                        modalDialogManager,
-                        tabListCoordinator,
-                        tabListEditorControllerSupplier,
-                        /* priceWelcomeMessageReviewActionProvider= */ mMediator,
-                        mode);
+            TabListEditorManager tabListEditorManager =
+                    new TabListEditorManager(
+                            activity,
+                            coordinatorView,
+                            /* rootView= */ parentView,
+                            browserControlsStateProvider,
+                            tabModelFilterSupplier,
+                            regularTabModelSupplier,
+                            tabContentManager,
+                            tabListCoordinator,
+                            mode);
+            mTabListEditorManager = tabListEditorManager;
+            mMediator.setTabListEditorControllerSupplier(
+                    mTabListEditorManager.getControllerSupplier());
+
+            var tabListEditorControllerSupplier =
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                tabListEditorManager.initTabListEditor();
+                                return tabListEditorManager.getControllerSupplier().get();
+                            });
+
+            mMessageManager =
+                    new TabSwitcherMessageManager(
+                            activity,
+                            lifecycleDispatcher,
+                            tabModelFilterSupplier,
+                            parentView,
+                            multiWindowModeStateDispatcher,
+                            snackbarManager,
+                            modalDialogManager,
+                            tabListCoordinator,
+                            tabListEditorControllerSupplier,
+                            /* priceWelcomeMessageReviewActionProvider= */ mMediator,
+                            mode);
+        }
     }
 
     /** Destroys the coordinator. */
@@ -260,15 +272,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Post native initialization. */
     public void initWithNative() {
-        ProfileProvider profileProvider = mProfileProviderSupplier.get();
-        assert profileProvider != null;
-        Profile originalProfile = profileProvider.getOriginalProfile();
+        try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.initWithNative")) {
+            ProfileProvider profileProvider = mProfileProviderSupplier.get();
+            assert profileProvider != null;
+            Profile originalProfile = profileProvider.getOriginalProfile();
 
-        mTabListCoordinator.initWithNative(originalProfile, /* dynamicResourceLoader= */ null);
+            mTabListCoordinator.initWithNative(originalProfile, /* dynamicResourceLoader= */ null);
 
-        mMessageManager.initWithNative(originalProfile);
+            mMessageManager.initWithNative(originalProfile);
 
-        mMultiThumbnailCardProvider.initWithNative(originalProfile);
+            mMultiThumbnailCardProvider.initWithNative(originalProfile);
+        }
     }
 
     /** Shows the tab list editor. */
