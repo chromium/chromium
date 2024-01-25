@@ -1759,8 +1759,12 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  if (IsRetriableError()) {
+    EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  } else {
+    EXPECT_EQ(!ShouldUnenroll(),
+              prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  }
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
@@ -1793,8 +1797,12 @@ TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,
   EXPECT_EQ(ShouldUnenroll(),
             prefs()->GetBoolean(
                 prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
-  EXPECT_EQ(!ShouldUnenroll(),
-            prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  if (IsRetriableError()) {
+    EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  } else {
+    EXPECT_EQ(!ShouldUnenroll(),
+              prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+  }
 }
 
 TEST_P(PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest,

@@ -81,6 +81,10 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
+  // PasswordStoreAndroidBackend implementation.
+  PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
+      AndroidBackendAPIErrorCode error) override;
+
  private:
   // If |forms_or_error| contains forms, it retrieves and fills in affiliation
   // and branding information for Android credentials in the forms and invokes
@@ -105,6 +109,9 @@ class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
+
+  // Nullable.
+  const TryFixPassphraseErrorCb try_fix_passphrase_error_cb_;
 
   base::WeakPtrFactory<PasswordStoreAndroidAccountBackend> weak_ptr_factory_{
       this};

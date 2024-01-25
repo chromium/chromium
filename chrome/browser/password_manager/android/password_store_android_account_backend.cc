@@ -74,6 +74,52 @@ bool IsExplicitPassphrasePlatformClientSupported() {
              syncer::kPassExplicitSyncPassphraseToGmsCore);
 }
 
+enum class ActionOnApiError {
+  // See password_manager_upm_eviction::EvictCurrentUser().
+  kEvict,
+  // See prefs::kSavePasswordsSuspendedByError.
+  kDisableSaving,
+  // See PasswordStoreAndroidAccountBackend::TryFixPassphraseErrorCb.
+  kDisableSavingAndTryFixPassphraseError,
+};
+
+ActionOnApiError GetRecoveryActionOnApiError(
+    AndroidBackendAPIErrorCode api_error_code,
+    bool can_remove_unenrollment,
+    bool supports_passphrase_error_fix) {
+  switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
+    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
+      return ActionOnApiError::kDisableSaving;
+    case AndroidBackendAPIErrorCode::kPassphraseRequired:
+      return supports_passphrase_error_fix
+                 ? ActionOnApiError::kDisableSavingAndTryFixPassphraseError
+                 : ActionOnApiError::kEvict;
+    case AndroidBackendAPIErrorCode::kNetworkError:
+    case AndroidBackendAPIErrorCode::kApiNotConnected:
+    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
+    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
+    case AndroidBackendAPIErrorCode::kBackendGeneric:
+    case AndroidBackendAPIErrorCode::kInternalError:
+    case AndroidBackendAPIErrorCode::kDeveloperError:
+    case AndroidBackendAPIErrorCode::kAccessDenied:
+    case AndroidBackendAPIErrorCode::kBadRequest:
+    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
+    case AndroidBackendAPIErrorCode::kInvalidData:
+    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
+    case AndroidBackendAPIErrorCode::kUnexpectedError:
+    case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
+    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
+    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
+    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
+      break;
+  }
+  return can_remove_unenrollment ? ActionOnApiError::kDisableSaving
+                                 : ActionOnApiError::kEvict;
+}
+
 }  // namespace
 
 PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
@@ -82,12 +128,13 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     : PasswordStoreAndroidBackend(
           PasswordStoreAndroidBackendBridgeHelper::Create(),
           std::make_unique<PasswordManagerLifecycleHelperImpl>(),
-          prefs,
+          prefs),
+      affiliations_prefetcher_(affiliations_prefetcher),
+      try_fix_passphrase_error_cb_(
           IsExplicitPassphrasePlatformClientSupported()
               ? base::BindRepeating(
                     &syncer::SendExplicitPassphraseToJavaPlatformClient)
-              : base::NullCallback()),
-      affiliations_prefetcher_(affiliations_prefetcher) {
+              : base::NullCallback()) {
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
@@ -106,9 +153,9 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
                                   std::move(lifecycle_helper),
-                                  prefs,
-                                  try_fix_passphrase_error_cb),
-      affiliations_prefetcher_(affiliations_prefetcher) {
+                                  prefs),
+      affiliations_prefetcher_(affiliations_prefetcher),
+      try_fix_passphrase_error_cb_(try_fix_passphrase_error_cb) {
   sync_controller_delegate_ = std::move(sync_controller_delegate);
 }
 
@@ -265,6 +312,29 @@ PasswordStoreAndroidAccountBackend::GetSmartBubbleStatsStore() {
 base::WeakPtr<PasswordStoreBackend>
 PasswordStoreAndroidAccountBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+PasswordStoreBackendErrorRecoveryType
+PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
+    AndroidBackendAPIErrorCode error) {
+  switch (GetRecoveryActionOnApiError(error,
+                                      bridge_helper()->CanRemoveUnenrollment(),
+                                      !!try_fix_passphrase_error_cb_)) {
+    case ActionOnApiError::kEvict: {
+      if (!password_manager_upm_eviction::IsCurrentUserEvicted(prefs())) {
+        password_manager_upm_eviction::EvictCurrentUser(static_cast<int>(error),
+                                                        prefs());
+      }
+      return PasswordStoreBackendErrorRecoveryType::kUnrecoverable;
+    }
+    case ActionOnApiError::kDisableSavingAndTryFixPassphraseError:
+      CHECK(try_fix_passphrase_error_cb_);
+      try_fix_passphrase_error_cb_.Run(sync_service_);
+      ABSL_FALLTHROUGH_INTENDED;
+    case ActionOnApiError::kDisableSaving:
+      prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+      return PasswordStoreBackendErrorRecoveryType::kRecoverable;
+  }
 }
 
 void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(

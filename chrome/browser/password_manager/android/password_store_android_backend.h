@@ -20,6 +20,7 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
@@ -101,8 +102,7 @@ class PasswordStoreAndroidBackend
   PasswordStoreAndroidBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      PrefService* prefs,
-      const TryFixPassphraseErrorCb& try_fix_passphrase_error_cb);
+      PrefService* prefs);
   ~PasswordStoreAndroidBackend() override;
 
  private:
@@ -224,6 +224,12 @@ class PasswordStoreAndroidBackend
   }
   PrefService* prefs() { return prefs_; }
 
+  // Subclasses can override this method
+  // to have a special handling for different errors. This function returns
+  // whether the error is recoverable or not.
+  virtual PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
+      AndroidBackendAPIErrorCode error) = 0;
+
  private:
   // Implements the retry mechanism for the operations that are safe to retry.
   // The given |delay| comes from the previous attempt to run the operation.
@@ -325,9 +331,6 @@ class PasswordStoreAndroidBackend
 
  private:
   raw_ptr<PrefService> prefs_ = nullptr;
-
-  // Nullable.
-  const TryFixPassphraseErrorCb try_fix_passphrase_error_cb_;
 
   base::Time initialized_at_ = base::Time::Now();
 
