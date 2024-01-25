@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.5](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.4...chromium-bidi-v0.5.5) (2024-01-25)
+
+
+### Features
+
+* allow not partitioned cookies ([#1718](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1718)) ([d54a4f1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d54a4f186005fa0e3ea8e71a5929ca307c852f1d))
+* implement user contexts ([#1715](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1715)) ([b75def3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b75def3778dc774d1bcee30f7029c6387568e960))
+* provide logs before Mapper is launched via NodeJS runner ([#1737](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1737)) ([0b278f3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0b278f30f9e46037bd9ec3d8d250457405ee7125))
+* return all cookies for a given browsing context ([#1746](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1746)) ([456d947](https://github.com/GoogleChromeLabs/chromium-bidi/commit/456d9473a7cb3b58127b92c45a8cffcb992969ef))
+
 ## [0.5.4](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.3...chromium-bidi-v0.5.4) (2024-01-17)
 
 
