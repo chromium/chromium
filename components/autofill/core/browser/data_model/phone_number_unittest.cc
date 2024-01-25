@@ -168,50 +168,6 @@ TEST(PhoneNumberTest, SetInfo) {
   EXPECT_EQ(u"514", phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale));
 }
 
-TEST(PhoneNumberTest, InferCountryCallingCode) {
-  base::test::ScopedFeatureList complement_calling_code_enabled;
-  complement_calling_code_enabled.InitAndEnableFeature(
-      features::kAutofillInferCountryCallingCode);
-
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  PhoneNumber phone(&profile);
-
-  // No country information available and thus no calling code inferred.
-  EXPECT_TRUE(
-      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
-  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale).empty());
-  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
-
-  // With country information available, the calling code is inferred.
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678", kLocale));
-  EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
-  EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
-
-  // Pre-formatted number.
-  // In this case the raw info is kept as-is, while the calling code is inferred
-  // for the filling information.
-  EXPECT_TRUE(
-      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
-  EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
-  EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
-
-  // Different country.
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
-  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"015787912345", kLocale));
-  EXPECT_EQ(u"49", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
-  EXPECT_EQ(u"+4915787912345", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"+49 1578 7912345", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_EQ(u"015787912345",
-            phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
-}
-
 // Test that cached phone numbers are correctly invalidated and updated.
 TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);

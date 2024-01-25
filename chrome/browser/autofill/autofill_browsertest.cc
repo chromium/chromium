@@ -416,9 +416,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
                   {u"4088714567", u"+4940808179000", u"", u""}));
 }
 
-// Prepend country codes when formatting phone numbers if:
-// - It was provided in the first place.
-// - `AutofillInferCountryCallingCode` is enabled.
+// Prepend country codes when formatting phone numbers if it was provided in the
+// first place.
 IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
   FormMap data = {{"NAME_FIRST", "Bob"},
                   {"NAME_LAST", "Smith"},
@@ -441,16 +440,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
         profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   }
 
-  // With `AutofillInferCountryCallingCode` enabled, the country code of the
-  // second phone number is derived from the profile (Germany).
-  std::vector<std::u16string> expected_phone_numbers = {
-      u"+49 8450 777777",
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? u"+49 8450 777777"
-          : u"08450 777777"};
-
-  EXPECT_THAT(actual_phone_numbers,
-              testing::UnorderedElementsAreArray(expected_phone_numbers));
+  EXPECT_THAT(actual_phone_numbers, testing::UnorderedElementsAre(
+                                        u"+49 8450 777777", u"08450 777777"));
 }
 
 // Test that Autofill uses '+' sign for international numbers.

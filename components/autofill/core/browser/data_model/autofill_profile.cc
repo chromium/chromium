@@ -568,8 +568,7 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
       return country == "US" && !IsValidZip(data);
 
     case PHONE_HOME_WHOLE_NUMBER:
-      return !i18n::PhoneObject(data, country, /*infer_country_code=*/false)
-                  .IsValidNumber();
+      return !i18n::PhoneObject(data, country).IsValidNumber();
 
     case EMAIL_ADDRESS:
       return !IsValidEmailAddress(data);
