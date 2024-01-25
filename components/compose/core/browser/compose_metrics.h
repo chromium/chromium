@@ -87,7 +87,8 @@ enum class ComposeSessionCloseReason {
   kCloseButtonPressed = 1,
   kEndedImplicitly = 2,
   kNewSessionWithSelectedText = 3,
-  kMaxValue = kNewSessionWithSelectedText,
+  kCanceledBeforeResponseReceived = 4,
+  kMaxValue = kCanceledBeforeResponseReceived,
 };
 
 // Keep in sync with ComposeSessionEventCounts in

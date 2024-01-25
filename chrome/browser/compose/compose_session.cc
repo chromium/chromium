@@ -830,9 +830,17 @@ void ComposeSession::SetMSBBCloseReason(
 
 void ComposeSession::SetCloseReason(
     compose::ComposeSessionCloseReason close_reason) {
-  close_reason_ = close_reason;
+  if (close_reason == compose::ComposeSessionCloseReason::kCloseButtonPressed &&
+      current_state_->has_pending_request) {
+    close_reason_ =
+        compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived;
+  } else {
+    close_reason_ = close_reason;
+  }
+
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
+    case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
       break;

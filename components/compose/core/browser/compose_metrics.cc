@@ -161,6 +161,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case ComposeSessionCloseReason::kCloseButtonPressed:
     case ComposeSessionCloseReason::kEndedImplicitly:
     case ComposeSessionCloseReason::kNewSessionWithSelectedText:
+    case ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       status = ".Ignored";
   }
   base::UmaHistogramCounts1000(kComposeSessionComposeCount + status,
