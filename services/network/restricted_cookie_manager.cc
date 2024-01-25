@@ -50,6 +50,9 @@ namespace network {
 
 namespace {
 
+static constexpr int kHoursInOneWeek = 24 * 7;
+static constexpr int kHoursInOneYear = 24 * 365;
+
 BASE_FEATURE(kIncreaseCoookieAccesCacheSize,
              "IncreaseCoookieAccesCacheSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -154,6 +157,29 @@ net::CookieOptions MakeOptionsForGet(
   }
 
   return options;
+}
+
+// Records the time until expiration for a cookie set via script.
+void HistogramScriptCookieExpiration(const net::CanonicalCookie& cookie) {
+  // Ignore session cookies as they have no expiration date.
+  if (!cookie.IsPersistent()) {
+    return;
+  }
+
+  // We are studying the requested expiration dates of cookies set via script.
+  // Network cookies are handled in
+  // URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete.
+  const int script_cookie_expiration_in_hours =
+      (cookie.ExpiryDate() - base::Time::Now()).InHours();
+  if (script_cookie_expiration_in_hours > kHoursInOneWeek) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ScriptExpirationInHoursGTOneWeek",
+                                script_cookie_expiration_in_hours,
+                                kHoursInOneWeek + 1, kHoursInOneYear, 100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ScriptExpirationInHoursLTEOneWeek",
+                                script_cookie_expiration_in_hours, 1,
+                                kHoursInOneWeek + 1, 100);
+  }
 }
 
 }  // namespace
@@ -960,6 +986,7 @@ void RestrictedCookieManager::SetCookieFromString(
     }
     return;
   }
+  HistogramScriptCookieExpiration(*parsed_cookie);
 
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
