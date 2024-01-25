@@ -183,7 +183,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     const {result} = await this.proxy_.handler.loadModel(
         {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
     if (result !== LoadModelResult.kSuccess) {
-      this.error_ = 'Unable to load model';
+      this.error_ =
+          'Unable to load model. Specify a correct and absolute path.';
     } else {
       this.model_ = newModel;
       this.model_.onConnectionError.addListener(() => {
