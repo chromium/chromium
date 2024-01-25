@@ -205,9 +205,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // Record the time between the response received time and the fetch handler
   // end time iff both events are already reached.
   void MaybeRecordResponseReceivedToFetchHandlerEndTiming();
-
-  void RecordWriteDataResult(MojoResult result,
-                             const std::string& histogram_prefix);
+  void RecordMojoResultForDataTransfer(MojoResult result,
+                                       const std::string& suffix);
+  void RecordMojoResultForWrite(MojoResult result);
 
   void SetFetchHandlerEndTiming(base::TimeTicks fetch_handler_end_time,
                                 bool is_fallback);
@@ -233,6 +233,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   std::optional<base::TimeTicks> response_received_time_;
   std::optional<base::TimeTicks> fetch_handler_end_time_;
   std::optional<bool> is_fetch_handler_fallback_;
+  bool is_main_resource_;
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;

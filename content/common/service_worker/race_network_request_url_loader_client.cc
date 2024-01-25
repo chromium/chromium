@@ -40,6 +40,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
       body_consumer_watcher_(FROM_HERE,
                              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                              base::SequencedTaskRunner::GetCurrentDefault()),
+      is_main_resource_(owner_->IsMainResourceLoader()),
       request_start_(base::TimeTicks::Now()),
       request_start_time_(base::Time::Now()) {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
@@ -404,13 +405,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     return;
   }
 
-  std::string histogram_prefix = base::StrCat(
-      {"ServiceWorker.FetchEvent",
-       owner_->IsMainResourceLoader() ? ".MainResource" : ".Subresource",
-       ".RaceNetworkRequest.DataTransfer"});
-
-  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Initial"}),
-                                ConvertMojoResultForUMA(mojo_result));
+  RecordMojoResultForDataTransfer(mojo_result, "Initial");
   if (mojo_result != MOJO_RESULT_OK) {
     return;
   }
@@ -423,8 +418,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
       "read_data_result", result);
-  base::UmaHistogramEnumeration(base::StrCat({histogram_prefix, ".Read"}),
-                                ConvertMojoResultForUMA(result));
+  RecordMojoResultForDataTransfer(result, "Read");
   switch (result) {
     case MOJO_RESULT_OK:
       break;
@@ -446,7 +440,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // process if one of them is failed.
 
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordWriteDataResult(result, histogram_prefix);
+    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -464,7 +458,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         return;
     }
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordWriteDataResult(result, histogram_prefix);
+    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -507,7 +501,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
-    RecordWriteDataResult(result, histogram_prefix);
+    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -528,7 +522,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
     result = write_buffer_manager_for_fetch_handler_.BeginWriteData();
-    RecordWriteDataResult(result, histogram_prefix);
+    RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -564,12 +558,9 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginReadData() {
   return std::make_pair(result, read_buffer);
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordWriteDataResult(
-    MojoResult result,
-    const std::string& histogram_prefix) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({histogram_prefix, ".WriteForRaceNetworkRequset"}),
-      ConvertMojoResultForUMA(result));
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::RecordMojoResultForWrite(
+    MojoResult result) {
+  RecordMojoResultForDataTransfer(result, "WriteForRaceNetworkRequset");
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteReadData(
@@ -624,6 +615,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
                     is_fetch_handler_fallback_ ? "WithoutServiceWorker"
                                                : "ServiceWorker"}),
       fetch_handler_end_time_.value() - response_received_time_.value());
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    RecordMojoResultForDataTransfer(MojoResult result,
+                                    const std::string& suffix) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.FetchEvent",
+                    is_main_resource_ ? ".MainResource" : ".Subresource",
+                    ".RaceNetworkRequest.DataTransfer.", suffix}),
+      ConvertMojoResultForUMA(result));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
