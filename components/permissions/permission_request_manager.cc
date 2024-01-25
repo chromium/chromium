@@ -1058,10 +1058,6 @@ void PermissionRequestManager::CurrentRequestsDecided(
       prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
       did_show_prompt_, did_click_manage_, did_click_learn_more_);
 
-  PermissionDecisionAutoBlocker* autoblocker =
-      PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
-          browser_context);
-
   absl::optional<QuietUiReason> quiet_ui_reason;
   if (ShouldCurrentRequestUseQuietUI())
     quiet_ui_reason = ReasonForUsingQuietUi();
@@ -1084,27 +1080,8 @@ void PermissionRequestManager::CurrentRequestsDecided(
         request->GetGestureType(), quiet_ui_reason, time_since_shown,
         web_contents());
 
-    PermissionEmbargoStatus embargo_status =
-        PermissionEmbargoStatus::NOT_EMBARGOED;
-    if (permission_action == PermissionAction::DISMISSED &&
-        !request->IsEmbeddedPermissionElementInitiated()) {
-      if (autoblocker->RecordDismissAndEmbargo(
-              request->requesting_origin(), request->GetContentSettingsType(),
-              ShouldCurrentRequestUseQuietUI())) {
-        embargo_status = PermissionEmbargoStatus::REPEATED_DISMISSALS;
-      }
-    } else if (permission_action == PermissionAction::IGNORED &&
-               !request->IsEmbeddedPermissionElementInitiated()) {
-      if (autoblocker->RecordIgnoreAndEmbargo(
-              request->requesting_origin(), request->GetContentSettingsType(),
-              ShouldCurrentRequestUseQuietUI())) {
-        embargo_status = PermissionEmbargoStatus::REPEATED_IGNORES;
-      }
-    } else if (permission_action == PermissionAction::GRANTED_ONCE) {
-      autoblocker->RemoveEmbargoAndResetCounts(
-          request->requesting_origin(), request->GetContentSettingsType());
-    }
-    PermissionUmaUtil::RecordEmbargoStatus(embargo_status);
+    PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
+        browser_context, request, permission_action));
   }
 
   // IGNORED is not a decision on the prompt and it occurs because of external
@@ -1516,6 +1493,41 @@ bool PermissionRequestManager::ShouldFinalizeRequestAfterDecided(
   }
 
   return view_->ShouldFinalizeRequestAfterDecided();
+}
+
+PermissionEmbargoStatus
+PermissionRequestManager::RecordActionAndGetEmbargoStatus(
+    content::BrowserContext* browser_context,
+    PermissionRequest* request,
+    PermissionAction permission_action) {
+  if (!request->uses_automatic_embargo()) {
+    return PermissionEmbargoStatus::NOT_EMBARGOED;
+  }
+
+  PermissionDecisionAutoBlocker* const autoblocker =
+      PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context);
+
+  if (permission_action == PermissionAction::DISMISSED &&
+      !request->IsEmbeddedPermissionElementInitiated()) {
+    if (autoblocker->RecordDismissAndEmbargo(
+            request->requesting_origin(), request->GetContentSettingsType(),
+            ShouldCurrentRequestUseQuietUI())) {
+      return PermissionEmbargoStatus::REPEATED_DISMISSALS;
+    }
+  } else if (permission_action == PermissionAction::IGNORED &&
+             !request->IsEmbeddedPermissionElementInitiated()) {
+    if (autoblocker->RecordIgnoreAndEmbargo(request->requesting_origin(),
+                                            request->GetContentSettingsType(),
+                                            ShouldCurrentRequestUseQuietUI())) {
+      return PermissionEmbargoStatus::REPEATED_IGNORES;
+    }
+  } else if (permission_action == PermissionAction::GRANTED_ONCE) {
+    autoblocker->RemoveEmbargoAndResetCounts(request->requesting_origin(),
+                                             request->GetContentSettingsType());
+  }
+
+  return PermissionEmbargoStatus::NOT_EMBARGOED;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager);

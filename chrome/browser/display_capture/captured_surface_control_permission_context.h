@@ -21,6 +21,8 @@ class CapturedSurfaceControlPermissionContext
   CapturedSurfaceControlPermissionContext& operator=(
       const CapturedSurfaceControlPermissionContext&) = delete;
 
+  bool UsesAutomaticEmbargo() const override;
+
  protected:
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,

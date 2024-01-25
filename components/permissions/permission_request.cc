@@ -36,10 +36,12 @@ PermissionRequest::PermissionRequest(
 PermissionRequest::PermissionRequest(
     PermissionRequestData request_data,
     PermissionDecidedCallback permission_decided_callback,
-    base::OnceClosure delete_callback)
+    base::OnceClosure delete_callback,
+    bool uses_automatic_embargo)
     : data_(std::move(request_data)),
       permission_decided_callback_(std::move(permission_decided_callback)),
-      delete_callback_(std::move(delete_callback)) {}
+      delete_callback_(std::move(delete_callback)),
+      uses_automatic_embargo_(uses_automatic_embargo) {}
 
 PermissionRequest::~PermissionRequest() {
   DCHECK(delete_callback_.is_null());

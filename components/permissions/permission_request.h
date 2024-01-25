@@ -60,7 +60,8 @@ class PermissionRequest {
 
   PermissionRequest(PermissionRequestData request_data,
                     PermissionDecidedCallback permission_decided_callback,
-                    base::OnceClosure delete_callback);
+                    base::OnceClosure delete_callback,
+                    bool uses_automatic_embargo);
 
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
@@ -201,6 +202,8 @@ class PermissionRequest {
   // identify the permission being requested.
   virtual std::u16string GetPermissionNameTextFragment() const;
 
+  bool uses_automatic_embargo() const { return uses_automatic_embargo_; }
+
  protected:
   // Sets whether this request is permission element initiated, for testing
   // subclasses only.
@@ -216,6 +219,8 @@ class PermissionRequest {
   // Called when the request is no longer in use so it can be deleted by the
   // caller.
   base::OnceClosure delete_callback_;
+
+  const bool uses_automatic_embargo_ = true;
 
   base::WeakPtrFactory<PermissionRequest> weak_factory_{this};
 };

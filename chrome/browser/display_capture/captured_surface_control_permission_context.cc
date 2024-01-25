@@ -17,6 +17,10 @@ CapturedSurfaceControlPermissionContext::
           ContentSettingsType::CAPTURED_SURFACE_CONTROL,
           blink::mojom::PermissionsPolicyFeature::kCapturedSurfaceControl) {}
 
+bool CapturedSurfaceControlPermissionContext::UsesAutomaticEmbargo() const {
+  return false;
+}
+
 void CapturedSurfaceControlPermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin,

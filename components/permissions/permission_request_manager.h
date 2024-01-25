@@ -408,6 +408,12 @@ class PermissionRequestManager
   // permission decision.
   bool ShouldFinalizeRequestAfterDecided(PermissionAction action) const;
 
+  // Calculate and record the PermissionEmbargoStatus.
+  PermissionEmbargoStatus RecordActionAndGetEmbargoStatus(
+      content::BrowserContext* browser_context,
+      PermissionRequest* request,
+      PermissionAction permission_action);
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 
