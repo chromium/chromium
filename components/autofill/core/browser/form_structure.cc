@@ -575,12 +575,9 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
   UpdateAutofillCount();
 
-  // Preserve timestamp from the cache as a new form from the renderer does not
-  // know the parsing/filling history, as this information is computed in the
-  // browser.
+  // Update form parsed timestamp
   form_parsed_timestamp_ =
       std::min(form_parsed_timestamp_, cached_form.form_parsed_timestamp_);
-  last_filling_timestamp_ = cached_form.last_filling_timestamp_;
 
   // The form signature should match between query and upload requests to the
   // server. On many websites, form elements are dynamically added, removed, or

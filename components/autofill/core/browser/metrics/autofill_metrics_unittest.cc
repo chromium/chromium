@@ -7078,9 +7078,16 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   // Dynamically change the form.
   form.fields.pop_back();
 
+  // Simulate checking whether to fill a dynamic form after the form was filled
+  // initially.
+  test_api(autofill_manager())
+      .ShouldTriggerRefill(FormStructure(form),
+                           RefillTriggerReason::kFormChanged);
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
+              BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 0)));
+
   // Trigger a refill, the refill metric should be updated.
   autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
-  test_api(autofill_manager()).TriggerRefill(form, /*trigger_details=*/{});
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
               BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1)));
 }
