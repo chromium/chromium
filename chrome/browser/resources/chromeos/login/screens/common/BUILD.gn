@@ -27,7 +27,6 @@ js_type_check("closure_compile_local") {
     ":error_message",
     ":offline_ad_login",
     ":recommend_apps",
-    ":saml_confirm_password",
     ":signin_fatal_error",
   ]
 }
@@ -94,18 +93,6 @@ js_library("recommend_apps") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("saml_confirm_password") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/saml_confirm_password.js" ]
-  deps = [
-    "../../:login_ui_tools",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-  ]
   extra_deps = [ ":web_components" ]
 }
 
