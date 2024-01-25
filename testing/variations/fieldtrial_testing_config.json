@@ -13468,6 +13468,21 @@
             ]
         }
     ],
+    "PassExplicitSyncPassphraseToGmsCore": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PassExplicitSyncPassphraseToGmsCore"
+                    ]
+                }
+            ]
+        }
+    ],
     "PassHistogramSharedMemoryOnLaunch": [
         {
             "platforms": [
