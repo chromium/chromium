@@ -1820,6 +1820,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.BytesReceived2" units="bytes"
+    expires_after="2024-07-12">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Total bytes received over the network for an HttpJob request. This is
+    measured when the HttpJob is completed.
+
+    Bytes after switching protocols (such as WebSockets) are not counted.
+
+    There is no previous version of this metric. It is numbered to be in sync
+    with similar metrics. Unlike PrefilterBytesRead, this metric accounts for
+    all HTTP stream bytes (not just the content body), counts bytes for aborted
+    jobs, and network bytes in 304 Not Modified exchanges (rather than cached
+    content bodies).
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.BytesSent2" units="bytes"
+    expires_after="2024-07-12">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request. This is measured
+    when the HttpJob is completed.
+
+    Bytes after switching protocols (such as WebSockets) are not counted.
+
+    There is no previous version of this metric. It is numbered to be in sync
+    with similar metrics.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.CanIncludeCookies" enum="Boolean"
     expires_after="2024-06-18">
   <owner>cfredric@chromium.org</owner>
@@ -1828,6 +1861,26 @@ chromium-metrics-reviews@google.com.
     Counts the HTTP requests which involve reading from the cookie jar to
     construct a Cookie header vs. the HTTP requests which are disallowed from
     including a Cookie header.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2"
+    units="bytes" expires_after="2024-07-12">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Total bytes received over the network for an HttpJob request that would be
+    covered by IP Protection based on match with respect to the masked domain
+    list alone. This is irrespective of token and proxy availability. Any bypass
+    logic (e.g. first party to top level frame) will be considered, if set.
+    These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
+    is measured when the HttpJob is completed.
+
+    There is no previous version of this metric. It is numbered to be in sync
+    with similar metrics. Unlike PrefilterBytesRead, this metric accounts for
+    all HTTP stream bytes (not just the content body), counts bytes for aborted
+    jobs, and network bytes in 304 Not Modified exchanges (rather than cached
+    content bodies).
   </summary>
 </histogram>
 
@@ -1842,6 +1895,23 @@ chromium-metrics-reviews@google.com.
     logic (e.g. first party to top level frame) will be considered, if set.
     These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
     is measured when the HttpJob is completed.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent2"
+    units="bytes" expires_after="2024-07-12">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request that would be
+    covered by IP Protection based on match with respect to the masked domain
+    list alone. This is irrespective of token and proxy availability. Any bypass
+    logic (e.g. first party to top level frame) will be considered, if set.
+    These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
+    is measured when the HttpJob is completed.
+
+    This version improves on BytesSent by counting bytes for aborted jobs and
+    network bytes in 304 Not Modified exchanges.
   </summary>
 </histogram>
 

@@ -464,6 +464,10 @@ void SharedDictionaryNetworkTransaction::CloseConnectionOnDestruction() {
   network_transaction_->CloseConnectionOnDestruction();
 }
 
+bool SharedDictionaryNetworkTransaction::IsMdlMatchForMetrics() const {
+  return network_transaction_->IsMdlMatchForMetrics();
+}
+
 int SharedDictionaryNetworkTransaction::OnConnected(
     const net::TransportInfo& info,
     net::CompletionOnceCallback callback) {
