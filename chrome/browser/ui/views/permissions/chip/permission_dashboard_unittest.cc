@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
@@ -22,14 +22,14 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 
-class AnimationObserver : public OmniboxChipButton::Observer {
+class AnimationObserver : public PermissionChipView::Observer {
  public:
   explicit AnimationObserver(base::OnceClosure quit_closure)
       : animation_complete_callback_(std::move(quit_closure)) {}
 
   void OnAnimationEnded() { std::move(animation_complete_callback_).Run(); }
 
-  // OmniboxChipButton::Observer
+  // PermissionChipView::Observer
   void OnChipVisibilityChanged(bool is_visible) override {}
   void OnExpandAnimationEnded() override { OnAnimationEnded(); }
   void OnCollapseAnimationEnded() override { OnAnimationEnded(); }
@@ -108,7 +108,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
   PermissionDashboardController* dashboard_controller =
       location_bar_view()->permission_dashboard_controller();
 
-  OmniboxChipButton* indicator_chip =
+  PermissionChipView* indicator_chip =
       dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
@@ -163,7 +163,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
   PermissionDashboardController* dashboard_controller =
       location_bar_view()->permission_dashboard_controller();
 
-  OmniboxChipButton* indicator_chip =
+  PermissionChipView* indicator_chip =
       dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =
@@ -207,7 +207,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
   PermissionDashboardController* dashboard_controller =
       location_bar_view()->permission_dashboard_controller();
 
-  OmniboxChipButton* indicator_chip =
+  PermissionChipView* indicator_chip =
       dashboard_controller->permission_dashboard_view()->GetIndicatorChip();
 
   content_settings::PageSpecificContentSettings* pscs =

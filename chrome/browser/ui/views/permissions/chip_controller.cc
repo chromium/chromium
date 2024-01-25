@@ -23,8 +23,8 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -83,7 +83,7 @@ class BubbleButtonController : public views::ButtonController {
 
 ChipController::ChipController(
     Browser* browser,
-    OmniboxChipButton* chip_view,
+    PermissionChipView* chip_view,
     PermissionDashboardView* permission_dashboard_view,
     PermissionDashboardController* permission_dashboard_controller)
     : browser_(browser),

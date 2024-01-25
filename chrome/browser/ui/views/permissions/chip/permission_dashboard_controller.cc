@@ -119,7 +119,7 @@ bool PermissionDashboardController::Update(
   indicator_model->Update(force_hide ? nullptr
                                      : location_bar_view_->GetWebContents());
 
-  OmniboxChipButton* indicator_chip =
+  PermissionChipView* indicator_chip =
       permission_dashboard_view_->GetIndicatorChip();
 
   if (!indicator_model->is_visible()) {
@@ -139,7 +139,7 @@ bool PermissionDashboardController::Update(
   permission_dashboard_view_->SetVisible(true);
 
   indicator_chip->SetChipIcon(indicator_model->icon());
-  indicator_chip->SetTheme(OmniboxChipTheme::kNormalVisibility);
+  indicator_chip->SetTheme(PermissionChipTheme::kNormalVisibility);
   indicator_chip->GetViewAccessibility().OverrideIsIgnored(false);
   indicator_chip->SetTooltipText(indicator_model->get_tooltip());
 

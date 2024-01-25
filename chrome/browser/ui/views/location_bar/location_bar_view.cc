@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
@@ -234,8 +235,8 @@ void LocationBarView::Init() {
             browser_, this, permission_dashboard_view_);
   } else {
     chip_controller_ = std::make_unique<ChipController>(
-        browser_, AddChildViewAt(std::make_unique<OmniboxChipButton>(
-                                     OmniboxChipButton::PressedCallback()),
+        browser_, AddChildViewAt(std::make_unique<PermissionChipView>(
+                                     PermissionChipView::PressedCallback()),
                                  0));
   }
 

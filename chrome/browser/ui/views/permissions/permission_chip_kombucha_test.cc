@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -116,14 +116,14 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest, PermissionChipClickTest) {
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   ExecuteJs(kWebContentsElementId, "requestNotification"),
                   // Make sure the request chip is visible.
-                  WaitForShow(OmniboxChipButton::kChipElementId),
+                  WaitForShow(PermissionChipView::kChipElementId),
                   // Make sure the permission popup bubble is visible.
                   WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-                  PressButton(OmniboxChipButton::kChipElementId),
+                  PressButton(PermissionChipView::kChipElementId),
                   WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
                   // The permission chip is hidden because the permission
                   // request was dismissed instantly after a click.
-                  EnsureNotPresent(OmniboxChipButton::kChipElementId));
+                  EnsureNotPresent(PermissionChipView::kChipElementId));
 }
 
 // Tests that after the second click on the quiet permission chip a permission
@@ -137,19 +137,19 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
       NavigateWebContents(kWebContentsElementId, GetURL()),
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
-      WaitForShow(OmniboxChipButton::kChipElementId),
+      WaitForShow(PermissionChipView::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
       // The first click - open a permission prompt popup bubble.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       // The second click - hide the permission prompt popup bubble and dismiss
       // a permission request.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      EnsureNotPresent(OmniboxChipButton::kChipElementId));
+      EnsureNotPresent(PermissionChipView::kChipElementId));
 }
 
 // Tests that after the second click on the quietest permission chip a
@@ -164,17 +164,17 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaTest,
       NavigateWebContents(kWebContentsElementId, GetURL()),
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
-      WaitForShow(OmniboxChipButton::kChipElementId),
+      WaitForShow(PermissionChipView::kChipElementId),
       // There is no auto-popup bubble for the quiet chip.
       EnsureNotPresent(ContentSettingBubbleContents::kMainElementId),
       // The first click - open a permission prompt popup bubble.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForShow(ContentSettingBubbleContents::kMainElementId),
       // The second click - hide the permission prompt popup bubble and dismiss
       // a permission request.
-      PressButton(OmniboxChipButton::kChipElementId),
+      PressButton(PermissionChipView::kChipElementId),
       WaitForHide(ContentSettingBubbleContents::kMainElementId),
       // The permission chip is hidden because the permission request was
       // dismissed instantly after a click.
-      EnsureNotPresent(OmniboxChipButton::kChipElementId));
+      EnsureNotPresent(PermissionChipView::kChipElementId));
 }

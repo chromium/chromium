@@ -1,15 +1,15 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_MODEL_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_MODEL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_
 
 #include <string>
 
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -42,7 +42,7 @@ class PermissionPromptChipModel {
   std::u16string GetAccessibilityChipText() { return accessibility_chip_text_; }
 
   PermissionPromptStyle GetPromptStyle() { return prompt_style_; }
-  OmniboxChipTheme GetChipTheme() { return chip_theme_; }
+  PermissionChipTheme GetChipTheme() { return chip_theme_; }
 
   bool ShouldDisplayBlockedIcon() { return should_display_blocked_icon_; }
   bool ShouldBubbleStartOpen() { return should_bubble_start_open_; }
@@ -77,7 +77,7 @@ class PermissionPromptChipModel {
   std::u16string accessibility_chip_text_;
 
   PermissionPromptStyle prompt_style_;
-  OmniboxChipTheme chip_theme_;
+  PermissionChipTheme chip_theme_;
 
   bool should_display_blocked_icon_ = false;
 
@@ -95,4 +95,4 @@ class PermissionPromptChipModel {
       permissions::PermissionAction::NUM;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_MODEL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_

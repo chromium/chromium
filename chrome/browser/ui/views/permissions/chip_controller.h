@@ -11,7 +11,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -33,18 +33,18 @@ class BubbleOwnerDelegate {
 
 // This class controls a chip UI view to surface permission related information
 // and prompts. For its creation, the controller expects an object of type
-// OmniboxChipButton which should be a child view of another view. No ownership
+// PermissionChipView which should be a child view of another view. No ownership
 // is transferred through the creation, and the controller will never destruct
-// the OmniboxChipButton object. The controller and it's view are intended to
+// the PermissionChipView object. The controller and it's view are intended to
 // be long-lived.
 class ChipController : public permissions::PermissionRequestManager::Observer,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate,
-                       public OmniboxChipButton::Observer {
+                       public PermissionChipView::Observer {
  public:
   ChipController(
       Browser* browser,
-      OmniboxChipButton* chip_view,
+      PermissionChipView* chip_view,
       PermissionDashboardView* permission_dashboard_view = nullptr,
       PermissionDashboardController* permission_dashboard_controller = nullptr);
 
@@ -80,7 +80,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // OmniboxChipButton::Observer
+  // PermissionChipView::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
@@ -96,7 +96,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
 
   // Chip View.
-  OmniboxChipButton* chip() { return chip_; }
+  PermissionChipView* chip() { return chip_; }
 
   // Hide and clean up the chip.
   void ResetPermissionPromptChip();
@@ -210,9 +210,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   raw_ptr<Browser> browser_;
 
   // The chip view this controller modifies.
-  raw_ptr<OmniboxChipButton> chip_;
+  raw_ptr<PermissionChipView> chip_;
 
-  // `PermissionDashboardView` is an owner of OmniboxChipButton.
+  // `PermissionDashboardView` is an owner of PermissionChipView.
   raw_ptr<PermissionDashboardView> permission_dashboard_view_;
   // `PermissionDashboardController` is an owner of this.
   raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
@@ -243,7 +243,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
-  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};

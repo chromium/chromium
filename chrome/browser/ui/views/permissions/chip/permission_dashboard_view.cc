@@ -7,7 +7,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_layout.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,13 +22,13 @@ PermissionDashboardView::PermissionDashboardView() {
 
   // Permission request chip should be created the first because it is displayed
   // under all other views.
-  request_chip_ = AddChildView(std::make_unique<OmniboxChipButton>(
-      OmniboxChipButton::PressedCallback()));
+  request_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+      PermissionChipView::PressedCallback()));
 
   // Activity indicators chip should be created the last because it is displayed
   // above all other views.
-  indicator_chip_ = AddChildView(std::make_unique<OmniboxChipButton>(
-      OmniboxChipButton::PressedCallback()));
+  indicator_chip_ = AddChildView(std::make_unique<PermissionChipView>(
+      PermissionChipView::PressedCallback()));
 
   // It is unclear which chip will be shown first, hence hide both of them.
   request_chip_->SetVisible(false);

@@ -1,11 +1,11 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
+
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -97,7 +97,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
          (!delegate_->WasCurrentRequestAlreadyDisplayed()));
 
     chip_text_ = GetQuietPermissionMessage(delegate_.get());
-    chip_theme_ = OmniboxChipTheme::kLowVisibility;
+    chip_theme_ = PermissionChipTheme::kLowVisibility;
   } else {
     prompt_style_ = PermissionPromptStyle::kChip;
     should_bubble_start_open_ = true;
@@ -105,7 +105,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
     should_expand_ = true;
 
     chip_text_ = GetLoudPermissionMessage(delegate_.get());
-    chip_theme_ = OmniboxChipTheme::kNormalVisibility;
+    chip_theme_ = PermissionChipTheme::kNormalVisibility;
   }
   accessibility_chip_text_ = l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT);
@@ -124,7 +124,7 @@ PermissionPromptChipModel::~PermissionPromptChipModel() = default;
 void PermissionPromptChipModel::UpdateAutoCollapsePromptChipState(
     bool is_collapsed) {
   should_display_blocked_icon_ = is_collapsed;
-  chip_theme_ = OmniboxChipTheme::kLowVisibility;
+  chip_theme_ = PermissionChipTheme::kLowVisibility;
 }
 
 bool PermissionPromptChipModel::IsExpandAnimationAllowed() {
@@ -142,7 +142,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
   switch (user_decision_) {
     case permissions::PermissionAction::GRANTED:
       should_display_blocked_icon_ = false;
-      chip_theme_ = OmniboxChipTheme::kNormalVisibility;
+      chip_theme_ = PermissionChipTheme::kNormalVisibility;
       chip_text_type =
           permissions::PermissionRequest::ChipTextType::ALLOW_CONFIRMATION;
       accessibility_text_type = permissions::PermissionRequest::ChipTextType::
@@ -152,7 +152,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       break;
     case permissions::PermissionAction::GRANTED_ONCE:
       should_display_blocked_icon_ = false;
-      chip_theme_ = OmniboxChipTheme::kNormalVisibility;
+      chip_theme_ = PermissionChipTheme::kNormalVisibility;
       chip_text_type =
           permissions::PermissionRequest::ChipTextType::ALLOW_ONCE_CONFIRMATION;
       accessibility_text_type = permissions::PermissionRequest::ChipTextType::
@@ -165,7 +165,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
     case permissions::PermissionAction::IGNORED:
     case permissions::PermissionAction::REVOKED:
       should_display_blocked_icon_ = true;
-      chip_theme_ = OmniboxChipTheme::kLowVisibility;
+      chip_theme_ = PermissionChipTheme::kLowVisibility;
       chip_text_type =
           permissions::PermissionRequest::ChipTextType::BLOCKED_CONFIRMATION;
       accessibility_text_type = permissions::PermissionRequest::ChipTextType::

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "ui/views/view_tracker.h"
 
@@ -19,7 +19,7 @@ class LocationBarView;
 class ChipController;
 class ContentSettingImageModel;
 
-class PermissionDashboardController : public OmniboxChipButton::Observer {
+class PermissionDashboardController : public PermissionChipView::Observer {
  public:
   PermissionDashboardController(
       Browser* browser,
@@ -43,7 +43,7 @@ class PermissionDashboardController : public OmniboxChipButton::Observer {
   // `true` if there are user-visible changes, otherwise returns `false`.
   bool Update(ContentSettingImageModel* indicator_model, bool force_hide);
 
-  // OmniboxChipButton::Observer
+  // PermissionChipView::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
@@ -83,7 +83,7 @@ class PermissionDashboardController : public OmniboxChipButton::Observer {
   // icon. It appears without animation.
   bool is_verbose_ = false;
   views::ViewTracker page_info_bubble_tracker_;
-  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};
   base::WeakPtrFactory<PermissionDashboardController> weak_factory_{this};
 };
