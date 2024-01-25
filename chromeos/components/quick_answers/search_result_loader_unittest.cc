@@ -41,7 +41,8 @@ constexpr char kValidResponse[] = R"()]}'
               "rawText": "9.055 inches"
             }
           },
-          "category": "Length"
+          "category": "Length",
+          "sourceAmount": 23
         }
       }
     ]

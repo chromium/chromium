@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
@@ -19,6 +20,90 @@ namespace {
 using base::Value;
 
 constexpr double kPreferredRatioRange = 100;
+constexpr int kMaxAlternativeUnitsNumber = 4;
+
+std::vector<UnitConversionInfo> ParseAlternativeUnits(
+    const Value::Dict& result,
+    const std::string& category,
+    const base::Value::Dict& src_unit,
+    const base::Value::Dict& dst_unit) {
+  std::vector<UnitConversionInfo> alternative_units_list;
+
+  const std::string* src_name = src_unit.FindStringByDottedPath(kNamePath);
+  const std::string* dst_name = dst_unit.FindStringByDottedPath(kNamePath);
+  if (!src_name || !dst_name) {
+    return alternative_units_list;
+  }
+
+  const std::optional<double> src_to_standard_conversion_rate =
+      src_unit.FindDouble(kConversionToSiAPath);
+  if (!src_to_standard_conversion_rate ||
+      src_to_standard_conversion_rate.value() == kInvalidRateValue) {
+    return alternative_units_list;
+  }
+
+  const base::Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
+  if (!rule) {
+    return alternative_units_list;
+  }
+
+  UnitConverter converter(*rule);
+  const Value::List* possible_units =
+      converter.GetPossibleUnitsForCategory(category);
+  if (!possible_units) {
+    return alternative_units_list;
+  }
+
+  std::vector<base::Value::Dict> possible_units_vector;
+  for (const Value& unit_value : *possible_units) {
+    possible_units_vector.push_back(unit_value.GetDict().Clone());
+  }
+
+  auto increasing_conversion_rate_comparator =
+      [&src_unit](const base::Value::Dict& unit_a,
+                  const base::Value::Dict& unit_b) -> bool {
+    const std::optional<double> conversion_rate_a =
+        GetUnitConversionRate(unit_a, src_unit);
+    if (!conversion_rate_a) {
+      return false;
+    }
+
+    const std::optional<double> conversion_rate_b =
+        GetUnitConversionRate(unit_b, src_unit);
+    if (!conversion_rate_b) {
+      return true;
+    }
+
+    return conversion_rate_a.value() < conversion_rate_b.value();
+  };
+  base::ranges::sort(possible_units_vector,
+                     increasing_conversion_rate_comparator);
+
+  for (const base::Value::Dict& unit : possible_units_vector) {
+    if (alternative_units_list.size() == kMaxAlternativeUnitsNumber) {
+      break;
+    }
+
+    const std::string* name = unit.FindStringByDottedPath(kNamePath);
+    if (!name || *name == *src_name || *name == *dst_name) {
+      continue;
+    }
+
+    const std::optional<double> unit_to_standard_conversion_rate =
+        unit.FindDouble(kConversionToSiAPath);
+    if (!unit_to_standard_conversion_rate ||
+        unit_to_standard_conversion_rate.value() == kInvalidRateValue) {
+      continue;
+    }
+
+    StandardUnitConversionRates standard_unit_conversion_rates(
+        src_to_standard_conversion_rate.value(),
+        unit_to_standard_conversion_rate.value());
+    alternative_units_list.emplace_back(*name, standard_unit_conversion_rates);
+  }
+
+  return alternative_units_list;
+}
 
 }  // namespace
 
@@ -51,10 +136,18 @@ UnitConversionResultParser::ParseInStructuredResult(
   const std::string* source_text =
       result.FindStringByDottedPath(kSourceTextPath);
   if (!source_text) {
-    LOG(ERROR) << "Failed to get the source amount and unit.";
+    LOG(ERROR) << "Failed to get the source amount and unit text.";
     return nullptr;
   }
   unit_conversion_result->source_text = *source_text;
+
+  const std::optional<double> source_amount =
+      result.FindDoubleByDottedPath(kSourceAmountPath);
+  if (!source_amount) {
+    LOG(ERROR) << "Failed to get the source amount.";
+    return nullptr;
+  }
+  unit_conversion_result->source_amount = source_amount.value();
 
   double source_to_standard_conversion_rate = kInvalidRateValue;
   const base::Value::Dict* source_unit =
@@ -86,11 +179,10 @@ UnitConversionResultParser::ParseInStructuredResult(
   // better destination unit type.
   // This only works if we have a valid source unit.
   if (source_unit) {
-    const std::optional<double> source_amount =
-        result.FindDoubleByDottedPath(kSourceAmountPath);
     const std::optional<double> dest_amount =
         result.FindDoubleByDottedPath(kDestAmountPath);
     const std::optional<double> ratio = GetRatio(source_amount, dest_amount);
+
     if (ratio && ratio.value() > kPreferredRatioRange) {
       const base::Value::List* rule = result.FindListByDottedPath(kRuleSetPath);
       if (rule) {
@@ -132,6 +224,14 @@ UnitConversionResultParser::ParseInStructuredResult(
     unit_conversion_result->standard_unit_conversion_rates =
         StandardUnitConversionRates(source_to_standard_conversion_rate,
                                     dest_to_standard_conversion_rate);
+  }
+
+  if (source_unit) {
+    std::vector<UnitConversionInfo> alternative_units =
+        ParseAlternativeUnits(result, *category, *source_unit, *dest_unit);
+    if (!alternative_units.empty()) {
+      unit_conversion_result->alternative_units_list = alternative_units;
+    }
   }
 
   std::unique_ptr<StructuredResult> structured_result =

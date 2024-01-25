@@ -17,7 +17,7 @@ namespace {
 using base::Value;
 
 bool IsLinearFormula(const std::optional<double> rate_a) {
-  return rate_a.has_value() && rate_a.value() != 0;
+  return rate_a.has_value() && rate_a.value() != kInvalidRateValue;
 }
 
 }  // namespace
@@ -72,8 +72,9 @@ const Value::Dict* UnitConverter::FindProperDestinationUnit(
     const base::Value::Dict& unit = unit_value.GetDict();
     const auto* name = unit.FindStringByDottedPath(kNamePath);
     const auto rate_a = unit.FindDoubleByDottedPath(kConversionToSiAPath);
-    if (*name == *src_name || !rate_a.has_value() || rate_a.value() == 0)
+    if (*name == *src_name || !IsLinearFormula(rate_a)) {
       continue;
+    }
     auto rate = GetRatio(rate_a.value(), src_rate_a.value());
     if (rate.has_value() && rate.value() < min_rate) {
       min_rate = rate.value();

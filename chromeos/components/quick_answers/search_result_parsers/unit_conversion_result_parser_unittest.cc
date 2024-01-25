@@ -29,6 +29,8 @@ constexpr double kPoundRateA = 0.45359237;
 constexpr char kPoundName[] = "Pound";
 constexpr double kGramRateA = 0.001;
 constexpr char kGramName[] = "Gram";
+constexpr double kOunceRateA = 0.028349523125;
+constexpr char kOunceName[] = "Ounce";
 
 constexpr double kSourceAmountKilogram = 100.0;
 constexpr double kDestAmountPound = 220.462;
@@ -58,6 +60,7 @@ Value BuildMassRuleSet() {
   units.Append(CreateUnit(kKilogramRateA, kKilogramName));
   units.Append(CreateUnit(kGramRateA, kGramName));
   units.Append(CreateUnit(kPoundRateA, kPoundName));
+  units.Append(CreateUnit(kOunceRateA, kOunceName));
   conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
@@ -182,7 +185,9 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
   EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
   EXPECT_FALSE(unit_conversion_result->standard_unit_conversion_rates);
+  EXPECT_FALSE(unit_conversion_result->alternative_units_list);
 }
 
 TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
@@ -219,6 +224,7 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
   EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
                   ->standard_unit_conversion_rates);
@@ -227,6 +233,8 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
   EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
             kKilogramRateA);
   EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+
+  EXPECT_FALSE(unit_conversion_result->alternative_units_list);
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -265,6 +273,7 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
   EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
                   ->standard_unit_conversion_rates);
@@ -273,6 +282,27 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
             kKilogramRateA);
   EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+
+  EXPECT_TRUE(unit_conversion_result->alternative_units_list);
+  std::vector<UnitConversionInfo> conversions =
+      unit_conversion_result->alternative_units_list.value();
+  EXPECT_EQ(2u, conversions.size());
+  UnitConversionInfo first_alternative_unit = conversions[0];
+  EXPECT_EQ(first_alternative_unit.unit, kOunceName);
+  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
+                .source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
+                .dest_to_standard_conversion_rate,
+            kOunceRateA);
+  UnitConversionInfo second_alternative_unit = conversions[1];
+  EXPECT_EQ(second_alternative_unit.unit, kGramName);
+  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
+                .source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
+                .dest_to_standard_conversion_rate,
+            kGramRateA);
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -316,6 +346,7 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(unit_conversion_result->result_text,
             base::UTF16ToASCII(answer->text));
   EXPECT_EQ(unit_conversion_result->category, kMassCategory);
+  EXPECT_EQ(unit_conversion_result->source_amount, kSourceAmountKilogram);
 
   ASSERT_TRUE(structured_result->unit_conversion_result
                   ->standard_unit_conversion_rates);
@@ -324,6 +355,27 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(conversion_rates.source_to_standard_conversion_rate,
             kKilogramRateA);
   EXPECT_EQ(conversion_rates.dest_to_standard_conversion_rate, kPoundRateA);
+
+  EXPECT_TRUE(unit_conversion_result->alternative_units_list);
+  std::vector<UnitConversionInfo> conversions =
+      unit_conversion_result->alternative_units_list.value();
+  EXPECT_EQ(2u, conversions.size());
+  UnitConversionInfo first_alternative_unit = conversions[0];
+  EXPECT_EQ(first_alternative_unit.unit, kOunceName);
+  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
+                .source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(first_alternative_unit.standard_unit_conversion_rates
+                .dest_to_standard_conversion_rate,
+            kOunceRateA);
+  UnitConversionInfo second_alternative_unit = conversions[1];
+  EXPECT_EQ(second_alternative_unit.unit, kGramName);
+  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
+                .source_to_standard_conversion_rate,
+            kKilogramRateA);
+  EXPECT_EQ(second_alternative_unit.standard_unit_conversion_rates
+                .dest_to_standard_conversion_rate,
+            kGramRateA);
 }
 
 }  // namespace quick_answers

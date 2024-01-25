@@ -67,7 +67,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessFirstResult) {
                 "rawText": "9.055 inches"
               }
             },
-            "category": "Length"
+            "category": "Length",
+            "sourceAmount": 23
           }
         }
       ]
@@ -100,7 +101,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessMultipleResults) {
                 "rawText": "9.055 inches"
               }
             },
-            "category": "Length"
+            "category": "Length",
+            "sourceAmount": 23
           }
         }
       ]

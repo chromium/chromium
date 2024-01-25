@@ -255,6 +255,7 @@ struct DefinitionResult {
   std::string word_class;
   PhoneticsInfo phonetics_info;
   Sense sense;
+  // Not every word will have subsenses.
   std::optional<std::vector<Sense>> subsenses_list;
 };
 
@@ -289,6 +290,19 @@ struct StandardUnitConversionRates {
   double dest_to_standard_conversion_rate = kInvalidRateValue;
 };
 
+// `UnitConversionInfo` must be copyable.
+struct UnitConversionInfo {
+  UnitConversionInfo(
+      std::string unit,
+      StandardUnitConversionRates standard_unit_conversion_rates);
+  UnitConversionInfo(const UnitConversionInfo& other);
+  UnitConversionInfo& operator=(const UnitConversionInfo& other);
+  ~UnitConversionInfo();
+
+  std::string unit;
+  StandardUnitConversionRates standard_unit_conversion_rates;
+};
+
 // `UnitConversionResult` holds result for unit conversion intent.
 // `UnitConversionResult` must be copyable.
 struct UnitConversionResult {
@@ -301,8 +315,10 @@ struct UnitConversionResult {
   std::string source_text;
   std::string result_text;
   std::string category;
-  // Not every unit conversion will have a conversion rate.
+  double source_amount = 0;
+  // Not every unit conversion will have a conversion rate or alternative units.
   std::optional<StandardUnitConversionRates> standard_unit_conversion_rates;
+  std::optional<std::vector<UnitConversionInfo>> alternative_units_list;
 };
 
 // `StructuredResult` is NOT copyable as it's not trivial to make a class with
