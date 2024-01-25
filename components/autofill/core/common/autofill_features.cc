@@ -355,13 +355,6 @@ BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, HTML autocomplete values that do not map to any known type, but
-// look reasonable (e.g. contain "address") are simply ignored. Without the
-// feature, Autofill is disabled on such fields.
-BASE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues,
-             "AutofillIgnoreUnmappableAutocompleteValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
 // overall type.

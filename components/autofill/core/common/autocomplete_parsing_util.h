@@ -53,9 +53,7 @@ bool ShouldIgnoreAutocompleteAttribute(std::string_view autocomplete);
 
 // Parses `value` as an HTML field type and converts it to the corresponding
 // HtmlFieldType, if it is supposed by Autofill.
-// HtmlFieldType::kUnspecified is returned if `value` is empty, or if
-// `value` is supposed to be ignored by
-// `kAutofillIgnoreUnmappableAutocompleteValues`. Otherwise
+// HtmlFieldType::kUnspecified is returned if `value` is empty. Otherwise
 // HtmlFieldType::kUnrecognized is returned.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value);
 
