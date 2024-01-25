@@ -2265,9 +2265,7 @@
       // Enables long aniamtion frames as a performance API (the
       // "long-animation-frame" timeline entry)
       name: "LongAnimationFrameTiming",
-      status: "experimental",
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "LongAnimationFrameTiming"
+      status: "stable"
     },
     {
       // Use LongAnimationFrameMonitor to emit longtask entries
