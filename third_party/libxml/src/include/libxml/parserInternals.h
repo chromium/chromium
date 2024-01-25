@@ -313,9 +313,12 @@ XMLPUBFUN xmlParserCtxtPtr
 			xmlCreateEntityParserCtxt(const xmlChar *URL,
 						 const xmlChar *ID,
 						 const xmlChar *base);
+XMLPUBFUN void xmlErrMemory(xmlParserCtxtPtr ctxt, const char* extra);
 XMLPUBFUN int
 			xmlSwitchEncoding	(xmlParserCtxtPtr ctxt,
 						 xmlCharEncoding enc);
+XMLPUBFUN int xmlSwitchEncodingName(xmlParserCtxtPtr ctxt,
+                                    const char* encoding);
 XMLPUBFUN int
 			xmlSwitchToEncoding	(xmlParserCtxtPtr ctxt,
 					 xmlCharEncodingHandlerPtr handler);

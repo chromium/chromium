@@ -414,33 +414,18 @@ xmlIOErr(int code, const char *extra)
  * Handle a resource access error
  */
 void
-__xmlLoaderErr(void *ctx, const char *msg, const char *filename)
+xmlLoaderErr(xmlParserCtxtPtr ctxt, const char *msg, const char *filename)
 {
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-    xmlStructuredErrorFunc schannel = NULL;
-    xmlGenericErrorFunc channel = NULL;
-    void *data = NULL;
-    xmlErrorLevel level = XML_ERR_ERROR;
+    xmlErrorLevel level;
 
-    if ((ctxt != NULL) && (ctxt->disableSAX != 0) &&
-        (ctxt->instate == XML_PARSER_EOF))
-	return;
-    if ((ctxt != NULL) && (ctxt->sax != NULL)) {
-        if (ctxt->validate) {
-	    channel = ctxt->sax->error;
-	    level = XML_ERR_ERROR;
-	} else {
-	    channel = ctxt->sax->warning;
-	    level = XML_ERR_WARNING;
-	}
-	if (ctxt->sax->initialized == XML_SAX2_MAGIC)
-	    schannel = ctxt->sax->serror;
-	data = ctxt->userData;
-    }
-    __xmlRaiseError(schannel, channel, data, ctxt, NULL, XML_FROM_IO,
-                    XML_IO_LOAD_ERROR, level, NULL, 0,
-		    filename, NULL, NULL, 0, 0,
-		    msg, filename);
+    if (ctxt->validate)
+        level = XML_ERR_ERROR;
+    else
+        level = XML_ERR_WARNING;
+
+    xmlErrParser(ctxt, NULL, XML_FROM_IO, XML_IO_LOAD_ERROR, level,
+                 (const xmlChar *) filename, NULL, NULL, 0,
+		 msg, filename);
 
 }
 
@@ -1018,7 +1003,8 @@ xmlFileFlush (void * context) {
  *
  * Write @len bytes from @buffer to the xml buffer
  *
- * Returns the number of bytes written
+ * Returns the number of bytes written or a negative xmlParserErrors
+ * value.
  */
 static int
 xmlBufferWrite (void * context, const char * buffer, int len) {
@@ -1026,7 +1012,7 @@ xmlBufferWrite (void * context, const char * buffer, int len) {
 
     ret = xmlBufferAdd((xmlBufferPtr) context, (const xmlChar *) buffer, len);
     if (ret != 0)
-        return(-1);
+        return(-XML_ERR_NO_MEMORY);
     return(len);
 }
 #endif
@@ -2234,9 +2220,13 @@ xmlRegisterHTTPPostCallbacks( void ) {
 
 /**
  * xmlAllocParserInputBuffer:
- * @enc:  the charset encoding if known
+ * @enc:  the charset encoding if known (deprecated)
  *
- * Create a buffered parser input for progressive parsing
+ * Create a buffered parser input for progressive parsing.
+ *
+ * The encoding argument is deprecated and should be set to
+ * XML_CHAR_ENCODING_NONE. The encoding can be changed with
+ * xmlSwitchEncoding or xmlSwitchEncodingName later on.
  *
  * Returns the new parser input or NULL
  */
@@ -2255,7 +2245,13 @@ xmlAllocParserInputBuffer(xmlCharEncoding enc) {
 	return(NULL);
     }
     xmlBufSetAllocationScheme(ret->buffer, XML_BUFFER_ALLOC_DOUBLEIT);
-    ret->encoder = xmlGetCharEncodingHandler(enc);
+    if (enc != XML_CHAR_ENCODING_NONE) {
+        if (xmlLookupCharEncodingHandler(enc, &ret->encoder) != 0) {
+            /* We can't handle errors properly here. */
+            xmlFreeParserInputBuffer(ret);
+            return(NULL);
+        }
+    }
     if (ret->encoder != NULL)
         ret->raw = xmlBufCreateSize(2 * xmlDefaultBufferSize);
     else
@@ -2689,10 +2685,14 @@ xmlOutputBufferCreateFilename(const char *URI,
 /**
  * xmlParserInputBufferCreateFile:
  * @file:  a FILE*
- * @enc:  the charset encoding if known
+ * @enc:  the charset encoding if known (deprecated)
  *
  * Create a buffered parser input for the progressive parsing of a FILE *
  * buffered C I/O
+ *
+ * The encoding argument is deprecated and should be set to
+ * XML_CHAR_ENCODING_NONE. The encoding can be changed with
+ * xmlSwitchEncoding or xmlSwitchEncodingName later on.
  *
  * Returns the new parser input or NULL
  */
@@ -2777,7 +2777,7 @@ xmlOutputBufferCreateBuffer(xmlBufferPtr buffer,
  */
 const xmlChar *
 xmlOutputBufferGetContent(xmlOutputBufferPtr out) {
-    if ((out == NULL) || (out->buffer == NULL))
+    if ((out == NULL) || (out->buffer == NULL) || (out->error != 0))
         return(NULL);
 
     return(xmlBufContent(out->buffer));
@@ -2793,7 +2793,7 @@ xmlOutputBufferGetContent(xmlOutputBufferPtr out) {
  */
 size_t
 xmlOutputBufferGetSize(xmlOutputBufferPtr out) {
-    if ((out == NULL) || (out->buffer == NULL))
+    if ((out == NULL) || (out->buffer == NULL) || (out->error != 0))
         return(0);
 
     return(xmlBufUse(out->buffer));
@@ -2805,10 +2805,14 @@ xmlOutputBufferGetSize(xmlOutputBufferPtr out) {
 /**
  * xmlParserInputBufferCreateFd:
  * @fd:  a file descriptor number
- * @enc:  the charset encoding if known
+ * @enc:  the charset encoding if known (deprecated)
  *
  * Create a buffered parser input for the progressive parsing for the input
  * from a file descriptor
+ *
+ * The encoding argument is deprecated and should be set to
+ * XML_CHAR_ENCODING_NONE. The encoding can be changed with
+ * xmlSwitchEncoding or xmlSwitchEncodingName later on.
  *
  * Returns the new parser input or NULL
  */
@@ -2857,10 +2861,14 @@ xmlMemClose(void *vctxt) {
  * xmlParserInputBufferCreateMem:
  * @mem:  the memory input
  * @size:  the length of the memory block
- * @enc:  the charset encoding if known
+ * @enc:  the charset encoding if known (deprecated)
  *
  * Create a buffered parser input for the progressive parsing for the input
  * from a memory area.
+ *
+ * The encoding argument is deprecated and should be set to
+ * XML_CHAR_ENCODING_NONE. The encoding can be changed with
+ * xmlSwitchEncoding or xmlSwitchEncodingName later on.
  *
  * Returns the new parser input or NULL
  */
@@ -2999,10 +3007,14 @@ xmlOutputBufferCreateFd(int fd, xmlCharEncodingHandlerPtr encoder) {
  * @ioread:  an I/O read function
  * @ioclose:  an I/O close function
  * @ioctx:  an I/O handler
- * @enc:  the charset encoding if known
+ * @enc:  the charset encoding if known (deprecated)
  *
  * Create a buffered parser input for the progressive parsing for the input
  * from an I/O handler
+ *
+ * The encoding argument is deprecated and should be set to
+ * XML_CHAR_ENCODING_NONE. The encoding can be changed with
+ * xmlSwitchEncoding or xmlSwitchEncodingName later on.
  *
  * Returns the new parser input or NULL
  */
@@ -3297,6 +3309,10 @@ xmlOutputBufferWrite(xmlOutputBufferPtr out, int len, const char *buf) {
 	     */
 	    if (out->conv == NULL) {
 		out->conv = xmlBufCreate();
+                if (out->conv == NULL) {
+                    out->error = XML_ERR_NO_MEMORY;
+                    return(-1);
+                }
 	    }
 	    ret = xmlBufAdd(out->buffer, (const xmlChar *) buf, chunk);
 	    if (ret != 0)
@@ -3309,11 +3325,8 @@ xmlOutputBufferWrite(xmlOutputBufferPtr out, int len, const char *buf) {
 	     * convert as much as possible to the parser reading buffer.
 	     */
 	    ret = xmlCharEncOutput(out, 0);
-	    if ((ret < 0) && (ret != -3)) {
-		xmlIOErr(XML_IO_ENCODER, NULL);
-		out->error = XML_IO_ENCODER;
+	    if (ret < 0)
 		return(-1);
-	    }
             if (out->writecallback)
 	        nbchars = xmlBufUse(out->conv);
             else
@@ -3349,8 +3362,10 @@ xmlOutputBufferWrite(xmlOutputBufferPtr out, int len, const char *buf) {
 		    xmlBufShrink(out->buffer, ret);
 	    }
 	    if (ret < 0) {
-		xmlIOErr(XML_IO_WRITE, NULL);
-		out->error = XML_IO_WRITE;
+                int errNo = (ret == -1) ? XML_IO_WRITE : -ret;
+
+		xmlIOErr(errNo, NULL);
+		out->error = errNo;
 		return(ret);
 	    }
             if (out->written > INT_MAX - ret)
@@ -3502,11 +3517,8 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 	     * convert as much as possible to the output buffer.
 	     */
 	    ret = xmlCharEncOutput(out, 0);
-	    if ((ret < 0) && (ret != -3)) {
-		xmlIOErr(XML_IO_ENCODER, NULL);
-		out->error = XML_IO_ENCODER;
+	    if (ret < 0)
 		return(-1);
-	    }
             if (out->writecallback)
 	        nbchars = xmlBufUse(out->conv);
             else
@@ -3543,8 +3555,9 @@ xmlOutputBufferWriteEscape(xmlOutputBufferPtr out, const xmlChar *str,
 		    xmlBufShrink(out->buffer, ret);
 	    }
 	    if (ret < 0) {
-		xmlIOErr(XML_IO_WRITE, NULL);
-		out->error = XML_IO_WRITE;
+                int errNo = (ret == -1) ? XML_IO_WRITE : -ret;
+		xmlIOErr(errNo, NULL);
+		out->error = errNo;
 		return(ret);
 	    }
             if (out->written > INT_MAX - ret)
@@ -3610,11 +3623,8 @@ xmlOutputBufferFlush(xmlOutputBufferPtr out) {
 	 */
 	do {
 	    nbchars = xmlCharEncOutput(out, 0);
-	    if (nbchars < 0) {
-		xmlIOErr(XML_IO_ENCODER, NULL);
-		out->error = XML_IO_ENCODER;
+	    if (nbchars < 0)
 		return(-1);
-	    }
 	} while (nbchars);
     }
 
@@ -3636,8 +3646,10 @@ xmlOutputBufferFlush(xmlOutputBufferPtr out) {
 	    xmlBufShrink(out->buffer, ret);
     }
     if (ret < 0) {
-	xmlIOErr(XML_IO_FLUSH, NULL);
-	out->error = XML_IO_FLUSH;
+        int errNo = (ret == -1) ? XML_IO_WRITE : -ret;
+
+        xmlIOErr(errNo, NULL);
+        out->error = errNo;
 	return(ret);
     }
     if (out->written > INT_MAX - ret)
@@ -3731,10 +3743,10 @@ xmlCheckHTTPInput(xmlParserCtxtPtr ctxt, xmlParserInputPtr ret) {
         if (code >= 400) {
             /* fatal error */
 	    if (ret->filename != NULL)
-		__xmlLoaderErr(ctxt, "failed to load HTTP resource \"%s\"\n",
-                         (const char *) ret->filename);
+                xmlLoaderErr(ctxt, "failed to load HTTP resource \"%s\"\n",
+                             (const char *) ret->filename);
 	    else
-		__xmlLoaderErr(ctxt, "failed to load HTTP resource\n", NULL);
+                xmlLoaderErr(ctxt, "failed to load HTTP resource\n", NULL);
             xmlFreeInputStream(ret);
             ret = NULL;
         } else {
@@ -3743,18 +3755,8 @@ xmlCheckHTTPInput(xmlParserCtxtPtr ctxt, xmlParserInputPtr ret) {
             if ((xmlStrstr(BAD_CAST mime, BAD_CAST "/xml")) ||
                 (xmlStrstr(BAD_CAST mime, BAD_CAST "+xml"))) {
                 encoding = xmlNanoHTTPEncoding(ret->buf->context);
-                if (encoding != NULL) {
-                    xmlCharEncodingHandlerPtr handler;
-
-                    handler = xmlFindCharEncodingHandler(encoding);
-                    if (handler != NULL) {
-                        xmlSwitchInputEncoding(ctxt, ret, handler);
-                    } else {
-                        __xmlErrEncoding(ctxt, XML_ERR_UNKNOWN_ENCODING,
-                                         "Unknown encoding %s",
-                                         BAD_CAST encoding, NULL);
-                    }
-                }
+                if (encoding != NULL)
+                    xmlSwitchEncodingName(ctxt, encoding);
 #if 0
             } else if (xmlStrstr(BAD_CAST mime, BAD_CAST "html")) {
 #endif
@@ -3913,7 +3915,8 @@ xmlDefaultExternalEntityLoader(const char *URL, const char *ID,
     if (resource == NULL) {
         if (ID == NULL)
             ID = "NULL";
-        __xmlLoaderErr(ctxt, "failed to load external entity \"%s\"\n", ID);
+        if (ctxt != NULL)
+            xmlLoaderErr(ctxt, "failed to load external entity \"%s\"\n", ID);
         return (NULL);
     }
     ret = xmlNewInputFromFile(ctxt, (const char *) resource);
