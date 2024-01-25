@@ -17,6 +17,7 @@
 #include "chromeos/ash/services/libassistant/util.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
