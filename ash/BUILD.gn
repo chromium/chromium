@@ -3252,6 +3252,7 @@ test("ash_unittests") {
     "ambient/ui/ambient_animation_shield_controller_unittest.cc",
     "ambient/ui/ambient_container_view_unittest.cc",
     "ambient/ui/ambient_video_view_unittest.cc",
+    "ambient/ui/glanceable_info_view_unittest.cc",
     "ambient/ui/jitter_calculator_unittest.cc",
     "ambient/ui/media_string_view_unittest.cc",
     "ambient/ui/photo_view_unittest.cc",

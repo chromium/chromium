@@ -127,6 +127,10 @@ int AmbientInfoView::GetAdjustedLeftPaddingToMatchBottom() {
   return adjusted_left_padding;
 }
 
+GlanceableInfoView* AmbientInfoView::GetGlanceableInfoViewForTesting() const {
+  return glanceable_info_view_;
+}
+
 BEGIN_METADATA(AmbientInfoView, views::View)
 END_METADATA
 

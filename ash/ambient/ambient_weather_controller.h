@@ -62,6 +62,8 @@ class ASH_EXPORT AmbientWeatherController
   AmbientWeatherModel* weather_model() { return weather_model_.get(); }
 
  private:
+  friend class AmbientWeatherControllerTest;
+
   // Triggers a fetch of weather information and a download of the appropriate
   // weather condition icon.
   void FetchWeather();
@@ -74,6 +76,14 @@ class ASH_EXPORT AmbientWeatherController
   void OnWeatherConditionIconDownloaded(float temp_f,
                                         bool show_celsius,
                                         const gfx::ImageSkia& icon);
+
+  // Returns true when geolocation permission is allowed for the Ambient
+  // Weather, i.e. geolocation access level is set either to "Allowed" or "Only
+  // allowed for system".
+  bool IsGeolocationUsageAllowed();
+
+  // Deletes the cached weather model.
+  void ClearAmbientWeatherModel();
 
   void OnScopedRefresherDestroyed();
 
