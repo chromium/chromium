@@ -49,7 +49,9 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -769,6 +771,13 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
           first_guest_session->profile()));
 
   EXPECT_TRUE(first_service->IsShowingDialog(first_guest_session));
+
+  // Complete the choice for the first guest profile.
+  first_service->NotifyChoiceMade(
+      TemplateURLPrepopulateData::bing.id,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
+  EXPECT_FALSE(first_service->IsShowingDialog(first_guest_session));
+
   CloseBrowserSynchronously(first_guest_session);
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
@@ -778,6 +787,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
           second_guest_session->profile()));
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
+  // The second guest profile still needs to choose again
   EXPECT_TRUE(second_service->IsShowingDialog(second_guest_session));
 }
 #endif
