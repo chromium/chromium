@@ -31,53 +31,6 @@ var OSSettingsBrowserTest = class extends PolymerTest {
   }
 };
 
-var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page/device_page_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'ash::features::kInputDeviceSettingsSplit',
-        'ash::features::kPeripheralCustomization',
-      ],
-      disabled: [
-        'ash::features::kOsSettingsRevampWayfinding',
-      ],
-    };
-  }
-};
-
-// TODO(https://crbug.com/1422799): The test is flaky on ChromeOS debug.
-TEST_F_WITH_PREAMBLE(
-    `
-#if !defined(NDEBUG)
-#define MAYBE_All DISABLED_All
-#else
-#define MAYBE_All All
-#endif
-    `,
-    'OSSettingsDevicePageTest', 'MAYBE_All',
-    () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
-
-var OSSettingsDevicePageRevampTest = class extends OSSettingsDevicePageTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat([
-        'ash::features::kOsSettingsRevampWayfinding',
-      ]),
-    };
-  }
-};
-
-TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
-  mocha.run();
-});
-
 [['AboutPage', 'os_about_page_tests.js'],
  [
    'ApnSubpage', 'apn_subpage_tests.js',

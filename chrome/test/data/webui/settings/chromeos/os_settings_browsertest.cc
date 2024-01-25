@@ -209,6 +209,59 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePageTimezoneSubpage) {
   RunSettingsTest("date_time_page/timezone_subpage_test.js");
 }
 
+class OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+        },
+        /*disabled=*/{
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(https://crbug.com/1422799): The test is flaky on ChromeOS debug.
+#if !defined(NDEBUG)
+#define MAYBE_DevicePage DISABLED_DevicePage
+#else
+#define MAYBE_DevicePage DevicePage
+#endif
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled,
+                       MAYBE_DevicePage) {
+  RunSettingsTest("device_page/device_page_test.js");
+}
+
+class OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+            ash::features::kOsSettingsRevampWayfinding,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled,
+                       DevicePageRevamp) {
+  RunSettingsTest("device_page/device_page_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageAudioPage) {
   RunSettingsTest("device_page/audio_page_test.js");
 }
@@ -495,45 +548,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("device_page/device_page_input_settings_test.js");
 }
 
-class OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kPeripheralCustomization,
-            ash::features::kInputDeviceSettingsSplit,
-        },
-        /*disabled=*/{ash::features::kOsSettingsRevampWayfinding});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled,
                        DevicePageStorage) {
   RunSettingsTest("device_page/storage_test.js");
 }
-
-class OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kPeripheralCustomization,
-            ash::features::kInputDeviceSettingsSplit,
-            ash::features::kOsSettingsRevampWayfinding,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitAndRevampEnabled,
                        DevicePageStorageRevamp) {
