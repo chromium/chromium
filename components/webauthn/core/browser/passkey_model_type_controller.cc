@@ -6,10 +6,8 @@
 
 #include <utility>
 
-#include "build/build_config.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 
 namespace webauthn {
 
@@ -23,16 +21,5 @@ PasskeyModelTypeController::PasskeyModelTypeController(
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       sync_service_(sync_service) {}
-
-bool PasskeyModelTypeController::ShouldRunInTransportOnlyMode() const {
-#if !BUILDFLAG(IS_IOS)
-  // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
-  // make sense to enable this datatype.
-  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    return false;
-  }
-#endif  // !BUILDFLAG(IS_IOS)
-  return true;
-}
 
 }  // namespace webauthn

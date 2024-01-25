@@ -30,9 +30,6 @@ class PasskeyModelTypeController : public syncer::ModelTypeController {
 
   ~PasskeyModelTypeController() override = default;
 
-  // syncer::ModelTypeController overrides.
-  bool ShouldRunInTransportOnlyMode() const override;
-
  private:
   const raw_ptr<syncer::SyncService> sync_service_;
 };
