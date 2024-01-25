@@ -711,8 +711,7 @@ class FormAutocompleteSubmissionTest
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {blink::features::kAutofillUseDomNodeIdForRendererId,
-           features::kAutofillReplaceCachedWebElementsByRendererIds,
+          {features::kAutofillReplaceCachedWebElementsByRendererIds,
            features::kAutofillImproveSubmissionDetection},
           /*disabled_features=*/{});
     } else {

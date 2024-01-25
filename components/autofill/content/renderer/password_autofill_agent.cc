@@ -404,12 +404,11 @@ bool IsInCrossOriginIframeOrEmbeddedFrame(const WebInputElement& element) {
 }
 
 void AnnotateFieldWithParsingResult(
-    WebDocument doc,
     FieldRendererId renderer_id,
     const std::string& password_managers_annotation) {
   if (renderer_id.is_null())
     return;
-  auto element = FindFormControlByRendererId(doc, renderer_id);
+  auto element = FindFormControlByRendererId(renderer_id);
   if (element.IsNull())
     return;
   // Calling SetAttribute synchronously here is safe because
@@ -1481,15 +1480,13 @@ void PasswordAutofillAgent::SetLoggingState(bool active) {
 
 void PasswordAutofillAgent::AnnotateFieldsWithParsingResult(
     const ParsingResult& parsing_result) {
-  WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-  AnnotateFieldWithParsingResult(doc, parsing_result.username_renderer_id,
+  AnnotateFieldWithParsingResult(parsing_result.username_renderer_id,
                                  "username_element");
-  AnnotateFieldWithParsingResult(doc, parsing_result.password_renderer_id,
+  AnnotateFieldWithParsingResult(parsing_result.password_renderer_id,
                                  "password_element");
-  AnnotateFieldWithParsingResult(doc, parsing_result.new_password_renderer_id,
+  AnnotateFieldWithParsingResult(parsing_result.new_password_renderer_id,
                                  "new_password_element");
-  AnnotateFieldWithParsingResult(doc,
-                                 parsing_result.confirm_password_renderer_id,
+  AnnotateFieldWithParsingResult(parsing_result.confirm_password_renderer_id,
                                  "confirmation_password_element");
 }
 
@@ -1500,10 +1497,9 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   autofilled_elements_cache_.clear();
 
   // Clear the actual field values.
-  WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-  std::vector<WebFormControlElement> elements = FindFormControlsByRendererId(
-      doc, base::make_span(all_autofilled_elements_.begin(),
-                           all_autofilled_elements_.end()));
+  std::vector<WebFormControlElement> elements =
+      FindFormControlsByRendererId(base::make_span(
+          all_autofilled_elements_.begin(), all_autofilled_elements_.end()));
   for (WebFormControlElement& element : elements) {
     if (element.IsNull())
       continue;
@@ -1544,8 +1540,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
 void PasswordAutofillAgent::TriggerFormSubmission() {
   // Find the last interacted element to simulate an enter keystroke at.
   WebFormControlElement form_control =
-      FindFormControlByRendererId(render_frame()->GetWebFrame()->GetDocument(),
-                                  field_renderer_id_to_submit_);
+      FindFormControlByRendererId(field_renderer_id_to_submit_);
   if (form_control.IsNull()) {
     // The target field doesn't exist anymore. Don't try to submit it.
     return;
@@ -1980,12 +1975,8 @@ PasswordAutofillAgent::FindUsernamePasswordElements(
   if (is_username_present)
     element_ids.push_back(username_renderer_id);
 
-  WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
-  bool wrapped_in_form_tag = !form_data.form_renderer_id.is_null();
   std::vector<WebFormControlElement> elements =
-      wrapped_in_form_tag ? FindFormControlsByRendererId(
-                                doc, form_data.form_renderer_id, element_ids)
-                          : FindFormControlsByRendererId(doc, element_ids);
+      FindFormControlsByRendererId(element_ids);
 
   // Set password element.
   WebInputElement password_field;

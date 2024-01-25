@@ -23,18 +23,6 @@ void HTMLFormElementTest::SetUp() {
   GetDocument().SetMimeType(AtomicString("text/html"));
 }
 
-TEST_F(HTMLFormElementTest, UniqueRendererFormId) {
-  SetHtmlInnerHTML(
-      "<body><form id='form1'></form><form id='form2'></form></body>");
-  auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
-  uint64_t first_id = form1->UniqueRendererFormId();
-  auto* form2 = To<HTMLFormElement>(GetElementById("form2"));
-  EXPECT_EQ(first_id + 1, form2->UniqueRendererFormId());
-  SetHtmlInnerHTML("<body><form id='form3'></form></body>");
-  auto* form3 = To<HTMLFormElement>(GetElementById("form3"));
-  EXPECT_EQ(first_id + 2, form3->UniqueRendererFormId());
-}
-
 // This tree is created manually because the HTML parser removes nested forms.
 // The created tree looks like this:
 // <body>

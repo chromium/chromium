@@ -115,8 +115,7 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
   AutofillAgentTestWithFeatures() {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAutofillUseDomNodeIdForRendererId,
-         features::kAutofillReplaceCachedWebElementsByRendererIds,
+        {features::kAutofillReplaceCachedWebElementsByRendererIds,
          features::kAutofillDetectRemovedFormControls},
         /*disabled_features=*/{});
   }
@@ -292,9 +291,7 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
   WaitForFormsSeen();
   EXPECT_CALL(autofill_driver(), AskForValuesToFill);
   autofill_agent().TriggerSuggestions(
-      FieldRendererId(1 +
-                      base::FeatureList::IsEnabled(
-                          blink::features::kAutofillUseDomNodeIdForRendererId)),
+      FieldRendererId(2),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 

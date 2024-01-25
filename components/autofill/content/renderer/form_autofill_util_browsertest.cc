@@ -195,8 +195,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   FormAutofillUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kAutofillUseDomNodeIdForRendererId,
-         features::kAutofillReplaceCachedWebElementsByRendererIds,
+        {features::kAutofillReplaceCachedWebElementsByRendererIds,
          features::kAutofillEnableSelectList},
         /*disabled_features=*/{});
   }
@@ -627,18 +626,17 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   WebVector<WebFormElement> forms = doc.Forms();
 
   for (const auto& form : forms)
-    EXPECT_EQ(form, FindFormByRendererId(doc, GetFormRendererId(form)));
+    EXPECT_EQ(form, FindFormByRendererId(GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_form_id(GetFormRendererId(forms[0]).value() +
                                       1000);
-  EXPECT_TRUE(FindFormByRendererId(doc, non_existing_form_id).IsNull());
+  EXPECT_TRUE(FindFormByRendererId(non_existing_form_id).IsNull());
 }
 
 // Used in ParameterizedFindFormControlByRendererIdTest.
 struct FindFormControlTestParam {
   std::string queried_field;
-  std::optional<std::string> form_to_be_searched;
   bool expectation;
 };
 
@@ -659,18 +657,6 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
   )");
   WebDocument doc = GetMainFrame()->GetDocument();
 
-  std::optional<FormRendererId> form_to_be_searched_id;
-  if (GetParam().form_to_be_searched.has_value()) {
-    if (GetParam().form_to_be_searched.value().empty()) {
-      // Only the unowned form will be searched.
-      form_to_be_searched_id = FormRendererId();
-    } else {
-      // Only the given form will be searched.
-      form_to_be_searched_id = GetFormRendererId(
-          GetFormElementById(doc, GetParam().form_to_be_searched.value()));
-    }
-  }
-
   WebFormControlElement queried_field =
       GetFormControlElementById(doc, GetParam().queried_field);
   FieldRendererId queried_field_id = GetFieldRendererId(queried_field);
@@ -679,25 +665,17 @@ TEST_P(ParameterizedFindFormControlByRendererIdTest,
       R"(document.getElementById('nonexistentField').remove();)");
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(
-      GetParam().expectation,
-      queried_field == FindFormControlByRendererId(doc, queried_field_id,
-                                                   form_to_be_searched_id));
+  EXPECT_EQ(GetParam().expectation,
+            queried_field == FindFormControlByRendererId(queried_field_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ParameterizedFindFormControlByRendererIdTest,
-    Values(FindFormControlTestParam{"nonexistentField", std::nullopt, false},
-           FindFormControlTestParam{"nonexistentField", std::string(), false},
-           FindFormControlTestParam{"nonexistentField", "form1", false},
-           FindFormControlTestParam{"nonexistentField", "form2", false},
-           FindFormControlTestParam{"ownedField1", std::nullopt, true},
-           FindFormControlTestParam{"ownedField1", "form1", true},
-           FindFormControlTestParam{"ownedField2", std::nullopt, true},
-           FindFormControlTestParam{"ownedField2", "form2", true},
-           FindFormControlTestParam{"unownedField", std::nullopt, true},
-           FindFormControlTestParam{"unownedField", std::string(), true}));
+    Values(FindFormControlTestParam{"nonexistentField", false},
+           FindFormControlTestParam{"ownedField1", true},
+           FindFormControlTestParam{"ownedField2", true},
+           FindFormControlTestParam{"unownedField", true}));
 
 TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
   LoadHTML("<body><input id='i1'><input id='i2'><input id='i3'></body>");
@@ -711,7 +689,7 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueId) {
                                                non_existing_field_id,
                                                GetFieldRendererId(input1)};
 
-  auto elements = FindFormControlsByRendererId(doc, renderer_ids);
+  auto elements = FindFormControlsByRendererId(renderer_ids);
 
   ASSERT_EQ(3u, elements.size());
   EXPECT_EQ(input3, elements[0]);

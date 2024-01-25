@@ -290,8 +290,6 @@ FindFormAndFieldForFormControlElement(
 // the unowned form (i.e., the collection of form control elements that aren't
 // owned by any form).
 //
-// `kAutofillUseDomNodeIdForRendererId` must be enabled.
-//
 // Returns `std::nullopt` if `contenteditable`:
 // - is a WebFormElement; otherwise, there could be two FormData objects with
 //   identical renderer ID referring to different conceptual forms: the one for
@@ -390,8 +388,7 @@ std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
-blink::WebFormElement FindFormByRendererId(const blink::WebDocument& doc,
-                                           FormRendererId form_renderer_id);
+blink::WebFormElement FindFormByRendererId(FormRendererId form_renderer_id);
 
 // Returns the form control element by unique renderer id.
 // |form_to_be_searched| could be used as an optimization to only search for
@@ -399,9 +396,7 @@ blink::WebFormElement FindFormByRendererId(const blink::WebDocument& doc,
 // to it. Returns the null element if there is no element with the
 // |queried_form_control| renderer id.
 blink::WebFormControlElement FindFormControlByRendererId(
-    const blink::WebDocument& doc,
-    FieldRendererId queried_form_control,
-    std::optional<FormRendererId> form_to_be_searched = std::nullopt);
+    FieldRendererId queried_form_control);
 
 // Note: The vector-based API of the following two functions is a tax for
 // limiting the frequency and duration of retrieving a lot of DOM elements.
@@ -413,18 +408,6 @@ blink::WebFormControlElement FindFormControlByRendererId(
 // |queried_form_controls|. The call of this function might be time
 // expensive, because it retrieves all DOM elements.
 std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
-    const blink::WebDocument& doc,
-    base::span<const FieldRendererId> queried_form_controls);
-
-// Returns form control elements by unique renderer id. The result has the same
-// number elements as |queried_form_controls| and the i-th element of the result
-// corresponds to the i-th element of |queried_form_controls|.
-// |form_to_be_searched| could be used as an optimization to only search for
-// elements in it, but doesn't guarantee that the returned element will belong
-// to it.
-std::vector<blink::WebFormControlElement> FindFormControlsByRendererId(
-    const blink::WebDocument& doc,
-    FormRendererId form_renderer_id,
     base::span<const FieldRendererId> queried_form_controls);
 
 blink::WebElement FindContentEditableByRendererId(

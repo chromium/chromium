@@ -171,8 +171,6 @@ struct ContextMenuData {
   // Indicates whether the context menu is invoked on a non-form,
   // non-form-control element that is contenteditable. Thus, it is mutually
   // exclusive with `form_control_type`.
-  // TODO(crbug.com/1427131): Only true if AutofillUseDomNodeIdForRendererId
-  // is enabled.
   bool is_content_editable_for_autofill = false;
 
   // Identifies the element the context menu was invoked on if either

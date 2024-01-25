@@ -286,10 +286,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
-            .SetFieldId(base::FeatureList::IsEnabled(
-                            blink::features::kAutofillUseDomNodeIdForRendererId)
-                            ? autofill_field->unique_renderer_id.value()
-                            : 0)
+            .SetFieldId(autofill_field->unique_renderer_id.value())
             .Build());
   }
 

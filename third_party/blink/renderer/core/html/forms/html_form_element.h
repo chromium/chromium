@@ -133,8 +133,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   FormData* ConstructEntryList(HTMLFormControlElement* submit_button,
                                const WTF::TextEncoding& encoding);
 
-  uint64_t UniqueRendererFormId() const { return unique_renderer_form_id_; }
-
   void InvalidateListedElementsIncludingShadowTrees();
 
  private:
@@ -189,8 +187,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   ListedElement::List listed_elements_including_shadow_trees_;
   // Do not access image_elements_ directly. Use ImageElements() instead.
   HeapVector<Member<HTMLImageElement>> image_elements_;
-
-  uint64_t unique_renderer_form_id_;
 
   base::OnceClosure cancel_last_submission_;
 

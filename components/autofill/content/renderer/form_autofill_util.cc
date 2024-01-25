@@ -1556,17 +1556,6 @@ bool ScriptModifiedUsernameOrCreditCardNumberAcceptable(
   return field_data_manager.FindMatchedValue(value);
 }
 
-// Build a map from entries in |form_control_renderer_ids| to their indices,
-// for more efficient lookup.
-base::flat_map<FieldRendererId, size_t> BuildRendererIdToIndex(
-    base::span<const FieldRendererId> form_control_renderer_ids) {
-  std::vector<std::pair<FieldRendererId, size_t>> items;
-  items.reserve(form_control_renderer_ids.size());
-  for (size_t i = 0; i < form_control_renderer_ids.size(); i++)
-    items.emplace_back(form_control_renderer_ids[i], i);
-  return base::flat_map<FieldRendererId, size_t>(std::move(items));
-}
-
 }  // namespace
 
 std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
@@ -1875,15 +1864,7 @@ FormRendererId GetFormRendererId(const blink::WebElement& e) {
   if (e.IsNull()) {
     return FormRendererId();
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
     return FormRendererId(e.GetDomNodeId());
-  }
-  WebFormElement form = e.DynamicTo<WebFormElement>();
-  CHECK(!form.IsNull())
-      << "FormRendererIds of non-WebFormElements, i.e., contenteditables, are "
-         "only supported with DomNodeIds";
-  return FormRendererId(form.UniqueRendererFormId());
 }
 
 FieldRendererId GetFieldRendererId(const blink::WebElement& e) {
@@ -1894,16 +1875,7 @@ FieldRendererId GetFieldRendererId(const blink::WebElement& e) {
   // contenteditable, we just that `e` is not a WebFormElement to protect
   // against confusions between Get{Form,Field}RendererId().
   CHECK(e.DynamicTo<WebFormElement>().IsNull());
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    return FieldRendererId(e.GetDomNodeId());
-  }
-  WebFormControlElement form_control = e.DynamicTo<WebFormControlElement>();
-  CHECK(!form_control.IsNull())
-      << "FieldRendererIds of non-WebFormControlElements, i.e., "
-         "contenteditables, are only supported with DomNodeIds";
-  return FieldRendererId(form_control.UniqueRendererFormControlId());
+  return FieldRendererId(e.GetDomNodeId());
 }
 
 base::i18n::TextDirection GetTextDirectionForElement(
@@ -2165,9 +2137,7 @@ FindFormAndFieldForFormControlElement(
 
 std::optional<FormData> FindFormForContentEditable(
     const blink::WebElement& content_editable) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId) ||
-      !content_editable.DynamicTo<WebFormElement>().IsNull() ||
+  if (!content_editable.DynamicTo<WebFormElement>().IsNull() ||
       !content_editable.DynamicTo<WebFormControlElement>().IsNull() ||
       !content_editable.IsContentEditable() ||
       (!content_editable.ParentNode().IsNull() &&
@@ -2540,135 +2510,42 @@ std::u16string InferLabelForElement(const WebFormControlElement& element,
   return u"";
 }
 
-WebFormElement FindFormByRendererId(const WebDocument& doc,
-                                    FormRendererId form_renderer_id) {
+WebFormElement FindFormByRendererId(FormRendererId form_renderer_id) {
   if (!form_renderer_id) {
     return WebFormElement();
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
-    WebFormElement form = node.DynamicTo<WebFormElement>();
-    return !form.IsNull() && form.IsConnected() && form.GetDocument().GetFrame()
-               ? form
-               : WebFormElement();
-  }
-  for (const auto& form : doc.Forms()) {
-    if (GetFormRendererId(form) == form_renderer_id)
-      return form;
-  }
-  return WebFormElement();
+  WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
+  WebFormElement form = node.DynamicTo<WebFormElement>();
+  return !form.IsNull() && form.IsConnected() && form.GetDocument().GetFrame()
+             ? form
+             : WebFormElement();
 }
 
 WebFormControlElement FindFormControlByRendererId(
-    const WebDocument& doc,
-    FieldRendererId queried_form_control,
-    std::optional<FormRendererId> form_to_be_searched /*= std::nullopt*/) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    if (!queried_form_control) {
-      return WebFormControlElement();
-    }
-    WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
-    WebFormControlElement form_control =
-        node.DynamicTo<WebFormControlElement>();
-    return !form_control.IsNull() && form_control.IsConnected() &&
-                   form_control.GetDocument().GetFrame()
-               ? form_control
-               : WebFormControlElement();
+    FieldRendererId queried_form_control) {
+  if (!queried_form_control) {
+    return WebFormControlElement();
   }
-  auto FindField = [&](const WebVector<WebFormControlElement>& fields) {
-    auto it =
-        base::ranges::find(fields, queried_form_control, GetFieldRendererId);
-    return it != fields.end() ? *it : WebFormControlElement();
-  };
-
-  auto IsCandidate =
-      [&form_to_be_searched](const FormRendererId& expected_form_renderer_id) {
-        return !form_to_be_searched.has_value() ||
-               form_to_be_searched.value() == expected_form_renderer_id;
-      };
-
-  if (IsCandidate(FormRendererId())) {
-    // Search the unowned form.
-    WebFormControlElement e = FindField(doc.UnassociatedFormControls());
-    if (form_to_be_searched == FormRendererId() || !e.IsNull())
-      return e;
-  }
-  for (const WebFormElement& form : doc.Forms()) {
-    // If the |form_to_be_searched| is specified, skip this form if it is not
-    // the right one.
-    if (!IsCandidate(GetFormRendererId(form))) {
-      continue;
-    }
-    WebFormControlElement e = FindField(form.GetFormControlElements());
-    if (form_to_be_searched == GetFormRendererId(form) || !e.IsNull())
-      return e;
-  }
-  return WebFormControlElement();
+  WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
+  WebFormControlElement form_control = node.DynamicTo<WebFormControlElement>();
+  return !form_control.IsNull() && form_control.IsConnected() &&
+                 form_control.GetDocument().GetFrame()
+             ? form_control
+             : WebFormControlElement();
 }
 
 std::vector<WebFormControlElement> FindFormControlsByRendererId(
-    const WebDocument& doc,
     base::span<const FieldRendererId> queried_form_controls) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    std::vector<WebFormControlElement> control_elements;
-    control_elements.reserve(queried_form_controls.size());
-    for (FieldRendererId queried_form_control : queried_form_controls) {
-      control_elements.push_back(
-          FindFormControlByRendererId(doc, queried_form_control));
-    }
-    return control_elements;
+  std::vector<WebFormControlElement> control_elements;
+  control_elements.reserve(queried_form_controls.size());
+  for (FieldRendererId queried_form_control : queried_form_controls) {
+    control_elements.push_back(
+        FindFormControlByRendererId(queried_form_control));
   }
-  std::vector<WebFormControlElement> result(queried_form_controls.size());
-  auto renderer_id_to_index_map = BuildRendererIdToIndex(queried_form_controls);
-
-  auto AddToResultIfQueried = [&](const WebFormControlElement& field) {
-    auto it = renderer_id_to_index_map.find(GetFieldRendererId(field));
-    if (it != renderer_id_to_index_map.end())
-      result[it->second] = field;
-  };
-
-  for (const auto& form : doc.Forms()) {
-    for (const auto& field : form.GetFormControlElements())
-      AddToResultIfQueried(field);
-  }
-  for (const auto& field : doc.UnassociatedFormControls()) {
-    AddToResultIfQueried(field);
-  }
-  return result;
-}
-
-std::vector<WebFormControlElement> FindFormControlsByRendererId(
-    const WebDocument& doc,
-    FormRendererId form_renderer_id,
-    base::span<const FieldRendererId> queried_form_controls) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    return FindFormControlsByRendererId(doc, queried_form_controls);
-  }
-  std::vector<WebFormControlElement> result(queried_form_controls.size());
-  WebFormElement form = FindFormByRendererId(doc, form_renderer_id);
-  if (form.IsNull())
-    return result;
-
-  auto renderer_id_to_index_map = BuildRendererIdToIndex(queried_form_controls);
-
-  for (const auto& field : form.GetFormControlElements()) {
-    auto it = renderer_id_to_index_map.find(GetFieldRendererId(field));
-    if (it == renderer_id_to_index_map.end())
-      continue;
-    result[it->second] = field;
-  }
-  return result;
+  return control_elements;
 }
 
 WebElement FindContentEditableByRendererId(FieldRendererId field_renderer_id) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAutofillUseDomNodeIdForRendererId)) {
-    return WebElement();
-  }
   WebElement field =
       WebNode::FromDomNodeId(*field_renderer_id).DynamicTo<WebElement>();
   return !field.IsNull() && field.IsContentEditable() ? field : WebElement();

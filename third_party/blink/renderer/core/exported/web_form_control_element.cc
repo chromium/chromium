@@ -350,10 +350,6 @@ WebFormElement WebFormControlElement::Form() const {
   return WebFormElement(ConstUnwrap<HTMLFormControlElement>()->Form());
 }
 
-uint64_t WebFormControlElement::UniqueRendererFormControlId() const {
-  return ConstUnwrap<HTMLFormControlElement>()->UniqueRendererFormControlId();
-}
-
 int32_t WebFormControlElement::GetAxId() const {
   return ConstUnwrap<HTMLFormControlElement>()->GetAxId();
 }

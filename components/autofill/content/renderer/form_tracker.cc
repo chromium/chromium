@@ -32,9 +32,7 @@ namespace autofill {
 namespace {
 bool ShouldReplaceElementsByRendererIds() {
   return base::FeatureList::IsEnabled(
-             blink::features::kAutofillUseDomNodeIdForRendererId) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillReplaceCachedWebElementsByRendererIds);
+      features::kAutofillReplaceCachedWebElementsByRendererIds);
 }
 }  // namespace
 
@@ -49,8 +47,7 @@ FormRef::FormRef(blink::WebFormElement form)
 
 blink::WebFormElement FormRef::GetForm() const {
   return ShouldReplaceElementsByRendererIds()
-             ? form_util::FindFormByRendererId(blink::WebDocument(),
-                                               form_renderer_id_)
+             ? form_util::FindFormByRendererId(form_renderer_id_)
              : form_;
 }
 
@@ -72,8 +69,6 @@ FieldRef::FieldRef(blink::WebElement content_editable)
     : field_renderer_id_(content_editable.GetDomNodeId()) {
   CHECK(!content_editable.IsNull());
   CHECK(content_editable.IsContentEditable());
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kAutofillUseDomNodeIdForRendererId));
   if (!ShouldReplaceElementsByRendererIds()) {
     field_ = content_editable;
   }
@@ -81,14 +76,11 @@ FieldRef::FieldRef(blink::WebElement content_editable)
 
 blink::WebFormControlElement FieldRef::GetField() const {
   return ShouldReplaceElementsByRendererIds()
-             ? form_util::FindFormControlByRendererId(blink::WebDocument(),
-                                                      field_renderer_id_)
+             ? form_util::FindFormControlByRendererId(field_renderer_id_)
              : field_.DynamicTo<WebFormControlElement>();
 }
 
 blink::WebElement FieldRef::GetContentEditable() const {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kAutofillUseDomNodeIdForRendererId));
   blink::WebElement content_editable =
       ShouldReplaceElementsByRendererIds()
           ? form_util::FindContentEditableByRendererId(field_renderer_id_)

@@ -179,10 +179,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool BlocksFormSubmission() const { return blocks_form_submission_; }
   void SetBlocksFormSubmission(bool value) { blocks_form_submission_ = value; }
 
-  uint64_t UniqueRendererFormControlId() const {
-    return unique_renderer_form_control_id_;
-  }
-
   int32_t GetAxId() const;
 
   bool MatchesValidityPseudoClasses() const override;
@@ -216,8 +212,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void HandlePopoverTriggering(HTMLElement* popover,
                                PopoverTriggerAction action);
-
-  uint64_t unique_renderer_form_control_id_;
 
   WebString autofill_section_;
   enum WebAutofillState autofill_state_;

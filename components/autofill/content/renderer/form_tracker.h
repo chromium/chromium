@@ -25,8 +25,8 @@ class WebFormElementObserver;
 namespace autofill {
 
 // Reference to a WebFormElement, represented as such and as a FormRendererId.
-// TODO(crbug.com/1427131): Replace with FormRendererId when
-// `kAutofillUseDomNodeIdForRendererId` launches.
+// TODO(crbug.com/1218275): Replace with FormRendererId when
+// `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FormRef {
  public:
   FormRef() = default;
@@ -42,8 +42,8 @@ class FormRef {
 
 // Reference to a WebFormControlElement, represented as such and as a
 // FieldRendererId.
-// TODO(crbug.com/1427131): Replace with FieldRendererId when
-// `kAutofillUseDomNodeIdForRendererId` launches.
+// TODO(crbug.com/1218275): Replace with FieldRendererId when
+// `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FieldRef {
  public:
   FieldRef() = default;

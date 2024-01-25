@@ -360,10 +360,7 @@ void DevToolsAgent::GetUniqueFormControlId(
     GetUniqueFormControlIdCallback callback) {
   auto* node = blink::DOMNodeIds::NodeForId(nodeId);
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
-    std::move(callback).Run(base::FeatureList::IsEnabled(
-                                features::kAutofillUseDomNodeIdForRendererId)
-                                ? form_control->GetDomNodeId()
-                                : form_control->UniqueRendererFormControlId());
+    std::move(callback).Run(form_control->GetDomNodeId());
     return;
   }
   std::move(callback).Run(0);  // invalid ID.

@@ -195,8 +195,6 @@ struct UntrustworthyContextMenuParams {
   // Indicates whether the context menu is invoked on a non-form,
   // non-form-control element that is contenteditable. Thus, it is mutually
   // exclusive with `form_control_type`.
-  // Only true if AutofillUseDomNodeIdForRendererId (crbug.com/1427131) is
-  // enabled.
   bool is_content_editable_for_autofill;
 
   // Identifies the element the context menu was invoked on if either
