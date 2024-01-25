@@ -186,8 +186,6 @@ class SupervisedUserService : public KeyedService,
 
   void OnSafeSitesSettingChanged();
 
-  void UpdateAsyncUrlChecker();
-
   // Updates the manual overrides for hosts in the URL filters when the
   // corresponding preference is changed.
   void UpdateManualHosts();

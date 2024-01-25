@@ -918,14 +918,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   filter->SetDefaultFilteringBehavior(
       supervised_user::FilteringBehavior::kBlock);
 
-  // The async checker will make rpc calls to check if the url should be
-  // blocked or not. This may cause flakiness.
-  filter->ClearAsyncURLChecker();
-
   base::RunLoop().RunUntilIdle();
 
   // Allows |www.example.com|.
-  AllowlistHost(kExampleHost);
+  AllowlistHost("*.example.*");
 
   // |with_frames_same_domain.html| contains subframes with "a.example.com" and
   // "b.example.com", and "c.example2.com" urls.

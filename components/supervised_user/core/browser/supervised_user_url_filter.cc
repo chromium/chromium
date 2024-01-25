@@ -233,11 +233,12 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
-    ValidateURLSupportCallback check_webstore_url_callback,
-    std::unique_ptr<Delegate> service_delegate)
+    std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
+    ValidateURLSupportCallback check_webstore_url_callback)
     : default_behavior_(FilteringBehavior::kAllow),
       user_prefs_(user_prefs),
-      service_delegate_(std::move(service_delegate)),
+      async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
+          std::move(url_checker_client))),
       check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
@@ -607,7 +608,7 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     // Any non-default reason trumps the async checker.
     // Also, if we're blocking anyway, then there's no need to check it.
     if (reason != supervised_user::FilteringBehaviorReason::DEFAULT ||
-        behavior == FilteringBehavior::kBlock || !async_url_checker_) {
+        behavior == FilteringBehavior::kBlock) {
       std::move(callback).Run(behavior, reason, false);
       for (Observer& observer : observers_) {
         observer.OnURLChecked(url, behavior, reason, false);
@@ -616,7 +617,7 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     }
   }
 
-  // Runs mature url filter if the |async_url_checker_| exists.
+  // Runs mature url filter.
   return RunAsyncChecker(url, std::move(callback));
 }
 
@@ -649,7 +650,7 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     return true;
   }
 
-  // Runs mature url filter if the |async_url_checker_| exists.
+  // Runs mature url filter.
   return RunAsyncChecker(url, std::move(callback));
 }
 
@@ -685,33 +686,11 @@ void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
   url_map_ = std::move(url_map);
 }
 
-void SupervisedUserURLFilter::InitAsyncURLChecker(
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK(service_delegate_);
-  std::string country = service_delegate_->GetCountryCode();
-
-  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<KidsChromeManagementURLCheckerClient>(
-          identity_manager, url_loader_factory, country);
-  async_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
-      std::move(url_checker_client));
-}
-
-void SupervisedUserURLFilter::ClearAsyncURLChecker() {
-  async_url_checker_.reset();
-}
-
-bool SupervisedUserURLFilter::HasAsyncURLChecker() const {
-  return async_url_checker_.get() != nullptr;
-}
-
 void SupervisedUserURLFilter::Clear() {
   default_behavior_ = FilteringBehavior::kAllow;
   url_map_.clear();
   allowed_host_list_.clear();
   blocked_host_list_.clear();
-  async_url_checker_.reset();
   is_filter_initialized_ = false;
 }
 
@@ -799,9 +778,8 @@ void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
 bool SupervisedUserURLFilter::RunAsyncChecker(
     const GURL& url,
     FilteringBehaviorCallback callback) const {
-  // The parental setting may allow all sites to be visited. In such case, the
-  // |async_url_checker_| will not be created.
-  if (!async_url_checker_) {
+  // The parental setting may allow all sites to be visited.
+  if (GetWebFilterType() == WebFilterType::kAllowAllSites) {
     std::move(callback).Run(FilteringBehavior::kAllow,
                             supervised_user::FilteringBehaviorReason::DEFAULT,
                             false);
@@ -812,6 +790,12 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
+}
+
+void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
+    std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client) {
+  async_url_checker_.reset(
+      new safe_search_api::URLChecker(std::move(url_checker_client)));
 }
 
 void SupervisedUserURLFilter::CheckCallback(

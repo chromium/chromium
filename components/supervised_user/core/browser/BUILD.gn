@@ -196,6 +196,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
+    "//components/safe_search_api:test_support",
     "//components/signin/public/base",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",

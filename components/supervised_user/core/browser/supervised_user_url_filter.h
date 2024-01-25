@@ -111,8 +111,8 @@ class SupervisedUserURLFilter {
 
   SupervisedUserURLFilter(
       PrefService& user_prefs,
-      ValidateURLSupportCallback check_webstore_url_callback,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
+      ValidateURLSupportCallback check_webstore_url_callback);
 
   virtual ~SupervisedUserURLFilter();
 
@@ -192,17 +192,6 @@ class SupervisedUserURLFilter {
   // Sets the set of manually allowed or blocked URLs.
   void SetManualURLs(std::map<GURL, bool> url_map);
 
-  // Initializes the experimental asynchronous checker.
-  void InitAsyncURLChecker(
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-  // Clears any asynchronous checker.
-  void ClearAsyncURLChecker();
-
-  // Returns whether the asynchronous checker is set up.
-  bool HasAsyncURLChecker() const;
-
   // Removes all filter entries, clears the async checker if present, and resets
   // the default behavior to "allow".
   void Clear();
@@ -227,6 +216,10 @@ class SupervisedUserURLFilter {
 
   // Set value for `is_filter_initialized_`.
   void SetFilterInitialized(bool is_filter_initialized);
+
+  // Sets safe_search_api::URLCheckerClient for SafeSites classification.
+  void SetURLCheckerClientForTesting(
+      std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
  private:
   friend class SupervisedUserURLFilterTest;

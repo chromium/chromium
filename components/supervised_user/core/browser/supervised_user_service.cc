@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -154,9 +155,14 @@ SupervisedUserService::SupervisedUserService(
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
+  CHECK(url_filter_delegate);
+  std::string country = url_filter_delegate->GetCountryCode();
+  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
+      std::make_unique<KidsChromeManagementURLCheckerClient>(
+          identity_manager, url_loader_factory, country);
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      user_prefs, std::move(check_webstore_url_callback),
-      std::move(url_filter_delegate));
+      user_prefs, std::move(url_checker_client),
+      std::move(check_webstore_url_callback));
   url_filter_->AddObserver(this);
 }
 
@@ -279,7 +285,6 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   supervised_user::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
   url_filter_->SetDefaultFilteringBehavior(behavior);
-  UpdateAsyncUrlChecker();
 
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
@@ -294,32 +299,11 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
-  UpdateAsyncUrlChecker();
-
   WebFilterType filter_type = url_filter_->GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
-  }
-}
-
-void SupervisedUserService::UpdateAsyncUrlChecker() {
-  int behavior_value =
-      user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  supervised_user::FilteringBehavior behavior =
-      SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
-
-  bool use_online_check =
-      IsSafeSitesEnabled(user_prefs_.get()) ||
-      behavior == supervised_user::FilteringBehavior::kBlock;
-
-  if (use_online_check != url_filter_->HasAsyncURLChecker()) {
-    if (use_online_check) {
-      url_filter_->InitAsyncURLChecker(identity_manager_, url_loader_factory_);
-    } else {
-      url_filter_->ClearAsyncURLChecker();
-    }
   }
 }
 
