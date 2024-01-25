@@ -148,17 +148,55 @@ TEST_P(PasswordCSVWriterTest, SerializePasswordsWritesNames) {
   std::string expected =
       base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)
           ? "name,url,username,password,note" + kLineEnding +
-                "example.com,https://example.com/,a,b," + kLineEnding +
                 "Netflix,android://Jzj5T2E45Hb33D-lk-"
                 "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsB"
                 "zC09Gk094Z-U_hg==@com.netflix.mediaclient,a,b," +
-                kLineEnding
+                kLineEnding +
+                "example.com,https://example.com/,a,b," + kLineEnding
           : "name,url,username,password" + kLineEnding +
-                "example.com,https://example.com/,a,b" + kLineEnding +
                 "Netflix,android://Jzj5T2E45Hb33D-lk-"
                 "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsB"
                 "zC09Gk094Z-U_hg==@com.netflix.mediaclient,a,b" +
-                kLineEnding;
+                kLineEnding +
+                "example.com,https://example.com/,a,b" + kLineEnding;
+  EXPECT_EQ(expected, PasswordCSVWriter::SerializePasswords(credentials));
+}
+
+TEST_P(PasswordCSVWriterTest, SerializePasswordsIsSorted) {
+  std::vector<CredentialUIEntry> credentials;
+  PasswordForm form;
+  form.signon_realm = "https://example.com/";
+  form.url = GURL("https://example.com");
+  form.username_value = u"a";
+  form.password_value = u"b";
+  credentials.emplace_back(form);
+  form.signon_realm = "https://other.org/";
+  form.url = GURL("https://other.org");
+  form.username_value = u"a";
+  form.password_value = u"b";
+  credentials.emplace_back(form);
+  form.signon_realm = "https://example.com/";
+  form.url = GURL("https://example.com");
+  form.username_value = u"someone";
+  form.password_value = u"secret";
+  credentials.emplace_back(form);
+  form.signon_realm = "https://example.org/";
+  form.url = GURL("https://example.org");
+  form.username_value = u"a";
+  form.password_value = u"b";
+  credentials.emplace_back(form);
+  std::string expected =
+      base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)
+          ? "name,url,username,password,note" + kLineEnding +
+                "example.com,https://example.com/,a,b," + kLineEnding +
+                "example.com,https://example.com/,someone,secret," + kLineEnding +
+                "example.org,https://example.org/,a,b," + kLineEnding +
+                "other.org,https://other.org/,a,b," + kLineEnding
+          : "name,url,username,password" + kLineEnding +
+                "example.com,https://example.com/,a,b" + kLineEnding +
+                "example.com,https://example.com/,someone,secret" + kLineEnding +
+                "example.org,https://example.org/,a,b" + kLineEnding +
+                "other.org,https://other.org/,a,b" + kLineEnding;
   EXPECT_EQ(expected, PasswordCSVWriter::SerializePasswords(credentials));
 }
 
