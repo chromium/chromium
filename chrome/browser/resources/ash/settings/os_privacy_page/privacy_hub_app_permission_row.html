@@ -28,9 +28,7 @@
     margin-inline-end: var(--cr-controlled-by-spacing);
   }
 </style>
-<div id="container"
-    actionable$="[[!isPermissionManaged_]]"
-    on-click="onPermissionRowClick_">
+<div id="container" actionable$="[[!isPermissionManaged_]]">
   <div id="appData">
     <img id="appIcon" src="chrome://app-icon/[[app.id]]/64"
         alt="[[app.name]] app icon." aria-hidden="true">

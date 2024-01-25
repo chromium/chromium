@@ -127,6 +127,12 @@ export class SettingsPrivacyHubAppPermissionRow extends
     this.mojoInterfaceProvider_ = getAppPermissionProvider();
   }
 
+  override ready(): void {
+    super.ready();
+    this.addEventListener('click', this.onPermissionRowClick_.bind(this));
+  }
+
+
   private onPermissionChange_(): void {
     const permission =
         castExists(this.app.permissions[PermissionType[this.permissionType]]);
