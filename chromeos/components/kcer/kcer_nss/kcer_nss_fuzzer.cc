@@ -1328,8 +1328,8 @@ void KcerFuzzer::RunGetKeyPermissions() {
     return;
   }
   ASSERT_TRUE(key_permissions_waiter.Get().has_value());
-  EXPECT_TRUE(KeyPermissionsEqual(key_permissions_waiter.Get().value(),
-                                  expected_key->key_permissions));
+  EXPECT_TRUE(ExpectKeyPermissionsEqual(key_permissions_waiter.Get().value(),
+                                        expected_key->key_permissions));
 }
 
 void KcerFuzzer::RunGetCertProvisioningProfileId() {
