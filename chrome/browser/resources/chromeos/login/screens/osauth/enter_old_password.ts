@@ -14,8 +14,10 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -28,45 +30,37 @@ import {getTemplate} from './enter_old_password.html.js';
 
 /**
  * UI mode for the dialog.
- * @enum {string}
  */
-const EnterOldPasswordUIState = {
-  PASSWORD: 'password',
-  PROGRESS: 'progress',
+enum EnterOldPasswordUiState {
+  PASSWORD = 'password',
+  PROGRESS = 'progress',
+}
+
+
+const EnterOldPasswordBase = mixinBehaviors(
+                                 [
+                                   OobeI18nBehavior,
+                                   LoginScreenBehavior,
+                                   MultiStepBehavior,
+                                 ],
+                                 PolymerElement) as {
+  new (): PolymerElement & OobeI18nBehaviorInterface &
+      LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
 };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
-const EnterOldPasswordBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
-/**
- * @typedef {{
- *   oldPasswordInput:  CrInputElement,
- * }}
- */
-EnterOldPasswordBase.$;
-
-/**
- * @polymer
- */
-class EnterOldPassword extends EnterOldPasswordBase {
+export class EnterOldPassword extends EnterOldPasswordBase {
   static get is() {
-    return 'enter-old-password-element';
+    return 'enter-old-password-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      password_: {
+      password: {
         type: String,
         value: '',
       },
@@ -81,52 +75,57 @@ class EnterOldPassword extends EnterOldPasswordBase {
         value: false,
       },
 
-      passwordInput_: Object,
+      passwordInput: Object,
     };
   }
 
-  defaultUIStep() {
-    return EnterOldPasswordUIState.PASSWORD;
+  private password: string;
+  private passwordInvalid: boolean;
+  private disabled: boolean;
+  private passwordInput: CrInputElement;
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): EnterOldPasswordUiState {
+    return EnterOldPasswordUiState.PASSWORD;
   }
 
-  get UI_STEPS() {
-    return EnterOldPasswordUIState;
+  override get UI_STEPS() {
+    return EnterOldPasswordUiState;
   }
 
   /** Overridden from LoginScreenBehavior. */
-  // clang-format off
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'showWrongPasswordError',
     ];
   }
-  // clang-format on
 
-  /**
-   * @override
-   */
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('EnterOldPasswordScreen');
 
-    this.passwordInput_ = this.$.oldPasswordInput;
-    addSubmitListener(this.passwordInput_, this.submit_.bind(this));
+    const oldpasswordInput =
+        this.shadowRoot?.querySelector<CrInputElement>('#oldPasswordInput');
+    assert(oldpasswordInput instanceof CrInputElement);
+    this.passwordInput = oldpasswordInput;
+    addSubmitListener(this.passwordInput, this.submit.bind(this));
   }
 
   /** Initial UI State for screen */
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.PASSWORD_CHANGED;
   }
 
   /**
-   * Invoked just before being shown. Contains all the data for the screen.
+   * Invoked just before being shown.
    */
-  onBeforeShow(data) {
+  onBeforeShow(): void {
     this.reset();
   }
 
-  reset() {
-    this.setUIStep(EnterOldPasswordUIState.PASSWORD);
+  private reset(): void {
+    this.setUIStep(EnterOldPasswordUiState.PASSWORD);
     this.clearPassword();
     this.disabled = false;
   }
@@ -135,44 +134,45 @@ class EnterOldPassword extends EnterOldPasswordBase {
    * Called when Screen fails to authenticate with
    * provided password.
    */
-  showWrongPasswordError() {
+  showWrongPasswordError(): void {
     this.clearPassword();
     this.disabled = false;
     this.passwordInvalid = true;
-    this.setUIStep(EnterOldPasswordUIState.PASSWORD);
+    this.setUIStep(EnterOldPasswordUiState.PASSWORD);
   }
 
-  /**
-   * @private
-   */
-  submit_() {
+  private submit(): void {
     if (this.disabled) {
       return;
     }
-    if (!this.passwordInput_.validate()) {
+    if (!this.passwordInput.validate()) {
       return;
     }
-    this.setUIStep(EnterOldPasswordUIState.PROGRESS);
+    this.setUIStep(EnterOldPasswordUiState.PROGRESS);
     this.disabled = true;
-    this.userActed(['submit', this.passwordInput_.value]);
+    this.userActed(['submit', this.passwordInput.value]);
   }
 
-  /** @private */
-  onForgotPasswordClicked_() {
+  private onForgotPasswordClicked(): void {
     if (this.disabled) {
       return;
     }
     this.userActed('forgot');
   }
 
-  /** @private */
-  onAnimationFinish_() {
+  private onAnimationFinish(): void {
     this.focus();
   }
 
-  clearPassword() {
-    this.password_ = '';
+  private clearPassword(): void {
+    this.password = '';
     this.passwordInvalid = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EnterOldPassword.is]: EnterOldPassword;
   }
 }
 

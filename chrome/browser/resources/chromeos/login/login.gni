@@ -203,7 +203,7 @@ osauth_screens_js_files = [
   "screens/osauth/gaia_password_changed.ts",
   "screens/osauth/local_password_setup.ts",
   "screens/osauth/local_data_loss_warning.ts",
-  "screens/osauth/enter_old_password.js",
+  "screens/osauth/enter_old_password.ts",
   "screens/osauth/osauth_error.js",
   "screens/osauth/password_selection.ts",
   "screens/osauth/pin_setup.ts",

@@ -9,10 +9,7 @@ import("../../login.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
-  deps = [
-    ":enter_old_password",
-    ":osauth_error",
-  ]
+  deps = [ ":osauth_error" ]
 }
 
 js_library("osauth_error") {
@@ -24,21 +21,6 @@ js_library("osauth_error") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
   ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("enter_old_password") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/enter_old_password.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 
