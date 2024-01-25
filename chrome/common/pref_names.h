@@ -2201,9 +2201,6 @@ inline constexpr char kWasRestarted[] = "was.restarted";
 // Whether Extensions are enabled.
 inline constexpr char kDisableExtensions[] = "extensions.disabled";
 
-// Customized app page names that appear on the New Tab Page.
-inline constexpr char kNtpAppPageNames[] = "ntp.app_page_names";
-
 // Keeps track of which sessions are collapsed in the Other Devices menu.
 inline constexpr char kNtpCollapsedForeignSessions[] =
     "ntp.collapsed_foreign_sessions";
@@ -2264,9 +2261,6 @@ inline constexpr char kNtpWallpaperSearchHistory[] =
 inline constexpr char kSeedColorChangeCount[] =
     "colorpicker.SeedColorChangeCount";
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Which page should be visible on the new tab page v4
-inline constexpr char kNtpShownPage[] = "ntp.shown_page";
 
 // A private RSA key for ADB handshake.
 inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";

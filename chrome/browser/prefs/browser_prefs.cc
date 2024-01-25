@@ -974,6 +974,10 @@ constexpr char kExtendedFkeysModifier[] =
     "ash.settings.extended_fkeys_modifier";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 01/2024.
+constexpr char kNtpShownPage[] = "ntp.shown_page";
+constexpr char kNtpAppPageNames[] = "ntp.app_page_names";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1377,6 +1381,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kPersistedSystemExtensions);
   registry->RegisterStringPref(kBorealisVmTokenHash, "");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 01/2024.
+  registry->RegisterIntegerPref(kNtpShownPage, 0);
+  registry->RegisterListPref(kNtpAppPageNames);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1847,7 +1855,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   media_router::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
-  NewTabUI::RegisterProfilePrefs(registry);
   ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   PhotosService::RegisterProfilePrefs(registry);
@@ -2622,6 +2629,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   performance_manager::user_tuning::prefs::MigrateTabDiscardingExceptionsPref(
       profile_prefs);
 #endif
+
+  // Added 01/2024.
+  profile_prefs->ClearPref(kNtpShownPage);
+  profile_prefs->ClearPref(kNtpAppPageNames);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

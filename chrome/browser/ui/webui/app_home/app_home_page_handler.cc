@@ -163,9 +163,15 @@ void AppHomePageHandler::LaunchAppInternal(
                                      web_ui_->GetWebContents());
       return;
     } else {
-      TabDialogs::FromWebContents(web_ui_->GetWebContents())
-          ->ShowForceInstalledDeprecatedAppsDialog(app_id,
-                                                   web_ui_->GetWebContents());
+      if (extensions::IsPreinstalledAppId(app_id)) {
+        TabDialogs::FromWebContents(web_ui_->GetWebContents())
+            ->ShowForceInstalledPreinstalledDeprecatedAppDialog(
+                app_id, web_ui_->GetWebContents());
+      } else {
+        TabDialogs::FromWebContents(web_ui_->GetWebContents())
+            ->ShowForceInstalledDeprecatedAppsDialog(app_id,
+                                                     web_ui_->GetWebContents());
+      }
       return;
     }
   }

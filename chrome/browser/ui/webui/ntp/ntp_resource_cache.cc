@@ -64,10 +64,6 @@
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
-#endif
-
 using content::BrowserThread;
 
 namespace {
@@ -144,7 +140,6 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 
   // Watch for pref changes that cause us to need to invalidate the HTML cache.
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
-  profile_pref_change_registrar_.Add(prefs::kNtpShownPage, callback);
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
   // TODO(crbug/1056916): Remove the global accessor to NativeTheme.

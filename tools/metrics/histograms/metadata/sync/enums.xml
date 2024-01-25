@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
   <int value="100158" label="NetworkEasterEggHighScore"/>
   <int value="100159" label="NetworkPredictionOptions"/>
   <int value="100160" label="NetworkQualities"/>
-  <int value="100161" label="NtpAppPageNames"/>
+  <int value="100161" label="(obsolete) NtpAppPageNames"/>
   <int value="100162" label="PageColors"/>
   <int value="100163" label="PerformanceTracingEnabled"/>
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>

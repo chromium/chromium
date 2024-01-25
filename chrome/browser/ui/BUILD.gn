@@ -4155,8 +4155,6 @@ static_library("ui") {
       "webui/app_settings/web_app_settings_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
-      "webui/ntp/app_launcher_handler.cc",
-      "webui/ntp/app_launcher_handler.h",
     ]
 
     deps += [

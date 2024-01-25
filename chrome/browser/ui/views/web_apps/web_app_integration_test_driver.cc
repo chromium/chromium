@@ -158,7 +158,6 @@
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
