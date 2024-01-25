@@ -3707,6 +3707,15 @@ std::unique_ptr<ActionViewInterface> View::GetActionViewInterface() {
   return std::make_unique<BaseActionViewInterface>(this);
 }
 
+base::CallbackListSubscription View::RegisterNotifyViewControllerCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return notify_view_controller_callback_list_.Add(std::move(callback));
+}
+
+void View::NotifyViewControllerCallback() {
+  notify_view_controller_callback_list_.Notify();
+}
+
 BaseActionViewInterface::BaseActionViewInterface(View* action_view)
     : action_view_(action_view) {}
 

@@ -1584,7 +1584,20 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void RemoveObserver(ViewObserver* observer);
   bool HasObserver(const ViewObserver* observer) const;
 
+  // View Controller Interfaces -----------------------------------------------
+  // These functions provide a common interface for view controllers to interact
+  // with views.
+
   virtual std::unique_ptr<ActionViewInterface> GetActionViewInterface();
+
+  // Registers a callback that can be used to notify a view controller of any
+  // changes. This is more general than the property changed callbacks as view
+  // controllers may need to recompute logic based on changes not captured by
+  // view properties.
+  base::CallbackListSubscription RegisterNotifyViewControllerCallback(
+      base::RepeatingClosureList::CallbackType callback);
+
+  void NotifyViewControllerCallback();
 
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   // Callers should not depend on this as it is meant to be temporary.
@@ -2418,6 +2431,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
+
+  // View Controller Interfaces
+  base::RepeatingClosureList notify_view_controller_callback_list_;
 };
 
 class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {

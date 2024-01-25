@@ -41,6 +41,13 @@ class TestButtonActionViewInterface : public views::ButtonActionViewInterface {
                                   .Build());
   }
 
+  void OnViewChangedImpl(actions::ActionItem* action_item) override {
+    // Dummy logic that is computed using both view and action item.
+    if (action_item->GetVisible() && action_view_->GetVisible()) {
+      action_item->SetVisible(false);
+    }
+  }
+
  private:
   raw_ptr<views::Button> action_view_;
 };
@@ -201,6 +208,23 @@ TEST_F(ActionViewControllerTest, TestActionInvocationContext) {
                    ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(test_button);
   test_api.NotifyClick(e);
+}
+
+TEST_F(ActionViewControllerTest, TestOnViewChanged) {
+  std::unique_ptr<Widget> test_widget = CreateTestWidget();
+  View* parent_view = test_widget->SetContentsView(std::make_unique<View>());
+  TestActionButton* test_view =
+      parent_view->AddChildView(std::make_unique<TestActionButton>());
+  test_widget->Show();
+
+  auto action_view_controller = std::make_unique<ActionViewController>();
+  std::unique_ptr<actions::ActionItem> action_item = CreateEnabledActionItem();
+
+  EXPECT_TRUE(test_view->GetVisible());
+  action_view_controller->CreateActionViewRelationship(
+      test_view, action_item->GetAsWeakPtr());
+  test_view->NotifyViewControllerCallback();
+  EXPECT_FALSE(test_view->GetVisible());
 }
 
 }  // namespace views
