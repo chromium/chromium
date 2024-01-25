@@ -69,6 +69,7 @@
 namespace {
 
 // Aliases.
+using ::crosapi::mojom::DownloadProgress;
 using ::crosapi::mojom::DownloadState;
 using ::crosapi::mojom::DownloadStatus;
 using ::crosapi::mojom::DownloadStatusPtr;
@@ -909,21 +910,32 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` creation.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(true)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(true))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(true)),
-          Field(&DownloadStatus::pausable, Eq(true)),
-          Field(&DownloadStatus::resumable, Eq(false)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
@@ -936,21 +948,32 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` updates.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(true))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(true)),
           Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(true)),
-          Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(true)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
@@ -966,21 +989,33 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterUpdateBrowserTest, Basics) {
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` updates.
+  // Since the download completes, the progress bar is invisible.
+  // TODO(http://b/306459683): Remove the testing on the deprecated received
+  // bytes and total bytes fields after the 2-version skew period passes.
   EXPECT_CALL(
       download_status_updater(),
       Update(Pointer(AllOf(
+          Field(&DownloadStatus::cancellable, Eq(false)),
+          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::progress,
+                Pointer(AllOf(Field(&DownloadProgress::loop, Eq(false)),
+                              Field(&DownloadProgress::received_bytes,
+                                    Eq(item.GetReceivedBytes())),
+                              Field(&DownloadProgress::total_bytes,
+                                    Eq(item.GetTotalBytes())),
+                              Field(&DownloadProgress::visible, Eq(false))))),
+          Field(&DownloadStatus::received_bytes_deprecated,
+                Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::resumable, Eq(false)),
           Field(&DownloadStatus::state, Eq(DownloadState::kComplete)),
-          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
-          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText())),
           Field(&DownloadStatus::target_file_path,
                 Eq(item.GetTargetFilePath())),
-          Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
-          Field(&DownloadStatus::cancellable, Eq(false)),
-          Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(false)),
-          Field(&DownloadStatus::status_text,
-                Eq(download_item_model.GetStatusText()))))));
+          Field(&DownloadStatus::total_bytes_deprecated,
+                Eq(item.GetTotalBytes()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.

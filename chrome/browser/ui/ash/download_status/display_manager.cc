@@ -49,8 +49,14 @@ std::string GetPrintString(const std::optional<int64_t>& data) {
 
 // Returns the progress indicated by `download_status`.
 Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
-  const std::optional<int64_t>& received_bytes = download_status.received_bytes;
-  const std::optional<int64_t>& total_bytes = download_status.total_bytes;
+  std::optional<int64_t> received_bytes;
+  std::optional<int64_t> total_bytes;
+
+  if (const crosapi::mojom::DownloadProgressPtr& progress_ptr =
+          download_status.progress) {
+    received_bytes = progress_ptr->received_bytes;
+    total_bytes = progress_ptr->total_bytes;
+  }
 
   // `received_bytes` and `total_bytes` could be invalid. Correct these numbers
   // if necessary. NOTE: `total_bytes` could be negative but `Progress` expects

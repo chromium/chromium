@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
   crosapi::mojom::DownloadStatusPtr uncancellable_download =
       CreateInProgressDownloadStatus(profile,
                                      /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+                                     /*total_bytes=*/1024);
   uncancellable_download->cancellable = false;
   Update(uncancellable_download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
   crosapi::mojom::DownloadStatusPtr cancellable_download =
       CreateInProgressDownloadStatus(profile,
                                      /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+                                     /*total_bytes=*/1024);
   cancellable_download->cancellable = true;
   Update(cancellable_download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
@@ -331,9 +331,12 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
             notification_id = notification.id();
           }));
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/1024,
-                                     /*target_bytes=*/1024);
-  download->state = crosapi::mojom::DownloadState::kComplete;
+      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kComplete,
+                           crosapi::mojom::DownloadProgress::New(
+                               /*loop=*/false,
+                               /*received_bytes=*/1024,
+                               /*total_bytes=*/1024,
+                               /*visible=*/false));
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -379,8 +382,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
             notification_id = notification.id();
           }));
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -414,8 +418,8 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/std::nullopt,
-                                     /*target_bytes=*/std::nullopt);
+      CreateDownloadStatus(profile, crosapi::mojom::DownloadState::kInProgress,
+                           /*progress=*/nullptr);
   EXPECT_FALSE(download->target_file_path);
   std::string notification_id;
 
@@ -443,8 +447,10 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
 
   // Update the download's received bytes and total bytes. Then check the
   // notification's progress.
-  download->received_bytes = 0;
-  download->total_bytes = 1024;
+  download->progress = crosapi::mojom::DownloadProgress::New();
+  crosapi::mojom::DownloadProgressPtr& progress = download->progress;
+  progress->received_bytes = 0;
+  progress->total_bytes = 1024;
   EXPECT_CALL(
       service_observer(),
       OnNotificationDisplayed(
@@ -460,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   // 2. Status text
   // 3. Target file path
   // Then check the notification's properties.
-  download->received_bytes = 512;
+  progress->received_bytes = 512;
   download->status_text = u"Random text";
   download->target_file_path = test::CreateFile(profile);
   EXPECT_NE(download->target_file_path, download->full_path);
@@ -489,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CompleteDownload) {
   EXPECT_TRUE(progress_bar->GetVisible());
 
   // Complete download and then check the notification.
-  download->received_bytes = download->total_bytes;
+  progress->received_bytes = progress->total_bytes;
   download->state = crosapi::mojom::DownloadState::kComplete;
   EXPECT_CALL(
       service_observer(),
@@ -520,8 +526,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           }));
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -559,8 +566,9 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
   // Create a download.
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -604,8 +612,8 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
 
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile, /*received_bytes=*/0,
-                                     /*target_bytes=*/std::nullopt);
+      CreateInProgressDownloadStatus(profile,
+                                     /*received_bytes=*/0);
 
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
@@ -641,9 +649,10 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
           [&notification_id](const message_center::Notification& notification) {
             notification_id = notification.id();
           }));
-  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
-      ProfileManager::GetActiveUserProfile(), /*received_bytes=*/0,
-      /*target_bytes=*/1024);
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
+                                     /*received_bytes=*/0,
+                                     /*total_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 
@@ -666,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
                                      /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+                                     /*total_bytes=*/1024);
   download->pausable = true;
   download->resumable = false;
   Update(download->Clone());
@@ -778,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ShowInFolder) {
   crosapi::mojom::DownloadStatusPtr download =
       CreateInProgressDownloadStatus(profile,
                                      /*received_bytes=*/0,
-                                     /*target_bytes=*/1024);
+                                     /*total_bytes=*/1024);
   Update(download->Clone());
   Mock::VerifyAndClearExpectations(&service_observer());
 

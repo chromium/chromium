@@ -9,11 +9,33 @@ import "chromeos/crosapi/mojom/download_controller.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
+// Indicates a download's progress.
+//
+// Next MinVersion: 1
+// Next ID: 4
+//
+[Stable, Uuid="9533a4a7-962f-4723-86f1-752a12623d5a"]
+struct DownloadProgress {
+  // Indicates whether the progress should be represented as infinitely looping.
+  bool loop@0;
+
+  // The total number of bytes that have been received and written to the
+  // underlying download file.
+  int64 received_bytes@1;
+
+  // The total number of bytes expected to be written to the underlying download
+  // file, or -1 if the total number of bytes is unknown.
+  int64 total_bytes@2;
+
+  // Indicates whether the progress should be visibly represented.
+  bool visible@3;
+};
+
 // Representation of a Lacros download's status to be passed into Ash Chrome
 // and rendered in the appropriate System UI surface(s).
 //
-// Next MinVersion: 5
-// Next ID: 11
+// Next MinVersion: 6
+// Next ID: 12
 //
 [Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
 struct DownloadStatus {
@@ -25,13 +47,13 @@ struct DownloadStatus {
   // The current state of the underlying download.
   DownloadState state@1;
 
-  // The total number of bytes that have been received and written to the
-  // underlying download file.
-  [MinVersion=1] int64? received_bytes@2;
+  // Deprecated. The total number of bytes that have been received and written
+  // to the underlying download file.
+  [MinVersion=1] int64? received_bytes_deprecated@2;
 
-  // The total number of bytes expected to be written to the underlying download
-  // file, or -1 if the total number of bytes is unknown.
-  [MinVersion=1] int64? total_bytes@3;
+  // Deprecated. The total number of bytes expected to be written to the
+  // underlying download file, or -1 if the total number of bytes is unknown.
+  [MinVersion=1] int64? total_bytes_deprecated@3;
 
   // The target path of an in-progress download. Note that the actual path being
   // written to may be that of a temporary or intermediate file, but the target
@@ -59,6 +81,9 @@ struct DownloadStatus {
 
   // The image representation of the underlying download.
   [MinVersion=4] gfx.mojom.ImageSkia? image@10;
+
+  // Indicates the progress of the underlying download.
+  [MinVersion=5] DownloadProgress? progress@11;
 };
 
 // The interface for the client of the `DownloadStatusUpdater` in Ash Chrome
