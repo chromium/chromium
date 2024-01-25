@@ -254,7 +254,9 @@ public class CustomTabMinimizationManager
                     "Tab is null. Activity state is "
                             + mActivity.getLifecycle().getCurrentState()
                             + ". wasInitializedMinimized: "
-                            + wasInitializedMinimized;
+                            + wasInitializedMinimized
+                            + ". isInPip: "
+                            + pictureInPictureModeChangedInfo.isInPictureInPictureMode();
             Log.e(TAG, msg);
             reportJavaException(new Exception(msg));
         }
