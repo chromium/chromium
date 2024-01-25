@@ -578,7 +578,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   // NOTE: GLES2_READ can be removed once OOP-R ships definitively.
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_APPLE)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
