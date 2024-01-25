@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
@@ -16,7 +17,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -24,13 +24,13 @@
 
 namespace ash {
 namespace {
-constexpr base::StringPiece kModifierMetricPrefix =
+constexpr std::string_view kModifierMetricPrefix =
     "ChromeOS.Settings.Keyboard.Modifiers.";
-constexpr base::StringPiece kModifierMetricIndividualChangedSuffix =
+constexpr std::string_view kModifierMetricIndividualChangedSuffix =
     "RemappedTo.Changed";
-constexpr base::StringPiece kModifierMetricIndividualInitSuffix =
+constexpr std::string_view kModifierMetricIndividualInitSuffix =
     "RemappedTo.Started";
-constexpr base::StringPiece kModifierMetricHash =
+constexpr std::string_view kModifierMetricHash =
     "ChromeOS.Settings.Keyboard.Modifiers.Hash";
 
 // The modifier hash is made up of `kNumModifiers` blocks of

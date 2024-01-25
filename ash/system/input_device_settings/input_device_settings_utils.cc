@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -39,7 +41,7 @@ std::string HexEncode(uint16_t v) {
   return base::ToLowerASCII(base::HexEncode(bytes));
 }
 
-bool ExistingSettingsHasValue(base::StringPiece setting_key,
+bool ExistingSettingsHasValue(std::string_view setting_key,
                               const base::Value::Dict* existing_settings_dict) {
   if (!existing_settings_dict) {
     return false;
@@ -115,7 +117,7 @@ std::string BuildDeviceKey(const ui::InputDevice& device) {
 }
 
 template <typename T>
-bool ShouldPersistSetting(base::StringPiece setting_key,
+bool ShouldPersistSetting(std::string_view setting_key,
                           T new_value,
                           T default_value,
                           bool force_persistence,
@@ -125,7 +127,7 @@ bool ShouldPersistSetting(base::StringPiece setting_key,
 }
 
 bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
-                          base::StringPiece setting_key,
+                          std::string_view setting_key,
                           bool new_value,
                           bool default_value,
                           bool force_persistence,
@@ -150,7 +152,7 @@ bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
 
 bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict) {
@@ -174,14 +176,14 @@ bool ShouldPersistFkeySetting(
 }
 
 template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     bool new_value,
     bool default_value,
     bool force_persistence,
     const base::Value::Dict* existing_settings_dict);
 
 template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
-    base::StringPiece setting_key,
+    std::string_view setting_key,
     int value,
     int default_value,
     bool force_persistence,

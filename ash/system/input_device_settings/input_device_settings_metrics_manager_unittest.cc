@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
+#include <string_view>
+
 #include "ash/accelerators/accelerator_encoding.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
@@ -59,7 +61,7 @@ constexpr int kKeyboardInternalId = 1;
 constexpr struct TimePeriodMetricData {
   TimePeriod time_period;
   base::TimeDelta time_delta;
-  base::StringPiece metric_name;
+  std::string_view metric_name;
 } kTimePeriodMetricData[] = {
     {TimePeriod::kOneHour, base::Minutes(0), "OneHour"},
     {TimePeriod::kThreeHours, base::Hours(2), "ThreeHours"},
@@ -69,7 +71,7 @@ constexpr struct TimePeriodMetricData {
 
 constexpr struct CategoryMetricNameData {
   Category category;
-  base::StringPiece metric_name;
+  std::string_view metric_name;
 } kCategoryMetricNameData[] = {
     {Category::kFirstEver, "FirstEver"},
     {Category::kDefault, "FromDefaults"},

@@ -4,6 +4,8 @@
 
 #include "ash/system/geolocation/geolocation_controller.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,7 +20,6 @@
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
@@ -39,17 +40,17 @@ constexpr char kUser2Email[] = "user2@geolocation";
 
 // Sets of test longitudes/latitude and the corresponding sunrise/sunset times
 // for testing. They all assume the clock's current time is `kTestNow`.
-constexpr base::StringPiece kTestNow = "23 Dec 2021 12:00:00";
+constexpr std::string_view kTestNow = "23 Dec 2021 12:00:00";
 
 constexpr double kTestLatitude1 = 23.5;
 constexpr double kTestLongitude1 = 35.88;
-constexpr base::StringPiece kTestSunriseTime1 = "23 Dec 2021 04:14:36.626";
-constexpr base::StringPiece kTestSunsetTime1 = "23 Dec 2021 14:59:58.459";
+constexpr std::string_view kTestSunriseTime1 = "23 Dec 2021 04:14:36.626";
+constexpr std::string_view kTestSunsetTime1 = "23 Dec 2021 14:59:58.459";
 
 constexpr double kTestLatitude2 = 37.5;
 constexpr double kTestLongitude2 = -100.5;
-constexpr base::StringPiece kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
-constexpr base::StringPiece kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
+constexpr std::string_view kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
+constexpr std::string_view kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
 
 constexpr SimpleGeoposition kSanJoseGeoposition = {37.335480, -121.893028};
 
@@ -78,7 +79,7 @@ std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
   return system::TimezoneSettings::GetTimezoneID(timezone);
 }
 
-base::Time ToUTCTime(base::StringPiece utc_time_str) {
+base::Time ToUTCTime(std::string_view utc_time_str) {
   base::Time time;
   CHECK(base::Time::FromUTCString(std::string(utc_time_str).c_str(), &time))
       << "Invalid UTC time string specified: " << utc_time_str;

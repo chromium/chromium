@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
 #include <cstdint>
+#include <string_view>
 
 #include "ash/accelerators/accelerator_encoding.h"
 #include "ash/constants/ash_features.h"
@@ -23,7 +24,6 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -266,7 +266,7 @@ void RecordButtonRemappingNameIfChanged(
 }
 
 template <typename T>
-base::StringPiece GetDeviceTypeMetricsName() {
+std::string_view GetDeviceTypeMetricsName() {
   if constexpr (std::is_same_v<T, mojom::Keyboard>) {
     return "Keyboard";
   } else if constexpr (std::is_same_v<T, mojom::Mouse>) {
@@ -279,7 +279,7 @@ base::StringPiece GetDeviceTypeMetricsName() {
 }
 
 template <typename T>
-base::StringPiece GetSettingsUpdatedPrefName() {
+std::string_view GetSettingsUpdatedPrefName() {
   if constexpr (std::is_same_v<T, mojom::Keyboard>) {
     return prefs::kKeyboardUpdateSettingsMetricInfo;
   } else if constexpr (std::is_same_v<T, mojom::Mouse>) {
@@ -291,11 +291,11 @@ base::StringPiece GetSettingsUpdatedPrefName() {
   }
 }
 
-base::StringPiece GetSettingsUpdatedTimePeriodMetricName(
+std::string_view GetSettingsUpdatedTimePeriodMetricName(
     SettingsUpdatedMetricsInfo::TimePeriod time_period) {
   constexpr auto kTimePeriodToMetricName =
       base::MakeFixedFlatMap<SettingsUpdatedMetricsInfo::TimePeriod,
-                             base::StringPiece>({
+                             std::string_view>({
           {SettingsUpdatedMetricsInfo::TimePeriod::kOneHour, "OneHour"},
           {SettingsUpdatedMetricsInfo::TimePeriod::kThreeHours, "ThreeHours"},
           {SettingsUpdatedMetricsInfo::TimePeriod::kOneDay, "OneDay"},
@@ -305,11 +305,11 @@ base::StringPiece GetSettingsUpdatedTimePeriodMetricName(
   return kTimePeriodToMetricName.at(time_period);
 }
 
-base::StringPiece GetSettingsUpdatedCategoryName(
+std::string_view GetSettingsUpdatedCategoryName(
     SettingsUpdatedMetricsInfo::Category category) {
   constexpr auto kCategoryToMetricName =
       base::MakeFixedFlatMap<SettingsUpdatedMetricsInfo::Category,
-                             base::StringPiece>({
+                             std::string_view>({
           {SettingsUpdatedMetricsInfo::Category::kFirstEver, "FirstEver"},
           {SettingsUpdatedMetricsInfo::Category::kDefault, "FromDefaults"},
           {SettingsUpdatedMetricsInfo::Category::kSynced, "Synced"},
@@ -982,7 +982,7 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardMouseComboDeviceMetric(
     const mojom::Mouse& mouse) {
   static base::NoDestructor<base::flat_set<std::string>> logged_devices;
   static constexpr auto kKnownKeyboardMouseComboDevices =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "046d:4024",  // Logitech K400
           "046d:404d",  // Logitech K400+
           "046d:c548",  // Logitech BOLT Receiver

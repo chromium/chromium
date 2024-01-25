@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
@@ -14,7 +15,6 @@
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -81,7 +81,7 @@ void InputDeviceTracker::OnActiveUserPrefServiceChanged(
 
 bool InputDeviceTracker::WasDevicePreviouslyConnected(
     InputDeviceCategory category,
-    const base::StringPiece& device_key) const {
+    std::string_view device_key) const {
   const auto* observed_devices = GetObservedDevicesForCategory(category);
   return observed_devices
              ? base::Contains(observed_devices->GetValue(), device_key)
@@ -127,9 +127,8 @@ void InputDeviceTracker::Init(PrefService* pref_service) {
       prefs::kPointingStickObservedDevicesPref, pref_service);
 }
 
-void InputDeviceTracker::RecordDeviceConnected(
-    InputDeviceCategory category,
-    const base::StringPiece& device_key) {
+void InputDeviceTracker::RecordDeviceConnected(InputDeviceCategory category,
+                                               std::string_view device_key) {
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     return;
   }
@@ -153,7 +152,7 @@ void InputDeviceTracker::RecordDeviceConnected(
 
 bool InputDeviceTracker::HasSeenPrimaryDeviceKeyAlias(
     const std::vector<std::string>& previously_observed_devices,
-    base::StringPiece device_key) {
+    std::string_view device_key) {
   const auto* aliases = Shell::Get()
                             ->input_device_key_alias_manager()
                             ->GetAliasesForPrimaryDeviceKey(device_key);

@@ -6,11 +6,11 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_KEY_ALIAS_MANAGER_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -32,7 +32,7 @@ class ASH_EXPORT InputDeviceKeyAliasManager {
   // Uses `primary_device_key` to retrieve all aliased device keys for a given
   // device.
   const base::flat_set<std::string>* GetAliasesForPrimaryDeviceKey(
-      base::StringPiece primary_device_key) const;
+      std::string_view primary_device_key) const;
 
   void AddDeviceKeyPair(const std::string& primary_key,
                         const std::string& aliased_key);
