@@ -833,7 +833,7 @@ void AutofillAgent::ApplyFieldAction(
             form_control.SetSuggestedValue(blink::WebString::FromUTF16(value));
             form_util::PreviewSuggestion(form_control.SuggestedValue().Utf16(),
                                          form_control.Value().Utf16(),
-                                         &form_control);
+                                         form_control);
             break;
         }
         break;

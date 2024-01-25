@@ -955,7 +955,7 @@ bool PasswordAutofillAgent::PreviewSuggestion(
     username_autofill_state_ = username_element.GetAutofillState();
     username_element.SetSuggestedValue(username);
     form_util::PreviewSuggestion(username_element.SuggestedValue().Utf16(),
-                                 username_query_prefix_, &username_element);
+                                 username_query_prefix_, username_element);
   }
   if (!password_element.IsNull()) {
     password_autofill_state_ = password_element.GetAutofillState();

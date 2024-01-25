@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1094,10 +1095,10 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
 // causing the background to be blue.
 void FillFormField(const FormFieldData::FillData& data,
                    bool is_initiating_node,
-                   blink::WebFormControlElement* field,
+                   blink::WebFormControlElement& field,
                    FieldDataManager& field_data_manager) {
-  CHECK(!IsCheckableElement(*field));
-  WebInputElement input_element = field->DynamicTo<WebInputElement>();
+  CHECK(!IsCheckableElement(field));
+  WebInputElement input_element = field.DynamicTo<WebInputElement>();
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kAutofilled
                                             : WebAutofillState::kNotFilled;
@@ -1110,28 +1111,28 @@ void FillFormField(const FormFieldData::FillData& data,
   }
 
   if (IsTextInput(input_element)) {
-    field_data_manager.UpdateFieldDataMap(GetFieldRendererId(*field), value,
+    field_data_manager.UpdateFieldDataMap(GetFieldRendererId(field), value,
                                           FieldPropertiesFlags::kAutofilled);
   }
-  field->SetAutofillValue(blink::WebString::FromUTF16(value),
-                          new_autofill_state);
+  field.SetAutofillValue(blink::WebString::FromUTF16(value),
+                         new_autofill_state);
   // Changing the field's value might trigger JavaScript, which is capable of
   // destroying the frame.
-  if (!field->GetDocument().GetFrame()) {
+  if (!field.GetDocument().GetFrame()) {
     return;
   }
 
   if (is_initiating_node &&
       (IsTextInput(input_element) || IsMonthInput(input_element) ||
-       IsTextAreaElement(*field))) {
-    auto length = base::checked_cast<unsigned>(field->Value().length());
-    field->SetSelectionRange(length, length);
+       IsTextAreaElement(field))) {
+    auto length = base::checked_cast<unsigned>(field.Value().length());
+    field.SetSelectionRange(length, length);
     // selectionchange event is capable of destroying the frame.
-    if (!field->GetDocument().GetFrame()) {
+    if (!field.GetDocument().GetFrame()) {
       return;
     }
     // Clear the current IME composition (the underline), if there is one.
-    field->GetDocument().GetFrame()->UnmarkText();
+    field.GetDocument().GetFrame()->UnmarkText();
   }
 }
 
@@ -1139,13 +1140,13 @@ void FillFormField(const FormFieldData::FillData& data,
 // Also sets the "autofilled" attribute, causing the background to be blue.
 void PreviewFormField(const FormFieldData::FillData& data,
                       bool is_initiating_node,
-                      blink::WebFormControlElement* field,
+                      blink::WebFormControlElement& field,
                       FieldDataManager& field_data_manager) {
-  CHECK(!IsCheckableElement(*field));
+  CHECK(!IsCheckableElement(field));
   // Preview input, textarea and select fields. For input fields, excludes
   // checkboxes and radio buttons, as there is no provision for
   // setSuggestedCheckedValue in WebInputElement.
-  WebInputElement input_element = field->DynamicTo<WebInputElement>();
+  WebInputElement input_element = field.DynamicTo<WebInputElement>();
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kPreviewed
                                             : WebAutofillState::kNotFilled;
@@ -1155,15 +1156,15 @@ void PreviewFormField(const FormFieldData::FillData& data,
     input_element.SetSuggestedValue(blink::WebString::FromUTF16(
         data.value.substr(0, input_element.MaxLength())));
     input_element.SetAutofillState(new_autofill_state);
-  } else if (IsTextAreaElement(*field) || IsSelectOrSelectListElement(*field)) {
-    field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
-    field->SetAutofillState(new_autofill_state);
+  } else if (IsTextAreaElement(field) || IsSelectOrSelectListElement(field)) {
+    field.SetSuggestedValue(blink::WebString::FromUTF16(data.value));
+    field.SetAutofillState(new_autofill_state);
   }
 
   if (is_initiating_node &&
-      (IsTextInput(input_element) || IsTextAreaElement(*field))) {
+      (IsTextInput(input_element) || IsTextAreaElement(field))) {
     // Select the part of the text that the user didn't type.
-    PreviewSuggestion(field->SuggestedValue().Utf16(), field->Value().Utf16(),
+    PreviewSuggestion(field.SuggestedValue().Utf16(), field.Value().Utf16(),
                       field);
   }
 }
@@ -2311,7 +2312,7 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
           field.value != element.Value().Utf16() ||
           !base::FeatureList::IsEnabled(
               features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-        fill_or_preview(field, is_initiating_element, &element,
+        fill_or_preview(field, is_initiating_element, element,
                         field_data_manager);
       }
       continue;
@@ -2339,7 +2340,8 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFormAction(
        autofillable_elements_index_pairs) {
     filled_fields.emplace_back(*filled_element,
                                filled_element->GetAutofillState());
-    fill_or_preview(*field_data, false, filled_element, field_data_manager);
+    fill_or_preview(*field_data, false, CHECK_DEREF(filled_element),
+                    field_data_manager);
   }
 
   // A focus event is emitted for the initiating element after autofilling is
@@ -2444,8 +2446,8 @@ bool IsWebElementEmpty(const blink::WebElement& root) {
 
 void PreviewSuggestion(const std::u16string& suggestion,
                        const std::u16string& user_input,
-                       blink::WebFormControlElement* input_element) {
-  input_element->SetSelectionRange(
+                       blink::WebFormControlElement& input_element) {
+  input_element.SetSelectionRange(
       base::checked_cast<unsigned>(user_input.length()),
       base::checked_cast<unsigned>(suggestion.length()));
 }

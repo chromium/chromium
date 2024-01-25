@@ -362,7 +362,7 @@ bool IsWebElementEmpty(const blink::WebElement& element);
 // |input_element| by calling value(), because of http://crbug.com/507714.
 void PreviewSuggestion(const std::u16string& suggestion,
                        const std::u16string& user_input,
-                       blink::WebFormControlElement* input_element);
+                       blink::WebFormControlElement& input_element);
 
 // Returns the aggregated values of the descendants of |element| that are
 // non-empty text nodes.  This is a faster alternative to |innerText()| for
