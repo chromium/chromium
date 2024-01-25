@@ -86,18 +86,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.CaptureText" units="ms" expires_after="2023-01-15">
-  <owner>sclittle@google.com</owner>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The time spent capturing plain text from the DOM. Pre sub frame translation
-    support (this includes before M83), this is reported by
-    ChromeRenderViewObserver. If sub frame translation is enabled, this is
-    captured in the browser process and reported by ContentTranslateDriver.
-  </summary>
-</histogram>
-
 <histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeISO639"
     expires_after="2024-12-10">
   <owner>megjablon@google.com</owner>
