@@ -219,8 +219,37 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
 
   last_acknowledged_state_ = std::move(acknowledged_state);
 
-  if (last_acknowledged_state_->is_in_back_forward_cache)
+  if (last_acknowledged_state_->is_in_back_forward_cache) {
     did_receive_back_forward_cache_ack_ = true;
+
+    // TODO(crbug.com/1521212): currently after the navigation, the old
+    // RenderViewHost is marked as inactive.
+    // `RenderViewHostImpl::GetMainRenderFrameHost()` will return nullptr. This
+    // prevents us from getting the RenderFrameHost even if the main frame of
+    // this RenderViewHost is stored in BFCache. Now we are getting the
+    // RenderFrameHost from the BackForwardCacheImpl as a workaround, but
+    // eventually we might allow getting the RenderFrameHost from a
+    // RenderViewHost that's in BFCache.
+    for (auto* entry :
+         render_view_host_impl_->frame_tree()
+             ->controller()
+             .GetBackForwardCache()
+             .GetEntriesForRenderViewHostImpl(render_view_host_impl_)) {
+      if (entry->render_frame_host()->LoadedWithCacheControlNoStoreHeader()) {
+        // If the BFCached document was loaded with "Cache-control: no-store"
+        // header, we clear the fallback surface and force the browser to embed
+        // a completely new surface when this page is activated from BFCache.
+        // This avoids displaying sensitive information between it's restored
+        // and the `pageshow` handler completes.
+        RenderWidgetHostViewBase* rwhv =
+            render_view_host_impl_->GetWidget()->GetRenderWidgetHostViewBase();
+        if (rwhv) {
+          rwhv->InvalidateLocalSurfaceIdAndAllocationGroup();
+          rwhv->ClearFallbackSurfaceForCommitPending();
+        }
+      }
+    }
+  }
 
   // Call |MaybeEvictFromBackForwardCache| after setting
   // |last_acknowledged_state_|.
