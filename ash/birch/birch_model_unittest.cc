@@ -37,17 +37,17 @@ class TestModelObserver : public BirchModel::Observer {
 class BirchModelTest : public AshTestBase {
  public:
   void SetUp() override {
-    switches::SetIgnoreBirchSecretKeyForTest(true);
+    switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
   }
 
   void TearDown() override {
     AshTestBase::TearDown();
-    switches::SetIgnoreBirchSecretKeyForTest(false);
+    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{features::kBirchFeature};
+  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
 // Test that adding items to the model notifies observers.

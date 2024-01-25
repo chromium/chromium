@@ -41,7 +41,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
         fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
   void SetUp() override {
-    switches::SetIgnoreBirchSecretKeyForTest(true);
+    switches::SetIgnoreForestSecretKeyForTest(true);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     BrowserWithTestWindowTest::SetUp();
@@ -65,7 +65,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     file_suggest_service_ = nullptr;
     fake_user_manager_.Reset();
     BrowserWithTestWindowTest::TearDown();
-    switches::SetIgnoreBirchSecretKeyForTest(false);
+    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
   void LogIn(const std::string& email) override {
@@ -113,7 +113,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   raw_ptr<BirchKeyedService> birch_keyed_service_ = nullptr;
 
-  base::test::ScopedFeatureList feature_list_{features::kBirchFeature};
+  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
 TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {

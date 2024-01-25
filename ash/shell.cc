@@ -1576,8 +1576,7 @@ void Shell::Init(
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 
-  if (features::IsBirchFeatureEnabled() &&
-      switches::IsBirchSecretKeyMatched()) {
+  if (features::IsForestFeatureEnabled()) {
     birch_model_ = std::make_unique<BirchModel>();
   }
 

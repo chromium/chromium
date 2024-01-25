@@ -678,7 +678,7 @@ void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
 }
 
 void LockStateController::ShutdownOnPine(bool with_pre_animation) {
-  if (features::IsPineEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     TakePineImageAndShutdown(with_pre_animation);
   } else {
     StartShutdownProcess(with_pre_animation);

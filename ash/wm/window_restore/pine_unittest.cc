@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_restore/pine_contents_view.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -23,14 +24,14 @@ namespace ash {
 
 class PineTest : public AshTestBase {
  public:
-  PineTest() = default;
+  PineTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
   PineTest(const PineTest&) = delete;
   PineTest& operator=(const PineTest&) = delete;
-  ~PineTest() override = default;
+  ~PineTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
 
  private:
   InProcessDataDecoder decoder_;
-  base::test::ScopedFeatureList scoped_feature_list_{features::kPine};
+  base::test::ScopedFeatureList scoped_feature_list_{features::kForestFeature};
 };
 
 TEST_F(PineTest, Show) {

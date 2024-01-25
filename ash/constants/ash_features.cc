@@ -282,9 +282,6 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling/disabling the birch feature.
-BASE_FEATURE(kBirchFeature, "BirchFeature", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -1223,6 +1220,11 @@ BASE_FEATURE(kForceReSyncDrive,
              "ForceReSyncDrive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls enabling/disabling the forest feature.
+BASE_FEATURE(kForestFeature,
+             "ForestFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow keeping full screen mode after unlock.
 BASE_FEATURE(kFullscreenAfterUnlockAllowed,
              "FullscreenAfterUnlockAllowed",
@@ -1917,8 +1919,6 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOak, "Oak", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -2205,8 +2205,6 @@ const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
 BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              "PhoneHubShortQuickActionPodsTitles",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPine, "Pine", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3191,10 +3189,6 @@ bool IsBatterySaverAlwaysOn() {
   return base::FeatureList::IsEnabled(kBatterySaverAlwaysOn);
 }
 
-bool IsBirchFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kBirchFeature);
-}
-
 bool IsBluetoothDisconnectWarningEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothDisconnectWarning);
 }
@@ -3494,6 +3488,11 @@ bool ShouldForceEnableServerSideSpeechRecognitionForDev() {
 
 bool IsForceReSyncDriveEnabled() {
   return base::FeatureList::IsEnabled(kForceReSyncDrive);
+}
+
+bool IsForestFeatureEnabled() {
+  return switches::IsForestSecretKeyMatched() &&
+         base::FeatureList::IsEnabled(kForestFeature);
 }
 
 bool IsFullscreenAfterUnlockAllowed() {
@@ -3918,10 +3917,6 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
-bool IsOakEnabled() {
-  return base::FeatureList::IsEnabled(kOak);
-}
-
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
 }
@@ -4095,10 +4090,6 @@ bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
 
 bool IsPickerUpdateEnabled() {
   return base::FeatureList::IsEnabled(kPicker);
-}
-
-bool IsPineEnabled() {
-  return base::FeatureList::IsEnabled(kPine);
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
