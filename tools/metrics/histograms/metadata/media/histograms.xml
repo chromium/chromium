@@ -1202,17 +1202,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization"
-    enum="GetOutputDeviceInfoCacheHit" expires_after="2024-02-04">
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    Whether a cached sink was used to get audio output device information, or a
-    new sink was created for that.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Render.StreamCallbackError2"
     enum="AudioRenderDeviceError" expires_after="never">
 <!-- expires-never: Audio pipeline health metric. -->

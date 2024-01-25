@@ -1006,21 +1006,6 @@ chromium-metrics-reviews@google.com.
       label="Failed as no factory associated with the profile found"/>
 </enum>
 
-<enum name="GetOutputDeviceInfoCacheHit">
-  <int value="0" label="Miss: no cached sink found">
-    Output parmeters for a device are requested, and there is no corresponding
-    sink cached; new sink is created and cached.
-  </int>
-  <int value="1" label="Miss: cannot lookup by session id">
-    If session id is used to specify a device, we always have to create and
-    cache a new sink.
-  </int>
-  <int value="2" label="Hit">
-    Output parmeters for a device are requested, and there is a corresponding
-    sink cached.
-  </int>
-</enum>
-
 <enum name="GlobalMediaControlsCastMode">
   <int value="0" label="Presentation"/>
   <int value="1" label="Remote Playback"/>
