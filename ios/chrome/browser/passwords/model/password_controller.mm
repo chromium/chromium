@@ -16,6 +16,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -148,7 +149,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  WebState* _webState;
+  raw_ptr<WebState> _webState;
 
   // Bridge to observe WebState from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;

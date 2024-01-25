@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -70,7 +71,7 @@ class PasswordTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  PasswordTabHelper* helper_ = nullptr;
+  raw_ptr<PasswordTabHelper> helper_ = nullptr;
   id dispatcher_;
 };
 

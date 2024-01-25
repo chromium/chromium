@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -106,7 +107,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
     }
   }
 
-  ChromeBrowserState* const browser_state_;
+  const raw_ptr<ChromeBrowserState> browser_state_;
   // StoreMetricReporterHelper is owned by the profile `metrics_reporter_` life
   // time is now bound to the profile.
   std::unique_ptr<password_manager::StoreMetricsReporter> metrics_reporter_;

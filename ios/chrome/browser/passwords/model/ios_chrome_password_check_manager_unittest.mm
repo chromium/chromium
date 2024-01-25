@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
@@ -157,7 +158,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  MockBulkLeakCheckService* bulk_leak_check_service_;
+  raw_ptr<MockBulkLeakCheckService> bulk_leak_check_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> manager_;
 };

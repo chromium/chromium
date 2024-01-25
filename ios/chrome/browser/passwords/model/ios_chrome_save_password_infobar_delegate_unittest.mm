@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -108,7 +109,7 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
   // Infobar delegate to test.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
   // Pointer to the infobar's form manager.
-  password_manager::MockPasswordFormManagerForUI* form_manager_ptr_;
+  raw_ptr<password_manager::MockPasswordFormManagerForUI> form_manager_ptr_;
 };
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetUserNameText) {

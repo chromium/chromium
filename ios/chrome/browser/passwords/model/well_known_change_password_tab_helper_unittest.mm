@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
@@ -164,7 +165,8 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   web::FakeWebStateDelegate delegate_;
-  password_manager::MockAffiliationService* affiliation_service_ = nullptr;
+  raw_ptr<password_manager::MockAffiliationService> affiliation_service_ =
+      nullptr;
 };
 
 GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {

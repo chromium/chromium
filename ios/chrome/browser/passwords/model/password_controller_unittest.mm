@@ -143,7 +143,7 @@ class MockPasswordManagerClient
  private:
   mutable FakeNetworkContext network_context_;
   raw_ptr<PrefService> const prefs_;
-  password_manager::PasswordStoreInterface* const store_;
+  const raw_ptr<password_manager::PasswordStoreInterface> store_;
 };
 
 // Creates PasswordController with the given `pref_service`, `web_state` and a
@@ -1315,7 +1315,7 @@ class PasswordControllerTestSimple : public PlatformTest {
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;
   web::FakeWebState web_state_;
-  web::FakeWebFramesManager* web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
 };
 
 TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
