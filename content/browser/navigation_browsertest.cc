@@ -7369,6 +7369,7 @@ IN_PROC_BROWSER_TEST_P(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/cross_site_iframe_factory.html?a(a,a)")));
 
+  current_frame_host()->DisableUnloadTimerForTesting();
   // Set up the unload handler if needed.
   MaybeAddUnloadHandler();
 
@@ -7874,6 +7875,61 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FixedStoragePartition) {
   EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
             storage_partition_config);
   EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+}
+
+class NavigationBrowserTestDeprecateUnloadOptOut
+    : public NavigationBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationBrowserTest::SetUpCommandLine(command_line);
+    if (IsOptOutEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kDeprecateUnload,
+           blink::features::kDeprecateUnloadOptOut},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kDeprecateUnload},
+          {blink::features::kDeprecateUnloadOptOut});
+    }
+  }
+
+ protected:
+  bool IsOptOutEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationBrowserTestDeprecateUnloadOptOut,
+                         ::testing::Bool());
+
+// Test that enabled/disabled kDeprecateUnloadOptOut has the desired effect.
+IN_PROC_BROWSER_TEST_P(NavigationBrowserTestDeprecateUnloadOptOut,
+                       DeprecateUnloadOptOutFlagRespected) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+
+  // Unload will not run on Android if the page is cacheable.
+  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
+      BackForwardCacheImpl::TEST_USES_UNLOAD_EVENT);
+  // Navigate to a page and install an unload handler with a side-effect.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_1));
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    localStorage.setItem("unload", "not_dispatched");
+    addEventListener("unload", () => {
+      localStorage.setItem("unload", "dispatched");
+    })
+  )"));
+
+  // Navigate to a same-site page (to ensure that the unload handler's
+  // side-effect is reliably visible).
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_2));
+
+  // Check for the side-effect.
+  ASSERT_EQ(EvalJs(web_contents(), "localStorage.getItem('unload')"),
+            IsOptOutEnabled() ? "dispatched" : "not_dispatched");
 }
 
 }  // namespace content
