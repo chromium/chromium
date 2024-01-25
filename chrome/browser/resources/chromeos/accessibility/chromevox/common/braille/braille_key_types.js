@@ -10,7 +10,7 @@
  * We define them here since they don't actually exist as bindings under
  * chrome.brailleDisplayPrivate.*.
  */
-import {Key, KeyCode, KeyName} from '../../../common/key_code.js';
+import {Key, KeyCode, KeyName} from '/common/key_code.js';
 
 /**
  * The set of commands sent from a braille display.

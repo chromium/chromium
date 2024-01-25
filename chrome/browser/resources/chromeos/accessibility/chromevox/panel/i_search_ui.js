@@ -5,7 +5,8 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
-import {constants} from '../../common/constants.js';
+import {constants} from '/common/constants.js';
+
 import {BackgroundBridge} from '../common/background_bridge.js';
 
 import {PanelInterface} from './panel_interface.js';

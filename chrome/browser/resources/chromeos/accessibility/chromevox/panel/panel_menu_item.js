@@ -5,7 +5,8 @@
 /**
  * @fileoverview An item in a drop-down menu in the ChromeVox panel.
  */
-import {LocalStorage} from '../../common/local_storage.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {SettingsManager} from '../common/settings_manager.js';

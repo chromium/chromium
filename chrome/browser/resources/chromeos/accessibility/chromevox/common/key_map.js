@@ -14,7 +14,7 @@
  *
  * To retrieve static data about user commands, see CommandStore.
  */
-import {KeyCode} from '../../common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 
 import {Command} from './command.js';
 import {CommandStore} from './command_store.js';

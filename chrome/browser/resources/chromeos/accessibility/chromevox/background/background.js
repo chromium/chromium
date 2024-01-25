@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Flags} from '../../common/flags.js';
-import {InstanceChecker} from '../../common/instance_checker.js';
-import {LocalStorage} from '../../common/local_storage.js';
+import {Flags} from '/common/flags.js';
+import {InstanceChecker} from '/common/instance_checker.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';

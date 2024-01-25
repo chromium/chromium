@@ -6,11 +6,12 @@
  * @fileoverview Calculates the menu items for the node menus in the ChromeVox
  * panel.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {CursorRange} from '../../../common/cursors/range.js';
-import {AutomationTreeWalker} from '../../../common/tree_walker.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {AutomationTreeWalker} from '/common/tree_walker.js';
+
 import {BridgeCallbackId} from '../../common/bridge_callback_manager.js';
 import {BridgeContext} from '../../common/bridge_constants.js';
 import {Msgs} from '../../common/msgs.js';

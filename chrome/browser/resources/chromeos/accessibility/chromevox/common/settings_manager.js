@@ -12,9 +12,9 @@
  * services).
  *
  */
-import {LocalStorage} from '../../common/local_storage.js';
-import {Settings} from '../../common/settings.js';
-import {StringUtil} from '../../common/string_util.js';
+import {LocalStorage} from '/common/local_storage.js';
+import {Settings} from '/common/settings.js';
+import {StringUtil} from '/common/string_util.js';
 
 const PrefObject = chrome.settingsPrivate.PrefObject;
 

@@ -5,8 +5,9 @@
 /**
  * @fileoverview Handles gesture-based commands.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {EventGenerator} from '../../../common/event_generator.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {EventGenerator} from '/common/event_generator.js';
+
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EventSourceType} from '../../common/event_source_type.js';

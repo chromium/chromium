@@ -6,8 +6,8 @@
  * @fileoverview A collection of JavaScript utilities used to simplify working
  * with keyboard events.
  */
-import {AsyncUtil} from '../../common/async_util.js';
-import {KeyCode, KeyName} from '../../common/key_code.js';
+import {AsyncUtil} from '/common/async_util.js';
+import {KeyCode, KeyName} from '/common/key_code.js';
 
 import {KeySequence} from './key_sequence.js';
 import {Msgs} from './msgs.js';

@@ -4,8 +4,9 @@
 {% endif %}
 {% if is_manifest_v3 == '1' %}
   "manifest_version": 3,
+  "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "chromevox_loader.js",
+    "service_worker": "chromevox/chromevox_loader.js",
     "type": "module"
   },
 {% else %}

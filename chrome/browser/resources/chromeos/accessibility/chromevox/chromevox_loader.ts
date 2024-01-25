@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // ChromeVox compiled script (non-ES6 modules) packed into one file.
-importScripts('/chromevox/chromeVoxChromeBackgroundScript.js');
+importScripts('chromeVoxChromeBackgroundScript.js');
 
 // ChromeVox ES6 modules. Non-ES6 modules cannot depend on these modules.
-import 'chromevox/background/es6_loader.js';
+import 'background/es6_loader.js';
 
 // Third party - Speech Rule Engine.
-importScripts('chromevox/third_party/sre/sre_browser.js');
+importScripts('third_party/sre/sre_browser.js');

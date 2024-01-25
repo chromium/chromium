@@ -7,7 +7,8 @@
  * extension API.
  */
 
-import {constants} from '../../common/constants.js';
+import {constants} from '/common/constants.js';
+
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';

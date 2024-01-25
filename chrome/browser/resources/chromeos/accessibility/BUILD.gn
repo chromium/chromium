@@ -14,7 +14,6 @@ import("tools/run_jsbundler.gni")
 assert(is_chromeos_ash)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
-tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
@@ -27,7 +26,6 @@ group("build") {
   if (is_chromeos_ash) {
     deps += [
       ":accessibility_common_manifests",
-      ":copied_loader_files",
       ":enhanced_network_tts_manifests",
       ":select_to_speak_manifests",
       ":switch_access_manifests",
@@ -37,39 +35,6 @@ group("build") {
       "switch_access:build",
     ]
   }
-}
-
-ts_library("ts_build") {
-  out_dir = tsc_out_dir
-  definitions = [
-    "definitions/accessibility_private_mv2.d.ts",
-    "definitions/automation.d.ts",
-    "definitions/command_line_private.d.ts",
-    "definitions/extension_types.d.ts",
-    "definitions/extensions.d.ts",
-    "definitions/goog_i18n.d.ts",
-    "definitions/i18n.d.ts",
-    "definitions/runtime.d.ts",
-    "definitions/settings_private_mv2.d.ts",
-    "definitions/storage_mv2.d.ts",
-    "definitions/tabs.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
-  ]
-
-  in_files = [ "chromevox_loader.ts" ]
-
-  tsconfig_base = "tsconfig.base.json"
-}
-
-run_jsbundler("copied_loader_files") {
-  mode = "copy"
-  deps = [ ":ts_build" ]
-  dest_dir = accessibility_out_dir
-  sources = filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
-  rewrite_rules = [
-    rebase_path(tsc_out_dir, root_build_dir) + ":",
-    rebase_path(".", root_build_dir) + ":",
-  ]
 }
 
 manifest_variants("accessibility_common_manifests") {

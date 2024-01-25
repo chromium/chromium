@@ -5,11 +5,12 @@
 /**
  * @fileoverview Classes that handle the ChromeVox range.
  */
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AutomationUtil} from '../../common/automation_util.js';
-import {constants} from '../../common/constants.js';
-import {Cursor} from '../../common/cursors/cursor.js';
-import {CursorRange} from '../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {Cursor} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {EarconId} from '../common/earcon_id.js';

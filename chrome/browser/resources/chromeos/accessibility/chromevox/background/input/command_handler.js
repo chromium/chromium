@@ -5,16 +5,17 @@
 /**
  * @fileoverview ChromeVox commands.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {BrowserUtil} from '../../../common/browser_util.js';
-import {constants} from '../../../common/constants.js';
-import {Cursor, CursorUnit} from '../../../common/cursors/cursor.js';
-import {CursorRange} from '../../../common/cursors/range.js';
-import {EventGenerator} from '../../../common/event_generator.js';
-import {KeyCode} from '../../../common/key_code.js';
-import {LocalStorage} from '../../../common/local_storage.js';
-import {RectUtil} from '../../../common/rect_util.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {BrowserUtil} from '/common/browser_util.js';
+import {constants} from '/common/constants.js';
+import {Cursor, CursorUnit} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {KeyCode} from '/common/key_code.js';
+import {LocalStorage} from '/common/local_storage.js';
+import {RectUtil} from '/common/rect_util.js';
+
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';

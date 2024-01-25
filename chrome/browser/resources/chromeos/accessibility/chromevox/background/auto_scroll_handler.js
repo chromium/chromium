@@ -5,12 +5,13 @@
 /**
  * @fileoverview Handles auto scrolling on navigation.
  */
-import {AutomationPredicate} from '../../common/automation_predicate.js';
-import {AutomationUtil} from '../../common/automation_util.js';
-import {constants} from '../../common/constants.js';
-import {CursorUnit} from '../../common/cursors/cursor.js';
-import {CursorRange} from '../../common/cursors/range.js';
-import {EventHandler} from '../../common/event_handler.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {CursorUnit} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+import {EventHandler} from '/common/event_handler.js';
+
 import {Command} from '../common/command.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 

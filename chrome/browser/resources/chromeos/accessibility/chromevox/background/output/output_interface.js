@@ -5,7 +5,8 @@
 /**
  * @fileoverview Interface for the central output class for ChromeVox.
  */
-import {CursorRange} from '../../../common/cursors/range.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {Spannable} from '../../common/spannable.js';
 
 import {OutputFormatTree} from './output_format_tree.js';

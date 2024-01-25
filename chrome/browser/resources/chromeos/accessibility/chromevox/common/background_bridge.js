@@ -7,7 +7,7 @@
  * panel, etc.) to communicate with the background.
  */
 
-import {constants} from '../../common/constants.js';
+import {constants} from '/common/constants.js';
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';

@@ -13,9 +13,30 @@ import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
 
+group("build") {
+  deps = [
+    ":chromevox_background_script",
+    ":chromevox_panel_script",
+    ":chromevox_phonetic_dictionaries_js",
+    ":copied_files",
+    "//third_party/chromevox:chromevox_third_party_resources",
+    "//third_party/liblouis",
+  ]
+}
+
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
+
+chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
+
+# Directory where typescript build will occur.
+ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
+
 tsc_out_dir = "$target_gen_dir/tsc"
+
+# Location of common typescript output.
+common_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/common/tsc"
 
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
@@ -33,6 +54,7 @@ ts_modules = [
   "common/tts_types.ts",
   "panel/panel.ts",
   "panel/panel_captions.ts",
+  "chromevox_loader.ts",
 ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
@@ -44,9 +66,6 @@ chromevox_modules = [
 
 # ES6 modules.
 chromevox_es6_modules = [
-  "../common/async_util.js",
-  "../common/browser_util.js",
-  "../common/key_code.js",
   "background/abstract_earcons.js",
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
@@ -178,18 +197,17 @@ relative_closure_library_modules = [
 closure_library_modules =
     rebase_path(relative_closure_library_modules, ".", closure_library_dir)
 
-chromevox_gen_dir =
-    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/chromevox"
-
-chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
-
-# JS files needed for the TS compiler.
-js_deps = []
-
 # Root dir must be the parent directory so it can reach common/.
 ts_library("ts_build") {
-  root_dir = "../"
+  root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
+
+  deps = [ "../common:ts_build" ]
+
+  extra_deps = [
+    #copied files
+    ":stage_ts_build",
+  ]
 
   definitions = [
     "//tools/typescript/definitions/context_menus.d.ts",
@@ -211,26 +229,12 @@ ts_library("ts_build") {
     "../definitions/tts.d.ts",
   ]
 
-  in_files = []
-  foreach(_js_file, js_deps) {
-    in_files += [ "chromevox/" + _js_file ]
-  }
-  foreach(_ts_file, ts_modules) {
-    in_files += [ "chromevox/" + _ts_file ]
-  }
+  path_mappings =
+      [ "/common/*|" + rebase_path("$common_tsc_dir/*", target_gen_dir) ]
+
+  in_files = ts_modules + chromevox_es6_modules
 
   tsconfig_base = "../tsconfig.base.json"
-}
-
-group("build") {
-  deps = [
-    ":chromevox_background_script",
-    ":chromevox_panel_script",
-    ":chromevox_phonetic_dictionaries_js",
-    ":copied_files",
-    "//third_party/chromevox:chromevox_third_party_resources",
-    "//third_party/liblouis",
-  ]
 }
 
 chromevox_background_script_loader_file = "background/loader.js"
@@ -294,10 +298,18 @@ run_jsbundler("copied_files") {
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
-    rebase_path("$tsc_out_dir/chromevox", root_build_dir) + ":",
+    rebase_path("$tsc_out_dir", root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
+
+# Copy all JS and TS sources to a staging folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("stage_ts_build") {
+  sources = chromevox_es6_modules + ts_modules
+  outputs = [ "$ts_build_staging_dir/{{source_target_relative}}" ]
 }
 
 template("generate_deps_js") {

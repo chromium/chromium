@@ -5,7 +5,7 @@
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
-import {CursorRange} from '../../common/cursors/range.js';
+import {CursorRange} from '/common/cursors/range.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
 import {Output} from './output/output.js';

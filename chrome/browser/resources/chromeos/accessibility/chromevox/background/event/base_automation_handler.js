@@ -6,7 +6,8 @@
  * @fileoverview Basic facillities to handle events from a single automation
  * node.
  */
-import {CursorRange} from '../../../common/cursors/range.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxRange} from '../chromevox_range.js';

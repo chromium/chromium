@@ -5,7 +5,8 @@
 /**
  * @fileoverview Forces user actions down a predetermined path.
  */
-import {KeyCode} from '../../common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
+
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';

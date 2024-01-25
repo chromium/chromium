@@ -5,11 +5,12 @@
 /**
  * @fileoverview Handle processing for richly editable text.
  */
-import {AutomationPredicate} from '../../../common/automation_predicate.js';
-import {AutomationUtil} from '../../../common/automation_util.js';
-import {constants} from '../../../common/constants.js';
-import {Cursor} from '../../../common/cursors/cursor.js';
-import {CursorRange} from '../../../common/cursors/range.js';
+import {AutomationPredicate} from '/common/automation_predicate.js';
+import {AutomationUtil} from '/common/automation_util.js';
+import {constants} from '/common/constants.js';
+import {Cursor} from '/common/cursors/cursor.js';
+import {CursorRange} from '/common/cursors/range.js';
+
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';

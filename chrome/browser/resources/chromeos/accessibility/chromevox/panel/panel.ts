@@ -5,9 +5,10 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
-import {BrowserUtil} from '../../common/browser_util.js';
-import {constants} from '../../common/constants.js';
-import {LocalStorage} from '../../common/local_storage.js';
+import {BrowserUtil} from '/common/browser_util.js';
+import {constants} from '/common/constants.js';
+import {LocalStorage} from '/common/local_storage.js';
+
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -15,7 +16,7 @@ import {Command} from '../common/command.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import { PanelNodeMenuItemData } from '../common/panel_menu_data.js';
+import {PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
 import {ISearchUI} from './i_search_ui.js';
