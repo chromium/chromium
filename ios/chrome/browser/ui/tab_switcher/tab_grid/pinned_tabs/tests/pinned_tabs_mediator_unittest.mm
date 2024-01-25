@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -91,7 +92,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/web/public/download/download_controller_delegate.h"
 
@@ -35,7 +36,7 @@ class BrowserDownloadService : public KeyedService,
                          std::unique_ptr<web::DownloadTask>) override;
   void OnDownloadControllerDestroyed(web::DownloadController*) override;
 
-  web::DownloadController* download_controller_ = nullptr;
+  raw_ptr<web::DownloadController> download_controller_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_BROWSER_DOWNLOAD_SERVICE_H_

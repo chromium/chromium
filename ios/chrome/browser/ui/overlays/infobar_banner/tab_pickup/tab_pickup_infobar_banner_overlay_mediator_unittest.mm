@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -92,7 +93,7 @@ class TabPickupBannerOverlayMediatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
-  TabPickupInfobarDelegate* delegate_ = nil;
+  raw_ptr<TabPickupInfobarDelegate> delegate_ = nil;
   FakeInfobarBannerConsumer* consumer_ = nil;
   TabPickupBannerOverlayMediator* mediator_ = nil;
 };
