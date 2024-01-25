@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
@@ -186,7 +187,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   FakePasswordsConsumer* consumer_;
   PasswordsMediator* mediator_;
-  feature_engagement::test::MockTracker* mock_tracker_;
+  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
 };
 
 // Consumer should be notified when passwords are changed.

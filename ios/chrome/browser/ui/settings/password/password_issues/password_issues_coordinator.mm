@@ -74,7 +74,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   PasswordDetailsCoordinator* _passwordDetails;
 
   // Password check manager to power mediator.
-  IOSChromePasswordCheckManager* _manager;
+  raw_ptr<IOSChromePasswordCheckManager> _manager;
 
   // Type of insecure credentials issues to display.
   password_manager::WarningType _warningType;
