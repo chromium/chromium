@@ -87,6 +87,11 @@ const char kDumpRuntimeCallStats[] = "dump-blink-runtime-call-stats";
 const char kEnableGpuMemoryBufferCompositorResources[] =
     "enable-gpu-memory-buffer-compositor-resources";
 
+// Enables taking a heap snapshot and dumping it to file when using leak
+// detection.
+const char kEnableLeakDetectionHeapSnapshot[] =
+    "enable-leak-detection-heap-snapshot";
+
 // When using CPU rasterizing generate low resolution tiling. Low res
 // tiles may be displayed during fast scrolls especially on slower devices.
 const char kEnableLowResTiling[] = "enable-low-res-tiling";

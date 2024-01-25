@@ -1868,6 +1868,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/controller/blink_leak_detector.cc',
+        ],
+        'allowed': [
+            'base::CommandLine',
+            'switches::kEnableLeakDetectionHeapSnapshot',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/controller/blink_shutdown.cc',
         ],
         'allowed': [

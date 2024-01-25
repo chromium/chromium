@@ -3525,6 +3525,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     blink::switches::kDisablePreferCompositingToLCDText,
     blink::switches::kDisableRGBA4444Textures,
     blink::switches::kDisableThrottleNonVisibleCrossOriginIframes,
+    blink::switches::kEnableLeakDetectionHeapSnapshot,
     blink::switches::kEnableLowResTiling,
     blink::switches::kEnablePreferCompositingToLCDText,
     blink::switches::kEnableRGBA4444Textures,
@@ -3560,39 +3561,39 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kRunAllCompositorStagesBeforeDraw,
 
 #if BUILDFLAG(ENABLE_PPAPI)
-    switches::kEnablePepperTesting,
+      switches::kEnablePepperTesting,
 #endif
-    switches::kDisableWebRtcHWDecoding,
-    switches::kDisableWebRtcHWEncoding,
-    switches::kEnableWebRtcSrtpEncryptedHeaders,
-    switches::kEnforceWebRtcIPPermissionCheck,
-    switches::kWebRtcMaxCaptureFramerate,
-    switches::kEnableLowEndDeviceMode,
-    switches::kDisableLowEndDeviceMode,
-    switches::kDisallowNonExactResourceReuse,
+      switches::kDisableWebRtcHWDecoding,
+      switches::kDisableWebRtcHWEncoding,
+      switches::kEnableWebRtcSrtpEncryptedHeaders,
+      switches::kEnforceWebRtcIPPermissionCheck,
+      switches::kWebRtcMaxCaptureFramerate,
+      switches::kEnableLowEndDeviceMode,
+      switches::kDisableLowEndDeviceMode,
+      switches::kDisallowNonExactResourceReuse,
 #if BUILDFLAG(IS_ANDROID)
-    switches::kDisableMediaSessionAPI,
-    switches::kRendererWaitForJavaDebugger,
+      switches::kDisableMediaSessionAPI,
+      switches::kRendererWaitForJavaDebugger,
 #endif
 #if BUILDFLAG(IS_WIN)
-    switches::kDisableHighResTimer,
-    switches::kTrySupportedChannelLayouts,
-    switches::kRaiseTimerFrequency,
+      switches::kDisableHighResTimer,
+      switches::kTrySupportedChannelLayouts,
+      switches::kRaiseTimerFrequency,
 #endif
 #if BUILDFLAG(IS_OZONE)
-    switches::kOzonePlatform,
+      switches::kOzonePlatform,
 #endif
 #if defined(ENABLE_IPC_FUZZER)
-    switches::kIpcDumpDirectory,
-    switches::kIpcFuzzerTestcase,
+      switches::kIpcDumpDirectory,
+      switches::kIpcFuzzerTestcase,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    switches::kSchedulerBoostUrgent,
+      switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kLacrosEnablePlatformHevc,
-    switches::kLacrosUseChromeosProtectedMedia,
-    switches::kLacrosUseChromeosProtectedAv1,
+      switches::kLacrosEnablePlatformHevc,
+      switches::kLacrosUseChromeosProtectedMedia,
+      switches::kLacrosUseChromeosProtectedAv1,
 #endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames);
