@@ -1421,12 +1421,17 @@ void BrowserAutofillManager::FillOrPreviewField(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (GetCachedFormAndField(form, field, &form_structure, &autofill_field) &&
-      autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
+      autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
+      (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
+       popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
+    // TODO(crbug.com/1345089): Only use AutofillField.
+    const FormFieldData* const filled_field = &field;
+    form_autofill_history_.AddFormFillEntry(
+        base::make_span(&filled_field, 1u),
+        base::make_span(&autofill_field, 1u),
+        GetFillingProductFromPopupItemId(popup_item_id),
+        /*is_refill=*/false);
     autofill_field->is_autofilled = true;
-    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
-    // After field filling, refills are not allowed. Resetting the corresponding
-    // FillingContext prevents this from happening.
-    SetFillingContext(form.global_id(), nullptr);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value.empty()),
@@ -1434,18 +1439,9 @@ void BrowserAutofillManager::FillOrPreviewField(
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
-    // Undo is currently only supported for Address/CreditCard filling. Do not
-    // store other information in the filling history as this information will
-    // never be used.
-    if ((popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
-         popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
-      // TODO(crbug.com/1345089): Only use AutofillField.
-      const FormFieldData* const filled_field = &field;
-      form_autofill_history_.AddFormFillEntry(
-          base::make_span(&filled_field, 1u),
-          base::make_span(&autofill_field, 1u),
-          GetFillingProductFromPopupItemId(popup_item_id),
-          /*is_refill=*/false);
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
+    if (FillingContext* filling_context = GetFillingContext(form.global_id())) {
+      SetFillingContext(form.global_id(), nullptr);
     }
   }
   driver().ApplyFieldAction(action_persistence, text_replacement,
@@ -2391,9 +2387,10 @@ FillingProduct BrowserAutofillManager::UndoAutofillImpl(
     autofill_field.set_autofilled_type(previous_state.autofilled_type);
   }
 
-  // After Undo, refills are not allowed. Resetting the corresponding
-  // FillingContext prevents this from happening.
-  SetFillingContext(form.global_id(), nullptr);
+  // Do not attempt a refill after an Undo operation.
+  if (FillingContext* filling_context = GetFillingContext(form.global_id())) {
+    SetFillingContext(form.global_id(), nullptr);
+  }
 
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
@@ -3453,11 +3450,7 @@ bool BrowserAutofillManager::FillField(
 void BrowserAutofillManager::SetFillingContext(
     FormGlobalId form_id,
     std::unique_ptr<FillingContext> context) {
-  if (context) {
-    filling_context_[form_id] = std::move(context);
-  } else {
-    filling_context_.erase(form_id);
-  }
+  filling_context_[form_id] = std::move(context);
 }
 
 BrowserAutofillManager::FillingContext*
