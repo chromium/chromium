@@ -49,31 +49,6 @@ struct ServerCvc {
   const base::Time last_updated_timestamp;
 };
 
-// Temporary struct used to store the data retrieved from the
-// `payment_instrument` and `payment_instrument_supported_rails` tables.
-struct PaymentInstrumentFields {
- public:
-  PaymentInstrumentFields();
-  ~PaymentInstrumentFields();
-
-  // The server generated id for the payment instrument.
-  int64_t instrument_id = 0;
-
-  // The nickname set by the user for the payment instrument.
-  std::u16string nickname;
-
-  // The type of payment instrument. This is used to determine which table to
-  // fetch the remaining instrument details from.
-  PaymentInstrument::InstrumentType instrument_type =
-      PaymentInstrument::InstrumentType::kUnknown;
-
-  // The URL for the display icon that can be used in the UI.
-  GURL display_icon_url;
-
-  // The payment rails that are supported for this payment instrument.
-  std::set<PaymentInstrument::PaymentRail> payment_rails;
-};
-
 // This class manages the various payments Autofill tables within the SQLite
 // database passed to the constructor. It expects the following schemas:
 //
@@ -312,56 +287,18 @@ struct PaymentInstrumentFields {
 //                      The timestamp of the most recent update to the data
 //                      entry.
 // -----------------------------------------------------------------------------
-// payment_instruments  This table contains basic details that apply to all
-//                      payment instruments synced from Payments backend via
-//                      Chrome Sync. This does not apply to credit cards or IBAN
-//                      for legacy reasons.
-//                      The pair of (`instrument_id`, `instrument_type`) are the
-//                      composite primary key for this table
+// masked_bank_accounts_metadata
+//                      Metadata (currently, usage data) about masked bank
+//                      accounts. This will be synced. This is not part of the
+//                      `masked_bank_accounts` table as that table is deleted
+//                      and recreated on every sync where as this table is
+//                      simply updated after a sync.
 //
-//   instrument_id      The server-generated id for the payment instrument.
-//   instrument_type    The type of payment instrument. This is an integer
-//                      mapping to one of the following types: {BankAccount}.
-//                      This determines which table to query for fetching the
-//                      instrument details.
-//   nickname           The nickname set by the user for the payment instrument.
-//   display_icon_url   The URL for the icon to be displayed when showing the
-//                      payment instrument to the user.
+//   instrument_id      The server-generated id for the bank account.
+//   use_count          The number of times this bank account has been used.
+//   use_date           The date this bank account was last used.
 // -----------------------------------------------------------------------------
-// payment_instruments_metadata
-//                      Metadata (currently, usage data) about payment
-//                      instruments. This will be synced.
-//                      The pair of (`instrument_id`, `instrument_type`) are the
-//                      composite primary key for this table and can be used as
-//                      the foreign key to the `payment_instruments` table.
-//
-//   instrument_id      The server-generated id for the payment instrument.
-//   instrument_type    The type of payment instrument. This is an integer
-//                      mapping to one of the following types: {BankAccount}.
-//   use_count          The number of times this payment instrument has been
-//                      used.
-//   use_date           The date this payment instrument was last used.
-// -----------------------------------------------------------------------------
-// payment_instrument_supported_rails
-//                      This table stores the mapping of what payment instrument
-//                      is supported for which payment rails, where a rail can
-//                      loosely represent the different ways in which Chrome can
-//                      intercept a user's payment journey and assist in
-//                      completing it. For example: Pix, UPI, Card number, IBAN
-//                      etc.
-//                      The tuple of (`instrument_id`, `instrument_type`,
-//                      `payment_rail`) are the composite primary key for this
-//                      table. The pair of can (`instrument_id`,
-//                      `instrument_type`) can be used as foreign key to the
-//                      `payment_instruments` table.
-//
-//   instrument_id      The server-generated id for the payment instrument.
-//   instrument_type    The type of payment instrument. This is an integer
-//                      mapping to one of the following types: {BankAccount}.
-//   payment_rail       This is an integer mapping to one of the following
-//                      types: {Pix}.
-// -----------------------------------------------------------------------------
-// bank_accounts        This table contains the bank account data synced via
+// masked_bank_accounts This table contains the bank account data synced via
 //                      Chrome Sync.
 //
 //   instrument_id      The identifier assigned by the GPay server to this bank
@@ -373,6 +310,9 @@ struct PaymentInstrumentFields {
 //   account_type       The type of bank account. This is an integer mapping to
 //                      one of the following types: {Checking, Savings, Current,
 //                      Salary, Transacting}
+//   nickname           The nickname set by the user for the payment instrument.
+//   display_icon_url   The URL for the icon to be displayed when showing the
+//                      payment instrument to the user.
 // -----------------------------------------------------------------------------
 // masked_credit_card_benefits
 //                      This table contains the multi-valued benefits fields
@@ -427,25 +367,16 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
-  // Fetches a PaymentInstrument from the autofill db. This will query the below
-  // 3 tables to generate a PaymentInstrument object.
-  //  `payment_instruments`
-  //  `payment_instrument_supported_rails`
-  //  instrument type specific table
-  // Note: The actual object will be one of the derived class of
-  // PaymentInstrument and can be determined
-  // by calling the `GetInstrumentType` method on it.
-  std::unique_ptr<PaymentInstrument> GetPaymentInstrument(
-      int64_t instrument_id,
-      PaymentInstrument::InstrumentType instrument_type);
-
   // Records a single BankAccount in the bank accounts table. Returns true if
   // the BankAccount was successfully added to the database.
-  bool AddBankAccount(const BankAccount& bank_account);
+  bool AddMaskedBankAccount(const BankAccount& bank_account);
   // Returns true if the BankAccount was successfully updated in the database.
-  bool UpdateBankAccount(const BankAccount& bank_account);
+  bool UpdateMaskedBankAccount(const BankAccount& bank_account);
   // Delete the bank account from the database.
-  bool RemoveBankAccount(const BankAccount& bank_account);
+  bool RemoveMaskedBankAccount(const BankAccount& bank_account);
+  // Retrieve the data from the `masked_bank_accounts` table and return a
+  // BankAccount object.
+  std::unique_ptr<BankAccount> GetMaskedBankAccount(int64_t instrument_id);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);
@@ -650,8 +581,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion116AddStoredCvcTable();
   bool MigrateToVersion118RemovePaymentsUpiVpaTable();
   bool MigrateToVersion119AddMaskedIbanTablesAndRenameLocalIbanTable();
-  bool MigrateToVersion120AddPaymentInstrumentAndBankAccountTables();
   bool MigrateToVersion123AddProductTermsUrlColumnAndAddCardBenefitsTables();
+  bool
+  MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -665,33 +597,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Deletes server credit cards by |id|. Returns true if a row was deleted.
   bool DeleteFromMaskedCreditCards(const std::string& id);
   bool DeleteFromUnmaskedCreditCards(const std::string& id);
-
-  // Retrieve the data from the `bank_accounts` table and return a BankAccount
-  // object. The `payment_instrument_fields` contain the fields retrieved from
-  // the `payment_instruments` and `payment_instrument_supported_rails` tables
-  // which are required to generate the BankAccount object.
-  std::unique_ptr<BankAccount> GetBankAccount(
-      const PaymentInstrumentFields& payment_instrument_fields);
-
-  // Adds a single PaymentInstrument to the autofill db. This will add at least
-  // one row to the `payment_instruments` and
-  // `payment_instrument_supported_rails` tables and depending on the type of
-  // PaymentInstrument, an entry will be added to the corresponding instrument
-  // type specific table. Returns true only if all of the updates to
-  // `payment_instruments`,`payment_instrument_supported_rails` and the
-  // instrument type specific tables are successfully updated. This method
-  // should be called from within an sql transaction.
-  bool AddPaymentInstrument(const PaymentInstrument& payment_instrument);
-  // Updates the `payment_instrument`, `payment_instrument_supported_rails` and
-  // the instrument type specific tables. Returns true only if the updates to
-  // all three tables are successful.This method should be called from within an
-  // sql transaction.
-  bool UpdatePaymentInstrument(const PaymentInstrument& payment_instrument);
-  // Deletes the payment instrument from the `payment_instrument`,
-  // `payment_instrument_supported_rails` and the instrument type specific
-  // tables. Returns true only if the updates to all the three tables are
-  // successful.This method should be called from within an sql transaction.
-  bool RemovePaymentInstrument(const PaymentInstrument& payment_instrument);
 
   bool InitCreditCardsTable();
   bool InitLocalIbansTable();
@@ -707,10 +612,8 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();
   bool InitVirtualCardUsageDataTable();
-  bool InitBankAccountsTable();
-  bool InitPaymentInstrumentsTable();
-  bool InitPaymentInstrumentsMetadataTable();
-  bool InitPaymentInstrumentSupportedRailsTable();
+  bool InitMaskedBankAccountsTable();
+  bool InitMaskedBankAccountsMetadataTable();
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
 

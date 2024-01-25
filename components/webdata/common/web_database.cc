@@ -16,7 +16,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 123;
+const int WebDatabase::kCurrentVersionNumber = 124;
 
 const int WebDatabase::kDeprecatedVersionNumber = 82;
 
@@ -45,9 +45,10 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 122 changes the meaning semantics of column `created_by_policy` in
-// the `keywords` table, and so it's incompatible with version 121.
-const int kCompatibleVersionNumber = 122;
+// Version 124 deletes 'payment_instruments', 'payment_instruments_meetadata',
+// 'payment_instrument_supported_rails', 'bank_accounts' table and thus is no
+// longer compatible with version 123.
+const int kCompatibleVersionNumber = 124;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
