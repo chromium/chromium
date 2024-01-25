@@ -79,7 +79,6 @@ ci/chromeos-amd64-generic-dbg
 ci/chromeos-amd64-generic-lacros-dbg
 ci/chromeos-amd64-generic-rel
 ci/chromeos-amd64-generic-rel-gtest
-ci/chromeos-amd64-generic-rel-tast
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
@@ -93,14 +92,12 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
+ci/lacros-amd64-generic-rel
 ci/lacros-amd64-generic-rel-gtest
-ci/lacros-amd64-generic-rel-non-skylab
 ci/lacros-amd64-generic-rel-renamed
-ci/lacros-amd64-generic-rel-tast
 ci/lacros-arm-archive-rel
 ci/lacros-arm-generic-rel
 ci/lacros-arm-generic-rel-skylab
-ci/lacros-arm64-generic-rel-skylab
 ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel

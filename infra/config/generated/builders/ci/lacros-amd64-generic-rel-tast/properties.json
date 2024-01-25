@@ -105,6 +105,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chromiumos"
   ]
 }

@@ -8858,7 +8858,7 @@
         ]
       },
       "lacros-amd64-generic-rel-tast": {
-        "contact_team_email": "chrome-desktop-engprod@google.com",
+        "contact_team_email": "chromeos-sw-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

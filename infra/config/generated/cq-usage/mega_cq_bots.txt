@@ -32,6 +32,7 @@ chromium/try/chromeos-amd64-generic-siso-rel
 chromium/try/chromeos-arm-generic-dbg
 chromium/try/chromeos-arm-generic-rel
 chromium/try/chromeos-arm64-generic-rel
+chromium/try/chromeos-octopus-rel
 chromium/try/dawn-android-arm-deps-rel
 chromium/try/dawn-android-arm64-deps-rel
 chromium/try/dawn-linux-x64-deps-rel
@@ -65,6 +66,8 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
 chromium/try/ios-simulator-siso
+chromium/try/lacros-amd64-generic-rel-gtest
+chromium/try/lacros-amd64-generic-rel-gtest-and-tast
 chromium/try/lacros-amd64-generic-rel-non-skylab
 chromium/try/lacros-amd64-generic-rel-renamed
 chromium/try/lacros-arm-generic-rel
