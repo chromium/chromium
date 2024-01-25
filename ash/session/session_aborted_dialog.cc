@@ -67,6 +67,9 @@ SessionAbortedDialog::SessionAbortedDialog() {
                      IDS_ASH_MULTIPROFILES_SESSION_ABORT_BUTTON_LABEL));
   SetAcceptCallback(base::BindOnce(
       []() { Shell::Get()->session_controller()->RequestSignOut(); }));
+  // Prevent dismissing dialog via keyboard accelerator.
+  SetCancelCallbackWithClose(
+      base::BindRepeating([]() -> bool { return false; }));
 }
 
 SessionAbortedDialog::~SessionAbortedDialog() = default;
