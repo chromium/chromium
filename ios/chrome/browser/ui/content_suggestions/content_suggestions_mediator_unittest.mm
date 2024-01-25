@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -367,14 +368,14 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  WebStateList* web_state_list_;
+  raw_ptr<WebStateList> web_state_list_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   id dispatcher_;
   id consumer_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   ContentSuggestionsMediator* mediator_;
-  FakeUrlLoadingBrowserAgent* url_loader_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;

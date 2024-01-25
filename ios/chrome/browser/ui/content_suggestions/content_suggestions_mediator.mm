@@ -14,6 +14,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -215,9 +216,9 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
   // Local State prefs.
-  PrefService* _localState;
+  raw_ptr<PrefService> _localState;
   // Used by SetUpList to get the sync status.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
@@ -241,7 +242,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // `magicStackOrder:` if kSegmentationPlatformIosModuleRanker is disabled) and
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
   NSArray<NSNumber*>* _latestMagicStackOrder;
-  commerce::ShoppingService* _shoppingService;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
   FaviconAttributesProvider* _mostVisitedAttributesProvider;
   std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;

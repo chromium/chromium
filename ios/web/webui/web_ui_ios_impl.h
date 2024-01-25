@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #import "ios/web/public/web_state.h"
@@ -58,7 +59,7 @@ class WebUIIOSImpl : public web::WebUIIOS,
   std::vector<std::unique_ptr<WebUIIOSMessageHandler>> handlers_;
 
   // Non-owning pointer to the WebState this WebUIIOS is associated with.
-  WebState* web_state_;
+  raw_ptr<WebState> web_state_;
 
   std::unique_ptr<WebUIIOSController> controller_;
 };

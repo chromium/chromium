@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -77,9 +78,9 @@ class BlockedPopupTabHelper
       infobars::InfoBarManager* infobar_manager);
 
   // The WebState that this object is attached to.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   // The currently displayed infobar.
-  infobars::InfoBar* infobar_;
+  raw_ptr<infobars::InfoBar> infobar_;
   // The popups to open.
   std::vector<Popup> popups_;
   // For management of infobars::InfoBarManager::Observer registration.  This

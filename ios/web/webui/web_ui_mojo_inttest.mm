@@ -6,6 +6,7 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
@@ -143,7 +144,7 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
 
  private:
   // UI handler class which communicates with test WebUI page.
-  TestUIHandler* ui_handler_;
+  raw_ptr<TestUIHandler> ui_handler_;
 };
 }  // namespace
 

@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/debug/alias.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/memory/weak_ptr.h"
@@ -206,11 +207,11 @@ class URLRequestChromeJob : public net::URLRequestJob {
   const bool is_incognito_;
 
   // The BrowserState with which this job is associated.
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // The backend is owned by the BrowserState and always outlives us. It is
   // obtained from the BrowserState on the IO thread.
-  URLDataManagerIOSBackend* backend_;
+  raw_ptr<URLDataManagerIOSBackend> backend_;
 
   base::WeakPtrFactory<URLRequestChromeJob> weak_factory_;
 };
@@ -229,7 +230,7 @@ URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
       send_content_type_header_(false),
       is_incognito_(is_incognito),
       browser_state_(browser_state),
-      backend_(NULL),
+      backend_(nullptr),
       weak_factory_(this) {
   DCHECK(browser_state_);
 }
@@ -431,7 +432,7 @@ class ChromeProtocolHandler
   }
 
  private:
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // True when generated from an incognito profile.
   const bool is_incognito_;
@@ -449,7 +450,7 @@ URLDataManagerIOSBackend::URLDataManagerIOSBackend() : next_request_id_(0) {
 URLDataManagerIOSBackend::~URLDataManagerIOSBackend() {
   for (DataSourceMap::iterator i = data_sources_.begin();
        i != data_sources_.end(); ++i) {
-    i->second->backend_ = NULL;
+    i->second->backend_ = nullptr;
   }
   data_sources_.clear();
 }
@@ -468,7 +469,7 @@ void URLDataManagerIOSBackend::AddDataSource(URLDataSourceIOSImpl* source) {
   if (i != data_sources_.end()) {
     if (!source->source()->ShouldReplaceExistingSource())
       return;
-    i->second->backend_ = NULL;
+    i->second->backend_ = nullptr;
   }
   data_sources_[source->source_name()] = source;
   source->backend_ = this;

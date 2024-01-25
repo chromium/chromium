@@ -12,6 +12,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -118,8 +119,8 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override { return BUTTON_OK; }
 
  private:
-  ChromeBrowserState* browser_state_;
-  web::WebState* web_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<web::WebState> web_state_;
   // The popups to open.
   std::vector<BlockedPopupTabHelper::Popup> popups_;
   // The icon to display.

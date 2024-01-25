@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -294,7 +295,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
 
-  syncer::TestSyncService* sync_service_;
+  raw_ptr<syncer::TestSyncService> sync_service_;
   sync_sessions::SyncedSession sync_session_;
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions_;

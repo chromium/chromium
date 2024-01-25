@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -90,7 +91,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
 // Test case for back forward and delta navigations focused on making sure that
 // omnibox visible URL always represents the current page.
 @interface VisibleURLWithCachedRestoreTestCase : WebHttpServerChromeTestCase {
-  PausableResponseProvider* _responseProvider;
+  raw_ptr<PausableResponseProvider> _responseProvider;
   GURL _testURL1;
   GURL _testURL2;
   GURL _testURL3;

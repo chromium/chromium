@@ -8,6 +8,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -51,7 +52,7 @@ class RepostFormTabHelper : public web::WebStateUserData<RepostFormTabHelper>,
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   __weak id<RepostFormTabHelperDelegate> delegate_ = nil;
 

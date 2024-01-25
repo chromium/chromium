@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_WEB_NAVIGATION_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_WEB_NAVIGATION_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/web/common/user_agent.h"
 
@@ -69,11 +70,11 @@ class WebNavigationBrowserAgent
 
   // The web state list for the associated browser. This should never be
   // null.
-  WebStateList* web_state_list_;
+  raw_ptr<WebStateList> web_state_list_;
   // The delegate, if assigned. This may be nil.
   id<WebNavigationNTPDelegate> delegate_;
   // The associated browser.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_NAVIGATION_BROWSER_AGENT_H_

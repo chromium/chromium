@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
 #include "ios/web/public/web_state_observer.h"
@@ -94,7 +95,7 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
                                 const std::string* data);
 
   // WebState this tab helper is attached to.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Store callbacks for GetImageData, with url as key.
   std::unordered_map<int, JsCallback> js_callbacks_;

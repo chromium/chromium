@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ios/chrome/browser/shared/model/browser/browser.h"
@@ -53,7 +54,7 @@ class TestBrowser final : public Browser {
   void DestroyInactiveBrowser() final;
 
  private:
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;

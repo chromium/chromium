@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/ios/crb_protocol_observers.h"
+#import "base/memory/raw_ptr.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -67,16 +68,16 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 @implementation SetUpListMediator {
   SetUpList* _setUpList;
-  PrefService* _localState;
+  raw_ptr<PrefService> _localState;
   // Used by SetUpList to get the sync status.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
   // Observes changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Used by SetUpList to get signed-in status.
-  AuthenticationService* _authenticationService;
+  raw_ptr<AuthenticationService> _authenticationService;
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -123,7 +124,7 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
                                web::WebFrame* web_frame) override;
 
   // WebState this tab helper is attached to.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   // Whether the Text Zoom UI is active
   bool text_zoom_ui_active_ = false;
   // Holds references to NSNotification callback observer.

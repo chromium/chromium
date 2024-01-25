@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/command_line.h"
+#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/memory_system/memory_system.h"
 #include "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
@@ -49,11 +51,11 @@ class IOSChromeMainParts : public web::WebMainParts {
   // thread.
   void StartMetricsRecording();
 
-  const base::CommandLine& parsed_command_line_;
+  const raw_ref<const base::CommandLine> parsed_command_line_;
 
   std::unique_ptr<ApplicationContextImpl> application_context_;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   IOSChromeFieldTrials ios_field_trials_;
 

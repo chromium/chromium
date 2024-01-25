@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
@@ -171,7 +172,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
   // casting as `prefs_` may not be a TestingPrefServiceSyncable.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
-  sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
 
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
@@ -183,7 +184,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // The incognito ChromeBrowserState instance that is associated with this
   // non-incognito ChromeBrowserState instance.
   std::unique_ptr<TestChromeBrowserState> otr_browser_state_;
-  TestChromeBrowserState* original_browser_state_;
+  raw_ptr<TestChromeBrowserState> original_browser_state_;
 
   base::WeakPtrFactory<TestChromeBrowserState> weak_ptr_factory_{this};
 };

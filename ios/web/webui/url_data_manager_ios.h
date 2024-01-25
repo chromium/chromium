@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 
@@ -76,7 +77,7 @@ class URLDataManagerIOS : public base::SupportsUserData::Data {
   // was invoked).
   static bool IsScheduledForDeletion(const URLDataSourceIOSImpl* data_source);
 
-  BrowserState* browser_state_;
+  raw_ptr<BrowserState> browser_state_;
 
   // `data_sources_` that are no longer referenced and scheduled for deletion.
   // Protected by g_delete_lock in the .cc file.

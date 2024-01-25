@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/model/lookalike_url_app_interface.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/chrome/browser/web/model/lookalike_url_constants.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -73,7 +74,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
   WEB_STATE_USER_DATA_KEY_DECL();
 
  private:
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)
