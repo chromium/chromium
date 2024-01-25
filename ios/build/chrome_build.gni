@@ -81,6 +81,9 @@ declare_args() {
 
   # Use perf_tests_hook if true
   ios_is_perf_test = false
+
+  # Enable memory debugging.
+  ios_enable_memory_debugging = !is_chrome_branded
 }
 
 if (target_environment == "catalyst") {

@@ -31,6 +31,7 @@ source_set("system_flags") {
     "//components/variations",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/memory/model:features",
     "//ios/chrome/browser/safety_check/model:constants",
     "//ios/chrome/browser/shared/public/features",
   ]
