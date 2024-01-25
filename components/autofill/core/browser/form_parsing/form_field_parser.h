@@ -368,12 +368,6 @@ class FormFieldParser {
       ParsingContext& context,
       const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
       FieldCandidatesMap& field_candidates);
-
-  // Interpret the fields' `parsable_name()` (id or name attribute) as an
-  // autocomplete type and classify them by it. E.g. <input id=given-name>.
-  static void ParseUsingAutocompleteAttributes(
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
-      FieldCandidatesMap& field_candidates);
 };
 
 }  // namespace autofill

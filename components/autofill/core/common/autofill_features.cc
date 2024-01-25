@@ -425,13 +425,6 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, local heuristics fall back to interpreting the fields' name as an
-// autocomplete type.
-// TODO(crbug.com/1345879) Remove once launched.
-BASE_FEATURE(kAutofillParseNameAsAutocompleteType,
-             "AutofillParseNameAsAutocompleteType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the placeholder is not used as a fallback during label inference.
 // Instead, local heuristics treat it as a separate source in addition to the
 // label. The placeholder is matched against the same regex as the label.

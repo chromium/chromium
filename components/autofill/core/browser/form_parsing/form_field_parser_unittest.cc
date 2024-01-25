@@ -167,21 +167,6 @@ TEST_P(FormFieldParserTest, ParseFormFieldsEnforceMinFillableFields) {
   EXPECT_EQ(0, ParseFormFields());
 }
 
-// Tests that the `parseable_name()` is parsed as an autocomplete type.
-TEST_P(FormFieldParserTest, ParseNameAsAutocompleteType) {
-  base::test::ScopedFeatureList autocomplete_feature;
-  autocomplete_feature.InitAndEnableFeature(
-      features::kAutofillParseNameAsAutocompleteType);
-
-  AddTextFormFieldData("given-name", "", NAME_FIRST);
-  AddTextFormFieldData("family-name", "", NAME_LAST);
-  AddTextFormFieldData("cc-exp-month", "", CREDIT_CARD_EXP_MONTH);
-  // The label is not parsed as an autocomplete type.
-  AddTextFormFieldData("", "cc-exp-month", UNKNOWN_TYPE);
-  EXPECT_EQ(3, ParseFormFields());
-  TestClassificationExpectations();
-}
-
 // Test that the parseable label is used when the feature is enabled.
 TEST_P(FormFieldParserTest, TestParseableLabels) {
   AddTextFormFieldData("", "not a parseable label", UNKNOWN_TYPE);

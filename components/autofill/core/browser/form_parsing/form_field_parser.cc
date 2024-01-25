@@ -188,13 +188,6 @@ void FormFieldParser::ParseFormFields(
   ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
-  // Deduce `field_candidates` for the `processed_fields` by parsing their
-  // `parsable_name()` as an autocomplete attribute.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParseNameAsAutocompleteType)) {
-    ParseUsingAutocompleteAttributes(processed_fields, field_candidates);
-  }
-
   // Single fields pass.
   ParseSingleFieldForms(context, fields, is_form_tag, field_candidates);
 
@@ -683,22 +676,6 @@ bool FormFieldParser::MatchesFormControlType(
 bool FormFieldParser::IsSingleFieldParseableType(FieldType field_type) {
   return field_type == MERCHANT_PROMO_CODE || field_type == IBAN_VALUE ||
          field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
-}
-
-// static
-void FormFieldParser::ParseUsingAutocompleteAttributes(
-    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
-    FieldCandidatesMap& field_candidates) {
-  for (const AutofillField* field : fields) {
-    HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(
-        base::UTF16ToUTF8(field->parseable_name()));
-    // The HTML_MODE is irrelevant when converting to a FieldType.
-    FieldType type = AutofillType(html_type).GetStorableType();
-    if (type != UNKNOWN_TYPE) {
-      AddClassification(field, type, kBaseAutocompleteParserScore,
-                        field_candidates);
-    }
-  }
 }
 
 }  // namespace autofill
