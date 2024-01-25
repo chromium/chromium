@@ -533,6 +533,10 @@ public final class ProductionSupportedFlagList {
                 "Allows creating WebRTC Encoded Transforms without the "
                         + "encodedInsertableStreams RTCPeerConnection Parameter."),
         Flag.baseFeature(
+                "RTCAlignReceivedEncodedVideoTransforms",
+                "Aligns the JS calls by WebRTC Encoded Transforms on Video Frames with a Metronome"
+                        + " to save power."),
+        Flag.baseFeature(
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
