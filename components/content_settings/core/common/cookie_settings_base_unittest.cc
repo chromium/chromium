@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -96,11 +97,26 @@ TEST(CookieSettingsBaseTest, ShouldNotDeleteAllowed) {
 }
 
 TEST(CookieSettingsBaseTest, ShouldNotDeleteAllowedHttps) {
+  base::test::ScopedFeatureList features_;
+  features_.InitAndDisableFeature(net::features::kEnableSchemeBoundCookies);
   CallbackCookieSettings settings(base::BindRepeating([](const GURL& url) {
     return url.SchemeIsCryptographic() ? CONTENT_SETTING_ALLOW
                                        : CONTENT_SETTING_BLOCK;
   }));
   EXPECT_FALSE(settings.ShouldDeleteCookieOnExit(
+      {}, kDomain, net::CookieSourceScheme::kNonSecure));
+  EXPECT_FALSE(settings.ShouldDeleteCookieOnExit(
+      {}, kDomain, net::CookieSourceScheme::kSecure));
+}
+
+TEST(CookieSettingsBaseTest, ShouldDeleteIsSchemeAwareWithSchemeBoundCookies) {
+  base::test::ScopedFeatureList features_;
+  features_.InitAndEnableFeature(net::features::kEnableSchemeBoundCookies);
+  CallbackCookieSettings settings(base::BindRepeating([](const GURL& url) {
+    return url.SchemeIsCryptographic() ? CONTENT_SETTING_ALLOW
+                                       : CONTENT_SETTING_SESSION_ONLY;
+  }));
+  EXPECT_TRUE(settings.ShouldDeleteCookieOnExit(
       {}, kDomain, net::CookieSourceScheme::kNonSecure));
   EXPECT_FALSE(settings.ShouldDeleteCookieOnExit(
       {}, kDomain, net::CookieSourceScheme::kSecure));

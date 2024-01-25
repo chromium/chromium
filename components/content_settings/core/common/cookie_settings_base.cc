@@ -177,10 +177,14 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   if (setting == CONTENT_SETTING_ALLOW) {
     return false;
   }
-  // Non-secure cookies are readable by secure sites. We need to check for
-  // the secure pattern if non-secure is not allowed. The section below is
-  // independent of the scheme so we can just retry from here.
-  if (scheme != net::CookieSourceScheme::kSecure) {
+  // When scheme bound cookies are not enabled, non-secure cookies are readable
+  // by secure sites. We need to check for the secure pattern if non-secure is
+  // not allowed. The section below is independent of the scheme so we can just
+  // retry from here. When scheme bound cookies are enables, this is also done
+  // if the scheme is unset.
+  if ((scheme == net::CookieSourceScheme::kNonSecure &&
+       !net::cookie_util::IsSchemeBoundCookiesEnabled()) ||
+      scheme == net::CookieSourceScheme::kUnset) {
     return ShouldDeleteCookieOnExit(cookie_settings, domain,
                                     net::CookieSourceScheme::kSecure);
   }
