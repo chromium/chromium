@@ -11,8 +11,11 @@
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_validator.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
+
+using EventType = StructuredEventProto_EventType;
 
 // Interface to be implemented by codegen for every project to validate
 // messages received by the structured metric service.

@@ -5,12 +5,8 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_ENUMS_H_
 #define COMPONENTS_METRICS_STRUCTURED_ENUMS_H_
 
-#include "third_party/metrics_proto/structured_data.pb.h"
-
 namespace metrics {
 namespace structured {
-
-using EventType = StructuredEventProto_EventType;
 
 // Specifies the type of identifier attached to an event.
 enum class IdType {

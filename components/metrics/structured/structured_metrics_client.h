@@ -8,9 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 
-#include "components/metrics/structured/delegating_events_processor.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/events_processor_interface.h"
 
 namespace metrics::structured {
 

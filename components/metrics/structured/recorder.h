@@ -11,9 +11,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/metrics/structured/delegating_events_processor.h"
 #include "components/metrics/structured/event.h"
+#include "components/metrics/structured/events_processor_interface.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace base {
 class FilePath;
