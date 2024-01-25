@@ -26,8 +26,9 @@ class InstanceTracer {
  public:
   constexpr uint64_t owner_id() const { return 0; }
 
-  constexpr static void Trace(uint64_t owner_id, uintptr_t address) {}
-  constexpr static void Untrace(uint64_t owner_id) {}
+  constexpr static void Trace([[maybe_unused]] uint64_t owner_id,
+                              [[maybe_unused]] uintptr_t address) {}
+  constexpr static void Untrace([[maybe_unused]] uint64_t owner_id) {}
 };
 
 #else

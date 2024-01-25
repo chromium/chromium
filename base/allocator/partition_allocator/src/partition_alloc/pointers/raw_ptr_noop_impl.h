@@ -109,8 +109,9 @@ struct RawPtrNoOpImpl {
   }
 
   template <typename T>
-  static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {}
-  static constexpr void Untrace(uint64_t owner_id) {}
+  static constexpr void Trace([[maybe_unused]] uint64_t owner_id,
+                              [[maybe_unused]] T* wrapped_ptr) {}
+  static constexpr void Untrace([[maybe_unused]] uint64_t owner_id) {}
 
   // This is for accounting only, used by unit tests.
   PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}

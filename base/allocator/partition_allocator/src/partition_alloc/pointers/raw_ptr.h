@@ -248,7 +248,7 @@ template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrNoOpImpl;
 #endif
 
-constexpr bool IsPtrArithmeticAllowed(RawPtrTraits Traits) {
+constexpr bool IsPtrArithmeticAllowed([[maybe_unused]] RawPtrTraits Traits) {
 #if BUILDFLAG(ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK)
   return partition_alloc::internal::ContainsFlags(
       Traits, RawPtrTraits::kAllowPtrArithmetic);
