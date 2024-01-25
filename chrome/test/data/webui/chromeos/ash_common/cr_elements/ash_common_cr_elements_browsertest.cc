@@ -14,6 +14,10 @@ IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrA11yAnnouncer) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrAutoImg) {
+  RunTest("chromeos/ash_common/cr_elements/cr_auto_img_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(AshCommonCrElementsTest, CrButton) {
   RunTest("chromeos/ash_common/cr_elements/cr_button_test.js", "mocha.run()");
 }
