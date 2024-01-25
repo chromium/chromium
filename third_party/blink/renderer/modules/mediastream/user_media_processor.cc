@@ -109,6 +109,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "SYSTEM_PERMISSION_DENIED";
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return "DEVICE_IN_USE";
+    case MediaStreamRequestResult::REQUEST_CANCELLED:
+      return "REQUEST_CANCELLED";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       return "NUM_MEDIA_REQUEST_RESULTS";
     default:
@@ -294,6 +296,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Permission denied by system";
     case MediaStreamRequestResult::DEVICE_IN_USE:
       return "Device in use";
+    case MediaStreamRequestResult::REQUEST_CANCELLED:
+      return "Request was cancelled";
     default:
       NOTREACHED();
       return "";
@@ -1061,6 +1065,8 @@ void UserMediaProcessor::OnStreamsGenerated(
     SendLogMessage(base::StringPrintf(
         "OnStreamsGenerated([request_id=%d]) => (ERROR: invalid request ID)",
         request_id));
+    blink::LogUserMediaRequestResult(
+        MediaStreamRequestResult::REQUEST_CANCELLED);
     for (const mojom::blink::StreamDevicesPtr& stream_devices :
          stream_devices_set->stream_devices) {
       OnStreamGeneratedForCancelledRequest(*stream_devices);
