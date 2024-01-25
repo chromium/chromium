@@ -65,6 +65,30 @@ TEST(HostResolverInternalResultTest, DataResult) {
               ElementsAre(HostPortPair("anotherdomain.test", 112)));
 }
 
+TEST(HostResolverInternalResultTest, CloneDataResult) {
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      "domain.test", DnsQueryType::AAAA, base::TimeTicks(), base::Time(),
+      HostResolverInternalResult::Source::kDns,
+      std::vector<IPEndPoint>{IPEndPoint(IPAddress(2, 2, 2, 2), 46)},
+      std::vector<std::string>{"foo", "bar"},
+      std::vector<HostPortPair>{HostPortPair("anotherdomain.test", 112)});
+
+  std::unique_ptr<HostResolverInternalResult> copy = result->Clone();
+  EXPECT_NE(copy.get(), result.get());
+
+  EXPECT_EQ(copy->domain_name(), "domain.test");
+  EXPECT_EQ(copy->query_type(), DnsQueryType::AAAA);
+  EXPECT_EQ(copy->type(), HostResolverInternalResult::Type::kData);
+  EXPECT_EQ(copy->source(), HostResolverInternalResult::Source::kDns);
+  EXPECT_THAT(copy->expiration(), Optional(base::TimeTicks()));
+  EXPECT_THAT(copy->timed_expiration(), Optional(base::Time()));
+  EXPECT_THAT(copy->AsData().endpoints(),
+              ElementsAre(IPEndPoint(IPAddress(2, 2, 2, 2), 46)));
+  EXPECT_THAT(copy->AsData().strings(), ElementsAre("foo", "bar"));
+  EXPECT_THAT(copy->AsData().hosts(),
+              ElementsAre(HostPortPair("anotherdomain.test", 112)));
+}
+
 TEST(HostResolverInternalResultTest, RoundtripDataResultThroughSerialization) {
   auto result = std::make_unique<HostResolverInternalDataResult>(
       "domain.test", DnsQueryType::AAAA, base::TimeTicks(), base::Time(),
@@ -216,6 +240,30 @@ TEST(HostResolverInternalResultTest, MetadataResult) {
   EXPECT_THAT(result->AsMetadata(), Ref(*result));
 
   EXPECT_THAT(result->metadatas(), ElementsAre(std::make_pair(4, kMetadata)));
+}
+
+TEST(HostResolverInternalResultTest, CloneMetadataResult) {
+  const ConnectionEndpointMetadata kMetadata(
+      /*supported_protocol_alpns=*/{"http/1.1", "h3"},
+      /*ech_config_list=*/{0x01, 0x13},
+      /*target_name*/ "target.test");
+  auto result = std::make_unique<HostResolverInternalMetadataResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
+      HostResolverInternalResult::Source::kDns,
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
+          {4, kMetadata}});
+
+  std::unique_ptr<HostResolverInternalResult> copy = result->Clone();
+  EXPECT_NE(copy.get(), result.get());
+
+  EXPECT_EQ(copy->domain_name(), "domain1.test");
+  EXPECT_EQ(copy->query_type(), DnsQueryType::HTTPS);
+  EXPECT_EQ(copy->type(), HostResolverInternalResult::Type::kMetadata);
+  EXPECT_EQ(copy->source(), HostResolverInternalResult::Source::kDns);
+  EXPECT_THAT(copy->expiration(), Optional(base::TimeTicks()));
+  EXPECT_THAT(copy->timed_expiration(), Optional(base::Time()));
+  EXPECT_THAT(copy->AsMetadata().metadatas(),
+              ElementsAre(std::make_pair(4, kMetadata)));
 }
 
 TEST(HostResolverInternalResultTest,
@@ -395,6 +443,23 @@ TEST(HostResolverInternalResultTest, ErrorResult) {
   EXPECT_EQ(result->error(), ERR_NAME_NOT_RESOLVED);
 }
 
+TEST(HostResolverInternalResultTest, CloneErrorResult) {
+  auto result = std::make_unique<HostResolverInternalErrorResult>(
+      "domain3.test", DnsQueryType::PTR, base::TimeTicks(), base::Time(),
+      HostResolverInternalResult::Source::kUnknown, ERR_NAME_NOT_RESOLVED);
+
+  std::unique_ptr<HostResolverInternalResult> copy = result->Clone();
+  EXPECT_NE(copy.get(), result.get());
+
+  EXPECT_EQ(copy->domain_name(), "domain3.test");
+  EXPECT_EQ(copy->query_type(), DnsQueryType::PTR);
+  EXPECT_EQ(copy->type(), HostResolverInternalResult::Type::kError);
+  EXPECT_EQ(copy->source(), HostResolverInternalResult::Source::kUnknown);
+  EXPECT_THAT(copy->expiration(), Optional(base::TimeTicks()));
+  EXPECT_THAT(copy->timed_expiration(), Optional(base::Time()));
+  EXPECT_EQ(copy->AsError().error(), ERR_NAME_NOT_RESOLVED);
+}
+
 TEST(HostResolverInternalResultTest, NoncachableErrorResult) {
   auto result = std::make_unique<HostResolverInternalErrorResult>(
       "domain3.test", DnsQueryType::PTR, /*expiration=*/std::nullopt,
@@ -515,6 +580,23 @@ TEST(HostResolverInternalResultTest, AliasResult) {
   EXPECT_THAT(result->AsAlias(), Ref(*result));
 
   EXPECT_THAT(result->alias_target(), "alias_target.test");
+}
+
+TEST(HostResolverInternalResultTest, CloneAliasResult) {
+  auto result = std::make_unique<HostResolverInternalAliasResult>(
+      "domain5.test", DnsQueryType::HTTPS, base::TimeTicks(), base::Time(),
+      HostResolverInternalResult::Source::kDns, "alias_target.test");
+
+  std::unique_ptr<HostResolverInternalResult> copy = result->Clone();
+  EXPECT_NE(copy.get(), result.get());
+
+  EXPECT_EQ(copy->domain_name(), "domain5.test");
+  EXPECT_EQ(copy->query_type(), DnsQueryType::HTTPS);
+  EXPECT_EQ(copy->type(), HostResolverInternalResult::Type::kAlias);
+  EXPECT_EQ(copy->source(), HostResolverInternalResult::Source::kDns);
+  EXPECT_THAT(copy->expiration(), Optional(base::TimeTicks()));
+  EXPECT_THAT(copy->timed_expiration(), Optional(base::Time()));
+  EXPECT_THAT(copy->AsAlias().alias_target(), "alias_target.test");
 }
 
 TEST(HostResolverInternalResultTest, RoundtripAliasResultThroughSerialization) {

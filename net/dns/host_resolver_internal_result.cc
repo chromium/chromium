@@ -410,6 +410,14 @@ HostResolverInternalDataResult::HostResolverInternalDataResult(
 
 HostResolverInternalDataResult::~HostResolverInternalDataResult() = default;
 
+std::unique_ptr<HostResolverInternalResult>
+HostResolverInternalDataResult::Clone() const {
+  CHECK(timed_expiration().has_value());
+  return std::make_unique<HostResolverInternalDataResult>(
+      domain_name(), query_type(), expiration(), timed_expiration().value(),
+      source(), endpoints(), strings(), hosts());
+}
+
 base::Value HostResolverInternalDataResult::ToValue() const {
   base::Value::Dict dict = ToValueBaseDict();
 
@@ -490,6 +498,14 @@ HostResolverInternalMetadataResult::HostResolverInternalMetadataResult(
 HostResolverInternalMetadataResult::~HostResolverInternalMetadataResult() =
     default;
 
+std::unique_ptr<HostResolverInternalResult>
+HostResolverInternalMetadataResult::Clone() const {
+  CHECK(timed_expiration().has_value());
+  return std::make_unique<HostResolverInternalMetadataResult>(
+      domain_name(), query_type(), expiration(), timed_expiration().value(),
+      source(), metadatas());
+}
+
 base::Value HostResolverInternalMetadataResult::ToValue() const {
   base::Value::Dict dict = ToValueBaseDict();
 
@@ -542,6 +558,13 @@ HostResolverInternalErrorResult::HostResolverInternalErrorResult(
                                  source),
       error_(error) {}
 
+std::unique_ptr<HostResolverInternalResult>
+HostResolverInternalErrorResult::Clone() const {
+  return std::make_unique<HostResolverInternalErrorResult>(
+      domain_name(), query_type(), expiration(), timed_expiration(), source(),
+      error());
+}
+
 base::Value HostResolverInternalErrorResult::ToValue() const {
   base::Value::Dict dict = ToValueBaseDict();
 
@@ -587,6 +610,14 @@ HostResolverInternalAliasResult::HostResolverInternalAliasResult(
                                  source),
       alias_target_(MaybeCanonicalizeName(std::move(alias_target))) {
   DCHECK(!alias_target_.empty());
+}
+
+std::unique_ptr<HostResolverInternalResult>
+HostResolverInternalAliasResult::Clone() const {
+  CHECK(timed_expiration().has_value());
+  return std::make_unique<HostResolverInternalAliasResult>(
+      domain_name(), query_type(), expiration(), timed_expiration().value(),
+      source(), alias_target());
 }
 
 base::Value HostResolverInternalAliasResult::ToValue() const {

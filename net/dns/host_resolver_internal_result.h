@@ -58,6 +58,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
   const HostResolverInternalAliasResult& AsAlias() const;
   HostResolverInternalAliasResult& AsAlias();
 
+  virtual std::unique_ptr<HostResolverInternalResult> Clone() const = 0;
+
   virtual base::Value ToValue() const = 0;
 
  protected:
@@ -135,6 +137,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalDataResult final
   const std::vector<HostPortPair>& hosts() const { return hosts_; }
   void set_hosts(std::vector<HostPortPair> hosts) { hosts_ = std::move(hosts); }
 
+  std::unique_ptr<HostResolverInternalResult> Clone() const override;
+
   base::Value ToValue() const override;
 
  private:
@@ -190,6 +194,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
     return metadatas_;
   }
 
+  std::unique_ptr<HostResolverInternalResult> Clone() const override;
+
   base::Value ToValue() const override;
 
  private:
@@ -229,6 +235,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalErrorResult final
 
   int error() const { return error_; }
 
+  std::unique_ptr<HostResolverInternalResult> Clone() const override;
+
   base::Value ToValue() const override;
 
  private:
@@ -264,6 +272,8 @@ class NET_EXPORT_PRIVATE HostResolverInternalAliasResult final
   }
 
   const std::string& alias_target() const { return alias_target_; }
+
+  std::unique_ptr<HostResolverInternalResult> Clone() const override;
 
   base::Value ToValue() const override;
 
