@@ -980,6 +980,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       [
+        # Test base::span<> compatibility against std::span<>.
+        r'base/containers/span_unittest.cc',
         # Needed to use QUICHE API.
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
