@@ -588,7 +588,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "mac")',
+    'condition': 'checkout_mac',
   },
   'src/third_party/apache-mac-arm64': {
     'packages': [
@@ -598,7 +598,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "mac")',
+    'condition': 'checkout_mac',
   },
 
   'src/third_party/apache-linux': {
@@ -620,7 +620,7 @@ deps = {
         }
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "win")'
+    'condition': 'checkout_win'
   },
 
   'src/third_party/aosp_dalvik': {
