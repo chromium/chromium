@@ -9,23 +9,16 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
-#include "third_party/blink/renderer/core/layout/unpositioned_float.h"
-#include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
-#include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
-#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
@@ -332,7 +325,7 @@ void TextPainter::PaintSelectedText(
 
 void TextPainter::PaintDecorationsExceptLineThrough(
     const TextFragmentPaintInfo& fragment_paint_info,
-    const FragmentItem& text_item,
+    const TextDecorationOffset& decoration_offset,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info,
@@ -341,15 +334,12 @@ void TextPainter::PaintDecorationsExceptLineThrough(
                                   ~TextDecorationLine::kLineThrough))
     return;
 
-  const TextDecorationOffset decoration_offset(text_item.Style());
-
   if (svg_text_paint_state_.has_value() &&
       !decoration_info.HasDecorationOverride()) {
     GraphicsContextStateSaver state_saver(paint_info.context, false);
     if (paint_info.IsRenderingResourceSubtree()) {
       state_saver.SaveIfNeeded();
-      paint_info.context.Scale(
-          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+      paint_info.context.Scale(1, decoration_info.ScalingFactor());
     }
     PaintSvgDecorationsExceptLineThrough(fragment_paint_info, decoration_offset,
                                          decoration_info, lines_to_paint,
@@ -362,7 +352,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
 }
 
 void TextPainter::PaintDecorationsOnlyLineThrough(
-    const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info) {
@@ -374,8 +363,7 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
     GraphicsContextStateSaver state_saver(paint_info.context, false);
     if (paint_info.IsRenderingResourceSubtree()) {
       state_saver.SaveIfNeeded();
-      paint_info.context.Scale(
-          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+      paint_info.context.Scale(1, decoration_info.ScalingFactor());
     }
     PaintSvgDecorationsOnlyLineThrough(decoration_info, text_style);
   } else {

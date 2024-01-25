@@ -14,7 +14,6 @@
 
 namespace blink {
 
-class FragmentItem;
 class LayoutObject;
 class LayoutSVGInlineText;
 struct AutoDarkMode;
@@ -91,14 +90,13 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
 
   void PaintDecorationsExceptLineThrough(
       const TextFragmentPaintInfo& fragment_paint_info,
-      const FragmentItem& text_item,
+      const TextDecorationOffset& decoration_offset,
       const PaintInfo& paint_info,
       const TextPaintStyle& text_style,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint);
 
-  void PaintDecorationsOnlyLineThrough(const FragmentItem& text_item,
-                                       const PaintInfo& paint_info,
+  void PaintDecorationsOnlyLineThrough(const PaintInfo& paint_info,
                                        const TextPaintStyle& text_style,
                                        TextDecorationInfo& decoration_info);
 

@@ -6,8 +6,9 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
-#include "third_party/blink/renderer/core/paint/text_painter.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
@@ -78,7 +79,8 @@ void TextDecorationPainter::UpdateDecorationInfo(
     result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
                    decoration_rect_.InlineSize(), style, inline_context_,
                    effective_selection_decoration, decoration_override,
-                   &scaled_font, MinimumThickness1(false), scaling_factor);
+                   &scaled_font, MinimumThickness1(false),
+                   text_item_.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
@@ -128,8 +130,9 @@ void TextDecorationPainter::PaintExceptLineThrough(
     GraphicsContextStateSaver state_saver(paint_info_.context, false);
     ClipIfNeeded(state_saver);
 
+    const TextDecorationOffset decoration_offset(style_);
     text_painter_.PaintDecorationsExceptLineThrough(
-        fragment_paint_info, text_item_, paint_info_, text_style_,
+        fragment_paint_info, decoration_offset, paint_info_, text_style_,
         *decoration_info_, ~TextDecorationLine::kNone);
   }
 
@@ -146,8 +149,8 @@ void TextDecorationPainter::PaintOnlyLineThrough() {
     GraphicsContextStateSaver state_saver(paint_info_.context, false);
     ClipIfNeeded(state_saver);
 
-    text_painter_.PaintDecorationsOnlyLineThrough(
-        text_item_, paint_info_, text_style_, *decoration_info_);
+    text_painter_.PaintDecorationsOnlyLineThrough(paint_info_, text_style_,
+                                                  *decoration_info_);
   }
 
   step_ = kBegin;

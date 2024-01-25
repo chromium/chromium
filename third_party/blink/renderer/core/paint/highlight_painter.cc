@@ -20,14 +20,15 @@
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
+#include "third_party/blink/renderer/core/paint/highlight_overlay.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/marker_range_mapping_context.h"
-#include "third_party/blink/renderer/core/paint/highlight_overlay.h"
-#include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
-#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/text_decoration_painter.h"
+#include "third_party/blink/renderer/core/paint/text_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -747,9 +748,10 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
   GraphicsContextStateSaver saver{paint_info_.context};
   ClipToPartDecorations(rect);
 
+  const TextDecorationOffset decoration_offset(fragment_item_.Style());
   text_painter_.PaintDecorationsExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
-      fragment_item_, paint_info_, text_style, *decoration_info,
+      decoration_offset, paint_info_, text_style, *decoration_info,
       LineFor(marker_type));
 }
 
@@ -1166,9 +1168,10 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
       }
     }
 
+    const TextDecorationOffset decoration_offset(fragment_item_.Style());
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_paint_info_.Slice(part.range.from, part.range.to),
-        fragment_item_, paint_info_, decoration_layer.text_style,
+        decoration_offset, paint_info_, decoration_layer.text_style,
         *decoration_info, lines_to_paint);
   }
 }
@@ -1231,9 +1234,8 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
       }
     }
 
-    text_painter_.PaintDecorationsOnlyLineThrough(fragment_item_, paint_info_,
-                                                  decoration_layer.text_style,
-                                                  *decoration_info);
+    text_painter_.PaintDecorationsOnlyLineThrough(
+        paint_info_, decoration_layer.text_style, *decoration_info);
   }
 }
 
