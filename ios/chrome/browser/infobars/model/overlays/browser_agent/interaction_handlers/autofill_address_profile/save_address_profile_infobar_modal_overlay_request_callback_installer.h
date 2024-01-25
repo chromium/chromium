@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/common/infobar_modal_overlay_request_callback_installer.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class SaveAddressProfileInfobarModalInteractionHandler;
@@ -50,8 +51,8 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
   // The handler for received responses.
-  SaveAddressProfileInfobarModalInteractionHandler* interaction_handler_ =
-      nullptr;
+  raw_ptr<SaveAddressProfileInfobarModalInteractionHandler>
+      interaction_handler_ = nullptr;
 
   base::WeakPtrFactory<
       SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller>

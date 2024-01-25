@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -49,7 +50,7 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  autofill::PersonalDataManager* personal_data_manager_;
+  raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   AutofillAddCreditCardMediator* add_credit_card_mediator_;
   id add_credit_card_mediator_delegate_mock_;
 };
