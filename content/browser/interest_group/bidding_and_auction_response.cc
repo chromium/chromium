@@ -167,10 +167,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     if (buyer_reporting) {
       output.buyer_reporting = ReportingURLs::TryParse(buyer_reporting);
     }
-    base::Value::Dict* seller_reporting =
+    base::Value::Dict* top_level_seller_reporting =
         win_reporting_urls->FindDict("topLevelSellerReportingURLs");
-    if (seller_reporting) {
-      output.seller_reporting = ReportingURLs::TryParse(seller_reporting);
+    if (top_level_seller_reporting) {
+      output.top_level_seller_reporting =
+          ReportingURLs::TryParse(top_level_seller_reporting);
+    }
+    base::Value::Dict* component_seller_reporting =
+        win_reporting_urls->FindDict("componentSellerReportingURLs");
+    if (component_seller_reporting) {
+      output.component_seller_reporting =
+          ReportingURLs::TryParse(component_seller_reporting);
     }
   }
   std::string* maybe_top_level_seller =

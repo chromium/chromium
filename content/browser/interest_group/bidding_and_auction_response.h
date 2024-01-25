@@ -69,7 +69,10 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   std::optional<std::string> ad_metadata;
 
   std::optional<std::string> error;
-  std::optional<ReportingURLs> buyer_reporting, seller_reporting;
+  // The Bidding and Auction server uses the top_level_seller_reporting field
+  // for single-level auctions.
+  std::optional<ReportingURLs> buyer_reporting, top_level_seller_reporting,
+      component_seller_reporting;
 };
 
 }  // namespace content
