@@ -1768,10 +1768,93 @@ void KcerTokenImpl::GetKeyInfoWithAttributes(GetKeyInfoTask task,
 
 //==============================================================================
 
+KcerTokenImpl::GetKeyPermissionsTask::GetKeyPermissionsTask(
+    PrivateKeyHandle in_key,
+    Kcer::GetKeyPermissionsCallback in_callback)
+    : key(std::move(in_key)), callback(std::move(in_callback)) {}
+KcerTokenImpl::GetKeyPermissionsTask::GetKeyPermissionsTask(
+    GetKeyPermissionsTask&& other) = default;
+KcerTokenImpl::GetKeyPermissionsTask::~GetKeyPermissionsTask() = default;
+
 void KcerTokenImpl::GetKeyPermissions(
     PrivateKeyHandle key,
     Kcer::GetKeyPermissionsCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::GetKeyPermissions, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking
+  // task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  if (!EnsurePkcs11IdIsSet(key)) {
+    return std::move(unblocking_callback)
+        .Run(base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  GetKeyPermissionsImpl(
+      GetKeyPermissionsTask(std::move(key), std::move(unblocking_callback)));
+}
+
+void KcerTokenImpl::GetKeyPermissionsImpl(GetKeyPermissionsTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  PrivateKeyHandle key = task.key;
+  GetKeyAttributes(
+      std::move(key), {AttributeId::kKeyPermissions},
+      base::BindOnce(&KcerTokenImpl::GetKeyPermissionsWithAttributes,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void KcerTokenImpl::GetKeyPermissionsWithAttributes(
+    GetKeyPermissionsTask task,
+    std::optional<Error> kcer_error,
+    chaps::AttributeList attributes,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (kcer_error.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
+  }
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return GetKeyPermissionsImpl(std::move(task));
+  }
+  if (result_code == chromeos::PKCS11_CKR_ATTRIBUTE_TYPE_INVALID) {
+    // Key permissions were never set on this key.
+    return std::move(task.callback).Run(std::nullopt);
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToReadAttribute));
+  }
+  if (attributes.attributes_size() != 1) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+  const chaps::Attribute& attr = attributes.attributes(0);
+  if ((attr.type() != static_cast<uint32_t>(AttributeId::kKeyPermissions)) ||
+      !attr.has_value() || attr.value().empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+
+  chaps::KeyPermissions key_permissions;
+  if (!key_permissions.ParseFromArray(attr.value().data(),
+                                      attr.value().size())) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToDecodeKeyAttributes));
+  }
+  return std::move(task.callback).Run(std::move(key_permissions));
 }
 
 //==============================================================================
@@ -1906,7 +1989,25 @@ void KcerTokenImpl::SetKeyNickname(PrivateKeyHandle key,
 void KcerTokenImpl::SetKeyPermissions(PrivateKeyHandle key,
                                       chaps::KeyPermissions key_permissions,
                                       Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::SetKeyPermissions, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(key_permissions), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  std::vector<uint8_t> serialized_permissions;
+  serialized_permissions.resize(key_permissions.ByteSizeLong());
+  key_permissions.SerializeToArray(serialized_permissions.data(),
+                                   serialized_permissions.size());
+
+  return SetKeyAttribute(
+      std::move(key), HighLevelChapsClient::AttributeId::kKeyPermissions,
+      serialized_permissions, std::move(unblocking_callback));
 }
 
 //==============================================================================

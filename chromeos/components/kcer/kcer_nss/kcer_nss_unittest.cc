@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/kcer/kcer.h"
@@ -106,15 +105,6 @@ std::string ToString(const std::vector<SigningScheme>& vec) {
   }
   res << "]";
   return res.str();
-}
-
-std::string ToString(const std::optional<chaps::KeyPermissions>& val) {
-  if (!val.has_value()) {
-    return "<empty>";
-  }
-  // Should be updated if `KeyPermissions` struct is changed.
-  return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
-                            val->key_usages().corporate());
 }
 
 std::unique_ptr<kcer::Kcer> CreateKcer(
@@ -934,6 +924,19 @@ TEST_F(KcerNssTest, GetKeyInfoGenericAndCustomAttributes) {
   }
 
   {
+    base::test::TestFuture<
+        base::expected<std::optional<chaps::KeyPermissions>, Error>>
+        key_permissions_waiter;
+    kcer_->GetKeyPermissions(PrivateKeyHandle(public_key),
+                             key_permissions_waiter.GetCallback());
+    ASSERT_TRUE(key_permissions_waiter.Get().has_value());
+    const std::optional<chaps::KeyPermissions>& key_permissions =
+        key_permissions_waiter.Get().value();
+    EXPECT_TRUE(
+        ExpectKeyPermissionsEqual(expected_key_permissions, key_permissions));
+  }
+
+  {
     expected_key_permissions.mutable_key_usages()->set_corporate(true);
     expected_key_permissions.mutable_key_usages()->set_arc(true);
 
@@ -953,10 +956,8 @@ TEST_F(KcerNssTest, GetKeyInfoGenericAndCustomAttributes) {
     ASSERT_TRUE(key_permissions_waiter.Get().has_value());
     const std::optional<chaps::KeyPermissions>& key_permissions =
         key_permissions_waiter.Get().value();
-    EXPECT_TRUE(KeyPermissionsEqual(expected_key_permissions, key_permissions))
-        << "ERROR: key_permissions: expected: "
-        << ToString(expected_key_permissions)
-        << ", actual: " << ToString(key_permissions);
+    EXPECT_TRUE(
+        ExpectKeyPermissionsEqual(expected_key_permissions, key_permissions));
   }
 
   {

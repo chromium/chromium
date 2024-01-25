@@ -307,6 +307,22 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
                                 chaps::AttributeList attributes,
                                 uint32_t result_code);
 
+  struct GetKeyPermissionsTask {
+    GetKeyPermissionsTask(PrivateKeyHandle in_key,
+                          Kcer::GetKeyPermissionsCallback in_callback);
+    GetKeyPermissionsTask(GetKeyPermissionsTask&& other);
+    ~GetKeyPermissionsTask();
+
+    const PrivateKeyHandle key;
+    Kcer::GetKeyPermissionsCallback callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void GetKeyPermissionsImpl(GetKeyPermissionsTask task);
+  void GetKeyPermissionsWithAttributes(GetKeyPermissionsTask task,
+                                       std::optional<Error> kcer_error,
+                                       chaps::AttributeList attributes,
+                                       uint32_t result_code);
+
   struct SetKeyAttributeTask {
     SetKeyAttributeTask(PrivateKeyHandle in_key,
                         HighLevelChapsClient::AttributeId in_attribute_id,

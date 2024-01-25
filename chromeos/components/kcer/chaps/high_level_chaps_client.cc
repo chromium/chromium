@@ -6,6 +6,7 @@
 
 #include "base/sequence_checker.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/components/kcer/key_permissions.pb.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
@@ -40,6 +41,8 @@ int GetDefaultLength(AttributeId attribute_id) {
       return sizeof(chromeos::PKCS11_CK_KEY_TYPE);
     case AttributeId::kKeyInSoftware:
       return sizeof(chromeos::PKCS11_CK_BBOOL);
+    case AttributeId::kKeyPermissions:
+      return sizeof(chaps::KeyPermissions);
   }
 }
 

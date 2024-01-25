@@ -48,6 +48,7 @@ class HighLevelChapsClient {
     kKeyType = chromeos::PKCS11_CKA_KEY_TYPE,
     // Stored on the private key.
     kKeyInSoftware = chaps::kKeyInSoftwareAttribute,
+    kKeyPermissions = pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,
   };
 
   HighLevelChapsClient() = default;
