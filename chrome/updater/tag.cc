@@ -78,12 +78,20 @@ constexpr base::StringPiece kAppArgAdditionalParameters = "ap";
 // Indicates which browser to restart on successful install.
 constexpr base::StringPiece kTagArgBrowserType = "browser";
 
+// Runtime Mode: "runtime" argument in the tag tells the updater to install
+// itself and stay on the system without any associated application for at least
+// `kMaxServerStartsBeforeFirstReg` wakes. This feature is used to expose the
+// COM API to a process that will install applications via that API.
+// Example:
+//   "runtime=true&needsadmin=true"
+constexpr base::StringPiece kTagArgRuntimeMode = "runtime";
+
 // The list of arguments that are needed for a meta-installer, to
 // indicate which application is being installed. These are stamped
 // inside the meta-installer binary.
 constexpr base::StringPiece kTagArgAppId = "appguid";
 constexpr base::StringPiece kAppArgAppName = "appname";
-constexpr base::StringPiece kAppArgNeedsAdmin = "needsadmin";
+constexpr base::StringPiece kTagArgNeedsAdmin = "needsadmin";
 constexpr base::StringPiece kAppArgInstallDataIndex = "installdataindex";
 constexpr base::StringPiece kAppArgUntrustedData = "untrusteddata";
 
@@ -101,17 +109,17 @@ constexpr char kDisallowedCharInTag = '/';
 constexpr uint8_t kTagMagicUtf8[] = {'G', 'a', 'c', 't', '2', '.',
                                      '0', 'O', 'm', 'a', 'h', 'a'};
 
-std::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
+std::optional<NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str)) {
-    return AppArgs::NeedsAdmin::kNo;
+    return NeedsAdmin::kNo;
   }
 
   if (base::EqualsCaseInsensitiveASCII("true", str)) {
-    return AppArgs::NeedsAdmin::kYes;
+    return NeedsAdmin::kYes;
   }
 
   if (base::EqualsCaseInsensitiveASCII("prefers", str)) {
-    return AppArgs::NeedsAdmin::kPrefers;
+    return NeedsAdmin::kPrefers;
   }
 
   return std::nullopt;
@@ -245,6 +253,17 @@ ErrorCode ParseAppId(base::StringPiece value, TagArgs* args) {
   return ErrorCode::kSuccess;
 }
 
+ErrorCode ParseRuntimeMode(base::StringPiece value, TagArgs* args) {
+  for (const std::string expected_value : {"true", "persist", "false"}) {
+    if (base::EqualsCaseInsensitiveASCII(expected_value, value)) {
+      args->runtime_mode = RuntimeModeArgs();
+      return ErrorCode::kSuccess;
+    }
+  }
+
+  return ErrorCode::kGlobal_RuntimeModeValueIsInvalid;
+}
+
 // |value| must not be empty.
 // |args| must not be null.
 using ParseGlobalAttributeFunPtr = ErrorCode (*)(base::StringPiece value,
@@ -267,6 +286,7 @@ const GlobalParseTable& GetTable() {
       {kTagArgFlighting, &ParseFlighting},
       {kTagArgUsageStats, &ParseUsageStats},
       {kTagArgAppId, &ParseAppId},
+      {kTagArgRuntimeMode, &ParseRuntimeMode},
   }};
   return *instance;
 }
@@ -334,7 +354,7 @@ const AppParseTable& GetTable() {
       {kAppArgAdditionalParameters, &ParseAdditionalParameters},
       {kAppArgExperimentLabels, &ParseExperimentLabels},
       {kAppArgAppName, &ParseAppName},
-      {kAppArgNeedsAdmin, &ParseNeedsAdmin},
+      {kTagArgNeedsAdmin, &ParseNeedsAdmin},
       {kAppArgInstallDataIndex, &ParseInstallDataIndex},
       {kAppArgUntrustedData, &ParseUntrustedData},
   }};
@@ -342,6 +362,36 @@ const AppParseTable& GetTable() {
 }
 
 }  // namespace app_attributes
+
+namespace runtime_mode_attributes {
+
+ErrorCode ParseNeedsAdmin(base::StringPiece value, RuntimeModeArgs* args) {
+  const auto needs_admin = ParseNeedsAdminEnum(value);
+  if (!needs_admin.has_value()) {
+    return ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid;
+  }
+
+  args->needs_admin = needs_admin.value();
+  return ErrorCode::kSuccess;
+}
+
+// |value| must not be empty.
+// |args| must not be null.
+using ParseRuntimeModeAttributeFunPtr = ErrorCode (*)(base::StringPiece value,
+                                                      RuntimeModeArgs* args);
+
+using RuntimeModeParseTable = std::map<base::StringPiece,
+                                       ParseRuntimeModeAttributeFunPtr,
+                                       CaseInsensitiveASCIICompare>;
+
+const RuntimeModeParseTable& GetTable() {
+  static const base::NoDestructor<RuntimeModeParseTable> instance{{
+      {kTagArgNeedsAdmin, &ParseNeedsAdmin},
+  }};
+  return *instance;
+}
+
+}  // namespace runtime_mode_attributes
 
 namespace installer_data_attributes {
 
@@ -456,6 +506,8 @@ std::vector<Attribute> Split(base::StringPiece query_string,
 ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
   const auto& global_func_lookup_table = global_attributes::GetTable();
   const auto& app_func_lookup_table = app_attributes::GetTable();
+  const auto& runtime_mode_func_lookup_table =
+      runtime_mode_attributes::GetTable();
 
   const std::vector<std::pair<std::string, std::string>> attributes =
       query_string::Split(tag);
@@ -470,6 +522,18 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
       }
 
       const ErrorCode result = global_func_lookup_table.at(name)(value, args);
+      if (result != ErrorCode::kSuccess) {
+        return result;
+      }
+    } else if ((runtime_mode_func_lookup_table.find(name) !=
+                runtime_mode_func_lookup_table.end()) &&
+               args->runtime_mode) {
+      if (value.empty()) {
+        return ErrorCode::kAttributeMustHaveValue;
+      }
+
+      const ErrorCode result =
+          runtime_mode_func_lookup_table.at(name)(value, &*args->runtime_mode);
       if (result != ErrorCode::kSuccess) {
         return result;
       }
@@ -717,18 +781,21 @@ std::ostream& operator<<(std::ostream& os, const ErrorCode& error_code) {
       return os << "ErrorCode::kGlobal_FlightingValueIsNotABoolean";
     case ErrorCode::kGlobal_UsageStatsValueIsInvalid:
       return os << "ErrorCode::kGlobal_UsageStatsValueIsInvalid";
+    case ErrorCode::kGlobal_RuntimeModeValueIsInvalid:
+      return os << "ErrorCode::kGlobal_RuntimeModeValueIsInvalid";
+    case ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid:
+      return os << "ErrorCode::kRuntimeMode_NeedsAdminValueIsInvalid";
   }
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const AppArgs::NeedsAdmin& needs_admin) {
+std::ostream& operator<<(std::ostream& os, const NeedsAdmin& needs_admin) {
   switch (needs_admin) {
-    case AppArgs::NeedsAdmin::kNo:
-      return os << "AppArgs::NeedsAdmin::kNo";
-    case AppArgs::NeedsAdmin::kYes:
-      return os << "AppArgs::NeedsAdmin::kYes";
-    case AppArgs::NeedsAdmin::kPrefers:
-      return os << "AppArgs::NeedsAdmin::kPrefers";
+    case NeedsAdmin::kNo:
+      return os << "NeedsAdmin::kNo";
+    case NeedsAdmin::kYes:
+      return os << "NeedsAdmin::kYes";
+    case NeedsAdmin::kPrefers:
+      return os << "NeedsAdmin::kPrefers";
   }
 }
 

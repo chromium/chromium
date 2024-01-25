@@ -68,6 +68,21 @@ TEST_F(GetUpdaterScopeForCommandLineTest, Prefers_And_TagPrefers) {
   EXPECT_TRUE(IsPrefersForCommandLine(command_line_));
 }
 
+TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntime) {
+  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true");
+  EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
+}
+
+TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntimeUser) {
+  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true&needsadmin=false&");
+  EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_), UpdaterScope::kUser);
+}
+
+TEST_F(GetUpdaterScopeForCommandLineTest, TagRuntimeSystem) {
+  command_line_.AppendSwitchASCII(kTagSwitch, "runtime=true&needsadmin=true&");
+  EXPECT_EQ(GetUpdaterScopeForCommandLine(command_line_),
+            UpdaterScope::kSystem);
+}
 #endif
 
 }  // namespace updater
