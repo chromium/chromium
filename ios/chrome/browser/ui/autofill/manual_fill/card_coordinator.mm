@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -26,7 +27,7 @@
 
 @interface CardCoordinator () <CardListDelegate, PersonalDataManagerObserver> {
   // Personal data manager to be observed.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>

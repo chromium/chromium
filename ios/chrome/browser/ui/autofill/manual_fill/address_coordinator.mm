@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -24,7 +25,7 @@
 @interface AddressCoordinator () <AddressListDelegate,
                                   PersonalDataManagerObserver> {
   // Personal data manager to be observed.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
