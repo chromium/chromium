@@ -296,7 +296,7 @@ class ReadAnythingAppController
   // spoken and highlighted with Read Aloud. Each triple contains three numbers:
   // the AXNodeID, the starting text index, and the ending text index. This
   // list of triples is represented as a double array.
-  std::vector<ui::AXNodeID> GetPreviousText(int max_text_length);
+  std::vector<ui::AXNodeID> GetPreviousText();
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular

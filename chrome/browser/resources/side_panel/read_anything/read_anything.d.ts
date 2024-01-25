@@ -267,7 +267,7 @@ declare namespace chrome {
     // Gets the nodes for the previous text that should be spoken and
     // highlighted. Use getNextTextStartIndex and getNextTextEndIndex to get
     // the bounds for text associated with these nodes.
-    function getPreviousText(maxTextLength: number): number[];
+    function getPreviousText(): number[];
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

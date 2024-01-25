@@ -615,9 +615,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   playPreviousMessage(): boolean {
-    const maxTextLength = this.maxSpeechLength;
-    const previousTextIds: number[] =
-        chrome.readingMode.getPreviousText(maxTextLength);
+    const previousTextIds: number[] = chrome.readingMode.getPreviousText();
     return this.playTextOf(previousTextIds);
   }
 

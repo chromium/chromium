@@ -260,7 +260,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   std::vector<ui::AXNodeID> GetPreviousText() {
-    return controller_->GetPreviousText(160);
+    return controller_->GetPreviousText();
   }
 
   int GetNextTextStartIndex(ui::AXNodeID id) {

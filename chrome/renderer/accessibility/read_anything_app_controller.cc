@@ -1505,8 +1505,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
 // TODO(crbug.com/1474951): Random access to processed nodes might not always
 // work (e.g. if we're switching granularities or jumping to a specific node),
 // so we should implement a method of retrieving previous text from AXPosition
-std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText(
-    int max_text_length) {
+std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText() {
   // If GetPreviousText is called before the tree is initialized or before
   // there are any processed granularities, return an empty vector.
   if (processed_granularities_on_current_page_.size() == 0) {
