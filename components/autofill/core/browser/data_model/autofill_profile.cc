@@ -928,13 +928,11 @@ void AutofillProfile::MergeFormGroupTokenQuality(
   }
 }
 
-bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
+void AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
                                          const std::string& app_locale) {
-  AutofillProfileComparator comparator(app_locale);
-
   // SaveAdditionalInfo should not have been called if the profiles were not
   // already deemed to be mergeable.
-  DCHECK(comparator.AreMergeable(*this, profile));
+  DCHECK(AutofillProfileComparator(app_locale).AreMergeable(*this, profile));
 
   if (MergeDataFrom(profile, app_locale)) {
     AutofillMetrics::LogProfileActionOnFormSubmitted(
@@ -943,7 +941,6 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
     AutofillMetrics::LogProfileActionOnFormSubmitted(
         AutofillMetrics::EXISTING_PROFILE_USED);
   }
-  return true;
 }
 
 // static

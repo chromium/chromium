@@ -182,8 +182,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Saves info from |profile| into |this|, provided |this| and |profile| do not
   // have any direct conflicts (i.e. data is present but different).
-  // Returns true if |this| and |profile| are similar.
-  bool SaveAdditionalInfo(const AutofillProfile& profile,
+  void SaveAdditionalInfo(const AutofillProfile& profile,
                           const std::string& app_locale);
 
   // Creates a differentiating label for each of the |profiles|.

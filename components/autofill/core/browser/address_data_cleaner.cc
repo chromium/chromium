@@ -204,37 +204,33 @@ void AddressDataCleaner::DedupeProfiles(
         continue;
       }
 
-      // The profiles are found to be mergeable. Attempt to update the existing
-      // profile. This returns true if the merge was successful, or if the
-      // merge would have been successful but the existing profile IsVerified()
-      // and will not accept updates from `profile_to_merge`.
-      if (existing_profile.SaveAdditionalInfo(
-              *profile_to_merge, personal_data_manager_->app_locale())) {
-        profiles_to_delete.insert(profile_to_merge->guid());
+      // The profiles are found to be mergeable; update the existing profile.
+      existing_profile.SaveAdditionalInfo(*profile_to_merge,
+                                          personal_data_manager_->app_locale());
+      profiles_to_delete.insert(profile_to_merge->guid());
 
-        // Account profiles track from which service they originate. This allows
-        // Autofill to distinguish between Chrome and non-Chrome account
-        // profiles and measure the added utility of non-Chrome profiles. Since
-        // the `existing_profile` matched the information that was already
-        // present in Autofill (`profile_to_merge`), the account profile doesn't
-        // provide any utility. To capture this in the metric, the merged
-        // profile is treated as a Chrome account profile.
-        if (existing_profile.source() == AutofillProfile::Source::kAccount) {
-          existing_profile.set_initial_creator_id(
-              AutofillProfile::kInitialCreatorOrModifierChrome);
-          existing_profile.set_last_modifier_id(
-              AutofillProfile::kInitialCreatorOrModifierChrome);
-        }
+      // Account profiles track from which service they originate. This allows
+      // Autofill to distinguish between Chrome and non-Chrome account
+      // profiles and measure the added utility of non-Chrome profiles. Since
+      // the `existing_profile` matched the information that was already
+      // present in Autofill (`profile_to_merge`), the account profile doesn't
+      // provide any utility. To capture this in the metric, the merged
+      // profile is treated as a Chrome account profile.
+      if (existing_profile.source() == AutofillProfile::Source::kAccount) {
+        existing_profile.set_initial_creator_id(
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+        existing_profile.set_last_modifier_id(
+            AutofillProfile::kInitialCreatorOrModifierChrome);
+      }
 
-        // Now try to merge the new resulting profile with the rest of the
-        // existing profiles.
-        profile_to_merge = &existing_profile;
-        // Account profiles cannot be merged into other profiles, since that
-        // would delete them. Note that the `existing_profile` (now
-        // `profile_to_merge`) might be verified.
-        if (profile_to_merge->source() == AutofillProfile::Source::kAccount) {
-          break;
-        }
+      // Now try to merge the new resulting profile with the rest of the
+      // existing profiles.
+      profile_to_merge = &existing_profile;
+      // Account profiles cannot be merged into other profiles, since that
+      // would delete them. Note that the `existing_profile` (now
+      // `profile_to_merge`) might be verified.
+      if (profile_to_merge->source() == AutofillProfile::Source::kAccount) {
+        break;
       }
     }
   }

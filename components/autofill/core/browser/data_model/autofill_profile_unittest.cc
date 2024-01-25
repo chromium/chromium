@@ -1560,7 +1560,7 @@ TEST(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
   b.SetRawInfo(NAME_FULL, u"Marion Mitchell Morrison");
   b.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
+  a.SaveAdditionalInfo(b, "en-US");
 
   EXPECT_EQ(u"Marion", a.GetRawInfo(NAME_FIRST));
   EXPECT_EQ(u"Mitchell", a.GetRawInfo(NAME_MIDDLE));
@@ -1579,7 +1579,7 @@ TEST(AutofillProfileTest, SaveAdditionalInfo_Name_KeepNameFull) {
   AutofillProfile b = a;
   b.SetRawInfo(NAME_FULL, u"");
 
-  EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
+  a.SaveAdditionalInfo(b, "en-US");
 
   EXPECT_EQ(u"Marion", a.GetRawInfo(NAME_FIRST));
   EXPECT_EQ(u"Mitchell", a.GetRawInfo(NAME_MIDDLE));
@@ -1608,7 +1608,7 @@ TEST(AutofillProfileTest,
   b.SetRawInfoWithVerificationStatus(NAME_FULL, u"", kObserved);
   b.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
+  a.SaveAdditionalInfo(b, "en-US");
 
   // The first, middle and last names should have their first letter in
   // uppercase and have acquired diacritics.
@@ -1632,7 +1632,7 @@ TEST(AutofillProfileTest, SaveAdditionalInfo_Name_LossOfInformation) {
   AutofillProfile b = a;
   b.SetRawInfo(NAME_MIDDLE, u"");
 
-  EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
+  a.SaveAdditionalInfo(b, "en-US");
 
   EXPECT_EQ(u"Marion", a.GetRawInfo(NAME_FIRST));
   EXPECT_EQ(u"Mitchell", a.GetRawInfo(NAME_MIDDLE));
@@ -1653,7 +1653,7 @@ TEST(AutofillProfileTest, SaveAdditionalInfo_Name_ComplementaryInformation) {
   b.SetRawInfo(NAME_FULL, u"Marion Mitchell Morrison");
   b.FinalizeAfterImport();
 
-  EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
+  a.SaveAdditionalInfo(b, "en-US");
 
   // The first, middle and last names should be kept and name full should be
   // added.
