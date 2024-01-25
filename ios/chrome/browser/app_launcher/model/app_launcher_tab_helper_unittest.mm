@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -259,12 +260,12 @@ class AppLauncherTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   bool incognito_ = false;
-  FakeNavigationManager* navigation_manager_ = nullptr;
+  raw_ptr<FakeNavigationManager> navigation_manager_ = nullptr;
   FakeAppLauncherAbuseDetector* abuse_detector_ = nil;
   FakeAppLauncherTabHelperDelegate delegate_;
   FakeAppLauncherTabHelperBrowserPresentationProvider*
       browser_presentation_provider_;
-  AppLauncherTabHelper* tab_helper_ = nullptr;
+  raw_ptr<AppLauncherTabHelper> tab_helper_ = nullptr;
 };
 
 // Tests that a valid URL launches app.
@@ -953,7 +954,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;
-  PolicyBlocklistService* policy_blocklist_service_;
+  raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 };
 
 // Tests that URLs to blocked domains do not open native apps.

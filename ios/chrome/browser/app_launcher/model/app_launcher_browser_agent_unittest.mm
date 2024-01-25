@@ -8,6 +8,7 @@
 
 #import <map>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
@@ -61,7 +62,7 @@ class FakeAppLauncherTabHelper : public AppLauncherTabHelper {
   AppLauncherTabHelperDelegate* delegate() { return delegate_; }
 
  private:
-  AppLauncherTabHelperDelegate* delegate_;
+  raw_ptr<AppLauncherTabHelperDelegate> delegate_;
 };
 
 // Test fixture for AppLauncherBrowserAgent.

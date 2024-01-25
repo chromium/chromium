@@ -14,6 +14,7 @@
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/scoped_observation.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
@@ -171,11 +172,11 @@ class ClearBrowsingDataAction : public Action,
 
  private:
   void ClearBrowsingData() {
-    incognito_scoped_observer_.Observe(incognito_browsing_data_remover_);
+    incognito_scoped_observer_.Observe(incognito_browsing_data_remover_.get());
     incognito_browsing_data_remover_->Remove(
         browsing_data::TimePeriod::ALL_TIME, mask_, {});
 
-    main_scoped_observer_.Observe(main_browsing_data_remover_);
+    main_scoped_observer_.Observe(main_browsing_data_remover_.get());
     main_browsing_data_remover_->Remove(browsing_data::TimePeriod::ALL_TIME,
                                         mask_, {});
   }
@@ -222,8 +223,8 @@ class ClearBrowsingDataAction : public Action,
       main_scoped_observer_{this};
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>
       incognito_scoped_observer_{this};
-  BrowsingDataRemover* main_browsing_data_remover_;
-  BrowsingDataRemover* incognito_browsing_data_remover_;
+  raw_ptr<BrowsingDataRemover> main_browsing_data_remover_;
+  raw_ptr<BrowsingDataRemover> incognito_browsing_data_remover_;
   Continuation continuation_;
   // Removal mask defined by the clear actions set in the IdleTimeoutActions
   // policy list.

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_CACHE_COUNTER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_CACHE_COUNTER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
@@ -28,7 +29,7 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
   // Invoked when cache size has been computed.
   void OnCacheSizeCalculated(int64_t cache_size);
 
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
 
   base::WeakPtrFactory<CacheCounter> weak_ptr_factory_;
 };

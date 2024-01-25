@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -30,7 +31,7 @@ class SearchEngineObserverBridge : public TemplateURLServiceObserver {
 
  private:
   __weak id<SearchEngineObserving> owner_;
-  TemplateURLService* templateURLService_;  // weak
+  raw_ptr<TemplateURLService> templateURLService_;  // weak
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_OBSERVER_BRIDGE_H_

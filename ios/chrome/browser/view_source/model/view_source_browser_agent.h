@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -48,7 +49,7 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
   void OnHandleViewSourceForActiveWebStateResult(const base::Value* value);
 
   // The browser this agent is associated with.
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<ViewSourceBrowserAgent> weak_ptr_factory_{this};
 };

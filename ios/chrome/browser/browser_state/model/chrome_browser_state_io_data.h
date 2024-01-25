@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -95,7 +96,7 @@ class ChromeBrowserStateIOData {
     ~ProfileParams();
 
     base::FilePath path;
-    IOSChromeIOThread* io_thread;
+    raw_ptr<IOSChromeIOThread> io_thread;
     scoped_refptr<content_settings::CookieSettings> cookie_settings;
     scoped_refptr<HostContentSettingsMap> host_content_settings_map;
 
@@ -110,7 +111,7 @@ class ChromeBrowserStateIOData {
 
     // The browser state this struct was populated from. It's passed as a void*
     // to ensure it's not accidentally used on the IO thread.
-    void* browser_state;
+    raw_ptr<void> browser_state;
   };
 
   explicit ChromeBrowserStateIOData(ChromeBrowserStateType browser_state_type);

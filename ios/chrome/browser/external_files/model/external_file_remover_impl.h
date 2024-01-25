@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -67,10 +68,10 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // Vector used to store delayed requests.
   std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests_;
   // Pointer to the tab restore service.
-  sessions::TabRestoreService* tab_restore_service_ = nullptr;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
   // ChromeBrowserState used to get the referenced files. Must outlive this
   // object.
-  ChromeBrowserState* browser_state_ = nullptr;
+  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   // Used to ensure that this class' methods are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure `Remove()` is not run when this object is destroyed.

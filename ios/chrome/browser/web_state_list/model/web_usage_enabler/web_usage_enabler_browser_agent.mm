@@ -11,7 +11,7 @@ BROWSER_USER_DATA_KEY_IMPL(WebUsageEnablerBrowserAgent)
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
     : browser_(browser) {
-  browser_observation_.Observe(browser_);
+  browser_observation_.Observe(browser_.get());
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   web_state_list_observation_.Observe(browser->GetWebStateList());

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -63,7 +64,7 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  TabInsertionBrowserAgent* agent_;
+  raw_ptr<TabInsertionBrowserAgent> agent_;
 };
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#import "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #include "url/gurl.h"
@@ -50,7 +51,7 @@ class SearchEngineJavaScriptFeature : public web::JavaScriptFeature {
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 
-  SearchEngineJavaScriptFeatureDelegate* delegate_;
+  raw_ptr<SearchEngineJavaScriptFeatureDelegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_JAVA_SCRIPT_FEATURE_H_

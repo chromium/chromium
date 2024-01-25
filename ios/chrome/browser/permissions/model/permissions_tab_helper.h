@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
@@ -61,10 +62,10 @@ class PermissionsTabHelper
   void UpdateIsInfoBarAccepted();
 
   // The WebState that this object is attached to.
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
 
   // The currently displayed infobar.
-  infobars::InfoBar* infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
 
   // Permissions that have changed its state from NotAccessible to Allowed
   // within a given timeout period.
@@ -83,10 +84,10 @@ class PermissionsTabHelper
       infobar_manager_scoped_observation_{this};
 
   // Banner queue for the TabHelper's WebState;
-  OverlayRequestQueue* banner_queue_ = nullptr;
+  raw_ptr<OverlayRequestQueue> banner_queue_ = nullptr;
 
   // Request inserter for the TabHelper's WebState;
-  InfobarOverlayRequestInserter* inserter_ = nullptr;
+  raw_ptr<InfobarOverlayRequestInserter> inserter_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

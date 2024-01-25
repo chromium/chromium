@@ -9,6 +9,7 @@
 
 #include <set>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -72,7 +73,7 @@ class DownloadControllerImpl : public DownloadController,
   // Set of tasks which are currently alive.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::set<DownloadTask*> alive_tasks_;
-  DownloadControllerDelegate* delegate_ = nullptr;
+  raw_ptr<DownloadControllerDelegate> delegate_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -7,6 +7,7 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -120,7 +121,7 @@ class AppLauncherTabHelper
       web::WebStatePolicyDecider::RequestInfo request_info) const;
 
   // The WebState that this object is attached to.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Used to check for repeated launches and provide policy for launching apps.
   AppLauncherAbuseDetector* abuse_detector_ = nil;
@@ -129,7 +130,7 @@ class AppLauncherTabHelper
   bool incognito_ = false;
 
   // Used to launch apps and present UI.
-  AppLauncherTabHelperDelegate* delegate_ = nullptr;
+  raw_ptr<AppLauncherTabHelperDelegate> delegate_ = nullptr;
 
   // Used to know if the browser is currently presenting another VC.
   __weak id<AppLauncherTabHelperBrowserPresentationProvider>

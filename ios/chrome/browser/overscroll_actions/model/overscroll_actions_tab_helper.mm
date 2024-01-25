@@ -48,7 +48,7 @@ void OverscrollActionsTabHelper::SetDelegate(
 OverscrollActionsTabHelper::OverscrollActionsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
-  web_state_observation_.Observe(web_state_);
+  web_state_observation_.Observe(web_state_.get());
 }
 
 OverscrollActionsController*

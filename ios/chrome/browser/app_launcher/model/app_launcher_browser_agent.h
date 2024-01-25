@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -57,7 +58,7 @@ class AppLauncherBrowserAgent
 
     // The Browser.  Used to fetch the appropriate request queue for app
     // launcher dialogs.
-    Browser* browser_ = nullptr;
+    raw_ptr<Browser> browser_ = nullptr;
 
     // Callback called in `UIApplication openURL:...` completion.
     // Parameter is the success parameter returned by the openURL API.

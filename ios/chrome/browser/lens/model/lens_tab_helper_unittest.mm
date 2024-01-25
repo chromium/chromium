@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -45,7 +46,7 @@ class LensTabHelperTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   web::WebTaskEnvironment task_environment_;
-  LensTabHelper* helper_ = nullptr;
+  raw_ptr<LensTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;
 };

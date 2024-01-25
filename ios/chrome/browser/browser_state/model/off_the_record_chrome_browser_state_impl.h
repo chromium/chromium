@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IMPL_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_OFF_THE_RECORD_CHROME_BROWSER_STATE_IMPL_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_io_data.h"
@@ -59,7 +60,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
       ChromeBrowserState* original_chrome_browser_state,
       const base::FilePath& otr_path);
 
-  ChromeBrowserState* original_chrome_browser_state_;  // weak
+  raw_ptr<ChromeBrowserState> original_chrome_browser_state_;  // weak
 
   // Creation time of the off-the-record BrowserState.
   const base::Time start_time_;

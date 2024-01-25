@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -63,10 +64,10 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
 
   // The WebStateList being observed for addition, replacement, and detachment
   // of WebStates
-  WebStateList* web_state_list_;
+  raw_ptr<WebStateList> web_state_list_;
   // The class which installs/uninstalls dependencies in response to changes to
   // the WebStateList
-  DependencyInstaller* dependency_installer_;
+  raw_ptr<DependencyInstaller> dependency_installer_;
   // Automatically detaches `this` from the WebStateList when destroyed
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};

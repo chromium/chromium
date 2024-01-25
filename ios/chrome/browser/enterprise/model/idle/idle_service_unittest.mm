@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+
+#import "base/memory/raw_ptr.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -121,12 +123,12 @@ class IdleTimeoutServiceTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockObserver mock_observer_;
-  MockActionRunner* action_runner_;
+  raw_ptr<MockActionRunner> action_runner_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<IdleService> idle_service_;
   IOSChromeScopedTestingLocalState local_state_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
 };
 
 // Test that the observer methods are not called when the policy is not set, and

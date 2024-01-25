@@ -10,6 +10,7 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -162,7 +163,7 @@ class UpgradeInfoBarDismissObserver
     scoped_observation_.Reset();
   }
 
-  UpgradeInfoBarDelegate* infobar_delegate_;
+  raw_ptr<UpgradeInfoBarDelegate> infobar_delegate_;
   __weak UpgradeCenter* dismiss_delegate_;
   __strong NSString* tab_id_;
   base::ScopedObservation<infobars::InfoBarManager,

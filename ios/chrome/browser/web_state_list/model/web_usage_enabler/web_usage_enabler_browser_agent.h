@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_USAGE_ENABLER_WEB_USAGE_ENABLER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_WEB_USAGE_ENABLER_WEB_USAGE_ENABLER_BROWSER_AGENT_H_
 
-#include "base/observer_list.h"
+#import "base/memory/raw_ptr.h"
+#import "base/observer_list.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
@@ -72,7 +73,7 @@ class WebUsageEnablerBrowserAgent
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // The browser whose WebStates' web usage is being managed.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Whether web usage is enabled for the WebState in `web_state_list_`.
   bool web_usage_enabled_ = false;

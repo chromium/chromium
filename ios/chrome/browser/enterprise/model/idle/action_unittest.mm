@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/model/idle/action.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
@@ -140,7 +141,7 @@ class IdleActionTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  AuthenticationService* authentication_service_;
+  raw_ptr<AuthenticationService> authentication_service_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ActionFactory> action_factory_;

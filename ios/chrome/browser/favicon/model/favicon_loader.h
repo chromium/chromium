@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -92,7 +93,7 @@ class FaviconLoader : public KeyedService {
 
  private:
   // The LargeIconService used to retrieve favicon.
-  favicon::LargeIconService* large_icon_service_;
+  raw_ptr<favicon::LargeIconService> large_icon_service_;
 
   // Tracks tasks sent to FaviconService.
   base::CancelableTaskTracker cancelable_task_tracker_;

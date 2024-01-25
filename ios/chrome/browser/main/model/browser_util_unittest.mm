@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -116,8 +117,8 @@ class BrowserUtilTest : public PlatformTest {
   std::unique_ptr<Browser> other_browser_;
   std::unique_ptr<Browser> incognito_browser_;
   std::unique_ptr<Browser> other_incognito_browser_;
-  BrowserList* browser_list_;
-  sessions::TabRestoreService* tab_restore_service_;
+  raw_ptr<BrowserList> browser_list_;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
 
 // Tests that an incognito tab is moved from one incognito browser to another.

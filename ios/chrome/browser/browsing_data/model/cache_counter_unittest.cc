@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -237,7 +238,7 @@ class CacheCounterTest : public PlatformTest {
 
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
   disk_cache::Backend* backend_;
-  disk_cache::Entry* entry_;
+  raw_ptr<disk_cache::Entry> entry_;
 
   bool finished_ = false;
   browsing_data::BrowsingDataCounter::ResultInt result_;

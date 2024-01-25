@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_IDLE_SERVICE_H_
 
 #import "base/cancelable_callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -117,7 +118,7 @@ class IdleService : public KeyedService {
   ActionSet last_action_set_;
   bool idle_timeout_dialog_pending_{false};
   bool idle_timeout_snackbar_pending_{false};
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   std::unique_ptr<ActionRunner> action_runner_;
   PrefChangeRegistrar pref_change_registrar_;
   base::CancelableOnceCallback<void()> cancelable_actions_callback_;
