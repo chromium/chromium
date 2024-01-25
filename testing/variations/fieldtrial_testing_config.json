@@ -4639,7 +4639,6 @@
                         "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting",
                         "FledgeFacilitatedTestingSignalsHeaders",
-                        "PrivateAggregationDebugReportingCookieDeprecationTesting",
                         "SkipTpcdMitigationsForAds",
                         "TPCDAdHeuristicSubframeRequestTagging"
                     ]
@@ -14628,6 +14627,26 @@
                     },
                     "enable_features": [
                         "PrivacySandboxSettings4"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivateAggregationFacilitatedTestingCookieDeprecation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "windows",
+                "mac",
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivateAggregationDebugReportingCookieDeprecationTesting"
                     ]
                 }
             ]
