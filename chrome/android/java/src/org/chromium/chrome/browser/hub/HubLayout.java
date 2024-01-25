@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
@@ -207,6 +208,18 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         forceAnimationToFinish();
 
+        Promise<Bitmap> bitmapPromise = new Promise<>();
+        @LayoutType int previousLayoutType = mPreviousLayoutTypeSupplier.get();
+        if (previousLayoutType == LayoutType.BROWSING) {
+            final Tab currentTab = mTabModelSelector.getCurrentTab();
+            createLayoutTabForTabId(getIdForTab(currentTab));
+            mCurrentSceneLayer = mTabSceneLayer;
+            captureTabThumbnail(currentTab, bitmapPromise);
+        } else {
+            mCurrentSceneLayer = mEmptySceneLayer;
+            bitmapPromise.fulfill(null);
+        }
+
         // TODO(crbug/1516760): This is a stop gap solution that will work until we have more panes.
         // While we only have tab switcher panes, selecting the pane based on the currently
         // selected tab model is correct. However, if we have more panes we likely want to be able
@@ -222,15 +235,8 @@ public class HubLayout extends Layout implements HubLayoutController {
         HubLayoutAnimatorProvider animatorProvider = createShowAnimatorProvider(containerView);
 
         Callback<Bitmap> thumbnailCallback = animatorProvider.getThumbnailCallback();
-        @LayoutType int previousLayoutType = mPreviousLayoutTypeSupplier.get();
-        if (previousLayoutType == LayoutType.BROWSING) {
-            final Tab currentTab = mTabModelSelector.getCurrentTab();
-            createLayoutTabForTabId(getIdForTab(currentTab));
-            mCurrentSceneLayer = mTabSceneLayer;
-            captureTabThumbnail(currentTab, thumbnailCallback);
-        } else {
-            mCurrentSceneLayer = mEmptySceneLayer;
-            Callback.runNullSafe(thumbnailCallback, null);
+        if (thumbnailCallback != null) {
+            bitmapPromise.then(thumbnailCallback);
         }
         updateEmptyLayerColor(mPaneManager.getFocusedPaneSupplier().get());
 
@@ -637,14 +643,9 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     private void captureTabThumbnail(
-            @Nullable Tab currentTab, @Nullable Callback<Bitmap> thumbnailCallback) {
+            @Nullable Tab currentTab, @NonNull Promise<Bitmap> bitmapPromise) {
         if (currentTab == null) {
-            Callback.runNullSafe(thumbnailCallback, null);
-            return;
-        }
-
-        if (thumbnailCallback == null) {
-            mTabContentManager.cacheTabThumbnail(currentTab);
+            bitmapPromise.fulfill(null);
             return;
         }
 
@@ -653,7 +654,7 @@ public class HubLayout extends Layout implements HubLayoutController {
                 /* returnBitmap= */ true,
                 (bitmap) -> {
                     if (bitmap != null || !currentTab.isNativePage()) {
-                        thumbnailCallback.onResult(bitmap);
+                        bitmapPromise.fulfill(bitmap);
                         return;
                     }
 
@@ -661,7 +662,7 @@ public class HubLayout extends Layout implements HubLayoutController {
                     // disk. For a normal tab we can't do this fallback as the thumbnail may be
                     // stale.
                     mTabContentManager.getEtc1TabThumbnailWithCallback(
-                            currentTab.getId(), thumbnailCallback);
+                            currentTab.getId(), bitmapPromise::fulfill);
                 });
     }
 
