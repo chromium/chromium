@@ -23,8 +23,9 @@ android_library("compiled_in_runtime_library_java") {
 }
 
 mustache_pass("generate_chromeos_manifest_for_upload") {
-  input = "AndroidManifest.xml"
-  output = generate_chromeos_manifest_for_upload_output
+  inputs = [ "AndroidManifest.xml" ]
+  output_dir =
+      get_path_info(generate_chromeos_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=false",
@@ -32,8 +33,8 @@ mustache_pass("generate_chromeos_manifest_for_upload") {
 }
 
 mustache_pass("generate_manifest_for_upload") {
-  input = "AndroidManifest.xml"
-  output = generate_manifest_for_upload_output
+  inputs = [ "AndroidManifest.xml" ]
+  output_dir = get_path_info(generate_manifest_for_upload_output, "dir")
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=true",
@@ -133,9 +134,8 @@ template("webapk_tmpl") {
                              "delta_config_file",
                            ])
 
-    input = get_target_outputs(_manifest_to_upload_dep)
-    input = input[0]
-    output = _manifest_output
+    inputs = get_target_outputs(_manifest_to_upload_dep)
+    output_dir = get_path_info(_manifest_output, "dir")
     extra_variables = [ "manifest_package=$apk_package_name" ]
     deps = [ _manifest_to_upload_dep ]
   }
@@ -143,8 +143,8 @@ template("webapk_tmpl") {
   # Populate background color in values/background_color.xml
   mustache_pass(_generate_res_background_xml_target_name) {
     forward_variables_from(invoker, [ "config_file" ])
-    input = "res_template/values/background_color.xml"
-    output = "${_generated_res_background_dir}/values/background_color.xml"
+    inputs = [ "res_template/values/background_color.xml" ]
+    output_dir = "${_generated_res_background_dir}/values"
   }
 
   android_resources(_app_icon_resources_target_name) {
