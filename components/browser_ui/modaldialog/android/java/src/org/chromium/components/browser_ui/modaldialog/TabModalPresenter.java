@@ -136,12 +136,13 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected boolean removeDialogView(PropertyModel model) {
         setBrowserControlsAccess(false);
 
         // The dialog view may not have been added to the container yet, e.g. if the enter animation
         // has not yet started.
-        if (ViewCompat.isAttachedToWindow(mDialogView)) {
+        boolean animateExit = ViewCompat.isAttachedToWindow(mDialogView);
+        if (animateExit) {
             runExitAnimation();
         } else {
             // Cancel any existing animations as when the animation completes it may try to make use
@@ -154,6 +155,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
             mModelChangeProcessor = null;
         }
         mDialogView = null;
+        return animateExit;
     }
 
     /**
@@ -255,10 +257,14 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                             public void onAnimationEnd(Animator animation) {
                                 mDialogContainer.setVisibility(View.GONE);
                                 mDialogContainer.removeView(dialogView);
+                                onExitAnimationFinished();
                             }
                         })
                 .start();
     }
+
+    /** Used when we need to update status for inherent classes. */
+    protected void onExitAnimationFinished() {}
 
     public View getDialogContainerForTest() {
         return mDialogContainer;

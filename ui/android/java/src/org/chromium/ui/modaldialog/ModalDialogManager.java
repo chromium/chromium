@@ -109,9 +109,11 @@ public class ModalDialogManager {
 
         /**
          * Removes the view created for the specified model from a container.
+         *
          * @param model The dialog model that needs to be removed.
+         * @return Whether an animation will be run.
          */
-        protected abstract void removeDialogView(PropertyModel model);
+        protected abstract boolean removeDialogView(PropertyModel model);
     }
 
     // This affects only the dialog style. To define a priority, call showDialog with {@link

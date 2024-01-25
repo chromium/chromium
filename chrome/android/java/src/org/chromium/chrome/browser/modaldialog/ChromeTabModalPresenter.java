@@ -230,11 +230,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     @Override
-    protected void removeDialogView(PropertyModel model) {
+    protected boolean removeDialogView(PropertyModel model) {
         mRunEnterAnimationOnCallback = false;
-        mTabObscuringHandlerSupplier.get().unobscure(mTabObscuringToken);
-        mTabObscuringToken = null;
-        super.removeDialogView(model);
+        boolean runAnimation = super.removeDialogView(model);
+        if (!runAnimation) {
+            onExitAnimationFinished();
+        }
+        return runAnimation;
     }
 
     @Override
@@ -278,6 +280,12 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             UiUtils.removeViewFromParent(getDialogContainer());
             UiUtils.insertBefore(mContainerParent, getDialogContainer(), mDefaultNextSiblingView);
         }
+    }
+
+    @Override
+    protected void onExitAnimationFinished() {
+        mTabObscuringHandlerSupplier.get().unobscure(mTabObscuringToken);
+        mTabObscuringToken = null;
     }
 
     /**
