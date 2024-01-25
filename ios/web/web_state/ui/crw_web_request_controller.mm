@@ -27,7 +27,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 
 using web::wk_navigation_util::ExtractTargetURL;

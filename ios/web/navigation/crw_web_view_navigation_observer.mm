@@ -21,7 +21,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_web_view_util.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 using web::NavigationManagerImpl;

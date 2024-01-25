@@ -14,7 +14,7 @@
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/download/download_task_observer_bridge.h"
 #include "ios/web_view/internal/cwv_web_view_internal.h"
-#include "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #include "net/base/net_errors.h"
 
 int64_t const CWVDownloadSizeUnknown = -1;

@@ -10,7 +10,7 @@
 #import "base/ranges/algorithm.h"
 #import "ios/web/webui/url_fetcher_block_adapter.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
-#import "net/base/mac/url_conversions.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
