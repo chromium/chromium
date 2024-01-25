@@ -289,6 +289,14 @@ class ChromeAutofillClient : public ContentAutofillClient,
     return autofill_progress_dialog_controller_.get();
   }
 
+  // ContentAutofillClient:
+  std::unique_ptr<AutofillManager> CreateManager(
+      base::PassKey<ContentAutofillDriver> pass_key,
+      ContentAutofillDriver& driver) override;
+  void InitAgent(
+      base::PassKey<ContentAutofillDriverFactory> pass_key,
+      const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) override;
+
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 #if BUILDFLAG(IS_ANDROID)

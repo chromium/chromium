@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -27,8 +28,11 @@
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
@@ -67,11 +71,9 @@ class MockAutofillSaveCardBottomSheetBridge
 };
 #endif
 
-// Exposes the protected constructor.
 class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
-  explicit TestChromeAutofillClient(content::WebContents* web_contents)
-      : ChromeAutofillClient(web_contents) {}
+  using ChromeAutofillClient::ChromeAutofillClient;
 
 #if BUILDFLAG(IS_ANDROID)
   MockFastCheckoutClient* GetFastCheckoutClient() override {
@@ -89,7 +91,6 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
   }
 
   MockFastCheckoutClient fast_checkout_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
 
@@ -117,14 +118,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return personal_data_manager_;
   }
 
-  TestContentAutofillDriver* autofill_driver() {
-    return test_autofill_driver_injector_[web_contents()];
-  }
-
-  TestBrowserAutofillManager* autofill_manager() {
-    return test_autofill_manager_injector_[web_contents()];
-  }
-
  private:
   void PreparePersonalDataManager() {
     personal_data_manager_ =
@@ -145,13 +138,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
-  TestAutofillClientInjector<TestChromeAutofillClient>
+  TestAutofillClientInjector<testing::NiceMock<TestChromeAutofillClient>>
       test_autofill_client_injector_;
-  TestAutofillDriverInjector<TestContentAutofillDriver>
-      test_autofill_driver_injector_;
-  TestAutofillManagerInjector<TestBrowserAutofillManager>
-      test_autofill_manager_injector_;
-
   base::OnceCallback<void()> setup_flags_;
 };
 
@@ -453,6 +441,68 @@ TEST_F(ChromeAutofillClientTestWithSaveCardLoadingAndConfirmation,
   client()->CreditCardUploadCompleted(true);
 }
 #endif
+
+struct AgentSetupParam {
+  version_info::Channel channel;
+  bool heavy_scraping_enabled;
+};
+
+class MockChromeAutofillClientWithAgent : public ChromeAutofillClient {
+ public:
+  explicit MockChromeAutofillClientWithAgent(content::WebContents* web_contents)
+      : ChromeAutofillClient(web_contents) {
+    ON_CALL(*this, GetChannel)
+        .WillByDefault(Return(version_info::Channel::STABLE));
+  }
+
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+};
+
+class ChromeAutofillClientTest_AgentSetup
+    : public ChromeRenderViewHostTestHarness,
+      public ::testing::WithParamInterface<AgentSetupParam> {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    agent_ = std::make_unique<MockAutofillAgent>();
+    agent_->BindForTesting(web_contents()->GetPrimaryMainFrame());
+  }
+
+  void TearDown() override {
+    agent_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  MockChromeAutofillClientWithAgent* client() {
+    return test_autofill_client_injector_[web_contents()];
+  }
+
+  MockAutofillAgent& agent() { return *agent_; }
+
+ private:
+  TestAutofillClientInjector<
+      testing::NiceMock<MockChromeAutofillClientWithAgent>>
+      test_autofill_client_injector_;
+  std::unique_ptr<MockAutofillAgent> agent_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ChromeAutofillClientTest,
+    ChromeAutofillClientTest_AgentSetup,
+    testing::Values(AgentSetupParam{version_info::Channel::CANARY, true},
+                    AgentSetupParam{version_info::Channel::DEV, true},
+                    AgentSetupParam{version_info::Channel::UNKNOWN, false},
+                    AgentSetupParam{version_info::Channel::BETA, false},
+                    AgentSetupParam{version_info::Channel::STABLE, false}));
+
+TEST_P(ChromeAutofillClientTest_AgentSetup, EnableHeavyFormDataScraping) {
+  ON_CALL(*client(), GetChannel).WillByDefault(Return(GetParam().channel));
+  EXPECT_CALL(agent(), EnableHeavyFormDataScraping())
+      .Times(GetParam().heavy_scraping_enabled ? 1 : 0);
+  NavigateAndCommit(GURL("https://foo.com/"));
+  task_environment()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&agent());
+}
 
 }  // namespace
 }  // namespace autofill

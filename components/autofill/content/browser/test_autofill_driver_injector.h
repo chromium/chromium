@@ -13,6 +13,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -162,8 +163,9 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
                                     ContentAutofillDriverFactory* factory) {
       auto* client = ContentAutofillClient::FromWebContents(web_contents());
       auto driver = std::make_unique<T>(rfh, factory);
-      driver->set_autofill_manager(std::make_unique<BrowserAutofillManager>(
-          driver.get(), client, "en-US"));
+      test_api(*driver).set_autofill_manager(
+          std::make_unique<BrowserAutofillManager>(driver.get(), client,
+                                                   "en-US"));
       return driver;
     }
 
