@@ -347,6 +347,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
     "java/src/org/chromium/net/telemetry/CronetLoggerImpl.java",
     "java/src/org/chromium/net/telemetry/ExperimentalOptions.java",
+    "java/src/org/chromium/net/telemetry/OptionalBoolean.java",
     "java/src/org/chromium/net/telemetry/RateLimiter.java",
     "java/src/org/chromium/net/telemetry/SizeBuckets.java",
     _generated_impl_version_java,

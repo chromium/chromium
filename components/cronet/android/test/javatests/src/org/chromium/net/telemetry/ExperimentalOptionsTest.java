@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.telemetry.ExperimentalOptions.OptionalBoolean;
 
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
