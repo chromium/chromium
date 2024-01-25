@@ -1499,6 +1499,7 @@
 <translation id="6981291220124935078">ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
 <translation id="698231206551913481">ਇਸ ਵਰਤੋਂਕਾਰ ਦੇ ਹਟਾਏ ਜਾਣ ਤੋਂ ਬਾਅਦ ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਲ ਸਬੰਧਿਤ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6989752354829085073">ਆਪਣੀ Chromebook ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ। ਅੱਗੇ ਵਧੋ ਅਤੇ 6 ਪੜਾਵਾਂ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="7004910047186208204">ਮੋਬਾਈਲ ਡਾਟੇ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7005239792648594238">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ</translation>

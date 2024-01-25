@@ -1498,6 +1498,7 @@ Novo instaliranje</translation>
 <translation id="6981291220124935078">Uključi pristup</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Sve datoteke i lokalni podaci povezani s ovim korisnikom trajno će se izbrisati nakon uklanjanja korisnika.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Krenite u kratki obilazak i naučite upotrebljavati značajke Chromebooka. Pokrenite se u šest koraka.</translation>
 <translation id="7004910047186208204">Povežite se s mobilnom podatkovnom mrežom</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da biste započeli</translation>

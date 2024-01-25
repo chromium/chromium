@@ -258,6 +258,7 @@
 <translation id="1442987760062738829">प्वाल</translation>
 <translation id="1446396933673057385">सत्यताको जाँच</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" नामक कीहरूलाई "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" नामक कीहरू सेट गरिएकै डिक्सनरीमा सेट गर्न सकिँदैन</translation>
 <translation id="1452803302401719440">तपाईंका अभिभावकले तपाईंका लागि रोज्नुभएका सेटिङले अहिले तपाईंलाई इन्टरनेटमा सुरक्षित राखिरहेका छन्</translation>
 <translation id="1455413310270022028">मेट्ने साधन</translation>
 <translation id="1458140305240870199">भित्री वस्त्रहरू</translation>
@@ -769,6 +770,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">तपाईं लग इन भएका बेला यो डिभाइससँग एट्याच गरिएका सहायक डिभाइसहरू</translation>
 <translation id="2450021089947420533">Journeys</translation>
+<translation id="2452837234288608067">यस सम्बन्धमा मद्दत गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2456755709261364512">तपाईंको ब्याट्री अनिवार्य रूपमा कम्तीमा पनि <ph name="REQUIRED_BATTERY_PRECENT" />% हुने गरी चार्ज गरिएको हुनु पर्छ</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> खोज्नुहोस्</translation>
 <translation id="2463739503403862330">पूर्ण जानकारी भर्नुहोस्</translation>
@@ -910,6 +912,7 @@
 <translation id="2725927759457695883">नाम थर भर्नुहोस्</translation>
 <translation id="2726001110728089263">छेउको ट्रे</translation>
 <translation id="2728127805433021124">सर्भरको प्रमाणपत्र एक कमजोर हस्ताक्षर अल्गोरिदम प्रयोग गर्दै हस्ताक्षर गरिएको छ।</translation>
+<translation id="272937284275742856">तपाईंका भुक्तानी विवरणहरू सुरक्षित रूपमा पुष्टि गरिँदै छन्...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />जडान सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">शास्त्रीय सङ्गीत</translation>
 <translation id="2731382536835015353">४४ x ६८ इन्च</translation>
@@ -1009,6 +1012,7 @@
 <translation id="2958544468932521864">क्रिकेट</translation>
 <translation id="2959113999220720579">अनुहार तथा शरीरको हेरचाह</translation>
 <translation id="2962073860865348475">१२ x १८ इन्च</translation>
+<translation id="2967098518029543669">यो पासवर्ड आफ्नो Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="2968103128155246731">भ्यान तथा मिनिभ्यानहरू</translation>
 <translation id="2972581237482394796">&amp;फेरि गर्नुहोस्</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, हाल चयन गरिएको छ। <ph name="ROW_CONTENT" /></translation>
@@ -1380,6 +1384,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> अङ्कको पुष्टि कोड हाल्नुहोस्</translation>
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3681421644246505351">Chrome ले तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा तपाईंका रुचिका विषयहरू थाहा पाउँछ।</translation>
+<translation id="3682094733650754138">ठेगाना भर्ने विकल्प छनौट गरिएको थियो</translation>
 <translation id="3689867156802445220">बिल्डिङ नम्बर</translation>
 <translation id="3693327506115126094">यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने तरिका छनौट गर्नुहोस्</translation>
 <translation id="3698629142018988477">साइट बनाउने बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन यो बटन थिच्नुहोस्</translation>
@@ -2789,6 +2794,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> ले तपाईंका MIDI डिभाइसहरू प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="6493924760403974580">यो एप यो आकारमा मात्र चल्छ।</translation>
 <translation id="6494750904506170417">पप-अप तथा रिडिरेक्टहरू</translation>
+<translation id="6495664197699704593">यो पासवर्ड यस डिभाइसमा मात्र सेभ गरिएको छ। यो पासवर्ड अन्य डिभाइसहरूमा प्रयोग गर्न <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
 <translation id="6497295192259406877">व्यावसायिक क्रियाकलापहरू</translation>
 <translation id="6499038740797743453">पासवर्ड रिसेट गर्ने हो?</translation>
 <translation id="6502510275417601303">भुक्तानीसम्बन्धी नयाँ सेटिङ मिलाउने अलर्ट बन्द गरिएको छ</translation>
@@ -2903,6 +2909,7 @@
 <translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6737708609449480586">आगोको भट्टीमा पकाइएका परिकारहरू</translation>
 <translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
+<translation id="6740851646645036700">तपाईं अहिले लेखनसम्बन्धी थप मद्दत प्राप्त गर्न सक्नुहुन्न। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="674375294223700098">अज्ञात सर्भर सर्टिफिकेट त्रुटि।</translation>
 <translation id="6744009308914054259">इन्टरनेटको प्रतीक्षा गर्दा गर्दै तपाईं अफलाइन लेखहरू पढ्न डाउनलोडहरू नामक फोल्डरमा जान सक्नुहुन्छ।</translation>
 <translation id="6745592621698551453">अहिले अपडेट गर्नुहोस्</translation>
@@ -2959,6 +2966,7 @@
 <translation id="6860888819347870819">यसले picture-in-picture मोडमा प्रवेश गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6864189428899665393">२६७x३८९ मि.मि.</translation>
 <translation id="686485648936420384">उपभोक्ता स्रोतसाधन</translation>
+<translation id="6865166112578825782">ठेगाना भर्नुहोस्</translation>
 <translation id="6865412394715372076">यो कार्ड यस बखत पुष्टि गर्न सकिँदैन</translation>
 <translation id="6868573634057275953">अपडेट गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="6869334554832814367">व्यक्तिगत कर्जा</translation>
@@ -3428,6 +3436,7 @@
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7701544340847569275">अपडेट गर्ने कार्य त्रुटिसहित सम्पन्न भएको छ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> मा अगाडि बढ्नु (असुरक्षित छ)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">मलाई लेख्न मद्दत गरियोस्</translation>
 <translation id="7705992072972338699">अप्टिकल डिस्क (हाई-ग्लस)</translation>
 <translation id="770607638235926858">स्किइङ तथा स्नोबोर्डिङ</translation>
 <translation id="7706689436519265630">तपाईंले कपी गर्नुभएका वा सार्नुभएका फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा ती फाइल भण्डारण गरिन सक्छ।</translation>
@@ -3647,6 +3656,7 @@
 <translation id="8161095570253161196">ब्राउज गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8164078261547504572">मूल्य घट्दा इमेल प्राप्त गर्न चाहनुहुन्छ?</translation>
+<translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" नामक कीहरूलाई एउटै डिक्सनरीमा सेट गर्न सकिँदैन</translation>
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
 <translation id="817820454357658398">महिलालाई सफा रहन सघाउने उत्पादनहरू</translation>
@@ -3917,6 +3927,7 @@
 <translation id="8687429322371626002"><ph name="MANAGER" /> ले तपाईंको यन्त्र र खाता व्यवस्थापन गर्छ।</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति समूह पृष्ठको सङ्ख्या</translation>
+<translation id="8693163814413702888">यो भाषा अझै पनि उपलब्ध छैन।</translation>
 <translation id="8693639060656817812">ट्र्याकिङबाट सुरक्षित राख्ने सुविधाको उपलब्धताका बारेमा थप जान्नुहोस्</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699041776323235191">HID यन्त्र</translation>
@@ -4042,6 +4053,7 @@
 <translation id="8949410982325929394">टोन</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कानुन तथा सरकार</translation>
+<translation id="8952569554322479410">एउटा वेबसाइटले भर्खरै तपाईंको <ph name="REQUEST_TYPE" /> प्रयोग गर्ने अनुमति मागेको छ। यो १ मिनेटको सर्वेक्षण पूरा गरेर हामीलाई वेबसाइटहरूले अनुमति माग्ने तरिकामा सुधार ल्याउन मद्दत गर्नुहोस्।</translation>
 <translation id="8954252855949068147">लत्ताकपडा</translation>
 <translation id="8956124158020778855">यो सेटिङ अन गरेपछि यस ट्याबमा फर्केर लेख्न थाल्नुहोस्।</translation>
 <translation id="8957210676456822347">क्याप्टिभ पोर्टल प्राधिकरण</translation>

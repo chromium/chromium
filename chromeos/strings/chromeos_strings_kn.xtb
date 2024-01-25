@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ಗುಣಿಸಿ</translation>
 <translation id="1145018782460575098">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ವಿಂಡೋ ತೆರೆದಿದೆ. <ph name="NUM_UPDATES" /> ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="1145516343487477149">ಸಾಮಾನ್ಯ Chromebook ಪ್ರಶ್ನೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸಹಾಯ ಒದಗಿಸುವ ಲೇಖನಗಳು ಹಾಗೂ ಉತ್ತರಗಳನ್ನು ಕಂಡುಕೊಳ್ಳಿ</translation>
 <translation id="1154390310959620237">ನೀವು ಕೇವಲ 5 ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು. ಹೊಸದನ್ನು ಸೇರಿಸಲು ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಅಳಿಸಿ.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ಸ್ಕ್ಯಾನ್ ಪ್ರದೇಶಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1367951781824006909">ಫೈಲ್‌ವೊಂದನ್ನು ಆರಿಸಿ</translation>
+<translation id="1371650399987522809">Google AI ನಿಂದ ಬೆಂಬಲಿತವಾದ ವಾಲ್‌ಪೇಪರ್‌ಗಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="1387854245479784695">ಇದು ಎಲ್ಲಾ ಕೋರ್‌ಗಳ ಒಟ್ಟುಗೂಡಿಸುವಿಕೆಯಾಗಿದೆ</translation>
 <translation id="1394661041439318933">ಸಾಧನವು <ph name="BATTERY_PERCENTAGE" />% ಕೇಸ್ ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="1397738625398125236">ಗೇಟ್‌ವೇ ಅನ್ನು ಪಿಂಗ್ ಮಾಡಬಹುದು</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1561927818299383735">ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಬಣ್ಣ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="1566493343215789965">ವಿಭಾಗಿಸಿ</translation>
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
 <translation id="1572585716423026576">ವಾಲ್‌ಪೇಪರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="1578784163189013834">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="160633243685262989">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1611649489706141841">ಮುಂದೆ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
+<translation id="1615576200479539465">ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
 <translation id="1626590945318984973">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಫಂಕ್ಷನ್ ಮತ್ತು <ph name="META_KEY" /> ಕೀಗಳನ್ನು ಬಳಸದೆಯೇ ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಒಂದನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="2880569433548999039">ಮೋಡ ತೆಲುತ್ತಿರುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="2938573842839598578">ಅಂದಾಜು ಫಲಿತಾಂಶಕ್ಕಾಗಿ, <ph name="CATEGORY_TEXT" /> ದ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ <ph name="OPERATOR_TEXT" /> ಮಾಡಿ</translation>
 <translation id="2940811910881150316">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಮುಚ್ಚಳವನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</translation>
 <translation id="2941112035454246133">ಕಡಿಮೆ</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
 <translation id="3569407787324516067">ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7180865173735832675">ಕಸ್ಟಮೈಸ್</translation>
 <translation id="7184043045742675738">ನಿಮ್ಮ ಬಟನ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಯಾವುದೇ ಕೀ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ. ಮೌಸ್ ಅಥವಾ ಬಾಣದ ಕೀಗಳೊಂದಿಗೆ ಕೀಯ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
+<translation id="7206979415662233817">ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="7212547870105584639">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">ಕೀಬೋರ್ಡ್ ಬಣ್ಣ</translation>
 <translation id="7317831949569936035">ಶಾಲಾ ನೋಂದಣಿ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ನಿಮಗೆ ಕನಿಷ್ಟ 18 ವರ್ಷ ವಯಸ್ಸಿನವರಾಗಿರಬೇಕು ಮತ್ತು AI ವಾಲ್‌ಪೇಪರ್‌ನ ನಿಮ್ಮ ಬಳಕೆಯು <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ಮತ್ತು <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ಜನರೇಟಿವ್ AI ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ನೀವು ವೈಯಕ್ತಿಕ ಮತ್ತು ವಾಣಿಜ್ಯೇತರ ಬಳಕೆಗಾಗಿ ಮಾತ್ರ AI ಮೂಲಕ ವಾಲ್‌ಪೇಪರ್‌ಗಳನ್ನು ರಚಿಸಬಹುದು. ನೀವು ವಾಲ್‌ಪೇಪರ್ ಸಹಾಯವನ್ನು ಸ್ವೀಕರಿಸಿದಾಗ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಗೆ ಒಳಪಟ್ಟಿರುವ ವಾಲ್‌ಪೇಪರ್ ಸಲಹೆಗಳನ್ನು ರಚಿಸಲು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಪಠ್ಯವನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ರಲ್ಲಿ <ph name="LIST_POSITION" /> ಹುಡುಕಾಟ ಫಲಿತಾಂಶ: <ph name="SEARCH_RESULT_TEXT" />. ಶಾರ್ಟ್‌ಕಟ್‌ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು Enter ಕೀ ಒತ್ತಿರಿ.</translation>

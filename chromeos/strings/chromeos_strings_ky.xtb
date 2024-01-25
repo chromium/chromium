@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Ички ката</translation>
 <translation id="1124772482545689468">Колдонуучу</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">көбөйтүү</translation>
 <translation id="1145018782460575098">Тышкы түзмөктөрдө орнотулган программаны жаңыртуу терезеси ачык. <ph name="NUM_UPDATES" /> жаңыртуу бар.</translation>
 <translation id="1145516343487477149">Chromebook тууралуу көп берилүүчү суроолорго жоопторду жана макалаларды табасыз</translation>
 <translation id="1154390310959620237">5 ыкчам баскычты гана ыңгайлаштыра аласыз. Жаңы ыкчам баскычты кошуу үчүн эскисин өчүрүңүз.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скандоо аймагы боюнча</translation>
 <translation id="1367951781824006909">Файл тандаңыз</translation>
+<translation id="1371650399987522809">Google сунуштаган ЖИ технологиялары менен түзүлгөн тушкагаздар тууралуу пикир</translation>
 <translation id="1387854245479784695">Бул бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="1394661041439318933">Түзмөк кутучасынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Шлюздун байланышын текшерүүгө болот</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Тийме такта</translation>
 <translation id="1561927818299383735">баскычтоптун жарыгынын түсү</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> жаңыртылбай жатат</translation>
+<translation id="1566493343215789965">бөлүү</translation>
 <translation id="1567064801249837505">Альбомдор</translation>
 <translation id="1572585716423026576">Тушкагаз катары коюу</translation>
 <translation id="1578784163189013834">Көшөгөнүн фонун тандоо</translation>
 <translation id="160633243685262989">Сүрөттү алдын ала көрүү</translation>
 <translation id="1611649489706141841">багыттоо</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бери колдонулган трафик</translation>
+<translation id="1615576200479539465">Сүрөттөр түзүлүүдө...</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
 <translation id="1626590945318984973">Ыкчам баскыч жеткиликсиз. <ph name="META_KEY" /> жана функциялык баскычтары жок жаңы ыкчам баскычты басыңыз.</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Батареянын кубаты <ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> түгөндү.</translation>
 <translation id="2880569433548999039">Булут көшөгөсү</translation>
 <translation id="2926057806159140518">Колдонуучу атыңызды жана сырсөзүңүздү киргизип же QR кодуңузду скандаңыз</translation>
+<translation id="2938573842839598578">Болжолдуу натыйжа үчүн <ph name="OPERATOR_TEXT" /> <ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Түзмөктү сыноого болбойт. Сынап көрүү үчүн капкагын кайра ачыңыз.</translation>
 <translation id="2941112035454246133">Төмөн</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
+<translation id="3547264467365135390">Формула</translation>
 <translation id="3557205324756024651">Жергиликтүү идентификация (милдеттүү эмес)</translation>
 <translation id="3565064564551103223">Уруксат берилген IP-даректер</translation>
 <translation id="3569407787324516067">Көшөгө</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7180865173735832675">Өзгөчөлөштүрүү</translation>
 <translation id="7184043045742675738">Баскычты тууралоо үчүн каалаган баскычты басыңыз. Чычкан же жебе баскычтары менен баскычты жылдырыңыз.</translation>
+<translation id="7206979415662233817">Тейлөө шарттары</translation>
 <translation id="7212547870105584639">Тармактын APN параметрлерин тескеңиз. APN'дер мобилдик тармак менен Интернеттин ортосундагы байланышты түзүшөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Тышкы түзмөктөр үчүн орнотулган программанын жаңыртуулары</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">баскычтоптун түсү</translation>
 <translation id="7317831949569936035">Окуу жайын каттоо</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Сиз кеминде 18 жашта болуп, ЖИ тушкагаздарын <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google'дун Тейлөө шарттарына<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> жана <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Генеративдик ЖИни пайдалануунун кошумча шарттарына<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ылайык колдонууга макул болушуңуз керек.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ЖИ менен тушкагаздарды коммерциялык максатта эмес, жеке колдонуу үчүн гана түзө аласыз. Тушкагаз сунуштарын алуу үчүн сиз киргизген текст <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Купуялык саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык Google'дун ЖИ серверлерине жөнөтүлөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Издөөдөгү натыйжаларды көрүү үчүн Издөө жана Боштук баскычтарын басыңыз.</translation>
 <translation id="7343649194310845056">Тармак түзмөктөрү</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ичинен <ph name="LIST_POSITION" /> издөө натыйжасы көрсөтүлүүдө:<ph name="SEARCH_RESULT_TEXT" />. Ыкчам баскычка өтүү үчүн "Enter" баскычын басыңыз.</translation>

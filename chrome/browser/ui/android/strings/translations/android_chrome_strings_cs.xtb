@@ -900,6 +900,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>
+<translation id="5848257610304005265">Otevřít PDF pomocí aplikace <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
 <translation id="5855546874025048181">Zpřesnit: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Došlo k chybě. Sledování ceny se nepodařilo aktualizovat.</translation>
@@ -1382,6 +1383,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8127542551745560481">Upravit domovskou stránku</translation>
 <translation id="8130309322784422030">Uložené přihlašovací údaje mohou být zastaralé</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
+<translation id="8135406045838672858">Stažené soubory PDF se automaticky otevírají pomocí aplikace <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google.</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Zbývá: 1 d</translation>

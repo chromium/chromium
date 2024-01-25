@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Ichki xatolik</translation>
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">koʻpaytiring</translation>
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
 <translation id="1145516343487477149">Yordam maqolalari va umumiy Chromebook savollariga javoblar toping</translation>
 <translation id="1154390310959620237">5 tagacha tezkor tugmani moslash mumkin. Yangi tezkor tugma kiritish uchun boshqa birini oʻchiring.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanerlash sohasiga moslash</translation>
 <translation id="1367951781824006909">Fayl tanlang</translation>
+<translation id="1371650399987522809">Google AI yordamida yaratilgan fon rasmi yuzasidan fikr-mulohaza</translation>
 <translation id="1387854245479784695">Bu barcha yadrolarning faoliyati</translation>
 <translation id="1394661041439318933">Qurilma gʻilofining batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Darvozani tekshirish mumkin</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1561927818299383735">orqa chiroq rangi</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> yangilanmadi</translation>
+<translation id="1566493343215789965">boʻling</translation>
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
 <translation id="160633243685262989">Rasmga razm solish</translation>
 <translation id="1611649489706141841">oldinga</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sanasidan keyingi trafik sarfi</translation>
+<translation id="1615576200479539465">Rasmlar yaratilmoqda...</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1626590945318984973">Tezkor tugma ishlamayapti. Funksiya va <ph name="META_KEY" /> tugmachalarini bosmasdan qayta urinib koʻring.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="2880569433548999039">Bulut manzaralari ekran lavhasi</translation>
 <translation id="2926057806159140518">Login va parolingizni kiriting yoki QR kodni skanerlang</translation>
+<translation id="2938573842839598578">Yaqin natijalarni olish uchun <ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">Qurilmani sinash imkonsiz. Sinash uchun qurlimani yopib, keyin qayta oching</translation>
 <translation id="2941112035454246133">Past</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Qurilmadagi hisob (ixtiyoriy)</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
 <translation id="3569407787324516067">Ekran lavhasi</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7180865173735832675">Sozlash</translation>
 <translation id="7184043045742675738">Tugmani sozlash uchun istalgan klaviatura tugmasini bosing. Sichqoncha yoki strelka tugmalari bilan tugma joylashuvini oʻzgartiring</translation>
+<translation id="7206979415662233817">Xizmat shartlari</translation>
 <translation id="7212547870105584639">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Tashqi qurilmalar uchun mikrodastur yangilanishi</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">klaviatura rangi</translation>
 <translation id="7317831949569936035">Maktab uchun yozilish</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">AI fon rasmidan foydalanish uchun kamida 18 yoshga kirgan boʻlishingiz kerak. Bu funksiya ishlashida <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google xizmat shartlari<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> va <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ AI qoʻshimcha xizmat shartlari<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> amal qiladi.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          AI yordamida fon rasmlarini faqat shaxsiy yoki notijoriy maqsadlar uchun yaratish mumkin. Fon rasmini yaratishda yordam olishda siz kiritgan matn Google AI serverlariga yuboriladi va fon rasmlarini yaratib taklif qiladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> ta natija: <ph name="SEARCH_RESULT_TEXT" />. Tezkor tugmani ochish uchun Enter tugmasini bosing.</translation>

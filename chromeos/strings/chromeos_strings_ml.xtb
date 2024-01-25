@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ഗുണിക്കുക</translation>
 <translation id="1145018782460575098">'ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്‌ഡേറ്റ് ചെയ്യുക' വിൻഡോ തുറന്നിരിക്കുന്നു. <ph name="NUM_UPDATES" /> അപ്ഡേറ്റുകൾ ലഭ്യമാണ്.</translation>
 <translation id="1145516343487477149">Chromebook-മായി ബന്ധപ്പെട്ട പൊതുവായ ചോദ്യങ്ങൾക്കുള്ള സഹായ ലേഖനങ്ങളും ഉത്തരങ്ങളും കണ്ടെത്തുക</translation>
 <translation id="1154390310959620237">നിങ്ങൾക്ക് 5 കുറുക്കുവഴികൾ മാത്രമേ ഇഷ്ടാനുസൃതമാക്കാനാകൂ. പുതിയൊരെണ്ണം ചേർക്കാൻ ഒരു കുറുക്കുവഴി ഇല്ലാതാക്കുക.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="1566493343215789965">ഹരിക്കുക</translation>
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
 <translation id="1578784163189013834">സ്ക്രീൻ സേവർ പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
+<translation id="1615576200479539465">ചിത്രങ്ങൾ സൃഷ്‌ടിക്കുന്നു...</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="1626590945318984973">കുറുക്കുവഴി ലഭ്യമല്ല. ഫംഗ്‌ഷനും <ph name="META_KEY" /> കീകളും ഉപയോഗിക്കാതെ ഒരു പുതിയ കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="2880569433548999039">ക്ലൗഡ് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
+<translation id="2938573842839598578">ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലിഡ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
+<translation id="3547264467365135390">ഫോർമുല</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
 <translation id="3569407787324516067">സ്ക്രീൻ സേവർ</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7180865173735832675">ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="7184043045742675738">നിങ്ങളുടെ ബട്ടൺ ഇഷ്ടാനുസൃതമാക്കാൻ ഏതെങ്കിലും കീയിൽ ക്ലിക്ക് ചെയ്യുക. മൗസ് അല്ലെങ്കിൽ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് കീയുടെ സ്ഥാനം മാറ്റുക.</translation>
+<translation id="7206979415662233817">സേവന നിബന്ധനകൾ</translation>
 <translation id="7212547870105584639">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്ഡേറ്റുകൾ</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">കീബോർഡിന്റെ നിറം</translation>
 <translation id="7317831949569936035">സ്‌കൂൾ എൻറോൾമെന്റ്</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">നിങ്ങൾക്ക് കുറഞ്ഞത് 18 വയസ്സ് പ്രായമുണ്ടായിരിക്കണം, കൂടാതെ നിങ്ങളുടെ AI വാൾപേപ്പറുകളുടെ ഉപയോഗം <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google സേവന നിബന്ധനകൾ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" />, <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ജനറേറ്റീവ് AI അധിക സേവന നിബന്ധനകൾ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> എന്നിവയ്ക്ക് വിധേയമാണെന്ന് സമ്മതിക്കുകയും വേണം.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          വ്യക്തിപരവും വാണിജ്യേതരവുമായ ഉപയോഗത്തിനായി നിങ്ങൾക്ക് AI ഉപയോഗിച്ച് മാത്രമേ വാൾപേപ്പറുകൾ സൃഷ്ടിക്കാനാകൂ. നിങ്ങൾക്ക് വാൾപേപ്പറുമായി ബന്ധപ്പെട്ട സഹായം ലഭിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി വാൾപേപ്പർ നിർദ്ദേശങ്ങൾ സൃഷ്ടിക്കാൻ Google AI സെർവറുകളിലേക്ക് ടെക്‌സ്‌റ്റ് അയയ്‌ക്കും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search-ൽ ഫലം കാണാൻ Search+space അമർത്തുക.</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> തിരയൽ ഫലങ്ങളിൽ <ph name="LIST_POSITION" />-ാമത്തേത്: <ph name="SEARCH_RESULT_TEXT" />. കുറുക്കുവഴിയിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ Enter അമർത്തുക.</translation>

@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Колдонмонун версиясы</translation>
 <translation id="1428770807407000502">Шайкештирүү өчүрүлсүнбү?</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
+<translation id="1435593198351412143">PDF файлдарын автоматтык түрдө ачуу</translation>
 <translation id="1436784010935106834">Чыгарылып салынган</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> колдонмосунда иштеп жатат</translation>
 <translation id="1448440926884431741">Көз салган товарларды Кыстармаларда иреттей аласыз</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">Серепчиңиздин же түзмөгүңүздүн ишин байкалаарлык деңгээлде жайлатпайт.</translation>
 <translation id="2900528713135656174">Иш-чара түзүү</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сунуштары көрсөтүлүүдө</translation>
+<translation id="2904300462646366554">Жүктөлүп алынган PDF файлдары түзмөгүңүздөгү PDF көрүүчү каражаттарынын бири менен автоматтык түрдө ачылат</translation>
 <translation id="2904414404539560095">Жалпы түзмөктөрдүн тизмеси көрсөтүлгөн өтмөк толук экран режиминде ачылды.</translation>
 <translation id="2908243544703713905">Окула элек окуялар бар</translation>
 <translation id="2909615210195135082">Google билдирмелеринин платформасы</translation>
@@ -894,9 +896,11 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
 <translation id="5814749351757353073">Жактырган сайттарыңызды колдоно бериңиз</translation>
 <translation id="5822875253699806474">Көргөн сайттарга тез кайтуу үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> тизмесине сакталды</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5833984609253377421">Шилтеме менен бөлүшүү</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">PDF файлы <ph name="APP_NAME" /> колдонмосу менен ачылсынбы?</translation>
 <translation id="5853623416121554550">тындырылды</translation>
 <translation id="5855546874025048181">Өркүндөтүү: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Бир жерден ката кетти. Баасына көз салуу жаңыртылбай койду.</translation>
@@ -1379,6 +1383,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8127542551745560481">Башкы бетти түзөтүү</translation>
 <translation id="8130309322784422030">Сакталган кирүү маалыматынын мөөнөтү өтүп кеткен окшойт</translation>
 <translation id="813082847718468539">Сайттын маалыматын карап көрүү</translation>
+<translation id="8135406045838672858">Жүктөлүп алынган PDF файлдары <ph name="APP_NAME" /> колдонмосу менен автоматтык түрдө ачылат</translation>
 <translation id="8137562778192957619">Бул сырсөздү эстеп калуунун кереги жок. Ал Google'дун Сырсөздөрдү башкаргыч кызматында сакталат.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл калды</translation>
 <translation id="8190358571722158785">1 күн калды</translation>

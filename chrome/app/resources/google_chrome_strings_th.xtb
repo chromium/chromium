@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">ใครกำลังใช้ Chrome อยู่</translation>
 <translation id="1142745911746664600">อัปเดต Chrome ไม่ได้</translation>
 <translation id="1149651794389918149">ลงชื่อเข้าใช้ Chrome หากต้องการลงชื่อเข้าใช้บัญชีเพียงครั้งเดียว คุณสามารถ<ph name="GUEST_LINK_BEGIN" />ใช้อุปกรณ์ในฐานะผู้มาเยือน<ph name="GUEST_LINK_END" />ได้</translation>
-<translation id="1152920704813762236">เกี่ยวกับ Chrome OS</translation>
+<translation id="1152920704813762236">เกี่ยวกับ ChromeOS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
 <translation id="1194807384646768652">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ประเภทนี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
@@ -83,7 +83,7 @@
 <translation id="234869673307233423">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="235650106824528204">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chrome ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">ต่อไป</translation>
-<translation id="2401189691232800402">ระบบ Chrome OS</translation>
+<translation id="2401189691232800402">ระบบ ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}=1{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}other{มีส่วนขยาย Chrome อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID # เครื่อง}}</translation>
 <translation id="2424440923901031101">ส่วนขยายนี้ละเมิดนโยบาย Chrome เว็บสโตร์และอาจไม่ปลอดภัย นำส่วนขยายดังกล่าวออกจาก Chrome เพื่อไม่ให้ดูและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ที่เข้าชม รวมถึงข้อมูลส่วนบุคคลได้อีกต่อไป</translation>
 <translation id="2467438592969358367">Google Chrome ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
@@ -103,7 +103,7 @@
 <translation id="2597976513418770460">ดึงข้อมูลของคุณในเบราว์เซอร์ Chrome จาก <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">การแคชโปรแกรมติดตั้งที่ดาวน์โหลดไว้ล้มเหลว ข้อผิดพลาด: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
 <translation id="2622559029861875898">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome ดำเนินการตรวจสอบเป็นประจำเพื่อให้มั่นใจว่าเบราว์เซอร์มีการตั้งค่าที่ปลอดภัยที่สุด เราจะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
 <translation id="2652691236519827073">เปิดลิงก์ใน Chrome แท็บใหม่</translation>
 <translation id="2665296953892887393">ช่วยทำให้ Google Chrome ดียิ่งขึ้นโดยการส่งรายงานข้อขัดข้องและ <ph name="UMA_LINK" /> ไปยัง Google</translation>
@@ -348,7 +348,7 @@
 <translation id="6851981911629679515">เปิดการปกป้องเพิ่มเติมในเครื่องมือ JavaScript และ WebAssembly ของ Chrome</translation>
 <translation id="6881299373831449287">กำลังอัปเดต Chrome</translation>
 <translation id="6885412569789873916">แอป Chrome เบต้า</translation>
-<translation id="6933858244219479645">ระบบ Chrome OS</translation>
+<translation id="6933858244219479645">ระบบ ChromeOS</translation>
 <translation id="6938166777909186039">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 8.1</translation>
 <translation id="6943584222992551122">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์เครื่องนี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chrome ในชื่อ <ph name="USER_EMAIL" /></translation>
 <translation id="6967962315388095737">กฎขาเข้าสำหรับ Google Chrome เบต้าเพื่ออนุญาตการเข้าชมแบบ mDNS</translation>

@@ -95,7 +95,7 @@
 <translation id="1742316578210444689">hebreiska, translitterering</translation>
 <translation id="1747761757048858544">nederländska (Nederländerna)</translation>
 <translation id="174937106936716857">Totalt antal filer</translation>
-<translation id="1755345808328621801">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
+<translation id="1755345808328621801">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1761091787730831947">Dela med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentiseringscertifikatet godkändes inte lokalt</translation>
@@ -243,7 +243,7 @@
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
 <translation id="2958458230122209142">Ont om lagringsutrymme – <ph name="REMAINING_PERCENTAGE" /> % kvar av ditt individuella lagringsutrymme på <ph name="TOTAL_SPACE" />.</translation>
-<translation id="2977940621473452797">Den här filen är avsedd för en dator med programvara från Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
+<translation id="2977940621473452797">Den här filen är avsedd för en dator med programvara från Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="2984337792991268709">Idag kl. <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">franska (Kanada)</translation>
 <translation id="3003189754374775221">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
@@ -464,7 +464,7 @@
 <translation id="4694604912444486114">Apa</translation>
 <translation id="469612310041132144">kinesiska (snabb inmatningsmetod)</translation>
 <translation id="4697043402264950621">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i stigande ordning.</translation>
-<translation id="469897186246626197">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
+<translation id="469897186246626197">Den här filen är avsedd för en Windows-dator. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="4706042980341760088">tamilskt tangentbord (skrivmaskin)</translation>
 <translation id="4711094779914110278">turkiska</translation>
 <translation id="4712283082407695269">Öppnar <ph name="PATH" /></translation>
@@ -601,7 +601,7 @@
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
 <translation id="5605830556594064952">USA (dvorak)</translation>
-<translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
+<translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
 <translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Lyssna</translation>
@@ -822,7 +822,7 @@
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7343393116438664539">vietnamesiska (telex)</translation>
 <translation id="7347346221088620549">Krypterad fil</translation>
-<translation id="7357762654218998920">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
+<translation id="7357762654218998920">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> objekt kopieras ...</translation>
 <translation id="7375951387215729722">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i fallande ordning.</translation>
 <translation id="7377161162143020057">Möjligheten att kopiera den här filen blockeras av administratörspolicyn</translation>

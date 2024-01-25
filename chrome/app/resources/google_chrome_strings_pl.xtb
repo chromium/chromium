@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Kto używa Chrome?</translation>
 <translation id="1142745911746664600">Nie można zaktualizować Chrome</translation>
 <translation id="1149651794389918149">Zaloguj się w Chrome. Jeśli chcesz zalogować się na konto tylko raz, możesz <ph name="GUEST_LINK_BEGIN" />skorzystać z trybu gościa na urządzeniu<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">System operacyjny Chrome – informacje</translation>
+<translation id="1152920704813762236">ChromeOS – informacje</translation>
 <translation id="1154147086299354128">&amp;Otwórz w Chrome</translation>
 <translation id="1194807384646768652">Pobieranie zostało zablokowane przez Chrome, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
@@ -83,7 +83,7 @@
 <translation id="234869673307233423">Chrome nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="235650106824528204">Wszystkie dane Chrome wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Dalej</translation>
-<translation id="2401189691232800402">System operacyjny Chrome</translation>
+<translation id="2401189691232800402">System ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chrome uzyskiwało dostęp do 1 urządzenia HID}=1{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do 1 urządzenia HID}few{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}many{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzeń HID}other{Co najmniej 1 rozszerzenie do Chrome uzyskuje dostęp do # urządzenia HID}}</translation>
 <translation id="2424440923901031101">To rozszerzenie narusza zasady Chrome Web Store i może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to także Twoich danych osobowych.</translation>
 <translation id="2467438592969358367">Google Chrome chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
@@ -103,7 +103,7 @@
 <translation id="2597976513418770460">Uzyskaj dostęp do danych z przeglądarki Chrome z konta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome nie może sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>
 <translation id="2665296953892887393">Pomóż nam ulepszyć Google Chrome, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
@@ -348,7 +348,7 @@
 <translation id="6851981911629679515">Włącz dodatkową ochronę w mechanizmie JavaScript i WebAssembly w Chrome</translation>
 <translation id="6881299373831449287">Aktualizuję Chrome</translation>
 <translation id="6885412569789873916">Aplikacje do Chrome Beta</translation>
-<translation id="6933858244219479645">System operacyjny Chrome</translation>
+<translation id="6933858244219479645">System ChromeOS</translation>
 <translation id="6938166777909186039">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.1.</translation>
 <translation id="6943584222992551122">Dane przeglądania tej osoby zostaną usunięte z tego urządzenia. Aby je odzyskać, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Reguła dla ruchu przychodzącego w Google Chrome Beta zezwalająca na ruch mDNS.</translation>

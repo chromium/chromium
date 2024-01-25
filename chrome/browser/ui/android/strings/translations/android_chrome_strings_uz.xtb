@@ -91,6 +91,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1428770807407000502">Sinxronizatsiya qilinsinmi?</translation>
 <translation id="1430915738399379752">Chop etish</translation>
+<translation id="1435593198351412143">PDF fayllar avtomatik ochilsin</translation>
 <translation id="1436784010935106834">Olib tashlangan</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
@@ -339,6 +340,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2894821468041866720">Brauzer yoki qurilmani sezilarli darajada sekinlashtirmaydi.</translation>
 <translation id="2900528713135656174">Tadbir yaratish</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> uchun tavsiyalar koʻrsatilmoqda</translation>
+<translation id="2904300462646366554">Yuklab olingan PDF fayllar avtomatik ravishda qurilmadagi PDF ilovalaridan birida ochiladi</translation>
 <translation id="2904414404539560095">Butun hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
 <translation id="2908243544703713905">Ochilmagan hikoyalar tayyor</translation>
 <translation id="2909615210195135082">Google bildirishnomalar platformasi</translation>
@@ -894,9 +896,11 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="5814749351757353073">Sevimli saytlardan xabar olib turing</translation>
 <translation id="5822875253699806474">Ochilgan sahifani davom ettirish uchun varaqlar va tarixni sinxronlang</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> jildiga saqlandi</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5833984609253377421">Havolani ulashish</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">PDF fayl <ph name="APP_NAME" /> ilovasida ochilsinmi?</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
 <translation id="5855546874025048181">Aniqlashtirish: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Xatolik yuz berdi. Kuzatiladigan narx yangilanmadi.</translation>
@@ -1379,6 +1383,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="8130309322784422030">Kirishga oid saqlangan axborotingiz eskirgan</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
+<translation id="8135406045838672858">Yuklab olingan PDF fayllar avtomatik <ph name="APP_NAME" /> ilovasida ochiladi</translation>
 <translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ta fayl qoldi</translation>
 <translation id="8190358571722158785">1 kun qoldi</translation>

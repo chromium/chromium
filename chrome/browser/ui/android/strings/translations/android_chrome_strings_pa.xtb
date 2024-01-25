@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ਐਪਲੀਕੇਸ਼ਨ ਵਰਜਨ</translation>
 <translation id="1428770807407000502">ਕੀ ਸਿੰਕ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="1435593198351412143">PDF ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="1436784010935106834">ਹਟਾਈਆਂ ਗਈਆਂ</translation>
 <translation id="1437543266176261764">ਇਹ ਸਰਗਰਮੀ <ph name="APP_NAME" /> ਵਿੱਚ ਚੱਲ ਰਹੀ ਹੈ</translation>
 <translation id="1448440926884431741">Bookmarks ਵਿੱਚ ਆਪਣੇ ਟਰੈਕ ਕੀਤੇ ਉਤਪਾਦਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -339,6 +340,7 @@
 <translation id="2894821468041866720">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਜਾਂ ਡੀਵਾਈਸ ਨੂੰ ਹੌਲੀ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="2900528713135656174">ਇਵੈਂਟ ਬਣਾਓ</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ਲਈ ਸੁਝਾਅ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
+<translation id="2904300462646366554">ਡਾਊਨਲੋਡ ਕੀਤੀ PDF ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ PDF ਵਿਊਅਰਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਇੱਕ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੁੱਲ੍ਹ ਜਾਂਦੀਆਂ ਹਨ</translation>
 <translation id="2904414404539560095">ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="2908243544703713905">ਨਾ-ਪੜ੍ਹੀਆਂ ਕਹਾਣੀਆਂ ਤਿਆਰ ਹਨ</translation>
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
@@ -894,9 +896,11 @@
 <translation id="5810288467834065221">ਕਾਪੀਰਾਈਟ <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="5814749351757353073">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਸਾਈਟਾਂ ਦਾ ਅਨੁਸਰਣ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5822875253699806474">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5833984609253377421">ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">ਕੀ PDF ਫ਼ਾਈਲ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਖੋਲ੍ਹਣਾ ਹੈ?</translation>
 <translation id="5853623416121554550">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="5855546874025048181">ਸੋਧੋ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। 'ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ' ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
@@ -1379,6 +1383,7 @@
 <translation id="8127542551745560481">ਹੋਮਪੇਜ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="8130309322784422030">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੀ ਸਾਈਨ-ਇਨ ਜਾਣਕਾਰੀ ਸ਼ਾਇਦ ਪੁਰਾਣੀ ਹੋਵੇ</translation>
 <translation id="813082847718468539">ਸਾਈਟ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
+<translation id="8135406045838672858">ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ PDF ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="8137562778192957619">ਤੁਹਾਨੂੰ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਪਵੇਗੀ। ਇਸਨੂੰ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ਫ਼ਾਈਲਾਂ ਬਾਕੀ</translation>
 <translation id="8190358571722158785">1 ਦਿਨ ਬਾਕੀ</translation>

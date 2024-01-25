@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सेभ गर्न "पुष्टि गर्नुहोस्" बटनमा क्लिक गर्नुहोस्। <ph name="TIMEOUT_SECONDS" /> मा पहिलेका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="6989752354829085073">Chromebook चलाउने तरिका सिक्न केही समय खर्चेर यसका सुविधाहरू हेर्नुहोस्। ६ वटा चरणमा सेटअप गरी चलाउन थाल्नुहोस्।</translation>
 <translation id="7004910047186208204">मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="7005239792648594238">सुरु गर्न कुनै एप खोल्नुहोस्</translation>

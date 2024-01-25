@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">ເປີດໃຊ້ສິດເຂົ້າເຖິງ</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="698231206551913481">ທຸກໄຟລ໌ ແລະ ຂໍ້ມູນພາຍໃນເຄື່ອງທີ່ເຊື່ອມໂຍງກັບຜູ້ໃຊ້ນີ້ຈະຖືກລຶບອອກໂດຍຖາວອນເມື່ອລຶບຜູ້ໃຊ້ນີ້ອອກ.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). ຄວາມລະອຽດປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">ເບິ່ງສາທິດສັ້ນໆສຳລັບວິທີໃຊ້ Chromebook ຂອງທ່ານ. ເລີ່ມຕົ້ນ ແລະ ພ້ອມໃຊ້ໃນ 6 ຂັ້ນຕອນ.</translation>
 <translation id="7004910047186208204">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດມືຖື</translation>
 <translation id="7005239792648594238">ເປີດແອັບເພື່ອເລີ່ມຕົ້ນ</translation>

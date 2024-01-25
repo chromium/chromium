@@ -259,6 +259,7 @@
 <translation id="1442987760062738829">سوراخ کریں</translation>
 <translation id="1446396933673057385">درستگی چیک</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">کلیدیں "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" کلیدوں کی طرح ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
 <translation id="1452803302401719440">آپ کے والدین نے جن ترتیبات کا انتخاب کیا ہے، اب وہ آپ کو آن لائن تحفظ فراہم کر رہے ہیں</translation>
 <translation id="1455413310270022028">صافی</translation>
 <translation id="1458140305240870199">زیر جامے</translation>
@@ -770,6 +771,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">آپ کے لاگ ان ہونے کے دوران اس آلے سے منسلک کردہ پیریفیرلز</translation>
 <translation id="2450021089947420533">صارف کے تجربے</translation>
+<translation id="2452837234288608067">اس میں مدد نہیں کر سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2456755709261364512">آپ کی بیٹری <ph name="REQUIRED_BATTERY_PRECENT" />فیصد سے زیادہ چارج ہونی چاہیے</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> تلاش کریں</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
@@ -911,6 +913,7 @@
 <translation id="2725927759457695883">مکمل نام پُر کریں</translation>
 <translation id="2726001110728089263">سائڈ ٹرے</translation>
 <translation id="2728127805433021124">سرور کا سرٹیفیکیٹ ایک کمزور دستخط الگورتھم استعمال کر کے دستخط کیا ہوا ہے۔</translation>
+<translation id="272937284275742856">آپ کی ادائیگی کی تفصیلات کی محفوظ طریقے سے تصدیق ہو رہی ہے...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">کلاسیکل موسیقی</translation>
 <translation id="2731382536835015353">‏‎44 x 68 انچ</translation>
@@ -1010,6 +1013,7 @@
 <translation id="2958544468932521864">کرکٹ</translation>
 <translation id="2959113999220720579">چہرے اور جسم کی نگہداشت</translation>
 <translation id="2962073860865348475">‏‎12 x 18 انچ</translation>
+<translation id="2967098518029543669">‏اسے اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="2968103128155246731">وینز اور منی وینز</translation>
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، فی الحال منتخب کردہ۔ <ph name="ROW_CONTENT" /></translation>
@@ -1385,6 +1389,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> ہندسی توثیقی کوڈ درج کریں</translation>
 <translation id="3681007416295224113">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3681421644246505351">‏Chrome آپ کی حالیہ براؤزنگ کی سرگزشت کی بنیاد پر دلچسپی کے موضوعات کو نوٹ کرتا ہے۔</translation>
+<translation id="3682094733650754138">مکمل پتہ پُر کریں کا اختیار منتخب کیا گیا</translation>
 <translation id="3689867156802445220">بلڈنگ نمبر</translation>
 <translation id="3693327506115126094">اپنی توثیق کئے جانے کا طریقہ منتخب کریں</translation>
 <translation id="3698629142018988477">‏سائٹ تخلیق کریں بٹن، Google Sites میں تیزی سے نئی سائٹ تخلیق کرنے کے لیے فعال کریں</translation>
@@ -2794,6 +2799,7 @@
 <translation id="6491663123807473970">‏<ph name="URL" /> آپ کے MIDI آلات استعمال کرنا چاہتا ہے</translation>
 <translation id="6493924760403974580">یہ ایپ صرف اس سائز کو سپورٹ کرتی ہے۔</translation>
 <translation id="6494750904506170417">پوپ اپس اور ری ڈائریکٹس</translation>
+<translation id="6495664197699704593">یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، <ph name="GOOGLE_PASSWORD_MANAGER" />۔</translation>
 <translation id="6497295192259406877">کاروباری آپریشنز</translation>
 <translation id="6499038740797743453">پاس ورڈ کو ری سیٹ کریں؟</translation>
 <translation id="6502510275417601303">ادائیگی کی نئی ترتیب کے بارے میں الرٹ بند ہے</translation>
@@ -2908,6 +2914,7 @@
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6737708609449480586">سینکی ہوئی اشیاء</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
+<translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="674375294223700098">سرور سرٹیفکیٹ میں نامعلوم خرابی۔</translation>
 <translation id="6744009308914054259">کنکشن کا انتظار کرنے کے دوران، آف لائن مضامین پڑھنے کے لیے آپ ڈاؤن لوڈز ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="6745592621698551453">ابھی اپ ڈیٹ کریں</translation>
@@ -2964,6 +2971,7 @@
 <translation id="6860888819347870819">تصویر میں تصویر داخل کرنے کے لیے کہہ سکتی ہے</translation>
 <translation id="6864189428899665393">‏‎267 x 389 مل میٹر</translation>
 <translation id="686485648936420384">صارف کے وسائل</translation>
+<translation id="6865166112578825782">پتہ درج کریں</translation>
 <translation id="6865412394715372076">ابھی اس کارڈ کی توثیق نہیں کی جا سکتی</translation>
 <translation id="6868573634057275953">اپ ڈیٹ دوبارہ شروع کریں</translation>
 <translation id="6869334554832814367">ذاتی قرضے</translation>
@@ -3433,6 +3441,7 @@
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7701544340847569275">خرابیوں کے ساتھ اپ ڈیٹ مکمل ہو گئی</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> کی طرف بڑھیں (غیر محفوظ)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">لکھنے میں میری مدد کریں</translation>
 <translation id="7705992072972338699">آپٹیکل ڈسک (ہائی گلوس)</translation>
 <translation id="770607638235926858">اسکیئنگ اور سنو بورڈنگ</translation>
 <translation id="7706689436519265630">‏جن فائلز کو آپ کاپی یا منتقل کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کیلئے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے۔</translation>
@@ -3652,6 +3661,7 @@
 <translation id="8161095570253161196">براؤزنگ دوبارہ شروع کریں</translation>
 <translation id="8163866351304776260">بائیں طرف مستطیل سوراخ</translation>
 <translation id="8164078261547504572">قیمتیں گرنے پر ای میلز چاہتے ہیں؟</translation>
+<translation id="8169175551046720804">کلیدیں "<ph name="DATA_CONTROLS_KEYS" />" ایک ہی ڈکشنری میں سیٹ نہیں کی جا سکتیں</translation>
 <translation id="8175796834047840627">‏آپ کے سائن ان ہونے کی وجہ سے Chrome آپ کے کارڈز کو آپ کے Google اکاؤنٹ میں محفوظ کرنے کی پیشکش کر رہا ہے۔ آپ اس برتاؤ کو ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="8176440868214972690">اس آلہ کے منتظم نے کچھ معلومات جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹ پر بھیجی ہیں۔</translation>
 <translation id="817820454357658398">نسوانی صفائی ستھرائی کے پروڈکٹس</translation>
@@ -3922,6 +3932,7 @@
 <translation id="8687429322371626002">آپ کا آلہ اور اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="868922510921656628">صفحات فی سیٹ</translation>
+<translation id="8693163814413702888">یہ زبان ابھی تک تعاون یافتہ نہیں ہے۔</translation>
 <translation id="8693639060656817812">ٹریکنگ کے خلاف تحفظ کی دستیابی کے بارے میں مزید جانیں</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699041776323235191">‏HID آلہ</translation>
@@ -4047,6 +4058,7 @@
 <translation id="8949410982325929394">ٹون</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">قانون اور حکومت</translation>
+<translation id="8952569554322479410">ایک ویب سائٹ نے ابھی آپ کی <ph name="REQUEST_TYPE" /> تک رسائی کے لیے کہا ہے۔ اس 1 منٹ کے سروے میں حصہ لے کر ویب سائٹس رسائی کے لیے کس طرح کہتی ہیں اس کو بہتر بنانے میں ہماری مدد کریں۔</translation>
 <translation id="8954252855949068147">لباس</translation>
 <translation id="8956124158020778855">اس ترتیب کو آن کرنے کے بعد، لکھنا شروع کرنے کے لیے اس ٹیب پر واپس آئیں۔</translation>
 <translation id="8957210676456822347">کیپٹو پورٹل اجازت دہندگی</translation>

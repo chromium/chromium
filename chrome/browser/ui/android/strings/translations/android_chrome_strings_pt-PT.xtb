@@ -900,6 +900,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Partilhar link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265">Abrir o PDF com a app <ph name="APP_NAME" />?</translation>
 <translation id="5853623416121554550">em pausa</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Algo correu mal. Não foi possível atualizar a opção Monitorizar preço.</translation>
@@ -1382,6 +1383,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="8130309322784422030">As suas informações de início de sessão armazenadas podem estar desatualizadas</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
+<translation id="8135406045838672858">Os PDFs transferidos são abertos automaticamente com a app <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Não vai ter de memorizar esta palavra-passe. Vai ser guardada no Gestor de Palavras-passe da Google.</translation>
 <translation id="8186512483418048923">Faltam <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Falta 1 dia</translation>

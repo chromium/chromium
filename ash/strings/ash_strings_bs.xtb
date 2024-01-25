@@ -1498,6 +1498,7 @@ Nova instalacija</translation>
 <translation id="6981291220124935078">Uključi pristup</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Nakon što se ukloni ovaj korisnik, trajno će se izbrisati svi fajlovi i lokalni podaci povezani s njim.</translation>
+<translation id="6984028004251196682">Ekran <ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Rezolucija je promijenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknite na Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Krenite u kratki obilazak da saznate kako se kretati Chromebookom. Izvršite pokretanje u šest koraka.</translation>
 <translation id="7004910047186208204">Povežite se s prijenosom podataka na mobilnoj mreži</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da započnete</translation>

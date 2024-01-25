@@ -258,6 +258,7 @@
 <translation id="1442987760062738829">ਮੋਰੀ</translation>
 <translation id="1446396933673057385">ਸਟੀਕਤਾ ਦੀ ਜਾਂਚ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">ਕੁੰਜੀਆਂ "<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" ਨੂੰ "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" ਕੁੰਜੀਆਂ ਵਾਂਗ ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="1452803302401719440">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਵੱਲੋਂ ਚੁਣੀਆਂ ਗਈਆਂ ਸੈਟਿੰਗਾਂ ਹੁਣ ਤੁਹਾਨੂੰ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰੱਖ ਰਹੀਆਂ ਹਨ</translation>
 <translation id="1455413310270022028">ਰਬੜ</translation>
 <translation id="1458140305240870199">ਅੰਦਰੂਨੀ ਵਸਤਰ</translation>
@@ -769,6 +770,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">ਤੁਹਾਡੇ ਲੌਗ-ਇਨ ਕੀਤੇ ਹੋਣ ਦੌਰਾਨ ਇਸ ਡੀਵਾਈਸ ਨਾਲ ਜੁੜੇ ਪੈਰੀਫਿਰਲ</translation>
 <translation id="2450021089947420533">ਖੋਜ ਸਫ਼ਰ</translation>
+<translation id="2452837234288608067">ਇਸ ਸੰਬੰਧੀ ਮਦਦ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2456755709261364512">ਤੁਹਾਡੀ ਬੈਟਰੀ <ph name="REQUIRED_BATTERY_PRECENT" />% ਤੋਂ ਵੱਧ ਚਾਰਜ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> ਖੋਜੋ</translation>
 <translation id="2463739503403862330">ਭਰੋ</translation>
@@ -910,6 +912,7 @@
 <translation id="2725927759457695883">ਪੂਰਾ ਨਾਮ ਭਰੋ</translation>
 <translation id="2726001110728089263">ਸਾਈਡ ਟ੍ਰੇਅ</translation>
 <translation id="2728127805433021124">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇੱਕ ਕਮਜ਼ੋਰ ਹਸਤਾਖਰ ਅਲਗੋਰਿਦਮ ਵਰਤਦੇ ਹੋਏ ਸਾਈਨ ਹੋਇਆ ਹੈ।</translation>
+<translation id="272937284275742856">ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਵੇਰਵਿਆਂ ਦੀ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ਕਨੈਕਟੀਵਿਟੀ ਨਿਦਾਨ ਚਲਾਇਆ ਜਾ ਰਿਹਾ ਹੈ<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">ਸ਼ਾਸਤਰੀ ਸੰਗੀਤ</translation>
 <translation id="2731382536835015353">44 x 68 ਇੰਚ</translation>
@@ -1009,6 +1012,7 @@
 <translation id="2958544468932521864">ਕ੍ਰਿਕਟ</translation>
 <translation id="2959113999220720579">ਚਿਹਰੇ ਅਤੇ ਸਰੀਰ ਦੀ ਦੇਖਭਾਲ</translation>
 <translation id="2962073860865348475">12 x 18 ਇੰਚ</translation>
+<translation id="2967098518029543669">ਇਸ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="2968103128155246731">ਵੈਨ ਅਤੇ ਮਿਨੀਵੈਨ</translation>
 <translation id="2972581237482394796">&amp;ਰੀਡੂ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ਵਰਤਮਾਨ ਵਿੱਚ ਚੁਣਿਆ ਗਿਆ। <ph name="ROW_CONTENT" /></translation>
@@ -1380,6 +1384,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" />-ਅੰਕੀ ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3681007416295224113">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3681421644246505351">Chrome ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਨੋਟ ਕਰਦਾ ਹੈ।</translation>
+<translation id="3682094733650754138">'ਪਤਾ ਭਰੋ' ਵਿਕਲਪ ਚੁਣਿਆ ਗਿਆ ਸੀ</translation>
 <translation id="3689867156802445220">ਇਮਾਰਤ ਨੰਬਰ</translation>
 <translation id="3693327506115126094">ਚੁਣੋ ਕਿ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਿਵੇਂ ਕੀਤੀ ਜਾਵੇ</translation>
 <translation id="3698629142018988477">'ਸਾਈਟ ਬਣਾਓ' ਬਟਨ, Google Sites ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ ਸਾਈਟ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -2787,6 +2792,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="6493924760403974580">ਇਹ ਐਪ ਸਿਰਫ਼ ਇਸ ਆਕਾਰ ਦਾ ਸਮਰਥਨ ਕਰਦੀ ਹੈ।</translation>
 <translation id="6494750904506170417">ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ</translation>
+<translation id="6495664197699704593">ਇਹ ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">ਕਾਰੋਬਾਰੀ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="6499038740797743453">ਕੀ ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6502510275417601303">ਨਵੀਂ ਭੁਗਤਾਨ ਸੈਟਿੰਗ ਬਾਰੇ ਅਲਰਟ ਬੰਦ ਹੈ</translation>
@@ -2901,6 +2907,7 @@
 <translation id="6732087373923685049">ਕੈਮਰਾ</translation>
 <translation id="6737708609449480586">ਬੇਕ ਕੀਤੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="6738516213925468394">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ <ph name="BEGIN_LINK" />ਸਿੰਕ ਪਾਸਫਰੇਜ਼<ph name="END_LINK" /> ਨਾਲ <ph name="TIME" /> ਵਜੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ। ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="6740851646645036700">ਤੁਹਾਡੀ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡੀ ਲਿਖਣ ਸੰਬੰਧੀ ਸਹਾਇਤਾ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="674375294223700098">ਅਗਿਆਤ ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਗੜਬੜ।</translation>
 <translation id="6744009308914054259">ਕਨੈਕਸ਼ਨ ਦੀ ਉਡੀਕ ਕਰਨ ਵੇਲੇ, ਆਫ਼ਲਾਈਨ ਲੇਖ ਪੜ੍ਹਨ ਲਈ ਤੁਸੀਂ ਡਾਊਨਲੋਡ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6745592621698551453">ਹੁਣ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -2957,6 +2964,7 @@
 <translation id="6860888819347870819">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਦਾਖਲ ਕਰਨ ਲਈ ਲਈ ਕਿਹਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6864189428899665393">267 x 389 ਮਿ.ਮੀ.</translation>
 <translation id="686485648936420384">ਖਪਤਕਾਰ ਸਰੋਤ</translation>
+<translation id="6865166112578825782">ਪਤਾ ਭਰੋ</translation>
 <translation id="6865412394715372076">ਇਸ ਕਾਰਡ ਦੀ ਫਿਲਹਾਲ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="6868573634057275953">ਅੱਪਡੇਟ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6869334554832814367">ਨਿੱਜੀ ਲੋਨ</translation>
@@ -3426,6 +3434,7 @@
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701544340847569275">ਅੱਪਡੇਟ ਗੜਬੜਾਂ ਨਾਲ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> ਲਈ ਅੱਗੇ ਵੱਧੋ (ਅਸੁਰੱਖਿਅਤ)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="7705992072972338699">ਔਪਟੀਕਲ ਡਿਸਕ (ਹਾਈ-ਗਲੋਸ)</translation>
 <translation id="770607638235926858">ਸਕੀਇੰਗ ਅਤੇ ਸਨੋਬੋਰਡਿੰਗ</translation>
 <translation id="7706689436519265630">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀਆਂ ਜਾਂ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਲਿਜਾਈਆਂ ਜਾਣ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -3645,6 +3654,7 @@
 <translation id="8161095570253161196">ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8163866351304776260">ਖੱਬੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="8164078261547504572">ਕੀ ਤੁਸੀਂ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਈਮੇਲਾਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="8169175551046720804">ਕੁੰਜੀਆਂ "<ph name="DATA_CONTROLS_KEYS" />" ਨੂੰ ਉਸੇ ਸ਼ਬਦਕੋਸ਼ ਵਿੱਚ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8175796834047840627">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ ਕਰਕੇ Chrome ਤੁਹਾਡੇ ਕਾਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸ ਵਤੀਰੇ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8176440868214972690">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਅੱਗੇ ਦਿੱਤੀਆਂ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੁਝ ਜਾਣਕਾਰੀ ਭੇਜੀ ਹੈ, ਜਿਵੇਂ ਸੈਟਿੰਗਾਂ ਜਾਂ ਨੀਤੀਆਂ।</translation>
 <translation id="817820454357658398">ਔਰਤਾਂ ਨਾਲ ਸੰਬੰਧਿਤ ਸਿਹਤ ਸੰਬੰਧੀ ਉਤਪਾਦ</translation>
@@ -3915,6 +3925,7 @@
 <translation id="8687429322371626002">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="8688672835843460752">ਉਪਲਬਧ</translation>
 <translation id="868922510921656628">ਪ੍ਰਤੀ ਸੈੱਟ ਪੰਨੇ</translation>
+<translation id="8693163814413702888">ਇਹ ਭਾਸ਼ਾ ਅਜੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8693639060656817812">ਟਰੈਕਿੰਗ ਸੁਰੱਖਿਆ ਦੀ ਉਪਲਬਧਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="869891660844655955">ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="8699041776323235191">HID ਡੀਵਾਈਸ</translation>
@@ -4040,6 +4051,7 @@
 <translation id="8949410982325929394">ਟੋਨ</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">ਕਨੂੰਨ ਅਤੇ ਸਰਕਾਰ</translation>
+<translation id="8952569554322479410">ਵੈੱਬਸਾਈਟ ਨੇ ਹੁਣੇ ਤੁਹਾਡੀ <ph name="REQUEST_TYPE" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਕਿਹਾ ਹੈ। ਇਸ 1-ਮਿੰਟ ਦੇ ਸਰਵੇਖਣ ਨੂੰ ਪੂਰਾ ਕਰ ਕੇ ਵੈੱਬਸਾਈਟਾਂ ਵੱਲੋਂ ਪਹੁੰਚ ਦੀ ਮੰਗ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ।</translation>
 <translation id="8954252855949068147">ਲਿਬਾਸ</translation>
 <translation id="8956124158020778855">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਲਿਖਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸ ਟੈਬ 'ਤੇ ਵਾਪਸ ਆਓ।</translation>
 <translation id="8957210676456822347">ਕੈਪਟਿਵ ਪੋਰਟਲ ਇਖਤਿਆਰੀਕਰਨ</translation>

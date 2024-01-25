@@ -290,7 +290,7 @@
 <translation id="3170673040743561620">سند را روی اسکنر قرار دهید</translation>
 <translation id="3174321110679064523">کاغذدیواری بامداد تا شامگاه</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
-<translation id="319101249942218879">تصویر چهره‌نما تغییر کرد</translation>
+<translation id="319101249942218879">تصویر چهرک تغییر کرد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3201315366910775591">دیگران می‌توانند آلبوم‌های مشترک را به‌روز کنند</translation>
@@ -300,7 +300,7 @@
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="324961752321393509">سرپرستتان اجازه نمی‌دهد این برنامه را ببندید</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
-<translation id="3275729367986477355">تصویر چهره‌نما</translation>
+<translation id="3275729367986477355">تصویر چهرک</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> گیگاهرتز</translation>
 <translation id="3291996639387199448">جهت کلید</translation>
@@ -347,7 +347,7 @@
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="3600339377155080675">قرینه صفحه‌نمایش</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
-<translation id="3603829704940252505">چهره‌نما</translation>
+<translation id="3603829704940252505">چهرک</translation>
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
@@ -455,7 +455,7 @@
 <translation id="439429847087949098">درحال بازراه‌اندازی <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">سفارشی‌سازی صفحه‌کلید</translation>
 <translation id="4403262788869804671">اگر میان‌بر کلید <ph name="META_KEY" /> داشته نباشد، ممکن است با میان‌بر برخی‌از برنامه‌ها تداخل پیدا کند. اگر می‌خواهید به استفاده از این میان‌بر ادامه دهید آن را دوباره فشار دهید، یا میان‌بر جدیدی را بااستفاده از کلید <ph name="KEY" /> فشار دهید.</translation>
-<translation id="4415951057168511744">چهره‌نمای کنونی</translation>
+<translation id="4415951057168511744">چهرک کنونی</translation>
 <translation id="4417830657741848074">سرپرستتان برخی‌از برنامه‌ها را طوری تنظیم کرده است که خودکار اجرا شوند. برخی‌از این برنامه‌ها ممکن است بسته نشوند.</translation>
 <translation id="4422041425070339732">پیکان پایین</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -906,7 +906,7 @@
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7656388927906093505">دستگاه موش‌واره است.</translation>
 <translation id="7658239707568436148">لغو</translation>
-<translation id="7665800271478495366">تغییر چهره‌نما</translation>
+<translation id="7665800271478495366">تغییر چهرک</translation>
 <translation id="7683228889864052081">رنگ‌مایه صفحه‌کلید</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>

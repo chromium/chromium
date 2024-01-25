@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">ആക്സസ് ഓണാക്കുക</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷൻ പിന്തുണയ്‌ക്കുന്നില്ല. <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) എന്നതിലേക്ക് റെസല്യൂഷൻ മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="6989752354829085073">നിങ്ങളുടെ Chromebook-നെ കുറിച്ച് മനസ്സിലാക്കാൻ ഒരു ദ്രുത ടൂർ നടത്തുക. വെറും 6 ഘട്ടങ്ങൾ മാത്രം.</translation>
 <translation id="7004910047186208204">മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7005239792648594238">ആരംഭിക്കാൻ ഒരു ആപ്പ് തുറക്കുക</translation>

@@ -1498,6 +1498,7 @@
 <translation id="6981291220124935078">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="698231206551913481">ಒಮ್ಮೆ ಈ ಬಳಕೆದಾರರನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ರೆಸಲ್ಯೂಷನ್ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಈ ರೆಸಲ್ಯೂಷನ್‌‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಸೇವ್ ಮಾಡಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6989752354829085073">ನಿಮ್ಮ Chromebook ಅನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುವುದು ಎಂಬುದನ್ನು ತಿಳಿಯಲು ತ್ವರಿತ ಪ್ರವಾಸವನ್ನು ವೀಕ್ಷಿಸಿ. ಇದು ಕೇವಲ 6 ಹಂತಗಳಲ್ಲಿ ತಕ್ಷಣವೇ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="7004910047186208204">ಮೊಬೈಲ್ ಡೇಟಾಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7005239792648594238">ಪ್ರಾರಂಭಿಸಲು ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
