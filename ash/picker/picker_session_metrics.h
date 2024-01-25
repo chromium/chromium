@@ -5,6 +5,8 @@
 #ifndef ASH_PICKER_PICKER_SESSION_METRICS_H_
 #define ASH_PICKER_PICKER_SESSION_METRICS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
@@ -45,6 +47,9 @@ class ASH_EXPORT PickerSessionMetrics {
   // Marks that the search field contents changed.
   void MarkContentsChanged();
 
+  // Marks that the search results were updated.
+  void MarkSearchResultsUpdated();
+
  private:
   bool is_recording_ = false;
 
@@ -53,6 +58,9 @@ class ASH_EXPORT PickerSessionMetrics {
 
   // Whether the first input focus has been marked yet.
   bool marked_first_focus_ = false;
+
+  // The timestamp of when the current search started.
+  std::optional<base::TimeTicks> search_start_timestamp_;
 
   // Records the presentation delay when search field contents change.
   std::unique_ptr<ui::PresentationTimeRecorder>

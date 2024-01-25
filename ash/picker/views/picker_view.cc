@@ -179,6 +179,7 @@ void PickerView::StartSearch(const std::u16string& query) {
 
 void PickerView::PublishSearchResults(const PickerSearchResults& results) {
   search_results_view_->SetSearchResults(results);
+  session_metrics_.MarkSearchResultsUpdated();
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {

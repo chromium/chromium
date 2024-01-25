@@ -40,14 +40,33 @@ void PickerSessionMetrics::MarkInputFocus() {
   base::UmaHistogramCustomTimes(
       "Ash.Picker.Session.InputReadyLatency",
       /*sample=*/base::TimeTicks::Now() - trigger_start_timestamp_,
-      /*min=*/base::Seconds(0), /*max=*/base::Seconds(5), /*buckets=*/100);
+      /*min=*/base::Seconds(0), /*max=*/base::Seconds(10), /*buckets=*/100);
   marked_first_focus_ = true;
 }
 
 void PickerSessionMetrics::MarkContentsChanged() {
-  if (is_recording_ && search_field_presentation_time_recorder_ != nullptr) {
+  if (!is_recording_) {
+    return;
+  }
+
+  if (search_field_presentation_time_recorder_ != nullptr) {
     search_field_presentation_time_recorder_->RequestNext();
   }
+
+  search_start_timestamp_ = base::TimeTicks::Now();
+}
+
+void PickerSessionMetrics::MarkSearchResultsUpdated() {
+  if (!is_recording_ || !search_start_timestamp_.has_value()) {
+    return;
+  }
+
+  base::UmaHistogramCustomTimes(
+      "Ash.Picker.Session.SearchLatency",
+      /*sample=*/base::TimeTicks::Now() - *search_start_timestamp_,
+      /*min=*/base::Seconds(0), /*max=*/base::Seconds(5), /*buckets=*/100);
+
+  search_start_timestamp_.reset();
 }
 
 }  // namespace ash

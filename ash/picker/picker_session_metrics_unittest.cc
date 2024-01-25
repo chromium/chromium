@@ -44,6 +44,7 @@ TEST_F(PickerSessionMetricsTest,
   PickerSessionMetrics metrics(base::TimeTicks::Now());
   metrics.MarkInputFocus();
   metrics.MarkContentsChanged();
+  metrics.MarkSearchResultsUpdated();
 
   EXPECT_THAT(histogram.GetTotalCountsForPrefix("Ash.Picker.Session"),
               IsEmpty());
@@ -109,6 +110,36 @@ TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
                   "Ash.Picker.Session.PresentationLatency.SearchField"),
               AllOf(Ge(latency_lower_bound.InMilliseconds()),
                     Le(latency_upper_bound.InMilliseconds())));
+}
+
+TEST_F(PickerSessionMetricsTest, RecordsSearchLatencyOnSearchFinished) {
+  base::HistogramTester histogram;
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  PickerSessionMetrics metrics;
+  metrics.StartRecording(*widget);
+  metrics.MarkContentsChanged();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  metrics.MarkSearchResultsUpdated();
+
+  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
+                                   base::Seconds(1), 1);
+}
+
+TEST_F(PickerSessionMetricsTest, DoesNotRecordSearchLatencyOnCanceledSearch) {
+  base::HistogramTester histogram;
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  PickerSessionMetrics metrics;
+  metrics.StartRecording(*widget);
+  metrics.MarkContentsChanged();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  metrics.MarkContentsChanged();
+  task_environment()->FastForwardBy(base::Seconds(2));
+  metrics.MarkSearchResultsUpdated();
+
+  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
+                                   base::Seconds(2), 1);
 }
 
 }  // namespace

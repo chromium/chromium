@@ -5536,6 +5536,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.Session.SearchLatency" units="ms"
+    expires_after="2025-01-31">
+  <owner>shend@chromium.org</owner>
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The delay from when the search field content changes to when the search
+    results are received. If multiple content changes happen before search
+    results are received, the time is calculated from the latest content change.
+    Recorded whenever search results are received and there was a content change
+    before that.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
     expires_after="2024-07-21">
   <owner>takise@chromium.org</owner>
