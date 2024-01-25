@@ -180,11 +180,13 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
   auto* const anchor_widget = anchor_view ? anchor_view->view()->GetWidget()
                                           : browser_view_->GetWidget();
-  if (!anchor_widget)
+  if (!anchor_widget) {
     return false;
+  }
 
-  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive())
+  if (!active_window_check_blocked() && !anchor_widget->ShouldPaintAsActive()) {
     return false;
+  }
 
   return true;
 }

@@ -31,7 +31,12 @@ using RequiredNoticeId = ui::ElementIdentifier;
 
 // This can be used in tests to avoid name conflicts.
 #define DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(name)
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, name)
+
+namespace internal {
+// Special value in the "show after" list that causes the notice to happen last.
+DECLARE_REQUIRED_NOTICE_IDENTIFIER(kShowAfterAllNotices);
+}  // namespace internal
 
 // The owner of this object currently has priority to show a required product
 // notice. It must be held while the notice is showing and released immediately
@@ -85,6 +90,9 @@ class ProductMessagingController final {
   // Returns whether there are any notices queued or showing. This can be used
   // to prevent other, lower-priority User Education experiences from showing.
   bool has_pending_notices() const { return current_notice_ || !data_.empty(); }
+
+  // Checks whether the given `notice_id` is queued.
+  bool IsNoticeQueued(RequiredNoticeId notice_id) const;
 
   // Requests that `notice_id` be queued to show. When it is allowed (which
   // might be as soon as the current message queue empties),

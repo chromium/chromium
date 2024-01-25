@@ -81,13 +81,12 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
             feature_engagement::TrackerFactory::GetForBrowserContext(
                 browser()->profile()));
     ASSERT_TRUE(mock_tracker_);
+    EXPECT_CALL(*mock_tracker_, IsInitialized)
+        .WillRepeatedly(testing::Return(true));
 
     // Allow an unlimited number of calls to WouldTriggerHelpUI().
     EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI)
         .WillRepeatedly(Return(true));
-
-    promo_controller_ = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
 
     // Register test features.
     registry()->RegisterFeature(
@@ -111,6 +110,11 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     registry()->RegisterFeature(std::move(notice));
   }
 
+  void TearDownOnMainThread() override {
+    mock_tracker_ = nullptr;
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   // Verifies that `CanShowPromo()` returns `expected_result`.
   auto QueryIPH(const base::Feature& iph_feature,
                 user_education::FeaturePromoResult expected_result) {
@@ -118,7 +122,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     oss << "QueryIPH(" << iph_feature.name << ", " << expected_result << ")";
     return CheckResult(
         [this, &iph_feature]() {
-          return promo_controller_->CanShowPromo(iph_feature);
+          return promo_controller()->CanShowPromo(iph_feature);
         },
         expected_result, oss.str());
   }
@@ -142,11 +146,11 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
       user_education::FeaturePromoParams params(iph_feature);
       params.close_callback = std::move(callback);
       if (expected_result !=
-          promo_controller_->MaybeShowPromo(std::move(params))) {
+          promo_controller()->MaybeShowPromo(std::move(params))) {
         LOG(ERROR) << "MaybeShowPromo() didn't return expected result.";
         return false;
       }
-      if (expected_result != promo_controller_->IsPromoActive(iph_feature)) {
+      if (expected_result != promo_controller()->IsPromoActive(iph_feature)) {
         LOG(ERROR) << "IsPromoActive() didn't return expected result.";
         return false;
       }
@@ -183,21 +187,21 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
 
   auto UseFeature(const base::Feature& iph_feature) {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
-      EXPECT_TRUE(promo_controller_->IsPromoActive(iph_feature));
-      promo_controller_->EndPromo(iph_feature,
-                                  EndFeaturePromoReason::kFeatureEngaged);
+      EXPECT_TRUE(promo_controller()->IsPromoActive(iph_feature));
+      promo_controller()->EndPromo(iph_feature,
+                                   EndFeaturePromoReason::kFeatureEngaged);
 
-      EXPECT_FALSE(promo_controller_->IsPromoActive(iph_feature));
+      EXPECT_FALSE(promo_controller()->IsPromoActive(iph_feature));
     })));
   }
 
   auto AbortIPH(const base::Feature& iph_feature) {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
-      EXPECT_TRUE(promo_controller_->IsPromoActive(iph_feature));
-      promo_controller_->EndPromo(iph_feature,
-                                  EndFeaturePromoReason::kAbortPromo);
+      EXPECT_TRUE(promo_controller()->IsPromoActive(iph_feature));
+      promo_controller()->EndPromo(iph_feature,
+                                   EndFeaturePromoReason::kAbortPromo);
 
-      EXPECT_FALSE(promo_controller_->IsPromoActive(iph_feature));
+      EXPECT_FALSE(promo_controller()->IsPromoActive(iph_feature));
     })));
   }
 
@@ -261,7 +265,8 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
   }
 
   user_education::FeaturePromoController* promo_controller() const {
-    return promo_controller_;
+    return static_cast<BrowserFeaturePromoController*>(
+        browser()->window()->GetFeaturePromoController());
   }
 
  private:
@@ -292,11 +297,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     return mock_tracker;
   }
 
-  raw_ptr<NiceMock<feature_engagement::test::MockTracker>,
-          AcrossTasksDanglingUntriaged>
-      mock_tracker_;
-  raw_ptr<BrowserFeaturePromoController, AcrossTasksDanglingUntriaged>
-      promo_controller_;
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
   base::CallbackListSubscription subscription_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;

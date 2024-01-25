@@ -86,6 +86,19 @@ class FeaturePromoLifecycleUiTest : public TestBase {
       GetPromoController(browser())->registry()->RegisterFeature(
           std::move(promo));
     }
+
+    mock_tracker_ =
+        static_cast<NiceMock<feature_engagement::test::MockTracker>*>(
+            feature_engagement::TrackerFactory::GetForBrowserContext(
+                browser()->profile()));
+    ASSERT_TRUE(mock_tracker_);
+    EXPECT_CALL(*mock_tracker_, IsInitialized)
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_tracker_ = nullptr;
+    TestBase::TearDownOnMainThread();
   }
 
  protected:
@@ -176,13 +189,13 @@ class FeaturePromoLifecycleUiTest : public TestBase {
     return std::move(
         CheckBrowser(base::BindLambdaForTesting([this, should_show,
                                                  feature](Browser* browser) {
-          auto* const tracker = GetTracker(browser);
           if (should_show) {
             last_show_time_.first = base::Time::Now();
-            EXPECT_CALL(*tracker, ShouldTriggerHelpUI(Ref(*feature)))
+            EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*feature)))
                 .WillOnce(Return(true));
           } else {
-            EXPECT_CALL(*tracker, ShouldTriggerHelpUI(Ref(*feature))).Times(0);
+            EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*feature)))
+                .Times(0);
           }
 
           const auto result =
@@ -202,7 +215,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
 
           // If shown, Tracker::Dismissed should be called eventually.
           if (should_show) {
-            EXPECT_CALL(*tracker, Dismissed(Ref(*feature)));
+            EXPECT_CALL(*mock_tracker_, Dismissed(Ref(*feature)));
             last_show_time_.second = base::Time::Now();
           }
 
@@ -289,13 +302,6 @@ class FeaturePromoLifecycleUiTest : public TestBase {
     return GetPromoController(browser)->storage_service();
   }
 
-  static NiceMock<feature_engagement::test::MockTracker>* GetTracker(
-      Browser* browser) {
-    return static_cast<NiceMock<feature_engagement::test::MockTracker>*>(
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser->profile()));
-  }
-
  private:
   static void RegisterMockTracker(content::BrowserContext* context) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
@@ -318,6 +324,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   std::pair<base::Time, base::Time> last_show_time_;
   std::pair<base::Time, base::Time> last_snooze_time_;
 
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
   feature_engagement::test::ScopedIphFeatureList scoped_feature_list_;
   base::CallbackListSubscription subscription_;
   user_education::FeaturePromoControllerCommon::TestLock disable_active_checks_;
