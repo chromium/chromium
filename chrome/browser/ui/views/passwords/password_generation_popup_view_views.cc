@@ -252,20 +252,39 @@ class NudgePasswordButtons : public views::View {
         views::BoxLayout::Orientation::kHorizontal));
     layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
+    const std::u16string help_text = base::JoinString(
+        {l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_TITLE),
+         l10n_util::GetStringFUTF16(
+             GetHelpTextMessageId(),
+             l10n_util::GetStringUTF16(
+                 IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+             controller_->GetPrimaryAccountEmail())},
+        u" ");
+    const std::u16string cancel_button_label =
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON);
     auto cancel_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::CancelButtonPressed,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON));
+        cancel_button_label);
+    cancel_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
+    cancel_button->SetAccessibleName(cancel_button_label);
+    cancel_button->SetAccessibleDescription(help_text);
     cancel_button_ = AddChildView(std::move(cancel_button));
 
     AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
                       /*resize=*/false, this);
 
+    const std::u16string accept_button_label =
+        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
     auto accept_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&NudgePasswordButtons::AcceptButtonPressed,
                             base::Unretained(this)),
-        l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM));
+        accept_button_label);
     accept_button->SetStyle(ui::ButtonStyle::kProminent);
+    accept_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
+    accept_button->SetAccessibleName(
+        base::JoinString({accept_button_label, controller_->password()}, u" "));
+    accept_button->SetAccessibleDescription(help_text);
     accept_button_ = AddChildView(std::move(accept_button));
 
     // Set up custom focus predicates for buttons as the default ones check if
@@ -377,7 +396,7 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SECURITY),
            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK),
            help_text},
-          u", ");
+          u" ");
       node_data->SetDescription(description);
       return;
     }
