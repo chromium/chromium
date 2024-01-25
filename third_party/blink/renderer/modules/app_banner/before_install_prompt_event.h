@@ -23,8 +23,8 @@ class BeforeInstallPromptEvent;
 class BeforeInstallPromptEventInit;
 class ExceptionState;
 
-using UserChoiceProperty = ScriptPromiseProperty<Member<AppBannerPromptResult>,
-                                                 ToV8UndefinedGenerator>;
+using UserChoiceProperty =
+    ScriptPromiseProperty<AppBannerPromptResult, IDLUndefined>;
 
 class BeforeInstallPromptEvent final
     : public Event,

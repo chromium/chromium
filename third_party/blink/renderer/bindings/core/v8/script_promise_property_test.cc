@@ -60,8 +60,8 @@ class StubFunction : public ScriptFunction::Callable {
 
 class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
  public:
-  typedef ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                                Member<GarbageCollectedScriptWrappable>>
+  typedef ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                GarbageCollectedScriptWrappable>
       Property;
   GarbageCollectedHolder(ExecutionContext* execution_context)
       : GarbageCollectedScriptWrappable("holder"),
@@ -83,9 +83,8 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
 
 class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
  public:
-  using Property =
-      ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
-                            Member<GarbageCollectedScriptWrappable>>;
+  using Property = ScriptPromiseProperty<GarbageCollectedScriptWrappable,
+                                         GarbageCollectedScriptWrappable>;
 
   explicit ScriptPromisePropertyResetter(Property* property)
       : property_(property) {}
@@ -213,8 +212,11 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
       public testing::Test {
  public:
   template <typename T>
-  void Test(const T& value, const char* expected, const char* file, int line) {
-    typedef ScriptPromiseProperty<T, ToV8UndefinedGenerator> Property;
+  void Test(const T::ImplType& value,
+            const char* expected,
+            const char* file,
+            int line) {
+    typedef ScriptPromiseProperty<T, IDLUndefined> Property;
     Property* property = MakeGarbageCollected<Property>(DomWindow());
     size_t n_resolve_calls = 0;
     ScriptValue actual_value;
@@ -606,17 +608,17 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithUndefined) {
-  Test(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
+  Test<IDLUndefined>(ToV8UndefinedGenerator(), "undefined", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithString) {
-  Test(String("hello"), "hello", __FILE__, __LINE__);
+  Test<IDLString>(String("hello"), "hello", __FILE__, __LINE__);
 }
 
 TEST_F(ScriptPromisePropertyNonScriptWrappableResolutionTargetTest,
        ResolveWithInteger) {
-  Test(-1, "-1", __FILE__, __LINE__);
+  Test<IDLLong>(-1, "-1", __FILE__, __LINE__);
 }
 
 }  // namespace blink

@@ -25,8 +25,7 @@ class ViewTransition;
 class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
                                       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  using PromiseProperty =
-      ScriptPromiseProperty<ToV8UndefinedGenerator, ScriptValue>;
+  using PromiseProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
 
  public:
   // Constructor for navigation-initiated view transition (used only in the new

@@ -107,10 +107,9 @@ FetchEvent::FetchEvent(ScriptState* script_state,
       observer_(respond_with_observer),
       preload_response_property_(MakeGarbageCollected<PreloadResponseProperty>(
           ExecutionContext::From(script_state))),
-      handled_property_(
-          MakeGarbageCollected<ScriptPromiseProperty<ToV8UndefinedGenerator,
-                                                     Member<DOMException>>>(
-              ExecutionContext::From(script_state))) {
+      handled_property_(MakeGarbageCollected<
+                        ScriptPromiseProperty<IDLUndefined, DOMException>>(
+          ExecutionContext::From(script_state))) {
   if (!navigation_preload_sent)
     preload_response_property_->ResolveWithUndefined();
 

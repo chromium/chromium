@@ -160,8 +160,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
 
-  using CompletedProperty =
-      ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>;
+  using CompletedProperty = ScriptPromiseProperty<IDLUndefined, DOMException>;
   Member<CompletedProperty> completed_property_;
 
   // WeakPtrFactory used only for decode() requests. Invalidated upon decoding

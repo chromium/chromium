@@ -34,8 +34,7 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
   void Trace(Visitor*) const final;
 
  private:
-  using FinishedProperty =
-      ScriptPromiseProperty<ToV8UndefinedGenerator, ScriptValue>;
+  using FinishedProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
 
   String navigation_type_;
   Member<NavigationHistoryEntry> from_;

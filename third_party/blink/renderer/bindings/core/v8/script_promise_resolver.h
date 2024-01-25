@@ -32,12 +32,6 @@
 
 namespace blink {
 
-// Used only for allowing a ScriptPromiseProperty to specify that it will
-// resolve/reject with v8::Undefined.
-struct ToV8UndefinedGenerator {
-  DISALLOW_NEW();
-};
-
 // This class wraps v8::Promise::Resolver and provides the following
 // functionalities.
 //  - A ScriptPromiseResolver retains a ScriptState. A caller
@@ -70,13 +64,13 @@ class CORE_EXPORT ScriptPromiseResolver
   // Anything that can be passed to ToV8Traits can be passed to this function.
   template <typename IDLType, typename BlinkType>
   void Resolve(BlinkType value) {
-    ResolveOrReject<IDLType>(value, kResolving);
+    ResolveOrReject<IDLType, BlinkType>(value, kResolving);
   }
 
   // Anything that can be passed to ToV8Traits can be passed to this function.
   template <typename IDLType, typename BlinkType>
   void Reject(BlinkType value) {
-    ResolveOrReject<IDLType>(value, kRejecting);
+    ResolveOrReject<IDLType, BlinkType>(value, kRejecting);
   }
 
   // Anything that can be passed to toV8 can be passed to this function.

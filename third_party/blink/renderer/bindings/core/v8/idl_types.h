@@ -23,9 +23,16 @@ class BigInt;
 class EventListener;
 class ScriptPromise;
 class ScriptValue;
+struct ToV8UndefinedGenerator;
 
 // The type names below are named as "IDL" prefix + Web IDL type name.
 // https://webidl.spec.whatwg.org/#dfn-type-name
+// undefined
+// TODO(japhet): Use IDLUndefined in place of ToV8UndefinedGenerator and delete
+// ToV8UndefinedGenerator. Using IDLUndefined here makes calls to
+// ScriptPromseResolver::Resolve/Reject ambiguous between the ToV8() variant
+// and the ToV8Traits<>::ToV8() variant of those functions.
+struct IDLUndefined final : public IDLBaseHelper<ToV8UndefinedGenerator> {};
 
 // any
 struct IDLAny final : public IDLBaseHelper<ScriptValue> {};

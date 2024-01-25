@@ -54,8 +54,7 @@ class MODULES_EXPORT ImageTrackList final : public ScriptWrappable {
   HeapVector<Member<ImageTrack>> tracks_;
   absl::optional<wtf_size_t> selected_track_id_;
 
-  using ReadyProperty =
-      ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>;
+  using ReadyProperty = ScriptPromiseProperty<IDLUndefined, DOMException>;
   Member<ReadyProperty> ready_property_;
 };
 
