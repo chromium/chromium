@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
@@ -243,6 +244,7 @@ public class PageInsightsCoordinatorTest {
                                         mBackPressManager,
                                         mInMotionSupplier,
                                         mAppInsetSupplier,
+                                        PageInsightsIntentParams.getDefaultInstance(),
                                         mIsPageInsightsHubEnabled,
                                         (navigationHandle) ->
                                                 PageInsightsConfig.newBuilder()

@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -122,6 +123,10 @@ public class PageInsightsSheetContentTest {
     }
 
     private void createSheetContent(TestValues testValues) {
+        createSheetContent(testValues, PageInsightsIntentParams.getDefaultInstance());
+    }
+
+    private void createSheetContent(TestValues testValues, PageInsightsIntentParams intentParams) {
         FeatureList.setTestValues(testValues);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -129,6 +134,7 @@ public class PageInsightsSheetContentTest {
                     mSheetContent =
                             new PageInsightsSheetContent(
                                     sTestRule.getActivity(),
+                                    intentParams,
                                     new View(sTestRule.getActivity()),
                                     view -> {},
                                     () -> {
@@ -437,6 +443,33 @@ public class PageInsightsSheetContentTest {
                     mSheetContent.showFeedPage();
                     float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
                     assertEquals(0.123, ratio, ASSERTION_DELTA);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void privacyNoticeShownForFirstTime_peekHeightFromIntentParam() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsSheetContent.PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
+                "0.123");
+        createSheetContent(
+                testValues,
+                PageInsightsIntentParams.newBuilder().setPeekWithNoticeHeightRatio(0.456f).build());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View testView = new View(sTestRule.getActivity());
+                    setPrivacyNoticePreferences(
+                            false, System.currentTimeMillis() - MILLIS_IN_ONE_DAY, 0);
+                    mSheetContent.initContent(
+                            testView,
+                            /* isPrivacyNoticeRequired= */ true,
+                            /* shouldHavePeekState= */ true);
+                    mSheetContent.showFeedPage();
+                    float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
+                    assertEquals(0.456, ratio, ASSERTION_DELTA);
                 });
     }
 
@@ -783,20 +816,10 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void getPeekHeight_shouldHavePeekState() {
-        createSheetContent();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSheetContent.initContent(
-                            new FrameLayout(sTestRule.getActivity()),
-                            /* isPrivacyNoticeRequired= */ false,
-                            /* shouldHavePeekState= */ true);
-
-                    assertEquals(
-                            (int)
-                                    (mFullHeight
-                                            * PageInsightsSheetContent.DEFAULT_PEEK_HEIGHT_RATIO),
-                            mSheetContent.getPeekHeight());
-                });
+        assertPeekHeight(
+                new TestValues(),
+                PageInsightsIntentParams.getDefaultInstance(),
+                PageInsightsSheetContent.DEFAULT_PEEK_HEIGHT_RATIO);
     }
 
     @Test
@@ -808,7 +831,29 @@ public class PageInsightsSheetContentTest {
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PageInsightsSheetContent.PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
                 "0.123");
-        createSheetContent(testValues);
+        assertPeekHeight(testValues, PageInsightsIntentParams.getDefaultInstance(), 0.123f);
+    }
+
+    @Test
+    @MediumTest
+    public void getPeekHeight_shouldHavePeekState_peekHeightFromIntentParam() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PageInsightsSheetContent.PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
+                "0.123");
+        assertPeekHeight(
+                testValues,
+                PageInsightsIntentParams.newBuilder().setPeekHeightRatio(0.456f).build(),
+                0.456f);
+    }
+
+    private void assertPeekHeight(
+            TestValues testValues,
+            PageInsightsIntentParams intentParams,
+            float expectedPeekHeightRatio) {
+        createSheetContent(testValues, intentParams);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetContent.initContent(
@@ -816,7 +861,9 @@ public class PageInsightsSheetContentTest {
                             /* isPrivacyNoticeRequired= */ false,
                             /* shouldHavePeekState= */ true);
 
-                    assertEquals((int) (mFullHeight * 0.123), mSheetContent.getPeekHeight());
+                    assertEquals(
+                            (int) (mFullHeight * expectedPeekHeightRatio),
+                            mSheetContent.getPeekHeight());
                 });
     }
 
