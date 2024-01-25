@@ -271599,6 +271599,21 @@
      }
     },
     "rendering": {
+     "bidi-rendering": {
+      "slot-no-isolate-001.html": [
+       "bb2e927c08bad7cb0689187f4908bd6a9c816e76",
+       [
+        null,
+        [
+         [
+          "/html/rendering/bidi-rendering/slot-no-isolate-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "bindings": {
       "the-button-element": {
        "button-type-menu-historical.html": [
@@ -367537,6 +367552,12 @@
      }
     },
     "rendering": {
+     "bidi-rendering": {
+      "slot-no-isolate-001-ref.html": [
+       "6675f0a16644c8f5cff7e1ba88953982031b37bc",
+       []
+      ]
+     },
      "bindings": {
       "the-button-element": {
        "button-type-menu-historical-ref.html": [
@@ -397540,6 +397561,14 @@
      "2ecd4f6c825c84aeb700560ccd1a2e56ba089a5e",
      []
     ],
+    "instance_normalization.https.any-expected.txt": [
+     "7033d60bd6bf4bbc9a304d70905abf2af6313dfd",
+     []
+    ],
+    "instance_normalization.https.any.worker-expected.txt": [
+     "3f7caaf073597c39ab7c034ee6195e9891dd5829",
+     []
+    ],
     "layer_normalization.https.any-expected.txt": [
      "5211ac852db11cb38f0bcc9f4abca8138bbcd6fd",
      []
@@ -397718,6 +397747,10 @@
        "6024e8786fb2e6f6e6c655757001c421d0d4f748",
        []
       ],
+      "instance_normalization.json": [
+       "a9fd493c9924ed5c73a56de61ed80b71670ebd4f",
+       []
+      ],
       "layer_normalization.json": [
        "6005776de5e2234f6ef3f7332a574e4bb86b2e71",
        []
@@ -397888,7 +397921,7 @@
       ]
      },
      "utils.js": [
-      "92fffeb80f3f6b3bb043c15f4702bd7ebaad7767",
+      "f91d6622d3c8e2124d1b9dae6afa3d9a5fafaf9f",
       []
      ]
     },
@@ -565298,6 +565331,15 @@
      }
     },
     "rendering": {
+     "bidi-rendering": {
+      "slot-direction.window.js": [
+       "673f6c0b0fc3ad830adf16787ba4edad3b6f81e9",
+       [
+        "html/rendering/bidi-rendering/slot-direction.window.html",
+        {}
+       ]
+      ]
+     },
      "dimension-attributes.html": [
       "1d94205e0b1ee6eab918ab7f32af7634ff5a0bf9",
       [
@@ -666671,6 +666713,57 @@
        }
       ]
      ],
+     "instance_normalization.https.any.js": [
+      "e1d73de387eab5e571635ec19544bb322cd125c0",
+      [
+       "webnn/gpu/instance_normalization.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API instanceNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/gpu/instance_normalization.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API instanceNormalization operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "layer_normalization.https.any.js": [
       "1deb43bee5dc326627d0141f3dd814543a677432",
       [
@@ -667788,6 +667881,57 @@
         [
          "script",
          "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "instance_normalization.https.any.js": [
+     "0b7a708917f0f65d397d7ac728b3ec59791728c7",
+     [
+      "webnn/instance_normalization.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API instanceNormalization operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/instance_normalization.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API instanceNormalization operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
         ],
         [
          "script",
