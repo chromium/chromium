@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+NSString* const kPrivacyGuideHistorySyncSwitchID =
+    @"kPrivacyGuideHistorySyncSwitchID";
 NSString* const kPrivacyGuideHistorySyncViewID =
     @"kPrivacyGuideHistorySyncViewID";
 NSString* const kPrivacyGuideNavigationBarViewID =

@@ -3525,6 +3525,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_GUIDE_CANCEL_BUTTON" desc="Text for the 'Cancel' button on the Welcome step of the Privacy Guide.">
         Cancel
       </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC" desc="Label for the switch in the History Sync step of the Privacy Guide.">
+        History sync
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_ACROSS_DEVICES" desc="Bullet point for the 'History sync' switch in the 'When on' section">
+        You'll have your history on all your synced devices so you can continue what you were doing
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_GOOGLE_SEARCH" desc="Bullet point for the 'History sync' switch in the 'When on' section">
+        If Google is also your default search engine, you'll see better, contextually relevant suggestions
+      </message>
+      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_GOOGLE_ACCOUNT" desc="Bullet point for the 'History sync' switch in the 'Things to consider' section">
+        The URLs you visit are saved to your Google Account
+      </message>
       <message name="IDS_IOS_PRIVACY_GUIDE_LETS_GO_BUTTON" desc="Text for the 'Let's go' button on the Welcome step of the Privacy Guide.">
         Let's go
       </message>

@@ -197,6 +197,7 @@ NSString* const kLightBulbSymbol = @"lightbulb";
 NSString* const kNewTabGroupActionSymbol = @"plus.square.on.square";
 NSString* const kRemoveTabFromGroupActionSymbol = @"minus.square";
 NSString* const kMoveTabToGroupActionSymbol = @"arrow.up.right.square";
+NSString* const kClockSymbol = @"clock";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
