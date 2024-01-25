@@ -20,10 +20,11 @@
 
 namespace base {
 
-class TraceEventMemoryOverhead;
 class Value;
 
 namespace trace_event {
+
+class TraceEventMemoryOverhead;
 
 class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
  public:
