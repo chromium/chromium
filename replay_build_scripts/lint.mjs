@@ -6,21 +6,15 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let lintFile =
+const lintFile =
   process.argv[2] ||
   path.join(
     __dirname,
     "../third_party/blink/renderer/bindings/core/v8/record_replay_interface.cc",
   );
 
-let replayText = fs.readFileSync(lintFile, "utf8");
-
-let regex = new RegExp("//js", "g");
-let endRegex = new RegExp('\\)""""', "g");
 const linter = new eslint.Linter();
-
 const engine = new eslint.ESLint();
-const formatter = await engine.loadFormatter();
 
 function findMatches(text /*: string*/, regex /*: RegExp*/) {
   let match;
@@ -126,6 +120,7 @@ async function lintScript({ name, text } /*: { name: string, text: string }*/) {
     },
   ];
 
+  const formatter = await engine.loadFormatter();
   console.log(await formatter.format(results, {}));
 
   let errorCount = 0;
@@ -141,23 +136,32 @@ async function lintScript({ name, text } /*: { name: string, text: string }*/) {
   return { errorCount, fatalErrorCount, warningCount };
 }
 
-const lineNumbers = findMatches(replayText, regex);
-const endLineNumbers = findMatches(replayText, endRegex);
+async function main() {
+  const replayText = fs.readFileSync(lintFile, "utf8");
 
-const textBlocks = lineNumbers.map((lineNumber, index) =>
-  getNamedTextBlock(replayText, lineNumber, endLineNumbers[index]),
-);
+  const regex = new RegExp("//js", "g");
+  const endRegex = new RegExp('\\)""""', "g");
 
-let errorCount = 0;
-let warningCount = 0;
-for (const block of textBlocks) {
-  const { errorCount: blockErrorCount, warningCount: blockWarningCount } =
-    await lintScript(block);
-  errorCount += blockErrorCount;
-  warningCount += blockWarningCount;
+  const lineNumbers = findMatches(replayText, regex);
+  const endLineNumbers = findMatches(replayText, endRegex);
+
+  const textBlocks = lineNumbers.map((lineNumber, index) =>
+    getNamedTextBlock(replayText, lineNumber, endLineNumbers[index]),
+  );
+
+  let errorCount = 0;
+  let warningCount = 0;
+  for (const block of textBlocks) {
+    const { errorCount: blockErrorCount, warningCount: blockWarningCount } =
+      await lintScript(block);
+    errorCount += blockErrorCount;
+    warningCount += blockWarningCount;
+  }
+
+  console.log(`Total counts: ${errorCount} errors, ${warningCount} warnings`);
+  if (errorCount > 0) {
+    process.exit(1);
+  }
 }
 
-console.log(`Total counts: ${errorCount} errors, ${warningCount} warnings`);
-if (errorCount > 0) {
-  process.exit(1);
-}
+main();
