@@ -244,7 +244,7 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
   SignIn(signin::ConsentLevel::kSync);
 
   CheckIsEnabledError(compose_enabling_.get(),
-                      compose::ComposeShowStatus::kGenericBlocked);
+                      compose::ComposeShowStatus::kFeatureFlagDisabled);
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {

@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Blocked for generic reason"/>
   <int value="2" label="Blocked for incompatible field type"/>
-  <int value="3" label="Blocked for MSBB not enabled"/>
+  <int value="3" label="Blocked for MSBB not enabled (OBSOLETE)"/>
   <int value="4" label="Blocked for user not signed in"/>
   <int value="5" label="Blocked for user language not supported"/>
   <int value="6"
@@ -111,6 +111,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Feature not eligible, remotely disabled"/>
   <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
   <int value="11" label="Blocked for element appearing inside a fenced frame"/>
+  <int value="12"
+      label="Blocked for feature flag for Chrome Compose not enabled"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">

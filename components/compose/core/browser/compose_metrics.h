@@ -96,7 +96,8 @@ enum class ComposeShowStatus {
   kShouldShow = 0,
   kGenericBlocked = 1,
   kIncompatibleFieldType = 2,
-  kDisabledMsbb = 3,
+  // kDisabledMsbb is no longer used now that we have a MSBB dialog.
+  kDisabledMsbb = 3,  // obsolete
   kSignedOut = 4,
   kUnsupportedLanguage = 5,
   kFormFieldInCrossOriginFrame = 6,
@@ -105,7 +106,8 @@ enum class ComposeShowStatus {
   kNotComposeEligible = 9,
   kIncorrectScheme = 10,
   kFormFieldNestedInFencedFrame = 11,
-  kMaxValue = kFormFieldNestedInFencedFrame,
+  kFeatureFlagDisabled = 12,
+  kMaxValue = kFeatureFlagDisabled,
 };
 
 // Struct containing event and logging information for an individual

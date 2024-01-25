@@ -153,7 +153,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   // Check that the feature flag is enabled.
   if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
     DVLOG(2) << "feature not enabled ";
-    return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
+    return base::unexpected(compose::ComposeShowStatus::kFeatureFlagDisabled);
   }
 
   // Check signin status.
