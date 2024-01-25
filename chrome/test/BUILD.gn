@@ -11422,7 +11422,6 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
         "../browser/notifications/notification_platform_bridge_win_interactive_uitest.cc",
         "../browser/notifications/win/fake_itoastnotifier.cc",
         "../browser/notifications/win/fake_itoastnotifier.h",
-        "../browser/os_crypt/app_bound_encryption_win_browsertest.cc",
         "../browser/ui/send_mouse_move_uitest_win.cc",
         "../browser/ui/views/accessibility/navigation_accessibility_uitest_win.cc",
         "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
@@ -11437,6 +11436,7 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
       deps += [
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
+        "//chrome/browser/os_crypt:browser_tests",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
         "//chrome/installer/util:strings",
