@@ -5521,7 +5521,7 @@
   {
     "name": "new-confirmation-bubble-for-generated-passwords",
     "owners": ["sygiet@google.com", "vasilii@chromium.org"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "new-ntp-omnibox-layout",
