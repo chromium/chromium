@@ -426,6 +426,7 @@ aura::WindowTreeHost* DesktopWindowTreeHostPlatform::AsWindowTreeHost() {
 
 void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
                                          const gfx::Rect& restore_bounds) {
+  OnAcceleratedWidgetMadeVisible(true);
   if (compositor())
     SetVisible(true);
 
