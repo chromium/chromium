@@ -93,12 +93,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewSwitchItem*)contentNotificationsItem {
   if (!_contentNotificationsItem) {
-    _contentNotificationsItem =
-        [self switchItemWithType:ItemTypeContentNotifications
-                               text:@"Personalized Content"
-                             symbol:kNewspaperSFSymbol
-              symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-            accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _contentNotificationsItem = [self
+             switchItemWithType:ItemTypeContentNotifications
+                           text:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
+                         symbol:kNewspaperSFSymbol
+          symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+        accessibilityIdentifier:kSettingsNotificationsContentCellId];
     _contentNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kContent, _gaiaID);
@@ -110,8 +112,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_contentNotificationsFooterItem) {
     _contentNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
         initWithType:ItemTypeContentNotificationsFooter];
-    _contentNotificationsFooterItem.text =
-        @"Get notified with personalized news updates and more.";
+    _contentNotificationsFooterItem.text = l10n_util::GetNSString(
+        IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT);
   }
 
   return _contentNotificationsFooterItem;

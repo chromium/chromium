@@ -982,6 +982,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL" desc="The label for the alert's cancel button">
         No, Thanks
       </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE" desc="The label for the notification settings item title for content notifications.">
+        Personalized Content
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT" desc="The label for the notification settings footer for content notifications.">
+        News, sports, and content based on your interests.
+      </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's redirect to the iOS Settings.">
         Go to Settings...
       </message>
