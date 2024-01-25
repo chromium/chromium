@@ -25,6 +25,8 @@ class AuthenticatorRequestWindow
     CHECK_EQ(step_,
              AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
 
+    model_->AddObserver(this);
+
     SetHasWindowSizeControls(true);
     SetCanResize(true);
     SetButtons(ui::DIALOG_BUTTON_NONE);
