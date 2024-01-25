@@ -233,11 +233,10 @@
   }
 
   [self.snackbarCommandsHandler
-      showSnackbarMessage:
-          bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
-              [self bookmark], name, url, [self folder],
-              _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get(),
-              _browserState)];
+      showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoToast(
+                              [self bookmark], name, url, [self folder],
+                              _localOrSyncableBookmarkModel.get(),
+                              _accountBookmarkModel.get(), _browserState)];
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _localOrSyncableBookmarkModel.get(),
