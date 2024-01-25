@@ -51,7 +51,7 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: chromedriver-headless-artifacts
       - name: Prepare Pages
@@ -66,7 +66,7 @@ jobs:
           path: out/site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@7a9bd943aa5e5175aeb8502edcc6c1c02d398e10 # v4.0.2
+        uses: actions/deploy-pages@87c3283f01cd6fe19a0ab93a23b2f6fcba5a8e42 # v4.0.3
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
@@ -81,19 +81,19 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Clean up WPT metadata
         run: rm -rf wpt-metadata/*
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: chromedriver-headless-wpt-metadata
           path: wpt-metadata/chromedriver/headless
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: chromedriver-headful-wpt-metadata
           path: wpt-metadata/chromedriver/headful
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: mapper-headless-wpt-metadata
           path: wpt-metadata/mapper/headless
-      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+      - uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: mapper-headful-wpt-metadata
           path: wpt-metadata/mapper/headful
@@ -138,7 +138,7 @@ jobs:
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
       - name: Setup cache for browser binaries
-        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
         with:
           path: ~/.cache/chromium-bidi
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
@@ -165,13 +165,13 @@ jobs:
           out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
           path: |

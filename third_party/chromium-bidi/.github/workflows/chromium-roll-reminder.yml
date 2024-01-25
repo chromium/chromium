@@ -16,13 +16,13 @@ jobs:
     if: contains(github.event.label.name, 'autorelease') && contains(github.event.label.name, 'tagged')
     steps:
       - name: Find Comment Id
-        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
+        uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3.0.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@23ff15729ef2fc348714a3bb66d2f655ca9066f2 # v3.1.0
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}

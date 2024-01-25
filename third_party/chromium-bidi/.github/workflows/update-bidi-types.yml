@@ -43,7 +43,7 @@ jobs:
         run: ./scripts/test.sh
         working-directory: webdriver-bidi
       - name: Upload WebDriverBidi CDDL
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: all-cddl
           path: webdriver-bidi/all.cddl
@@ -51,7 +51,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
         working-directory: permissions
       - name: Upload WebDriverBidi CDDL for Permissions
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           name: permissions-cddl
           path: permissions/permissions.cddl
@@ -79,11 +79,11 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download WebDriverBidi CDDL
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: all-cddl
       - name: Download WebDriverBidi CDDL for Permissions
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: permissions-cddl
       - name: Generate TypeScript types for the main spec
