@@ -65,6 +65,10 @@ class ASH_EXPORT PickerSessionMetrics {
   // Records the presentation delay when search field contents change.
   std::unique_ptr<ui::PresentationTimeRecorder>
       search_field_presentation_time_recorder_;
+
+  // Records the presentation delay of updating the results page.
+  std::unique_ptr<ui::PresentationTimeRecorder>
+      results_presentation_time_recorder_;
 };
 
 }  // namespace ash

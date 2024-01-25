@@ -5536,6 +5536,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.Session.PresentationLatency.SearchResults"
+    units="ms" expires_after="2025-01-31">
+  <owner>shend@chromium.org</owner>
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The delay from when the search results are updated to when the next frame in
+    the widget is presented to the screen. If multiple content changes result in
+    the same frame being presented, the delay is calculated from the first
+    content change. Recorded whenever the picker publishes search results and a
+    frame is successfully presented to the screen.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Picker.Session.SearchLatency" units="ms"
     expires_after="2025-01-31">
   <owner>shend@chromium.org</owner>

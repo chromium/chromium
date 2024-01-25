@@ -17,13 +17,16 @@ PickerSessionMetrics::PickerSessionMetrics(
 PickerSessionMetrics::~PickerSessionMetrics() = default;
 
 void PickerSessionMetrics::StartRecording(views::Widget& widget) {
-  // Initialize a presentation time recorder based on the new widget's
+  // Initialize presentation time recorders based on the new widget's
   // compositor. After this, a presentation latency metric is recorded every
   // time `RequestNext` is called on the recorder.
   search_field_presentation_time_recorder_ =
       CreatePresentationTimeHistogramRecorder(
           widget.GetCompositor(),
           "Ash.Picker.Session.PresentationLatency.SearchField");
+  results_presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+      widget.GetCompositor(),
+      "Ash.Picker.Session.PresentationLatency.SearchResults");
 
   is_recording_ = true;
 }
@@ -57,16 +60,22 @@ void PickerSessionMetrics::MarkContentsChanged() {
 }
 
 void PickerSessionMetrics::MarkSearchResultsUpdated() {
-  if (!is_recording_ || !search_start_timestamp_.has_value()) {
+  if (!is_recording_) {
     return;
   }
 
-  base::UmaHistogramCustomTimes(
-      "Ash.Picker.Session.SearchLatency",
-      /*sample=*/base::TimeTicks::Now() - *search_start_timestamp_,
-      /*min=*/base::Seconds(0), /*max=*/base::Seconds(5), /*buckets=*/100);
+  if (results_presentation_time_recorder_ != nullptr) {
+    results_presentation_time_recorder_->RequestNext();
+  }
 
-  search_start_timestamp_.reset();
+  if (search_start_timestamp_.has_value()) {
+    base::UmaHistogramCustomTimes(
+        "Ash.Picker.Session.SearchLatency",
+        /*sample=*/base::TimeTicks::Now() - *search_start_timestamp_,
+        /*min=*/base::Seconds(0), /*max=*/base::Seconds(10), /*buckets=*/100);
+
+    search_start_timestamp_.reset();
+  }
 }
 
 }  // namespace ash

@@ -14,10 +14,11 @@
 namespace ash {
 namespace {
 
-using ::testing::AllOf;
-using ::testing::Ge;
 using ::testing::IsEmpty;
-using ::testing::Le;
+
+MATCHER_P2(InClosedRange, low, high, "") {
+  return low <= arg && arg <= high;
+}
 
 base::TimeTicks WaitUntilNextFramePresented(ui::Compositor* compositor) {
   base::TimeTicks presentation_timestamp;
@@ -108,8 +109,38 @@ TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
       presentation_timestamp_after - contents_changed_timestamp;
   EXPECT_THAT(histogram.GetTotalSum(
                   "Ash.Picker.Session.PresentationLatency.SearchField"),
-              AllOf(Ge(latency_lower_bound.InMilliseconds()),
-                    Le(latency_upper_bound.InMilliseconds())));
+              InClosedRange(latency_lower_bound.InMilliseconds(),
+                            latency_upper_bound.InMilliseconds()));
+}
+
+TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForResults) {
+  base::HistogramTester histogram;
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  PickerSessionMetrics metrics(base::TimeTicks::Now());
+  metrics.StartRecording(*widget);
+  const base::TimeTicks search_results_updated_timestamp =
+      base::TimeTicks::Now();
+  const base::TimeTicks presentation_timestamp_before =
+      WaitUntilNextFramePresented(widget->GetCompositor());
+  metrics.MarkSearchResultsUpdated();
+  widget->SchedulePaintInRect(gfx::Rect(0, 0, 1, 1));
+  const base::TimeTicks presentation_timestamp_after =
+      WaitUntilNextFramePresented(widget->GetCompositor());
+
+  histogram.ExpectTotalCount(
+      "Ash.Picker.Session.PresentationLatency.SearchResults", 1);
+  // There may be intermediate frames between `presentation_timestamp_before`
+  // and `presentation_timestamp_after`. Thus, these two timestamps can only
+  // be used to bound the metric value.
+  const base::TimeDelta latency_lower_bound =
+      presentation_timestamp_before - search_results_updated_timestamp;
+  const base::TimeDelta latency_upper_bound =
+      presentation_timestamp_after - search_results_updated_timestamp;
+  EXPECT_THAT(histogram.GetTotalSum(
+                  "Ash.Picker.Session.PresentationLatency.SearchResults"),
+              InClosedRange(latency_lower_bound.InMilliseconds(),
+                            latency_upper_bound.InMilliseconds()));
 }
 
 TEST_F(PickerSessionMetricsTest, RecordsSearchLatencyOnSearchFinished) {
