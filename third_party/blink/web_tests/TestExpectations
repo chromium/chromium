@@ -6792,3 +6792,6 @@ crbug.com/1521090 [ Mac12 ] virtual/static-routing-api/http/tests/inspector-prot
 
 ### sheriff 2023-01-24
 crbug.com/1521311 http/tests/devtools/service-workers/sw-navigate-useragent.js [ Failure Pass ]
+
+# Fix the duplicated reporting on Mac11 and Mac12.
+crbug.com/1505556 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-details-captured.js [ Failure Pass ]
