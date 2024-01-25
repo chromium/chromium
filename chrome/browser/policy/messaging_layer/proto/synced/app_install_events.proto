@@ -1,0 +1,48 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Events related to adding and removing users from Chrome.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Event for an arc++ app installation.
+message AndroidAppInstallEvent {
+  reserved 2;
+  reserved "gaia_id";
+
+  // Android package.
+  string app_package = 1;
+
+  // Physical device serial number.
+  string serial_number = 3;
+
+  // Type of arc++ app installation event.
+  // Enum ordinal of dm_api.proto AppInstallReportLogEvent.EventType
+  int32 event_type = 4;
+
+  // Total and available space on the stateful partition, in bytes. Set for
+  // event types SERVER_REQUEST, CLOUDDPS_RESPONSE, INSTALLATION_STARTED,
+  // INSTALLATION_FINISHED, INSTALLATION_FAILED and SUCCESS.
+  int64 stateful_total = 5;
+  int64 stateful_free = 6;
+
+  // CloudDPS response. Set for event type CLOUDDPS_RESPONSE.
+  int32 clouddps_response = 7;
+
+  // Network state. Set for event type SESSION_STATE_CHANGE of type LOGIN and
+  // CONNECTIVITY_CHANGE.
+  bool online = 8;
+
+  // Type of session state change. Set for event type SESSION_STATE_CHANGE.
+  // Enum ordinal of dm_api.proto
+  // AppInstallReportLogEvent.SessionStateChangeType
+  int32 session_state_change_type = 9;
+
+  // Android id of the user session on the device where the app was installed.
+  int64 android_id = 10;
+}

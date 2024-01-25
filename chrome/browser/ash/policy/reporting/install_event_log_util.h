@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_UTIL_H_
 
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/app_install_events.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/common/extension_id.h"
 
@@ -60,6 +61,10 @@ base::Value::Dict ConvertArcAppEventToValue(
     const std::string& package,
     const em::AppInstallReportLogEvent& app_install_report_log_event,
     const base::Value::Dict& context);
+
+reporting::AndroidAppInstallEvent CreateAndroidAppInstallEvent(
+    const std::string& package,
+    const enterprise_management::AppInstallReportLogEvent& event);
 
 }  // namespace policy
 

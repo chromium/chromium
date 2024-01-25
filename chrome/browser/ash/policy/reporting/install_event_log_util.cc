@@ -352,4 +352,20 @@ base::Value::Dict ConvertArcAppEventToValue(
   return wrapper;
 }
 
+reporting::AndroidAppInstallEvent CreateAndroidAppInstallEvent(
+    const std::string& package,
+    const enterprise_management::AppInstallReportLogEvent& event) {
+  auto result = reporting::AndroidAppInstallEvent();
+  result.set_app_package(package);
+  result.set_serial_number(GetSerialNumber());
+  result.set_event_type(event.event_type());
+  result.set_stateful_total(event.stateful_total());
+  result.set_stateful_free(event.stateful_free());
+  result.set_clouddps_response(event.clouddps_response());
+  result.set_online(event.online());
+  result.set_session_state_change_type(event.session_state_change_type());
+  result.set_android_id(event.android_id());
+  return result;
+}
+
 }  // namespace policy

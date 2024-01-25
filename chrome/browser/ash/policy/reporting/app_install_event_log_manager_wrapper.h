@@ -9,13 +9,17 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_event_encrypted_reporter.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/app_install_events.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
 class Profile;
 
 namespace policy {
+BASE_DECLARE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents);
 
 // Observes the pref that indicates whether to log events for app push-installs.
 // When logging is enabled, creates an |AppInstallEventLogManager|. When logging
@@ -46,17 +50,33 @@ class AppInstallEventLogManagerWrapper {
   // for testing.
   void Init();
 
+  // Initializes log collection.
+  void InitLogging();
+
+  // Destructs all logging-related objects.
+  void DisableLogging();
+
   // Creates the |log_manager_|. Virtual for testing.
   virtual void CreateManager();
 
   // Destroys the |log_manager_|. Virtual for testing.
   virtual void DestroyManager();
 
+  // Creates the |encrypted_reporter_|. Virtual for testing.
+  virtual void CreateEncryptedReporter();
+
+  // Destroys the |encrypted_reporter_|. Virtual for testing.
+  virtual void DestroyEncryptedReporter();
+
   // Provides the task runner used for all I/O on the log file.
   std::unique_ptr<ArcAppInstallEventLogManager::LogTaskRunnerWrapper>
       log_task_runner_;
 
  private:
+  // Holds the value of the
+  // `kUseEncryptedReportingPipelineToReportArcAppInstallEvents` feature.
+  const bool use_encrypted_reporting_pipeline_;
+
   // Evaluates the current state of the pref that indicates whether to log
   // events for app push-installs. If logging is enabled, creates the
   // |log_manager_|. If logging is disabled, destroys the |log_manager_| and
@@ -71,6 +91,8 @@ class AppInstallEventLogManagerWrapper {
 
   // Handles collection, storage and upload of app push-install event logs.
   std::unique_ptr<ArcAppInstallEventLogManager> log_manager_;
+
+  std::unique_ptr<ArcAppInstallEventEncryptedReporter> encrypted_reporter_;
 
   // Pref change observer.
   PrefChangeRegistrar pref_change_registrar_;
