@@ -26,7 +26,7 @@ import java.util.Optional;
 public class SearchEngineChoiceService {
     private static SearchEngineChoiceService sInstance;
 
-    private final SearchEngineCountryDelegate mDelegate;
+    private SearchEngineCountryDelegate mDelegate;
     private final List<Long> mPtrToNativeCallbacks = new ArrayList<>();
     // To understand whether we already got a reply from `SearchEngineCountryDelegate`, we need to
     // differentiate between "null result" and "no result yet", thus the optional.
@@ -59,16 +59,10 @@ public class SearchEngineChoiceService {
                 .getDeviceCountry()
                 .then(
                         (deviceCountry) -> {
-                            ThreadUtils.checkUiThread();
-                            mPlayCountryRequestResult = Optional.ofNullable(deviceCountry);
-                            for (long ptrToNativeCallback : mPtrToNativeCallbacks) {
-                                // `mPtrToNativeCallbacks` can be non-empty only after the native is
-                                // loaded, so it is safe to call JNI here.
-                                SearchEngineChoiceServiceJni.get()
-                                        .processCountryFromPlayApi(
-                                                ptrToNativeCallback, deviceCountry);
-                            }
-                            mPtrToNativeCallbacks.clear();
+                            processResponseFromPlayApi(deviceCountry);
+                        },
+                        (exception) -> {
+                            processResponseFromPlayApi(null);
                         });
     }
 
@@ -89,6 +83,27 @@ public class SearchEngineChoiceService {
         // When `SearchEngineCountryDelegate` replies with the result - the result will be reported
         // to native using the saved callback.
         mPtrToNativeCallbacks.add(ptrToNativeCallback);
+    }
+
+    /**
+     * Saves the result of the device country request and propagates to native callbacks waiting for
+     * this result.
+     *
+     * @param deviceCountry the country code string or null if there was an error.
+     */
+    private void processResponseFromPlayApi(@Nullable String deviceCountry) {
+        ThreadUtils.checkUiThread();
+        assert mPlayCountryRequestResult == null;
+        mPlayCountryRequestResult = Optional.ofNullable(deviceCountry);
+        for (long ptrToNativeCallback : mPtrToNativeCallbacks) {
+            // `mPtrToNativeCallbacks` can be non-empty only after the native is loaded, so it is
+            // safe to call JNI here.
+            SearchEngineChoiceServiceJni.get()
+                    .processCountryFromPlayApi(ptrToNativeCallback, deviceCountry);
+        }
+        mPtrToNativeCallbacks.clear();
+        // We request the country code once per run, so it is safe to free up the delegate now.
+        mDelegate = null;
     }
 
     @NativeMethods
