@@ -178,9 +178,9 @@ def _split_enums(dir_name):
     print('Please run `git add` on the new enums.xml file:')
     print(f'  git add {enums_file}')
     print('')
-    print('IMPORTANT: You must also manually add the new file to:')
-    print('  tools/metrics/histograms/histograms_index.txt')
-    print('  components/metrics/generate_expired_histograms_array.gni')
+    print('Updating histograms_xml_files.gni file...')
+    histogram_paths.UpdateHistogramsXmlGniFile()
+    print('Done.')
 
 
 def main():
