@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -15,11 +16,24 @@
 namespace autofill {
 
 struct NextIdleTimeTicks::Data {
-  void SetValueToCurrentTimeTicks() { value = base::TimeTicks::Now(); }
+  void SetValueToCurrentTimeTicks();
 
   base::TimeTicks value;
   base::CallbackListSubscription on_idle_callback_subscription;
+
+  // The `TimeTicks` when `this` was created - used for metrics reporting only.
+  base::TimeTicks creation_time;
 };
+
+void NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks() {
+  value = base::TimeTicks::Now();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupImprovedTimingChecks)) {
+    CHECK(!creation_time.is_null());
+    base::UmaHistogramTimes("Autofill.Popup.NextIdleTimeTicksDelay",
+                            base::TimeTicks::Now() - creation_time);
+  }
+}
 
 NextIdleTimeTicks::NextIdleTimeTicks() = default;
 
@@ -36,6 +50,7 @@ NextIdleTimeTicks NextIdleTimeTicks::CaptureNextIdleTimeTicks() {
   result.data_ = std::make_unique<Data>();
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillPopupImprovedTimingChecks)) {
+    result.data_->creation_time = base::TimeTicks::Now();
     result.data_->on_idle_callback_subscription =
         base::CurrentUIThread::Get()->RegisterOnNextIdleCallback(
             {},

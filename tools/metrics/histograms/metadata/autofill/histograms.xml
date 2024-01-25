@@ -3528,6 +3528,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Popup.NextIdleTimeTicksDelay" units="ms"
+    expires_after="2024-12-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <summary>
+    Records how long it took for the UI thread in the browser process to become
+    idle and record the TimeTicks at which the Autofill popup was shown. It is a
+    safe-guard metric: For the majority of cases, this time should be
+    negligible. Emitted whenever an Autofill popup (or keyboard acessory on
+    Android) is shown and the AutofillPopupImprovedTimingChecks feature is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
     expires_after="2024-05-19">
   <owner>koerber@google.com</owner>
