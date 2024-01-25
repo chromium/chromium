@@ -163,6 +163,15 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return as_span().last(count);
   }
 
+  // Leaks the memory in the HeapArray so that it will never be freed, and
+  // consumes the HeapArray, returning an unowning span that points to the
+  // memory.
+  base::span<T> leak() && {
+    HeapArray<T> dropped = std::move(*this);
+    T* leaked = dropped.data_.release();
+    return make_span(leaked, dropped.size_);
+  }
+
  private:
   HeapArray(std::unique_ptr<T[]> data, size_t size)
       : data_(std::move(data)), size_(size) {}

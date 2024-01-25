@@ -242,4 +242,23 @@ TEST(HeapArray, CopyFrom) {
   EXPECT_EQ(1001u, other[1]);
 }
 
+TEST(HeapArray, Leak) {
+  size_t count = 0;
+  span<DestructCounter> leaked;
+  {
+    auto vec = base::HeapArray<DestructCounter>::WithSize(2);
+    vec[0].set_where(&count);
+    vec[1].set_where(&count);
+
+    auto* data = vec.data();
+    leaked = std::move(vec).leak();
+    ASSERT_EQ(data, leaked.data());
+
+    EXPECT_EQ(count, 0u);
+  }
+  EXPECT_EQ(count, 0u);
+
+  delete[] leaked.data();
+}
+
 }  // namespace base

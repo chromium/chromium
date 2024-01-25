@@ -650,15 +650,16 @@ TEST_P(HistogramTest, CorruptSampleCounts) {
   EXPECT_EQ(2, snapshot->redundant_count());
   EXPECT_EQ(2, snapshot->TotalCount());
 
-  snapshot->counts()[3] += 100;  // Sample count won't match redundant count.
+  // Sample count won't match redundant count.
+  snapshot->counts().value()[3u] += 100;
   EXPECT_EQ(HistogramBase::COUNT_LOW_ERROR,
             histogram->FindCorruption(*snapshot));
-  snapshot->counts()[2] -= 200;
+  snapshot->counts().value()[2u] -= 200;
   EXPECT_EQ(HistogramBase::COUNT_HIGH_ERROR,
             histogram->FindCorruption(*snapshot));
 
   // But we can't spot a corruption if it is compensated for.
-  snapshot->counts()[1] += 100;
+  snapshot->counts().value()[1u] += 100;
   EXPECT_EQ(HistogramBase::NO_INCONSISTENCIES,
             histogram->FindCorruption(*snapshot));
 }

@@ -23,9 +23,8 @@ namespace base {
 // non-public methods and fields.
 class SampleVectorTest : public testing::Test {
  public:
-  const HistogramBase::AtomicCount* GetSamplesCounts(
-      const SampleVectorBase& samples) {
-    return samples.counts();
+  bool HasSamplesCounts(const SampleVectorBase& samples) {
+    return samples.counts().has_value();
   }
 };
 
@@ -277,13 +276,13 @@ TEST_F(SampleVectorTest, SingleSample) {
   SampleVector samples(&ranges);
 
   // Ensure that a single value accumulates correctly.
-  EXPECT_FALSE(GetSamplesCounts(samples));
+  EXPECT_FALSE(HasSamplesCounts(samples));
   samples.Accumulate(3, 200);
   EXPECT_EQ(200, samples.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples));
+  EXPECT_FALSE(HasSamplesCounts(samples));
   samples.Accumulate(3, 400);
   EXPECT_EQ(600, samples.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples));
+  EXPECT_FALSE(HasSamplesCounts(samples));
   EXPECT_EQ(3 * 600, samples.sum());
   EXPECT_EQ(600, samples.TotalCount());
   EXPECT_EQ(600, samples.redundant_count());
@@ -304,14 +303,14 @@ TEST_F(SampleVectorTest, SingleSample) {
   // Ensure that it can be merged to another single-sample vector.
   SampleVector samples_copy(&ranges);
   samples_copy.Add(samples);
-  EXPECT_FALSE(GetSamplesCounts(samples_copy));
+  EXPECT_FALSE(HasSamplesCounts(samples_copy));
   EXPECT_EQ(3 * 600, samples_copy.sum());
   EXPECT_EQ(600, samples_copy.TotalCount());
   EXPECT_EQ(600, samples_copy.redundant_count());
 
   // A different value should cause creation of the counts array.
   samples.Accumulate(8, 100);
-  EXPECT_TRUE(GetSamplesCounts(samples));
+  EXPECT_TRUE(HasSamplesCounts(samples));
   EXPECT_EQ(600, samples.GetCount(3));
   EXPECT_EQ(100, samples.GetCount(8));
   EXPECT_EQ(3 * 600 + 8 * 100, samples.sum());
@@ -336,7 +335,7 @@ TEST_F(SampleVectorTest, SingleSample) {
 
   // Ensure that it can merged to a single-sample vector.
   samples_copy.Add(samples);
-  EXPECT_TRUE(GetSamplesCounts(samples_copy));
+  EXPECT_TRUE(HasSamplesCounts(samples_copy));
   EXPECT_EQ(3 * 1200 + 8 * 100, samples_copy.sum());
   EXPECT_EQ(1200 + 100, samples_copy.TotalCount());
   EXPECT_EQ(1200 + 100, samples_copy.redundant_count());
@@ -362,16 +361,16 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
                                                counts_bytes, false);
 
   PersistentSampleVector samples1(0, &ranges, &samples_meta, allocation);
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
   samples1.Accumulate(3, 200);
   EXPECT_EQ(200, samples1.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
   EXPECT_EQ(0, samples1.GetCount(8));
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
 
   PersistentSampleVector samples2(0, &ranges, &samples_meta, allocation);
   EXPECT_EQ(200, samples2.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples2));
+  EXPECT_FALSE(HasSamplesCounts(samples2));
 
   HistogramBase::Sample min;
   int64_t max;
@@ -386,12 +385,12 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   EXPECT_TRUE(it->Done());
 
   samples1.Accumulate(8, 100);
-  EXPECT_TRUE(GetSamplesCounts(samples1));
+  EXPECT_TRUE(HasSamplesCounts(samples1));
 
-  EXPECT_FALSE(GetSamplesCounts(samples2));
+  EXPECT_FALSE(HasSamplesCounts(samples2));
   EXPECT_EQ(200, samples2.GetCount(3));
   EXPECT_EQ(100, samples2.GetCount(8));
-  EXPECT_TRUE(GetSamplesCounts(samples2));
+  EXPECT_TRUE(HasSamplesCounts(samples2));
   EXPECT_EQ(3 * 200 + 8 * 100, samples2.sum());
   EXPECT_EQ(300, samples2.TotalCount());
   EXPECT_EQ(300, samples2.redundant_count());
@@ -412,7 +411,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   EXPECT_TRUE(it->Done());
 
   PersistentSampleVector samples3(0, &ranges, &samples_meta, allocation);
-  EXPECT_TRUE(GetSamplesCounts(samples2));
+  EXPECT_TRUE(HasSamplesCounts(samples2));
   EXPECT_EQ(200, samples3.GetCount(3));
   EXPECT_EQ(100, samples3.GetCount(8));
   EXPECT_EQ(3 * 200 + 8 * 100, samples3.sum());
@@ -455,18 +454,18 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
                                                counts_bytes, false);
 
   PersistentSampleVector samples1(0, &ranges, &samples_meta, allocation);
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
   samples1.Accumulate(3, 200);
   EXPECT_EQ(200, samples1.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
 
   // Because the delayed allocation can be shared with other objects (the
   // |offset| parameter allows concatinating multiple data blocks into the
   // same allocation), it's possible that the allocation gets realized from
   // the outside even though the data block being accessed is all zero.
-  allocation.Get();
+  allocation.Get<uint8_t>();
   EXPECT_EQ(200, samples1.GetCount(3));
-  EXPECT_FALSE(GetSamplesCounts(samples1));
+  EXPECT_FALSE(HasSamplesCounts(samples1));
 
   HistogramBase::Sample min;
   int64_t max;
@@ -503,7 +502,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   EXPECT_TRUE(it->Done());
 
   samples1.Accumulate(8, 100);
-  EXPECT_TRUE(GetSamplesCounts(samples1));
+  EXPECT_TRUE(HasSamplesCounts(samples1));
   EXPECT_EQ(300, samples1.GetCount(3));
   EXPECT_EQ(300, samples2.GetCount(3));
   EXPECT_EQ(100, samples1.GetCount(8));
