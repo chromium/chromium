@@ -44,6 +44,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -606,8 +608,7 @@ BrowserAutofillManager::FillingContext::FillingContext(
     const std::u16string* optional_cvc)
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
-      filled_origin(field.origin),
-      original_fill_time(base::TimeTicks::Now()) {
+      filled_origin(field.origin) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
          !optional_cvc);
 
@@ -1417,7 +1418,9 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormFieldData& field,
     const std::u16string& value,
     PopupItemId popup_item_id) {
-  if (AutofillField* autofill_field = GetAutofillField(form, field);
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (GetCachedFormAndField(form, field, &form_structure, &autofill_field) &&
       autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
       (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
        popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
@@ -1436,6 +1439,10 @@ void BrowserAutofillManager::FillOrPreviewField(
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
+    if (FillingContext* filling_context = GetFillingContext(form.global_id())) {
+      SetFillingContext(form.global_id(), nullptr);
+    }
   }
   driver().ApplyFieldAction(action_persistence, text_replacement,
                             field.global_id(), value);
@@ -1838,28 +1845,24 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   // We are interested in reporting the events where JavaScript resets an
   // autofilled value immediately after filling. For a reset, the value
   // needs to be empty.
-  if (!field.value.empty())
-    return;
-
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
-    return;
-
-  FillingContext* filling_context =
-      GetFillingContext(form_structure->global_id());
-  if (!filling_context)
-    return;
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delta = now - filling_context->original_fill_time;
-
-  // If the filling happened too long ago, maybe this is just an effect of
-  // the user pressing a "reset form" button.
-  if (delta >= limit_before_refill_) {
+  if (!field.value.empty()) {
     return;
   }
-
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+    return;
+  }
+  if (!form_structure->last_filling_timestamp()) {
+    return;
+  }
+  // If the filling happened too long ago, maybe this is just an effect of
+  // the user pressing a "reset form" button.
+  if (base::TimeDelta delta =
+          base::TimeTicks::Now() - *form_structure->last_filling_timestamp();
+      delta >= limit_before_refill_) {
+    return;
+  }
   auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
     logger->OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
@@ -2711,7 +2714,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
                         "security policy.";
-
       // Record in this AutofillField object's last FillFieldLogEvent object
       // that this field was actually not filled due to the iframe security
       // policy.
@@ -2730,26 +2732,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       }
     }
   }
-
-  // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
+    // Save filling history to support undoing it later if needed.
     form_autofill_history_.AddFormFillEntry(
         safe_newly_filled_fields.old_values, safe_newly_filled_fields.cached,
         is_credit_card ? FillingProduct::kCreditCard : FillingProduct::kAddress,
         is_refill);
   }
-
   LOG_AF(buffer) << CTag{"table"};
   LOG_AF(log_manager()) << LoggingScope::kFilling
                         << LogMessage::kSendFillingData << Br{}
                         << std::move(buffer);
-
   if (filling_context) {
     // When a new preview/fill starts, previously forced_fill_values should be
     // ignored the operation could be for a different card or address.
     filling_context->forced_fill_values.clear();
   }
-
   OnDidFillOrPreviewForm(
       action_persistence, *form_structure, *autofill_trigger_field,
       safe_newly_filled_fields.new_values, newly_filled_field_ids, safe_fields,
@@ -3468,10 +3467,9 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   // filled before.
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
-  if (filling_context == nullptr) {
+  if (!form_structure.last_filling_timestamp() || filling_context == nullptr) {
     return false;
   }
-
   // Confirm that the form changed by running a DeepEqual check on the filled
   // form and the received form. Other trigger reasons do not need this check
   // since they do not depend on the form changing.
@@ -3481,10 +3479,8 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
                           *filling_context->filled_form)) {
     return false;
   }
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delta = now - filling_context->original_fill_time;
-
+  base::TimeDelta delta =
+      base::TimeTicks::Now() - *form_structure.last_filling_timestamp();
   return !filling_context->attempted_refill && delta < limit_before_refill_;
 }
 

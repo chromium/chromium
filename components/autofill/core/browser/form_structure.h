@@ -309,6 +309,13 @@ class FormStructure {
     return form_parsed_timestamp_;
   }
 
+  std::optional<base::TimeTicks> last_filling_timestamp() const {
+    return last_filling_timestamp_;
+  }
+  void set_last_filling_timestamp(base::TimeTicks last_filling_timestamp) {
+    last_filling_timestamp_ = last_filling_timestamp;
+  }
+
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
 
   FormSignature form_signature() const { return form_signature_; }
@@ -519,6 +526,9 @@ class FormStructure {
 
   // The timestamp (not wallclock time) when this form was initially parsed.
   base::TimeTicks form_parsed_timestamp_;
+
+  // The timestamp (not wallclock time) when this form was last filled.
+  std::optional<base::TimeTicks> last_filling_timestamp_;
 
   // If phone number rationalization has been performed for a given section.
   std::set<Section> phone_rationalized_;
