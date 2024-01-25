@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_params_user_context_invalid_type[None]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
+[FAIL] test_params_user_context_invalid_type[False]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
+[FAIL] test_params_user_context_invalid_type[42]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
+[FAIL] test_params_user_context_invalid_type[value3]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
+[FAIL] test_params_user_context_invalid_type[value4]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
+Harness: the test ran to completion.
