@@ -4,6 +4,8 @@
 
 #include "components/reporting/client/report_queue_provider_test_helper.h"
 
+#include <memory>
+
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue_provider.h"
@@ -12,9 +14,8 @@
 namespace reporting::test {
 
 ReportQueueProviderTestHelper::ReportQueueProviderTestHelper()
-    : provider_(new ::testing::NiceMock<MockReportQueueProvider>(),
-                base::OnTaskRunnerDeleter(
-                    base::SequencedTaskRunner::GetCurrentDefault())) {}
+    : provider_(
+          std::make_unique<::testing::NiceMock<MockReportQueueProvider>>()) {}
 
 ReportQueueProviderTestHelper::~ReportQueueProviderTestHelper() = default;
 

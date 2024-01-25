@@ -173,8 +173,6 @@ class HttpsLatencyEventsTest : public ::testing::Test {
     ::ash::LoginState::Shutdown();
 
     reporting_test_enviroment_.reset();
-    // Let `reporting_test_enviroment_` shut down.
-    task_environment_.RunUntilIdle();
   }
 
   void EnableDeviceNetworkStatusPolicy() {

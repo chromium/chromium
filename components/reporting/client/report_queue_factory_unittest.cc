@@ -67,7 +67,6 @@ class ReportQueueFactoryTest : public ::testing::Test {
 
   void TearDown() override {
     helper_.reset();
-    task_environment_.RunUntilIdle();  // Drain remaining scheduled tasks.
   }
 
   const Destination destination_ = Destination::UPLOAD_EVENTS;

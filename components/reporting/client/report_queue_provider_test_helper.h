@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_PROVIDER_TEST_HELPER_H_
 #define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_PROVIDER_TEST_HELPER_H_
 
+#include <memory>
+
 #include "components/reporting/client/report_queue_provider.h"
 
 namespace reporting {
@@ -19,7 +21,7 @@ class ReportQueueProviderTestHelper {
   MockReportQueueProvider* mock_provider() const;
 
  private:
-  ReportQueueProvider::SmartPtr<MockReportQueueProvider> provider_;
+  std::unique_ptr<MockReportQueueProvider> provider_;
 };
 }  // namespace test
 }  // namespace reporting

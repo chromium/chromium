@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_TEST_UTIL_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_TEST_UTIL_H_
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
@@ -46,7 +48,7 @@ class ReportingClient::TestEnvironment {
   explicit TestEnvironment(
       ReportingClient::StorageModuleCreateCallback storage_create_cb);
 
-  ReportQueueProvider::SmartPtr<ReportingClient> client_;
+  const std::unique_ptr<ReportingClient> client_;
 };
 }  // namespace reporting
 

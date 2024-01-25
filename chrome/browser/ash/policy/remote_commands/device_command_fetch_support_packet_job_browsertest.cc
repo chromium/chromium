@@ -12,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -98,8 +97,6 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
 
     reporting_test_enviroment_.reset();
     reporting_test_storage_.reset();
-    // Let `reporting_test_enviroment_` shut down.
-    base::RunLoop().RunUntilIdle();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
