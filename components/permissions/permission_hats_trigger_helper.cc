@@ -420,8 +420,8 @@ PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
     double probability =
         probability_vector.size() == 1 ? probability_vector[0] : 1.0;
     const std::string& supplied_trigger_id =
-        is_custom_invitation_experiment ? custom_invitation_trigger_id_vector[0]
-                                        : permission_trigger_id_vector[0];
+        is_custom_invitation_arm ? custom_invitation_trigger_id_vector[0]
+                                 : permission_trigger_id_vector[0];
     return PermissionHatsTriggerHelper::SurveyParametersForHats(
         probability, supplied_trigger_id, custom_invitation);
   } else if (permission_trigger_id_vector.size() != probability_vector.size()) {
@@ -443,9 +443,8 @@ PermissionHatsTriggerHelper::GetSurveyParametersForRequestType(
               request_filter_vector[i])) {
         double probability = probability_vector[i];
         const std::string& supplied_trigger_id =
-            is_custom_invitation_experiment
-                ? custom_invitation_trigger_id_vector[i]
-                : permission_trigger_id_vector[i];
+            is_custom_invitation_arm ? custom_invitation_trigger_id_vector[i]
+                                     : permission_trigger_id_vector[i];
         return PermissionHatsTriggerHelper::SurveyParametersForHats(
             probability, supplied_trigger_id, custom_invitation,
             message_identifier);
