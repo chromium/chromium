@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_mediator.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
@@ -16,7 +17,7 @@
 
 @implementation PlusAddressBottomSheetMediator {
   // The service implementation that owns the data.
-  plus_addresses::PlusAddressService* _plusAddressService;
+  raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
   // The autofill callback to be run if the process completes via confirmation
