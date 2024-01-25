@@ -77,6 +77,8 @@ void PageUkmTracker::MaybeLogUkm() {
       .Record(ukm::UkmRecorder::Get());
 }
 
+ComposeSessionEvents::ComposeSessionEvents() {}
+
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
 }
@@ -145,7 +147,7 @@ void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
 }
 
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
-                                   ComposeSessionEvents session_events) {
+                                   const ComposeSessionEvents& session_events) {
   base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
 
   std::string status;
@@ -166,6 +168,31 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                session_events.undo_count);
   base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
                                session_events.update_input_count);
+}
+
+void LogComposeSessionCloseUkmMetrics(
+    ukm::SourceId source_id,
+    const ComposeSessionEvents& session_events) {
+  // Log the UKM metrics for this session.
+  ukm::builders::Compose_SessionProgress(source_id)
+      .SetDialogShownCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.dialog_shown_count))
+      .SetComposeCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.compose_count))
+      .SetShortenCount(session_events.shorten_count)
+      .SetLengthenCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.lengthen_count))
+      .SetFormalCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.formal_count))
+      .SetCasualCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.casual_count))
+      .SetRegenerateCount(ukm::GetExponentialBucketMinForCounts1000(
+          session_events.regenerate_count))
+      .SetUndoCount(
+          ukm::GetExponentialBucketMinForCounts1000(session_events.undo_count))
+      .SetInsertedResults(session_events.inserted_results)
+      .SetCanceled(session_events.canceled)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LogComposeDialogInnerTextShortenedBy(int shortened_by) {
