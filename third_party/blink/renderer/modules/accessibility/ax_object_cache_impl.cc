@@ -4065,6 +4065,17 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       DeferTreeUpdate(TreeUpdateReason::kAriaSelectedChanged, element);
     } else if (attr_name == html_names::kAriaExpandedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaExpandedChanged, element);
+    } else if (attr_name == html_names::kAriaHiddenAttr) {
+      // Removing the subtree will also notify its parent that children changed,
+      // causing the subtree to recursively be rebuilt with correct cached
+      // values. In addition, changes to aria-hidden can affect with aria-owns
+      // within the subtree are considered valid. Removing the subtree forces
+      // any stale assumptions regarding aria-owns to be tossed, and the
+      // resulting tree structure changes to occur as the subtree is rebuilt,
+      // including restoring the natural parent of previously owned children
+      // if the owner becomes aria-hidden.
+      RemoveSubtreeWhenSafe(element);
+      MarkElementDirty(element->parentNode());
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);

@@ -1830,10 +1830,12 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedAriaHiddenProperty) {
   // Ensure that aria-hidden has propagated to a deep descendant.
   ASSERT_TRUE(mark->IsAriaHidden());
 
+  main = GetAXObjectByElementId("main");
   main->GetElement()->removeAttribute(html_names::kAriaHiddenAttr);
   GetAXObjectCache().UpdateAXForAllDocuments();
 
   // Ensure that clearing aria-hidden has propagated to a deep descendant.
+  mark = GetAXObjectByElementId("mark");
   ASSERT_FALSE(mark->IsAriaHidden());
 }
 
