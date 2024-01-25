@@ -19,12 +19,8 @@ Only one build configuration is currently supported.
    gclient sync
    ```
 3. Setup engflow:
-   ```sh
-   export GOMA_SERVER_HOST=simpsonite.goma.engflow.com
-   export GOMACTL_USE_PROXY=false
-   goma_auth login
-   goma_ctl restart
-   ```
+   Follow [the instructions here](https://www.notion.so/replayio/Migrating-local-chromium-buld-from-goma-to-reclient-c24f36853bbe408b97c4e9931a7af1e8) up to step 8.
+
 4. Gen + Configure your build:
    * If you are using Linux, see [Troubleshooting](#troubleshooting) first.
    ```
