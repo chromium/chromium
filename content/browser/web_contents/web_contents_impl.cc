@@ -7817,9 +7817,8 @@ void WebContentsImpl::RunFileChooser(
 double WebContentsImpl::GetPendingPageZoomLevel() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, use the default page zoom level when the AccessibilityPageZoom
-  // and RequestDesktopSiteZoom features are not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom) &&
-      !base::FeatureList::IsEnabled(features::kRequestDesktopSiteZoom)) {
+  // feature is disabled.
+  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
     return 0.0;
   }
 #endif
@@ -7830,9 +7829,9 @@ double WebContentsImpl::GetPendingPageZoomLevel() {
 
   GURL url = pending_entry->GetURL();
 #if BUILDFLAG(IS_ANDROID)
-  return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
-      url.scheme(), net::GetHostOrSpecFromURL(url),
-      pending_entry->GetIsOverridingUserAgent());
+  return HostZoomMap::GetForWebContents(this)
+      ->GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
+                                            net::GetHostOrSpecFromURL(url));
 #else
   return HostZoomMap::GetForWebContents(this)->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));

@@ -96,17 +96,8 @@ public class HostZoomMapImpl {
         return HostZoomMapImplJni.get().getDefaultZoomLevel(context);
     }
 
-    /**
-     * Get the page zoom scaling factor to use when a desktop or mobile user agent is used.
-     * @param webContents The {@link WebContents} to get the desktop site zoom scale for.
-     * @return The desktop site zoom scale.
-     */
-    public static float getDesktopSiteZoomScale(WebContents webContents) {
-        return (float) HostZoomMapImplJni.get().getDesktopSiteZoomScale(webContents);
-    }
-
     @CalledByNative
-    public static double getAdjustedZoomLevel(double zoomLevel, double desktopSiteZoomScale) {
+    public static double getAdjustedZoomLevel(double zoomLevel) {
         float systemFontScale = getSystemFontScale();
         // The OS |fontScale| will not be factored in zoom estimation if Page Zoom is disabled; a
         // systemFontScale = 1 will be used in this case.
@@ -114,7 +105,7 @@ public class HostZoomMapImpl {
                 || !shouldAdjustForOSLevel()) {
             systemFontScale = 1;
         }
-        return adjustZoomLevel(zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
+        return adjustZoomLevel(zoomLevel, systemFontScale);
     }
 
     @CalledByNative
@@ -136,34 +127,24 @@ public class HostZoomMapImpl {
     }
 
     /**
-     * Adjust a given zoom level to account for the OS-level |fontScale| configuration and/or the
-     * scaling factor applicable when a site uses the desktop user agent on Android.
+     * Adjust a given zoom level to account for the OS-level |fontScale| configuration on Android.
      *
-     * @param zoomLevel    The zoom level to adjust.
-     * @param systemFontScale  User selected font scale value.
-     * @param desktopSiteZoomScale The zoom scaling factor applicable for a desktop site.
-     * @return double      The adjusted zoom level.
+     * @param zoomLevel The zoom level to adjust.
+     * @param systemFontScale User selected font scale value.
+     * @return double The adjusted zoom level.
      */
-    public static double adjustZoomLevel(
-            double zoomLevel, float systemFontScale, float desktopSiteZoomScale) {
-        // No calculation to do if the user has set OS-level |fontScale| to 1 (default), and if the
-        // desktop site zoom scale is default (1, or 100%).
-        if (MathUtils.areFloatsEqual(systemFontScale, 1f)
-                        && MathUtils.areFloatsEqual(desktopSiteZoomScale, 1f)
-                || !shouldAdjustForOSLevel()) {
+    public static double adjustZoomLevel(double zoomLevel, float systemFontScale) {
+        // No calculation to do if the user has set OS-level |fontScale| to 1 (default).
+        if (MathUtils.areFloatsEqual(systemFontScale, 1f) || !shouldAdjustForOSLevel()) {
             return zoomLevel;
         }
 
         // Convert the zoom factor to a level, e.g. factor = 0.0 should translate to 1.0 (100%).
-        // Multiply the level by the OS-level |fontScale| and the desktop site zoom scale. For
-        // example, if the user has chosen a Chrome-level zoom of 150%, and a OS-level setting of XL
-        // (130%) and the desktop site zoom scale is 110%, then we want to continue to display 150%
-        // to the user but actually render 1.5 * 1.3 * 1.1 = 2.145 (~214%) zoom. We must apply this
-        // at the zoom level (not factor) to compensate for logarithmic scale.
-        double adjustedLevel =
-                systemFontScale
-                        * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel)
-                        * desktopSiteZoomScale;
+        // Multiply the level by the OS-level |fontScale|. For example, if the user has chosen a
+        // Chrome-level zoom of 150%, and a OS-level setting of XL (130%), then we want to continue
+        // to display 150% to the user but actually render 1.5 * 1.3 = 1.95 (195%) zoom. We must
+        // apply this at the zoom level (not factor) to compensate for logarithmic scale.
+        double adjustedLevel = systemFontScale * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel);
 
         // We do not pass levels to the backend, but factors. So convert back and round.
         double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
@@ -186,8 +167,6 @@ public class HostZoomMapImpl {
         void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
 
         double getDefaultZoomLevel(BrowserContextHandle context);
-
-        double getDesktopSiteZoomScale(WebContents webContents);
 
         SiteZoomInfo[] getAllHostZoomLevels(BrowserContextHandle context);
 

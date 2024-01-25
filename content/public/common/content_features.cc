@@ -1296,12 +1296,6 @@ BASE_FEATURE(kRequestDesktopSiteWindowSetting,
              "RequestDesktopSiteWindowSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
-// when desktop user agent is used.
-BASE_FEATURE(kRequestDesktopSiteZoom,
-             "RequestDesktopSiteZoom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Apply text selection menu order correction logic for Android.
 // TODO(https://crbug.com/1506484) This is a kill switch landed in M122.
 // Please remove after M124.

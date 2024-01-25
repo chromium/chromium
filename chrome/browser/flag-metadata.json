@@ -7058,11 +7058,6 @@
     "expiry_milestone": 124
   },
   {
-    "name": "request-desktop-site-zoom",
-    "owners": [ "aishwaryarj@google.com", "skavuluru@google.com", "twellington@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "reset-shortcut-customizations",
     "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
     "expiry_milestone": 130

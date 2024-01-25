@@ -44,21 +44,16 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
 
         // Just before sending the zoom level to the backend, we will take into account the system
-        // level setting and the desktop site zoom scale. We only do this here and not when applying
-        // the default values chosen in the settings flow so that if the user changes their OS-level
-        // setting or Request Desktop Site setting, the Chrome setting will continue to display the
-        // same value, but adjust accordingly. For example, if the user chooses 150% zoom in
-        // settings with font set to XL and navigates to a desktop site that requires 110% zoom,
-        // then really that choice is 195% * 1.1 = 214.5%. If the user then switches to default
-        // |fontScale| or switches to a mobile site, we would still want the value to be 150% shown
-        // to the user, and not the 214.5%.
+        // level setting. We only do this here and not when applying the default values chosen in
+        // the settings flow so that if the user changes their OS-level setting, the Chrome setting
+        // will continue to display the same value, but adjust accordingly. For example, if the user
+        // chooses 150% zoom in settings with font set to XL, then really that choice is 195%. If
+        // the user then switches to default |fontScale|, we would still want the value to be 150%
+        // shown to the user, and not the 195%.
         HostZoomMapImpl.setZoomLevel(
                 webContents,
                 newZoomLevel,
-                HostZoomMapImpl.adjustZoomLevel(
-                        newZoomLevel,
-                        sSystemFontScale,
-                        HostZoomMapImpl.getDesktopSiteZoomScale(webContents)));
+                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale));
     }
 
     /** Get the current system font scale */
@@ -83,13 +78,10 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
 
         // Just before returning a zoom level from the backend, we must again take into account the
-        // system level setting and the desktop site zoom scale. Here we need to do the reverse
-        // operation of the above, effectively divide rather than multiply, so we will pass the
-        // reciprocal of |sSystemFontScale| and |DESKTOP_SITE_ZOOM_SCALE| respectively.
+        // system level setting. Here we need to do the reverse operation of the above, effectively
+        // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale|.
         return HostZoomMapImpl.adjustZoomLevel(
-                HostZoomMapImpl.getZoomLevel(webContents),
-                (float) 1 / sSystemFontScale,
-                (float) 1 / HostZoomMapImpl.getDesktopSiteZoomScale(webContents));
+                HostZoomMapImpl.getZoomLevel(webContents), (float) 1 / sSystemFontScale);
     }
 
     /**

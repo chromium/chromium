@@ -2560,9 +2560,6 @@ extern const char kRequestDesktopSiteDefaultsLoggingDescription[];
 extern const char kRequestDesktopSiteWindowSettingName[];
 extern const char kRequestDesktopSiteWindowSettingDescription[];
 
-extern const char kRequestDesktopSiteZoomName[];
-extern const char kRequestDesktopSiteZoomDescription[];
-
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
