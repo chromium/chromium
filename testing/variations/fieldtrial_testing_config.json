@@ -8722,21 +8722,6 @@
             ]
         }
     ],
-    "HideTabOnTabSwitcher": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HideTabOnTabSwitcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "HighestRequestPriorityForClassifyUrl": [
         {
             "platforms": [

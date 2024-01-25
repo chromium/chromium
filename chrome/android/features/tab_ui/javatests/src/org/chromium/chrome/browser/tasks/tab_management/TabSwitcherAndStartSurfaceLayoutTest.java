@@ -2141,10 +2141,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
-        ChromeFeatureList.HIDE_TAB_ON_TAB_SWITCHER
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testHideTabOnTabSwitcher(boolean isStartSurfaceRefactorEnabled) throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

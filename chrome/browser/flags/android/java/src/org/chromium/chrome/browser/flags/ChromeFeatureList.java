@@ -300,7 +300,6 @@ public abstract class ChromeFeatureList {
             "GridTabSwitcherAndroidAnimations";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
-    public static final String HIDE_TAB_ON_TAB_SWITCHER = "HideTabOnTabSwitcher";
     public static final String HISTORY_JOURNEYS = "Journeys";
     public static final String INCOGNITO_DOWNLOADS_WARNING = "IncognitoDownloadsWarning";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
@@ -563,8 +562,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
     public static final CachedFlag sInstantStart = newCachedFlag(INSTANT_START, false);
-    public static final CachedFlag sHideTabOnTabSwitcher =
-            newCachedFlag(HIDE_TAB_ON_TAB_SWITCHER, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
@@ -673,7 +670,6 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherAndroidAnimations,
                     sIncognitoReauthenticationForAndroid,
                     sInstantStart,
-                    sHideTabOnTabSwitcher,
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,
                     sNewTabSearchEngineUrlAndroid,

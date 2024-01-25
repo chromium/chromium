@@ -4653,14 +4653,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "hide-tab-on-tab-switcher",
-    "owners": [
-      "ckitagawa@chromium.org",
-      "clank-isochron-team@google.com"
-    ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "history-journeys",
     "owners": [ "tommycli@chromium.org", "chrome-journeys@google.com" ],
     "expiry_milestone": 125

@@ -214,7 +214,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFocusOmniboxInIncognitoTabIntents,
     &kFullscreenInsetsApiMigration,
     &kGridTabSwitcherAndroidAnimations,
-    &kHideTabOnTabSwitcher,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kInstantStart,
@@ -621,10 +620,6 @@ BASE_FEATURE(kFullscreenInsetsApiMigration,
 BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
              "GridTabSwitcherAndroidAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kHideTabOnTabSwitcher,
-             "HideTabOnTabSwitcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoReauthenticationForAndroid,
              "IncognitoReauthenticationForAndroid",

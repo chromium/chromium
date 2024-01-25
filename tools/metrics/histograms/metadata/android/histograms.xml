@@ -4290,19 +4290,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.TabSwitcher.TabHidden" enum="Boolean"
-    expires_after="2024-06-23">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-isochron-team@google.com</owner>
-  <summary>
-    This histogram records whether the foreground tab was hidden after the tab
-    switcher was shown. This operation is recorded when the foreground tab is
-    attempted to be hidden after its use in animation and thumbnail capture is
-    finished. A value of true indicates the tab was hidden and a value of false
-    indicates the operation was cancelled.
-  </summary>
-</histogram>
-
 <histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
     units="thumbnails" expires_after="2024-06-30">
   <owner>ckitagawa@chromium.org</owner>

@@ -2411,9 +2411,6 @@ extern const char kRefreshFeedOnRestartDescription[];
 extern const char kGridTabSwitcherAndroidAnimationsName[];
 extern const char kGridTabSwitcherAndroidAnimationsDescription[];
 
-extern const char kHideTabOnTabSwitcherName[];
-extern const char kHideTabOnTabSwitcherDescription[];
-
 extern const char kInfoCardAcknowledgementTrackingName[];
 extern const char kInfoCardAcknowledgementTrackingDescription[];
 
