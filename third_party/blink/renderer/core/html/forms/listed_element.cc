@@ -164,15 +164,18 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
     SetFormAttributeTargetObserver(nullptr);
     ResetFormOwner();
   } else if (!form_ && insertion_point.isConnected()) {
-    // An unassociated listed element is detached from the document.
-    ResetFormOwner();
-  } else {
+    // If there is no associated form, then there won't be one after removing,
+    // so don't need to call ResetFormOwner(). While this doesn't need to call
+    // ResetFormOwner(), it needs to call SetForm() to ensure Document level
+    // state is updated.
+    form_was_set_by_parser_ = false;
+    SetForm(nullptr);
+  } else if (form_ && NodeTraversal::HighestAncestorOrSelf(element) !=
+                          NodeTraversal::HighestAncestorOrSelf(*form_.Get())) {
     // If the form and element are both in the same tree, preserve the
     // connection to the form.  Otherwise, null out our form and remove
     // ourselves from the form's list of elements.
-    if (form_ && NodeTraversal::HighestAncestorOrSelf(element) !=
-                     NodeTraversal::HighestAncestorOrSelf(*form_.Get()))
-      ResetFormOwner();
+    ResetFormOwner();
   }
 
   DisabledStateMightBeChanged();
