@@ -353,7 +353,7 @@ void BubbleFrameView::UpdateWindowRoundedCorners() {
   // to the client view layer or applying a mask.  However, certain
   // implementations of the client view may need to do additional work to have a
   // rounded window.
-  GetWidget()->client_view()->UpdateWindowRoundedCorners();
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(GetCornerRadius());
 }
 
 void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {

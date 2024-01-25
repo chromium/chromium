@@ -193,11 +193,13 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     // TODO(crbug.com/1415486): Support variable window radii.
     DCHECK(IsRadiiUniform(window_radii.value()));
 
+    const int corner_radius = window_radii->upper_left();
+
     if (GetFrameEnabled()) {
-      header_view_->SetHeaderCornerRadius(window_radii->upper_left());
+      header_view_->SetHeaderCornerRadius(corner_radius);
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners();
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -269,21 +271,16 @@ class CustomClientView : public views::ClientView {
   ~CustomClientView() override = default;
 
   // ClientView:
-  void UpdateWindowRoundedCorners() override {
-    absl::optional<gfx::RoundedCornersF> window_radii =
-        shell_surface_->window_corners_radii();
-
+  void UpdateWindowRoundedCorners(int corner_radius) override {
     DCHECK(GetWidget());
     const bool frame_enabled = static_cast<CustomFrameView*>(
                                    GetWidget()->non_client_view()->frame_view())
                                    ->GetFrameEnabled();
 
-    // TODO(crbug.com/1415486): Support variable window radii.
-    DCHECK(IsRadiiUniform(window_radii.value()));
+    const float corner_radius_f = corner_radius;
     const gfx::RoundedCornersF root_surface_radii = {
-        frame_enabled ? 0 : window_radii->upper_left(),
-        frame_enabled ? 0 : window_radii->upper_right(),
-        window_radii->lower_right(), window_radii->lower_left()};
+        frame_enabled ? 0 : corner_radius_f,
+        frame_enabled ? 0 : corner_radius_f, corner_radius_f, corner_radius_f};
 
     const Surface* root_surface = shell_surface_->root_surface();
 

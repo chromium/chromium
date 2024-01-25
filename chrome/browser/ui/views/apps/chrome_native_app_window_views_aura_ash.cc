@@ -89,14 +89,14 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
       return;
     }
 
-    if (draw_frame()) {
-      const int corner_radius =
-          chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+    const int corner_radius =
+        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
 
+    if (draw_frame()) {
       SetFrameCornerRadius(corner_radius);
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners();
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 
   // aura::WindowObserver:
@@ -137,11 +137,9 @@ class ChromeNativeAppNonClientView : public views::ClientView {
   ~ChromeNativeAppNonClientView() override = default;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners() override {
+  void UpdateWindowRoundedCorners(int corner_radius) override {
     DCHECK(GetWidget());
 
-    const int corner_radius =
-        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
     gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
 
     // If the chrome app's non-standard frame is not drawn, then round all four

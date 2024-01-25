@@ -23,8 +23,7 @@ SystemWebDialogView::SystemWebDialogView(
                            std::move(handler),
                            web_contents) {}
 
-void SystemWebDialogView::UpdateWindowRoundedCorners() {
-  const int corner_radius = GetCornerRadius();
+void SystemWebDialogView::UpdateWindowRoundedCorners(int corner_radius) {
   gfx::RoundedCornersF radii;
 
   if (GetWebDialogFrameKind() == FrameKind::kDialog && GetBubbleFrameView()) {

@@ -1043,7 +1043,7 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   }
 
   if (chromeos::features::IsRoundedWindowsEnabled()) {
-    GetWidget()->client_view()->UpdateWindowRoundedCorners();
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
 }
 

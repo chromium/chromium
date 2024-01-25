@@ -35,7 +35,7 @@ class SystemWebDialogView : public views::WebDialogView {
   ~SystemWebDialogView() override = default;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners() override;
+  void UpdateWindowRoundedCorners(int corner_radius) override;
 };
 
 }  // namespace ash

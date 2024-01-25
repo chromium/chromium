@@ -310,9 +310,10 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
+  const int corner_radius =
+      chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+
   if (frame_enabled_) {
-    const int corner_radius =
-        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
     header_view_->SetHeaderCornerRadius(corner_radius);
   }
 
@@ -320,7 +321,7 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
-  GetWidget()->client_view()->UpdateWindowRoundedCorners();
+  GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
 }
 
 base::RepeatingCallback<void()>
