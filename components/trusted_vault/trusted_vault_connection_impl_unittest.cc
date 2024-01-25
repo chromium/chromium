@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -24,6 +25,7 @@
 #include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -148,6 +150,10 @@ class TrustedVaultConnectionImplTest
 
   SecurityDomainId security_domain() { return GetParam(); }
 
+  std::string security_domain_name_uma() {
+    return GetSecurityDomainNameForUma(security_domain());
+  }
+
   TrustedVaultConnectionImpl* connection() { return &connection_; }
 
   // Allows overloading of FakeTrustedVaultAccessTokenFetcher behavior, doesn't
@@ -228,6 +234,8 @@ class TrustedVaultConnectionImplTest
     return task_environment_;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   const std::vector<std::vector<uint8_t>> kTrustedVaultKeys = {{1, 2},
                                                                {1, 2, 3, 4}};
   const GURL kTestURL = GURL("https://test.com/test");
@@ -237,6 +245,8 @@ class TrustedVaultConnectionImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+  base::HistogramTester histogram_tester_;
 
   TrustedVaultConnectionImpl connection_;
 };
@@ -431,6 +441,21 @@ TEST_P(TrustedVaultConnectionImplTest,
       net::HTTP_OK, MakeJoinSecurityDomainsResponse(security_domain(),
                                                     /*current_epoch=*/1)
                         .SerializeAsString()));
+
+  histogram_tester().ExpectUniqueSample(
+      "TrustedVault.SecurityDomainServiceURLFetchResponse",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.RegisterDevice",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      base::StrCat(
+          {"TrustedVault.SecurityDomainServiceURLFetchResponse.RegisterDevice.",
+           security_domain_name_uma()}),
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(TrustedVaultConnectionImplTest,

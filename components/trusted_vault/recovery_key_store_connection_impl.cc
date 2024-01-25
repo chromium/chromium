@@ -56,6 +56,7 @@ void ProcessUpdateVaultResponseResponse(
 
   NOTREACHED_NORETURN();
 }
+
 }  // namespace
 
 RecoveryKeyStoreConnectionImpl::RecoveryKeyStoreConnectionImpl(
@@ -71,14 +72,15 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
     const CoreAccountInfo& account_info,
     const trusted_vault_pb::UpdateVaultRequest& update_vault_request,
     UpdateRecoveryKeyStoreCallback callback) {
+  TrustedVaultRequest::RecordFetchStatusCallback record_fetch_status_to_uma =
+      base::BindRepeating(
+          &RecordRecoveryKeyStoreURLFetchResponse,
+          RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore);
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
       GURL(kUpdateVaultUrl), update_vault_request.SerializeAsString(),
       /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
-      access_token_fetcher_->Clone(),
-      // TODO(crbug.com/1495928): Add a separate metric for RecoveryKeyStore URL
-      // fetches.
-      TrustedVaultURLFetchReasonForUMA::kUnspecified);
+      access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessUpdateVaultResponseResponse, std::move(callback)));
   return request;

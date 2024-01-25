@@ -57,6 +57,11 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kDownloadAuthenticationFactorsRegistrationState,
 };
 
+// Used to provide UMA metric breakdowns.
+enum class RecoveryKeyStoreURLFetchReasonForUMA {
+  kUpdateRecoveryKeyStore,
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class TrustedVaultDownloadKeysStatusForUMA {
@@ -102,13 +107,23 @@ void RecordTrustedVaultDeviceRegistrationState(
 void RecordTrustedVaultDeviceRegistrationOutcome(
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
 
-// Records url fetch response status (combined http and net error code). If
-// |http_response_code| is non-zero, it will be recorded, otherwise |net_error|
-// will be recorded. Either |http_status| or |net_error| must be non zero.
-void RecordTrustedVaultURLFetchResponse(
+// Records url fetch response status (combined http and net error code) for
+// requests to security domain service. If |http_response_code| is non-zero, it
+// will be recorded, otherwise |net_error| will be recorded. Either
+// |http_status| or |net_error| must be non zero.
+void RecordTrustedVaultURLFetchResponse(SecurityDomainId security_domain_id,
+                                        TrustedVaultURLFetchReasonForUMA reason,
+                                        int http_response_code,
+                                        int net_error);
+
+// Records url fetch response status (combined http and net error code) for
+// requests to vault service. If |http_response_code| is non-zero, it
+// will be recorded, otherwise |net_error| will be recorded. Either
+// |http_status| or |net_error| must be non zero.
+void RecordRecoveryKeyStoreURLFetchResponse(
+    RecoveryKeyStoreURLFetchReasonForUMA reason,
     int http_response_code,
-    int net_error,
-    TrustedVaultURLFetchReasonForUMA reason);
+    int net_error);
 
 // Records the outcome of trying to download keys from the server.
 // |also_log_with_v1_suffix| allows the caller to determine whether the local
@@ -135,6 +150,21 @@ void RecordTrustedVaultSetEncryptionKeysForSecurityDomain(
 // client.
 void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
     absl::optional<SecurityDomainId> security_domain);
+
+// Returns a security domain name suitable for using in histograms. When
+// including this in a histogram, its name in the XML should have
+// "{SecurityDomainId}" where the returned string will be inserted (which
+// will include a leading period). For example:
+//   name="TrustedVault.Foo{SecurityDomainId}"
+// Will match a histogram name like:
+//   TrustedVault.Foo.ChromeSync
+//
+// Then there needs to be a <token> element in the XML entry like:
+//   <token key="SecurityDomainId" variants="SecurityDomainId"/>
+//
+// See
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms
+std::string GetSecurityDomainNameForUma(SecurityDomainId domain);
 
 }  // namespace trusted_vault
 

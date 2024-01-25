@@ -71,6 +71,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-31">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts of responses (both http code and net error code) for requests to the
+    recovery key store server (aka Vault Service). Note that requests that timed
+    out are not covered by this histogram.
+
+    {Reason}
+  </summary>
+  <token key="Reason">
+    <variant name="" summary="Any reason"/>
+    <variant name=".UpdateRecoveryKeyStore"
+        summary="Upload a set of recovery keys"/>
+  </token>
+</histogram>
+
+<histogram
+    name="TrustedVault.SecurityDomainServiceURLFetchResponse{Reason}{SecurityDomainId}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-31">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts of responses (both http code and net error code) for requests to the
+    Trusted Vault server (aka Security Domain Service), broken out by {Reason}
+    and {SecurityDomainId}. Note that requests that timed out are not covered by
+    this histogram.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId">
+    <variant name="" summary="Any security domain"/>
+  </token>
+  <token key="Reason">
+    <variant name="" summary="Any reason"/>
+    <variant name=".DownloadAuthenticationFactorsRegistrationState"
+        summary="Downloading of auth factor registrations"/>
+    <variant name=".DownloadIsRecoverabilityDegraded"
+        summary="Downloading of the recoverability-degraded state"/>
+    <variant name=".DownloadKeys" summary="Downloading of keys"/>
+    <variant name=".RegisterDevice" summary="Local device registration"/>
+    <variant name=".RegisterUnspecifiedAuthenticationFactor"
+        summary="Registration of an authentication factor of unspecified type"/>
+  </token>
+</histogram>
+
 <histogram name="TrustedVault.SetEncryptionKeysForSecurityDomain{ProfileType}"
     enum="SecurityDomainId" expires_after="2024-06-14">
   <owner>mastiz@chromium.org</owner>

@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -85,7 +86,7 @@ class TrustedVaultRequestTest : public testing::Test {
         max_retry_duration, shared_url_loader_factory_,
         std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
             MakeAccessTokenInfo(access_token)),
-        TrustedVaultURLFetchReasonForUMA::kUnspecified);
+        /*record_fetch_status_callback=*/base::DoNothing());
     request->FetchAccessTokenAndSendRequest(std::move(completion_callback));
     return request;
   }
@@ -112,7 +113,7 @@ class TrustedVaultRequestTest : public testing::Test {
         /*max_retry_duration=*/base::Seconds(0), shared_url_loader_factory_,
         std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
             base::unexpected{error}),
-        TrustedVaultURLFetchReasonForUMA::kUnspecified);
+        /*record_fetch_status_callback=*/base::DoNothing());
     request->FetchAccessTokenAndSendRequest(std::move(completion_callback));
     return request;
   }

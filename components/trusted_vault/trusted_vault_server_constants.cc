@@ -101,17 +101,4 @@ absl::optional<SecurityDomainId> GetSecurityDomainByName(
              : absl::nullopt;
 }
 
-std::string GetSecurityDomainNameForHistograms(SecurityDomainId domain) {
-  switch (domain) {
-    // These strings get embedded in histogram names and so should not be
-    // changed.
-    case SecurityDomainId::kChromeSync:
-      return "ChromeSync";
-    case SecurityDomainId::kPasskeys:
-      return "HwProtected";
-      // If adding a new value, also update the variants for SecurityDomainId
-      // in tools/metrics/histograms/metadata/trusted_vault/histograms.xml.
-  }
-}
-
 }  // namespace trusted_vault

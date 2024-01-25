@@ -74,21 +74,6 @@ std::string GetSecurityDomainName(SecurityDomainId domain);
 absl::optional<SecurityDomainId> GetSecurityDomainByName(
     base::StringPiece domain);
 
-// Returns a security domain name suitable for using in histograms. When
-// including this in a histogram, its name in the XML should have
-// "{SecurityDomainId}" where the returned string will be inserted (which
-// will include a leading period). For example:
-//   name="TrustedVault.Foo{SecurityDomainId}"
-// Will match a histogram name like:
-//   TrustedVault.Foo.ChromeSync
-//
-// Then there needs to be a <token> element in the XML entry like:
-//   <token key="SecurityDomainId" variants="SecurityDomainId"/>
-//
-// See
-// https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms
-std::string GetSecurityDomainNameForHistograms(SecurityDomainId domain);
-
 }  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_

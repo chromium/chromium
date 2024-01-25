@@ -2114,7 +2114,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
       /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatus::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultURLFetchResponse.DownloadKeys",
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.DownloadKeys",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.SecurityDomainServiceURLFetchResponse.DownloadKeys."
+      "ChromeSync",
       /*sample=*/200,
       /*expected_bucket_count=*/1);
 }

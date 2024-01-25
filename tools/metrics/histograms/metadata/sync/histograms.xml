@@ -2011,27 +2011,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultURLFetchResponse{Reason}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-30">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Counts of responses (both http code and net error code) for requests to the
-    Trusted Vault server (aka Security Domain Service). Note that requests that
-    timed out are not covered by this histogram.
-  </summary>
-  <token key="Reason">
-    <variant name="" summary="Any reason"/>
-    <variant name=".DownloadIsRecoverabilityDegraded"
-        summary="Downloading of the recoverability-degraded state"/>
-    <variant name=".DownloadKeys" summary="Downloading of keys"/>
-    <variant name=".RegisterDevice" summary="Local device registration"/>
-    <variant name=".RegisterUnspecifiedAuthenticationFactor"
-        summary="Registration of an authentication factor of unspecified type"/>
-  </token>
-</histogram>
-
 <histogram name="Sync.TypedURLDatabaseError" enum="SyncTypedUrlDatabaseError"
     expires_after="2024-02-25">
   <owner>mastiz@chromium.org</owner>

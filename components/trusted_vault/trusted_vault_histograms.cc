@@ -9,12 +9,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace trusted_vault {
 
 namespace {
 
-std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
+std::string GetTrustedVaultURLFetchReasonSuffix(
+    TrustedVaultURLFetchReasonForUMA reason) {
   switch (reason) {
     case TrustedVaultURLFetchReasonForUMA::kUnspecified:
       return std::string();
@@ -29,10 +31,20 @@ std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
       return "DownloadIsRecoverabilityDegraded";
     case TrustedVaultURLFetchReasonForUMA::
         kDownloadAuthenticationFactorsRegistrationState:
-      // TODO(crbug.com/1495928): this isn't recorded until the histogram is
-      // updated to include the name of the security domain.
-      NOTREACHED_NORETURN();
+      return "DownloadAuthenticationFactorsRegistrationState";
   }
+
+  NOTREACHED_NORETURN();
+}
+
+std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
+    RecoveryKeyStoreURLFetchReasonForUMA reason) {
+  switch (reason) {
+    case RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore:
+      return "UpdateRecoveryKeyStore";
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -83,30 +95,54 @@ void RecordTrustedVaultDeviceRegistrationOutcome(
                                 registration_outcome);
 }
 
-void RecordTrustedVaultURLFetchResponse(
-    int http_response_code,
-    int net_error,
-    TrustedVaultURLFetchReasonForUMA reason) {
-  DCHECK_LE(net_error, 0);
-  DCHECK_GE(http_response_code, 0);
-
-  // TODO(crbug.com/1495928): this isn't recorded until the histogram is
-  // updated to include the name of the security domain.
-  if (reason == TrustedVaultURLFetchReasonForUMA::
-                    kDownloadAuthenticationFactorsRegistrationState) {
-    return;
-  }
+void RecordTrustedVaultURLFetchResponse(SecurityDomainId security_domain_id,
+                                        TrustedVaultURLFetchReasonForUMA reason,
+                                        int http_response_code,
+                                        int net_error) {
+  CHECK_LE(net_error, 0);
+  CHECK_GE(http_response_code, 0);
 
   const int value = http_response_code == 0 ? net_error : http_response_code;
-  const std::string suffix = GetReasonSuffix(reason);
+  const std::string reason_suffix = GetTrustedVaultURLFetchReasonSuffix(reason);
+  const std::string security_domain_name =
+      GetSecurityDomainNameForUma(security_domain_id);
 
-  base::UmaHistogramSparse("Sync.TrustedVaultURLFetchResponse", value);
+  base::UmaHistogramSparse("TrustedVault.SecurityDomainServiceURLFetchResponse",
+                           value);
+  base::UmaHistogramSparse(
+      base::StrCat({"TrustedVault.SecurityDomainServiceURLFetchResponse", ".",
+                    security_domain_name}),
+      value);
 
-  if (!suffix.empty()) {
+  if (!reason_suffix.empty()) {
     base::UmaHistogramSparse(
-        base::StrCat({"Sync.TrustedVaultURLFetchResponse", ".", suffix}),
+        base::StrCat({"TrustedVault.SecurityDomainServiceURLFetchResponse", ".",
+                      reason_suffix}),
+        value);
+    base::UmaHistogramSparse(
+        base::StrCat({"TrustedVault.SecurityDomainServiceURLFetchResponse", ".",
+                      reason_suffix, ".", security_domain_name}),
         value);
   }
+}
+
+void RecordRecoveryKeyStoreURLFetchResponse(
+    RecoveryKeyStoreURLFetchReasonForUMA reason,
+    int http_response_code,
+    int net_error) {
+  CHECK_LE(net_error, 0);
+  CHECK_GE(http_response_code, 0);
+
+  const int value = http_response_code == 0 ? net_error : http_response_code;
+  const std::string reason_suffix =
+      GetRecoveryKeyStoreURLFetchReasonSuffix(reason);
+
+  base::UmaHistogramSparse("TrustedVault.RecoveryKeyStoreURLFetchResponse",
+                           value);
+  base::UmaHistogramSparse(
+      base::StrCat({"TrustedVault.RecoveryKeyStoreURLFetchResponse", ".",
+                    reason_suffix}),
+      value);
 }
 
 void RecordTrustedVaultDownloadKeysStatus(
@@ -146,6 +182,19 @@ void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
   base::UmaHistogramEnumeration(
       "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
       domain_for_uma);
+}
+
+std::string GetSecurityDomainNameForUma(SecurityDomainId domain) {
+  switch (domain) {
+    // These strings get embedded in histogram names and so should not be
+    // changed.
+    case SecurityDomainId::kChromeSync:
+      return "ChromeSync";
+    case SecurityDomainId::kPasskeys:
+      return "HwProtected";
+      // If adding a new value, also update the variants for SecurityDomainId
+      // in tools/metrics/histograms/metadata/trusted_vault/histograms.xml.
+  }
 }
 
 }  // namespace trusted_vault

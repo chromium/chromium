@@ -10,6 +10,7 @@
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -20,6 +21,7 @@
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "net/base/url_util.h"
@@ -28,6 +30,13 @@
 namespace trusted_vault {
 
 namespace {
+
+TrustedVaultRequest::RecordFetchStatusCallback MakeFetchStatusCallback(
+    SecurityDomainId security_domain_id,
+    TrustedVaultURLFetchReasonForUMA reason) {
+  return base::BindRepeating(&RecordTrustedVaultURLFetchResponse,
+                             security_domain_id, reason);
+}
 
 // Returns security domain epoch if valid (>0) and nullopt otherwise.
 absl::optional<int> GetLastKeyVersionFromJoinSecurityDomainsResponse(
@@ -297,8 +306,10 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         /*serialized_request_proto=*/absl::nullopt,
         /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
         access_token_fetcher_->Clone(),
-        TrustedVaultURLFetchReasonForUMA::
-            kDownloadAuthenticationFactorsRegistrationState);
+        MakeFetchStatusCallback(
+            security_domain_,
+            TrustedVaultURLFetchReasonForUMA::
+                kDownloadAuthenticationFactorsRegistrationState));
 
     // Unretained: this object owns `request_`. When `request_` is deleted, so
     // is the `SimpleURLLoader` and thus any callback is canceled.
@@ -362,7 +373,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
       DownloadAuthenticationFactorsRegistrationStateResult result) {
     base::UmaHistogramEnumeration(
         "TrustedVault.DownloadAuthenticationFactorsRegistrationState." +
-            GetSecurityDomainNameForHistograms(security_domain_),
+            GetSecurityDomainNameForUma(security_domain_),
         result);
     std::move(callback_).Run(result);
   }
@@ -457,7 +468,8 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       /*serialized_request_proto=*/absl::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
-      TrustedVaultURLFetchReasonForUMA::kDownloadKeys);
+      MakeFetchStatusCallback(security_domain_,
+                              TrustedVaultURLFetchReasonForUMA::kDownloadKeys));
 
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessDownloadKeysResponse,
@@ -480,7 +492,9 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
       /*serialized_request_proto=*/absl::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
-      TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded);
+      MakeFetchStatusCallback(
+          security_domain_,
+          TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded));
 
   request->FetchAccessTokenAndSendRequest(base::BindOnce(
       &ProcessDownloadIsRecoverabilityDegradedResponse, std::move(callback)));
@@ -520,8 +534,10 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
           .SerializeAsString(),
       kMaxJoinSecurityDomainRetryDuration, GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
-      GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
-          authentication_factor_type));
+      MakeFetchStatusCallback(
+          security_domain_,
+          GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
+              authentication_factor_type)));
 
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessJoinSecurityDomainsResponse, std::move(callback)));
