@@ -178,7 +178,7 @@
     "@types/chai-as-promised": "7.1.8",
     "@types/debug": "4.1.12",
     "@types/mocha": "10.0.6",
-    "@types/node": "20.10.6",
+    "@types/node": "20.11.6",
     "@types/sinon": "17.0.3",
     "@types/websocket": "1.0.10",
     "@types/ws": "8.5.10",
@@ -186,7 +186,7 @@
     "@typescript-eslint/eslint-plugin": "6.19.1",
     "@typescript-eslint/parser": "6.19.1",
     "argparse": "2.0.1",
-    "chai": "4.3.10",
+    "chai": "4.4.1",
     "chai-as-promised": "7.1.1",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1245094",
@@ -219,6 +219,6 @@
   },
   "dependencies": {
     "mitt": "3.0.1",
-    "urlpattern-polyfill": "9.0.0"
+    "urlpattern-polyfill": "10.0.0"
   }
 }
