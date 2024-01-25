@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -120,6 +121,16 @@ void HandleImageUrlResponse(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::RunObjectCallbackAndroid(
       callback, url::GURLAndroid::FromNativeGURL(env, image_url));
+}
+
+const bookmarks::BookmarkNode* GetNodeFromReadingListIfLoaded(
+    const ReadingListManager* manager,
+    const GURL& url) {
+  if (manager->IsLoaded()) {
+    return manager->Get(url);
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -265,32 +276,39 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
 const bookmarks::BookmarkNode*
 BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrlImpl(const GURL& url) {
   std::vector<const bookmarks::BookmarkNode*> nodes;
-  const auto* reading_list_node =
-      local_or_syncable_reading_list_manager_->Get(url);
+  const auto* reading_list_node = GetNodeFromReadingListIfLoaded(
+      local_or_syncable_reading_list_manager_.get(), url);
   if (reading_list_node) {
     nodes.push_back(reading_list_node);
   }
 
   if (account_reading_list_manager_) {
-    reading_list_node = account_reading_list_manager_->Get(url);
+    reading_list_node = GetNodeFromReadingListIfLoaded(
+        account_reading_list_manager_.get(), url);
     if (reading_list_node) {
       nodes.push_back(reading_list_node);
     }
   }
 
   // Get all the nodes for |url| from BookmarkModel and sort them by date added.
+  bookmarks::ManagedBookmarkService* managed =
+      ManagedBookmarkServiceFactory::GetForProfile(profile_);
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       bookmark_model_result = bookmark_model_->GetNodesByURL(url);
   nodes.insert(nodes.end(), bookmark_model_result.begin(),
                bookmark_model_result.end());
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
-  if (nodes.size() == 0) {
-    return nullptr;
+  // Return the first node matching the search criteria.
+  for (const auto* node : nodes) {
+    // Skip any managed nodes because they're not user bookmarks.
+    if (managed->IsNodeManaged(node)) {
+      continue;
+    }
+    return node;
   }
 
-  // Return the first node matching the search criteria.
-  return nodes.front();
+  return nullptr;
 }
 
 jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {

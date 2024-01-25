@@ -175,10 +175,10 @@ class BookmarkBridgeTest : public testing::Test {
   raw_ptr<PartnerBookmarksShim> partner_bookmarks_shim_;
 
   std::unique_ptr<ReadingListModel> account_reading_list_model_;
-  raw_ptr<ReadingListManager> account_reading_list_manager_;
+  raw_ptr<ReadingListManagerImpl> account_reading_list_manager_;
 
   std::unique_ptr<ReadingListModel> local_or_syncable_reading_list_model_;
-  raw_ptr<ReadingListManager> local_or_syncable_reading_list_manager_;
+  raw_ptr<ReadingListManagerImpl> local_or_syncable_reading_list_manager_;
 
   std::unique_ptr<BookmarkBridge> bookmark_bridge_;
 
@@ -210,6 +210,47 @@ TEST_F(BookmarkBridgeTest, TestGetMostRecentlyAddedUserBookmarkIdForUrl) {
   recently_added = local_or_syncable_reading_list_manager()->Add(url, "fourth");
   ASSERT_EQ(
       recently_added,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+}
+
+TEST_F(BookmarkBridgeTest,
+       TestGetMostRecentlyAddedUserBookmarkIdForUrlBeforeReadingListLoads) {
+  GURL url = GURL("http://foo.com");
+  ASSERT_EQ(
+      nullptr,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+
+  // Add to the reading list and verify that it's the most recently added.
+  auto* recently_added =
+      local_or_syncable_reading_list_manager()->Add(url, "test");
+  ASSERT_EQ(
+      recently_added,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+
+  local_or_syncable_reading_list_manager_->SetIsLoadedForTests(false);
+  ASSERT_EQ(
+      nullptr,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+}
+
+TEST_F(
+    BookmarkBridgeTest,
+    TestGetMostRecentlyAddedUserBookmarkIdForUrlBeforeReadingListLoadsWithAccountBookmarks) {
+  CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
+  GURL url = GURL("http://foo.com");
+  ASSERT_EQ(
+      nullptr,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+
+  // Add to the reading list and verify that it's the most recently added.
+  auto* recently_added = account_reading_list_manager_->Add(url, "test");
+  ASSERT_EQ(
+      recently_added,
+      bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
+
+  account_reading_list_manager_->SetIsLoadedForTests(false);
+  ASSERT_EQ(
+      nullptr,
       bookmark_bridge()->GetMostRecentlyAddedUserBookmarkIdForUrlImpl(url));
 }
 

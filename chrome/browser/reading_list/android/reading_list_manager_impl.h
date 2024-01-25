@@ -31,7 +31,6 @@ class ReadingListManagerImpl : public ReadingListManager,
                          const IdGenerationFunction& id_gen_func);
   ~ReadingListManagerImpl() override;
 
- private:
   // ReadingListModelObserver overrides.
   void ReadingListModelLoaded(const ReadingListModel* model) override;
   void ReadingListDidAddEntry(const ReadingListModel* model,
@@ -71,6 +70,10 @@ class ReadingListManagerImpl : public ReadingListManager,
   bool GetReadStatus(const bookmarks::BookmarkNode* node) override;
   bool IsLoaded() const override;
 
+  // Sets the loaded bit for testing.
+  void SetIsLoadedForTests(bool is_loaded);
+
+ private:
   // Finds the child in the bookmark tree by URL. Returns nullptr if not found.
   // Not recursive since the reading list bookmark tree only has a folder root
   // node and one level of children.
