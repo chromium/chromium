@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -18,7 +19,10 @@ namespace power_bookmarks {
 const char kSaveLocationStateHistogramBase[] =
     "PowerBookmarks.SuggestedSaveLocation.";
 
+const base::TimeDelta kRejectionCoolOffTime = base::Minutes(1);
+
 namespace {
+
 const char kWasSuggestedFolderKey[] = "was_folder_suggested";
 
 const char kTrue[] = "true";
@@ -108,6 +112,7 @@ const bookmarks::BookmarkNode* BookmarkClientBase::GetSuggestedSaveLocation(
   }
 
   if (suggestion) {
+    last_suggested_save_time_ = base::Time::Now();
     return suggestion;
   }
 
@@ -186,6 +191,13 @@ void BookmarkClientBase::NodeMoveObserver::BookmarkNodeMoved(
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
+  // If enough time has elapsed since the bookmark was saved, don't consider
+  // the bookmark moving out of that folder to be a rejection.
+  if (kRejectionCoolOffTime <
+      base::Time::Now() - client_->last_suggested_save_time_) {
+    return;
+  }
+
   const bookmarks::BookmarkNode* node = new_parent->children()[new_index].get();
 
   // If the user changes the folder off of the suggested folder and it was the
