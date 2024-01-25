@@ -300,6 +300,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
       if (gpu_feature_data.name == "opengl" ||
           gpu_feature_data.name == "metal" ||
           gpu_feature_data.name == "vulkan" ||
+          gpu_feature_data.name == "skia_graphite" ||
           gpu_feature_data.name == "surface_control") {
         status += "_on";
       }
