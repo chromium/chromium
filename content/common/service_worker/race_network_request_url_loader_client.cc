@@ -382,33 +382,35 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
+  auto callback_func =
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kServiceWorkerAutoPreload, "use_two_phase_write", true)
+          ? &ServiceWorkerRaceNetworkRequestURLLoaderClient::
+                ReadAndTwoPhaseWrite
+          : &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite;
+
   body_consumer_watcher_.Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
   body_consumer_watcher_.ArmOrNotify();
-  write_buffer_manager_for_race_network_request_.Watch(base::BindRepeating(
-      &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-      weak_factory_.GetWeakPtr()));
-  write_buffer_manager_for_fetch_handler_.Watch(base::BindRepeating(
-      &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-      weak_factory_.GetWeakPtr()));
+  write_buffer_manager_for_race_network_request_.Watch(
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
+  write_buffer_manager_for_fetch_handler_.Watch(
+      base::BindRepeating(callback_func, weak_factory_.GetWeakPtr()));
 }
 
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndTwoPhaseWrite(
     MojoResult result) {
   std::optional<base::span<const char>> read_buffer = StartReadData(result);
   if (!read_buffer.has_value()) {
     return;
   }
-
   uint32_t num_bytes_to_consume = 0;
+
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If both data pipes are watched, write data to both pipes. Cancel writing
     // process if one of them is failed.
-
     result = write_buffer_manager_for_race_network_request_.BeginWriteData();
     RecordMojoResultForWrite(result);
     switch (result) {
@@ -515,6 +517,100 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
             read_buffer.value());
   }
   CompleteReadData(num_bytes_to_consume);
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
+    MojoResult result) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
+    return;
+  }
+
+  if (write_buffer_manager_for_race_network_request_.IsWatching() &&
+      write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If both data pipes are watched, write data to both pipes.
+    result = write_buffer_manager_for_race_network_request_.WriteData(
+        read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        // The data pipe consumer is aborted.
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        // The data pipe is not writable yet. We don't consume data from |body_|
+        // and write any data in this case. And retry it later.
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    result =
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
+        // not consumed yet but the buffer is full. Stop processing the data
+        // pipe for the fetch handler side, not to make the data transfer
+        // process for the race network request side being stuck.
+        body_->EndReadData(read_buffer.value().size());
+        write_buffer_manager_for_fetch_handler_.CancelWatching();
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+    CHECK_EQ(write_buffer_manager_for_race_network_request_.num_bytes_written(),
+             write_buffer_manager_for_fetch_handler_.num_bytes_written());
+  } else if (write_buffer_manager_for_race_network_request_.IsWatching()) {
+    // If the data pipe for RaceNetworkRequest is the only watcher, don't write
+    // data to the data pipe for the fetch handler.
+    result = write_buffer_manager_for_race_network_request_.WriteData(
+        read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        body_->EndReadData(0);
+        write_buffer_manager_for_race_network_request_.ArmOrNotify();
+        return;
+    }
+  } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
+    // If the data pipe for the fetch handler is the only watcher, don't write
+    // data to the data pipe for RaceNetworkRequest.
+    result =
+        write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
+    RecordMojoResultForWrite(result);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_FAILED_PRECONDITION:
+        body_->EndReadData(0);
+        TransitionState(State::kAborted);
+        Abort();
+        return;
+      case MOJO_RESULT_SHOULD_WAIT:
+        body_->EndReadData(0);
+        write_buffer_manager_for_fetch_handler_.ArmOrNotify();
+        return;
+    }
+  }
+  CompleteReadData(read_buffer.value().size());
 }
 
 std::optional<base::span<const char>>

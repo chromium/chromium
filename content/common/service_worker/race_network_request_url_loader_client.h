@@ -194,7 +194,17 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // process, and there could be the case if the response is not returned due to
   // the long fetch handler execution. and test case the mechanism to wait for
   // the fetch handler
-  void ReadAndWrite(MojoResult mojo_result);
+  void ReadAndTwoPhaseWrite(MojoResult result);
+  // Reads data from |body_|, and writes it into the data pipe producer handles
+  // for both the race network request and the fetch handler respectively.
+  //
+  // Unlike |ReadAndTwoPhaseWrite()|, this doesn't use two-phase operations to
+  // write data into data pipes. However, the result should be the same as
+  // |ReadAndTwoPhaseWrite()| because mojo's |WriteData()| is expected to write
+  // the same amount of data from the given data pipe consumer handle to read.
+  // also |ReadAndWrite()| has CHECK to guarantee that the actual written sizes
+  // to data pips are exactly same.
+  void ReadAndWrite(MojoResult result);
   // Begins a two-phase read from |body_|, the data pipe consumer. If succeed,
   // the read buffer is returned. If there are no data to read from the data
   // pipe, this internally calls |OnDataTransferComplete()| and return nothing.

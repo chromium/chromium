@@ -34,8 +34,10 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   void CancelWatching();
   MojoResult BeginWriteData();
   MojoResult EndWriteData(uint32_t num_bytes_written);
+  MojoResult WriteData(base::span<const char> read_buffer);
   void ArmOrNotify();
   size_t buffer_size() const { return buffer_.size(); }
+  size_t num_bytes_written() const { return num_bytes_written_; }
   size_t CopyAndCompleteWriteData(base::span<const char> read_buffer);
   size_t CopyAndCompleteWriteDataWithSize(base::span<const char> read_buffer,
                                           size_t max_num_bytes_to_consume);
@@ -53,6 +55,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   mojo::ScopedDataPipeConsumerHandle consumer_;
   base::span<char> buffer_;
   mojo::SimpleWatcher watcher_;
+  size_t num_bytes_written_ = 0;
 };
 }  // namespace content
 

@@ -96,6 +96,17 @@ MojoResult RaceNetworkRequestWriteBufferManager::EndWriteData(
 void RaceNetworkRequestWriteBufferManager::ArmOrNotify() {
   watcher_.ArmOrNotify();
 }
+
+MojoResult RaceNetworkRequestWriteBufferManager::WriteData(
+    base::span<const char> read_buffer) {
+  uint32_t num_bytes = read_buffer.size();
+  MojoResult result = producer_->WriteData(read_buffer.data(), &num_bytes,
+                                           MOJO_WRITE_DATA_FLAG_NONE);
+  num_bytes_written_ += num_bytes;
+
+  return result;
+}
+
 size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteData(
     base::span<const char> read_buffer) {
   return CopyAndCompleteWriteDataWithSize(read_buffer, read_buffer.size());
