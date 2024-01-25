@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_MOBILE_SESSION_SHUTDOWN_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_MOBILE_SESSION_SHUTDOWN_METRICS_PROVIDER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -68,7 +69,7 @@ class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
   virtual bool LastSessionEndedFrozen();
 
  private:
-  metrics::MetricsService* metrics_service_;
+  raw_ptr<metrics::MetricsService> metrics_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_MOBILE_SESSION_SHUTDOWN_METRICS_PROVIDER_H_

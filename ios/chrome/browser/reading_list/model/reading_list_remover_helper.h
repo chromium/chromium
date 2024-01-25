@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_REMOVER_HELPER_H_
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -43,8 +44,8 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   void ReadlingListItemsRemoved(bool success);
 
   Callback completion_;
-  ReadingListModel* reading_list_model_ = nullptr;
-  ReadingListDownloadService* reading_list_download_service_ = nullptr;
+  raw_ptr<ReadingListModel> reading_list_model_ = nullptr;
+  raw_ptr<ReadingListDownloadService> reading_list_download_service_ = nullptr;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       scoped_observation_{this};
 

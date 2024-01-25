@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -213,7 +214,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
-  web::WebState* web_state_;
+  raw_ptr<web::WebState> web_state_;
   UIViewController* base_view_controller_;
   FakeAlertController* fake_alert_controller_;
   id mock_browser_coordinator_commands_handler_;

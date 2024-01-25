@@ -31,7 +31,7 @@ void ReadingListRemoverHelper::ReadingListModelLoaded(
     const ReadingListModel* reading_list_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(reading_list_model_, reading_list_model);
-  DCHECK(scoped_observation_.IsObservingSource(reading_list_model_));
+  DCHECK(scoped_observation_.IsObservingSource(reading_list_model_.get()));
   scoped_observation_.Reset();
 
   bool model_cleared = reading_list_model_->DeleteAllEntries();
@@ -44,7 +44,7 @@ void ReadingListRemoverHelper::ReadingListModelBeingDeleted(
     const ReadingListModel* reading_list_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(reading_list_model_, reading_list_model);
-  DCHECK(scoped_observation_.IsObservingSource(reading_list_model_));
+  DCHECK(scoped_observation_.IsObservingSource(reading_list_model_.get()));
   scoped_observation_.Reset();
   ReadlingListItemsRemoved(false);
 }
@@ -61,7 +61,7 @@ void ReadingListRemoverHelper::RemoveAllUserReadingListItemsIOS(
 
   // ReadingListModel::AddObserver calls ReadingListModelLoaded if model is
   // already loaded, so there is no need to check.
-  scoped_observation_.Observe(reading_list_model_);
+  scoped_observation_.Observe(reading_list_model_.get());
 }
 
 void ReadingListRemoverHelper::ReadlingListItemsRemoved(bool success) {

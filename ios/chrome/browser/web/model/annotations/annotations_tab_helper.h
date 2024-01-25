@@ -9,6 +9,7 @@
 
 #import <optional>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
@@ -117,7 +118,7 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   id<UnitConversionCommands> unit_conversion_handler_ = nil;
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   std::unique_ptr<base::Value::Dict> metadata_;
 

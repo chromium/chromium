@@ -7,6 +7,7 @@
 
 #include <string>
 
+#import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
@@ -105,7 +106,7 @@ class ReadingListDownloadService
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  ReadingListModel* reading_list_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   base::FilePath chrome_profile_path_;
   std::unique_ptr<URLDownloader> url_downloader_;
   std::vector<GURL> url_to_download_cellular_;

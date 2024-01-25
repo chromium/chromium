@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/persistent_histogram_allocator.h"
 #import "base/test/scoped_feature_list.h"
 #import "build/branding_buildflags.h"
@@ -57,7 +58,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  ChromeBrowserState* browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;

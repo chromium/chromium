@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
@@ -70,7 +71,7 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;
-  ReadingListBrowserAgent* reading_list_browser_agent_;
+  raw_ptr<ReadingListBrowserAgent> reading_list_browser_agent_;
   id mock_snackbar_commands_handler_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };

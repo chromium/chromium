@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -129,10 +130,10 @@ class PasswordCounterDelegateBridge
 @implementation FormInputAccessoryMediator {
   // The WebStateList this instance is observing in order to update the
   // active WebState.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
 
   // Personal data manager to be observed.
-  autofill::PersonalDataManager* _personalDataManager;
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 
   // C++ to ObjC bridge for PersonalDataManagerObserver.
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>

@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
@@ -144,7 +145,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   base::ThreadChecker thread_checker_;
 
   // Weak pointer to the MetricsStateManager.
-  metrics::MetricsStateManager* metrics_state_manager_;
+  raw_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
@@ -166,7 +167,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
   // The IOSChromeStabilityMetricsProvider instance that was registered with
   // MetricsService. Has the same lifetime as `metrics_service_`.
-  IOSChromeStabilityMetricsProvider* stability_metrics_provider_;
+  raw_ptr<IOSChromeStabilityMetricsProvider> stability_metrics_provider_;
 
   // Saved callback received from CollectFinalMetricsForLog().
   base::OnceClosure collect_final_metrics_done_callback_;

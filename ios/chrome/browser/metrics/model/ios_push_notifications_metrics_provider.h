@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PUSH_NOTIFICATIONS_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PUSH_NOTIFICATIONS_METRICS_PROVIDER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace signin {
@@ -27,7 +28,7 @@ class IOSPushNotificationsMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PUSH_NOTIFICATIONS_METRICS_PROVIDER_H_

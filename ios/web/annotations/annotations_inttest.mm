@@ -6,6 +6,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/memory/ptr_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -282,7 +283,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   TestAnnotationTextObserver* observer() { return &observer_; }
 
   base::test::ScopedFeatureList feature_;
-  JavaScriptContentWorld* content_world_;
+  raw_ptr<JavaScriptContentWorld> content_world_;
   TestAnnotationTextObserver observer_;
   AnnotationsTestJavaScriptFeature js_test_feature_;
 };

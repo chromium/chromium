@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_WEB_STATE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_WEB_STATE_OBSERVER_H_
 
+#import "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/web/public/web_state_observer.h"
@@ -79,9 +80,9 @@ class ReadingListWebStateObserver
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
-  ReadingListModel* reading_list_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<base::RepeatingTimer> timer_;
   GURL pending_url_;
   int try_number_;

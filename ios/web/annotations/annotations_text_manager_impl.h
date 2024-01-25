@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "base/values.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
@@ -65,7 +66,7 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   // A list of observers. Weak references.
   base::ObserverList<AnnotationsTextObserver, true> observers_;
 
-  WebState* web_state_ = nullptr;
+  raw_ptr<WebState> web_state_ = nullptr;
   // Id passed on to some callbacks and checked on followup calls to make
   // sure it matches with current manager's state.
   int seq_id_;

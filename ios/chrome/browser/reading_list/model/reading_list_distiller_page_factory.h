@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -44,7 +45,7 @@ class ReadingListDistillerPageFactory {
   void ReleaseAllRetainedWebState();
 
  private:
-  web::BrowserState* browser_state_;
+  raw_ptr<web::BrowserState> browser_state_;
   std::unique_ptr<FaviconWebStateDispatcher> web_state_dispatcher_;
 };
 

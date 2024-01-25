@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -113,13 +114,13 @@
   // Handler for sign-in commands.
   id<ApplicationCommands> _applicationCommandsHandler;
   // Authentication Service to retrieve the user's signed-in state.
-  AuthenticationService* _authService;
+  raw_ptr<AuthenticationService> _authService;
   // Service to retrieve preference values.
-  PrefService* _prefService;
+  raw_ptr<PrefService> _prefService;
   // Manager for user's Google identities.
-  signin::IdentityManager* _identityManager;
+  raw_ptr<signin::IdentityManager> _identityManager;
   // Sync service.
-  syncer::SyncService* _syncService;
+  raw_ptr<syncer::SyncService> _syncService;
   // Coordinator of manage sync settings.
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
