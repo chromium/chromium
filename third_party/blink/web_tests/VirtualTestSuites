@@ -1897,22 +1897,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "mediastreamtrack-transfer",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html",
-      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-blink-features=MediaStreamTrackTransfer",
-      "--enable-features=MediaStreamTrackTransfer",
-      "--use-fake-device-for-media-stream=display-media-type=browser",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "force-defer-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],
