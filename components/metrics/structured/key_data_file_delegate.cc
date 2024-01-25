@@ -91,8 +91,8 @@ void KeyDataFileDelegate::OnWrite(WriteStatus status) {
   }
 }
 
-void KeyDataFileDelegate::WriteNowForTest() {
-  proto_.get()->StartWrite();
+void KeyDataFileDelegate::WriteNowForTesting() {
+  proto_.get()->StartWriteForTesting();  // IN-TEST
 }
 
 }  // namespace metrics::structured

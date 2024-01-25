@@ -51,7 +51,7 @@ class KeyDataFileDelegate : public KeyData::StorageDelegate {
   friend class KeyDataFileDelegateTest;
 
   // Flushes immediately for tests that need to read the file immediately.
-  void WriteNowForTest();
+  void WriteNowForTesting();
 
   // Callback made when |proto_| is initially read.
   void OnRead(ReadStatus status);

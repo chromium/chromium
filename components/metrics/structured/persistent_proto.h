@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
 #define COMPONENTS_METRICS_STRUCTURED_PERSISTENT_PROTO_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
+#include "base/files/important_file_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 
 namespace metrics::structured {
 // The result of reading a backing file from disk.
@@ -38,16 +42,17 @@ enum class WriteStatus {
 // If no proto file exists on disk, or it is invalid, a blank proto is
 // constructed and immediately written to disk.
 //
-// Writing. Writes must be triggered manually. Two methods are available:
-//  - QueueWrite() delays writing to disk for |write_delay| time, in order to
-//    batch successive writes.
-//  - StartWrite() writes to disk as soon as the task scheduler allows.
-// The |on_write| callback is run each time a write has completed.
+// Writing. Writes must be triggered manually. QueueWrite() delays writing to
+// disk for |write_delay| time, in order to batch successive writes.
+// The |on_write| callback is run each time a write has completed. QueueWrite()
+// should not be called until OnReadComplete() is finished, which can be
+// checked with the callback |on_read_|. Calling QueueWrite() before
+// OnReadComplete() has finished will result in a crash.
 //
 // WARNING. Every proto this class can be used with needs to be listed at the
 // bottom of the cc file.
 template <class T>
-class PersistentProto {
+class PersistentProto : public base::ImportantFileWriter::DataSerializer {
  public:
   using ReadCallback = base::OnceCallback<void(ReadStatus)>;
   using WriteCallback = base::RepeatingCallback<void(WriteStatus)>;
@@ -90,9 +95,6 @@ class PersistentProto {
   // Write the backing proto to disk after |save_delay_ms_| has elapsed.
   void QueueWrite();
 
-  // Write the backing proto to disk 'now'.
-  void StartWrite();
-
   // Safely clear this proto from memory and disk. This is preferred to clearing
   // the proto, because it ensures the proto is purged even if called before the
   // backing file is read from disk. In this case, the file is overwritten after
@@ -100,19 +102,23 @@ class PersistentProto {
   // skipping the |save_delay_ms_| wait time.
   void Purge();
 
+  // base::ImportantFileWriter::DataSerializer:
+  std::optional<std::string> SerializeData() override;
+
+  // Schedules a write to be executed immediately. Only to be used for tests.
+  void StartWriteForTesting();
+
  private:
-  void OnReadComplete(std::pair<ReadStatus, std::unique_ptr<T>> result);
+  // Callback when the file has been loaded into a file.
+  void OnReadComplete(
+      base::expected<std::unique_ptr<T>, ReadStatus> read_status);
+
+  // Called after |proto_file_| has attempted to write with the write status
+  // captured in |write_successful|.
+  void OnWriteAttempt(bool write_successful);
+
+  // Called after OnWriteAttempt() or if the write was unsuccessful earlier.
   void OnWriteComplete(WriteStatus status);
-  void OnQueueWrite();
-
-  // Path on disk to read from and write to.
-  const base::FilePath path_;
-
-  // How long to delay writing to disk for on a call to QueueWrite.
-  const base::TimeDelta write_delay_;
-
-  // Whether or not a write is currently scheduled.
-  bool write_is_queued_ = false;
 
   // Whether we should immediately clear the proto after reading it.
   bool purge_after_reading_ = false;
@@ -126,7 +132,12 @@ class PersistentProto {
   // The proto itself.
   std::unique_ptr<T> proto_;
 
+  // Task runner for reads and writes to be queued.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Persistence for |proto_|.
+  base::ImportantFileWriter proto_file_;
+
   base::WeakPtrFactory<PersistentProto> weak_factory_{this};
 };
 

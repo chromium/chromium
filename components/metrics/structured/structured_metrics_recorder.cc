@@ -167,6 +167,7 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
   }
 
   RecordEvent(event);
+  test_callback_on_record_.Run();
 }
 
 bool StructuredMetricsRecorder::HasState(State state) const {
@@ -351,14 +352,14 @@ void StructuredMetricsRecorder::HashUnhashedEventsAndPersist() {
   if (IsInitialized()) {
     LogNumEventsRecordedBeforeInit(unhashed_events_.size());
     while (!unhashed_events_.empty()) {
-      RecordEvent(unhashed_events_.front());
+      OnEventRecord(unhashed_events_.front());
       unhashed_events_.pop_front();
     }
   }
   if (IsProfileInitialized()) {
     LogNumEventsRecordedBeforeInit(unhashed_profile_events_.size());
     while (!unhashed_profile_events_.empty()) {
-      RecordEvent(unhashed_profile_events_.front());
+      OnEventRecord(unhashed_profile_events_.front());
       unhashed_profile_events_.pop_front();
     }
   }

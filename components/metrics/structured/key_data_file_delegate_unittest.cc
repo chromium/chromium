@@ -104,7 +104,7 @@ class KeyDataFileDelegateTest : public testing::Test {
   }
 
   void SaveKeyData() {
-    key_data_file_->WriteNowForTest();
+    key_data_file_->WriteNowForTesting();
     Wait();
     ASSERT_TRUE(base::PathExists(GetPath()));
   }
