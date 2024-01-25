@@ -389,7 +389,7 @@
 <translation id="2624588537172718173">设备音频和麦克风</translation>
 <translation id="263399434338050016">“全选”</translation>
 <translation id="2644422758626431000">将窗口固定到左侧</translation>
-<translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">窗口截取/录制</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
+<translation id="2744221223678373668">已共享</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“删除”</translation>
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
 <translation id="2761723519669354964">打开任务栏中的突出显示项</translation>
+<translation id="2762000892062317888">刚刚</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 至 <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + 搜索键 + S</translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>

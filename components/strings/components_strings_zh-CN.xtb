@@ -1251,7 +1251,7 @@
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3443504041532578451">光盘（磨光）</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
-<translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
+<translation id="3447644283769633681">阻止所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3450323514459570273">可以请求控制您的 MIDI 设备以及为其重新编程</translation>
@@ -2056,7 +2056,6 @@
 <translation id="503498442187459473"><ph name="HOST" /> 想使用您的摄像头和麦克风</translation>
 <translation id="5035135400558156732">园艺</translation>
 <translation id="503574301575803523">SRA3</translation>
-<translation id="5036337510084622581">请重新登录，然后返回此标签页以获取写作帮助</translation>
 <translation id="5039762155821394373">字号</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5040262127954254034">隐私权</translation>

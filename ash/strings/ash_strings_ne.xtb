@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">हटस्पट सुविधा अन गर्न तपाईंको फोनमा अनिवार्य रूपमा मोबाइल डेटा उपलब्ध हुनु पर्छ</translation>
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
+<translation id="2744221223678373668">साझा गरिएको</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"मेटाऊ"</translation>
 <translation id="2750941250130734256">सक्रिय विन्डो अनडक गरिएको छ।</translation>
 <translation id="2761723519669354964">सेल्फबाट हाइलाइट गरिएको वस्तु खोल्नुहोस्</translation>
+<translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> देखि <ph name="KEY_TWO" /> सम्म थिच्नुहोस्</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
@@ -1498,6 +1500,7 @@
 <translation id="6981291220124935078">प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> मा <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> हर्ज) रिजोल्युसन प्रयोग गर्न मिल्दैन। रिजोल्युसन परिवर्तन गरी <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) बनाइयो। यो परिवर्तन सेभ गर्न "पुष्टि गर्नुहोस्" बटनमा क्लिक गर्नुहोस्। <ph name="TIMEOUT_SECONDS" /> मा पहिलेका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="6989752354829085073">Chromebook चलाउने तरिका सिक्न केही समय खर्चेर यसका सुविधाहरू हेर्नुहोस्। ६ वटा चरणमा सेटअप गरी चलाउन थाल्नुहोस्।</translation>
 <translation id="7004910047186208204">मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="7005239792648594238">सुरु गर्न कुनै एप खोल्नुहोस्</translation>

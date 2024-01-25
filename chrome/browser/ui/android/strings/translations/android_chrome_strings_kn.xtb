@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">ಅಪ್ಲಿಕೇಶನ್ ಆವೃತ್ತಿ</translation>
 <translation id="1428770807407000502">ಸಿಂಕ್‌ ಆಫ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
+<translation id="1435593198351412143">PDF ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1436784010935106834">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1437543266176261764"><ph name="APP_NAME" /> ನಲ್ಲಿ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1448440926884431741">ನಿಮ್ಮ ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳನ್ನು Bookmarks ನಲ್ಲಿ ಆಯೋಜಿಸಿ</translation>
@@ -190,6 +191,7 @@
 <translation id="2056878612599315956">ಸೈಟ್ ಅನ್ನು ಅಮಾನತುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್‌ ವಿಫಲವಾಗಿದೆ}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ}}</translation>
 <translation id="2067805253194386918">ಪಠ್ಯ</translation>
+<translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ರಲ್ಲಿ <ph name="RESULT_NUMBER" /> ಫಲಿತಾಂಶಗಳು</translation>
 <translation id="2091863218454846791">ಕಾಂಪ್ಯಾಕ್ಟ್ ವೀಕ್ಷಣೆಯನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2093731487903423814">ಹಿಂದಿನ 15 ನಿಮಿಷಗಳು</translation>
@@ -315,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="2781151931089541271">1 ಸೆಕೆಂಡು ಉಳಿದಿದೆ</translation>
+<translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="281504910091592009">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಲ್ಲಿ<ph name="END_LINK" /> ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2827278682606527653">ಫೀಡ್ ಕಾರ್ಡ್ ಮೆನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ</translation>
@@ -339,6 +342,7 @@
 <translation id="2894821468041866720">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅಥವಾ ಸಾಧನವನ್ನು ಗಮನಾರ್ಹವಾಗಿ ನಿಧಾನಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> ಗಾಗಿ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2904300462646366554">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ PDF ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ PDF ವೀಕ್ಷಕದೊಂದಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಲ್ಪಡುತ್ತವೆ</translation>
 <translation id="2904414404539560095">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="2908243544703713905">ಓದದಿರುವ ಸ್ಟೋರಿಗಳು ಸಿದ್ಧವಾಗಿವೆ</translation>
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
@@ -893,9 +897,11 @@
 <translation id="5810288467834065221">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="5814749351757353073">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="5822875253699806474">ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಹಿಂತಿರುಗಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5833984609253377421">ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> ಮೂಲಕ PDF ತೆರೆಯಬೇಕೆ?</translation>
 <translation id="5853623416121554550">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5855546874025048181">ಪರಿಷ್ಕರಿಸಿ: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಟ್ರ್ಯಾಕ್ ಬೆಲೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
@@ -1378,6 +1384,7 @@
 <translation id="8127542551745560481">ಮುಖಪುಟವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8130309322784422030">ನೀವು ಸಂಗ್ರಹಿಸಿದ ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯು ಹಳೆಯದಾಗಿರಬಹುದು</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="8135406045838672858"><ph name="APP_NAME" /> ಮೂಲಕ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ PDF ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುತ್ತದೆ</translation>
 <translation id="8137562778192957619">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ನೆನಪಿಟ್ಟುಕೊಳ್ಳುವ ಅಗತ್ಯವಿಲ್ಲ. ಅದನ್ನು Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಫೈಲ್‌ಗಳು</translation>
 <translation id="8190358571722158785">1 ದಿನ ಉಳಿದಿದೆ</translation>

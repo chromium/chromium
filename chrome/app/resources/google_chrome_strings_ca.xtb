@@ -84,7 +84,7 @@
 <translation id="234869673307233423">Chrome no pot comprovar les teves contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="235650106824528204">L'administrador del perfil de treball pot suprimir qualsevol dada de Chrome que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2401189691232800402">Sistema Chrome OS</translation>
+<translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o més extensions de Chrome estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chrome estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chrome estan accedint a # dispositius d'interfície humana}}</translation>
 <translation id="2424440923901031101">Aquesta extensió infringeix la política de Chrome Web Store i podria no ser segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
@@ -349,7 +349,7 @@
 <translation id="6851981911629679515">Activa la protecció addicional al motor JavaScript i WebAssembly de Chrome</translation>
 <translation id="6881299373831449287">S'està actualitzant Chrome</translation>
 <translation id="6885412569789873916">Aplicacions de Chrome Beta</translation>
-<translation id="6933858244219479645">Sistema Chrome OS</translation>
+<translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.1.</translation>
 <translation id="6943584222992551122">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla d'entrada de Google Chrome Beta per permetre el trànsit d'mDNS.</translation>

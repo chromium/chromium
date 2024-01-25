@@ -679,7 +679,6 @@
 <translation id="1521933835545997395">Установена е връзка с телефон с Android</translation>
 <translation id="1523279371236772909">Прегледано през миналия месец</translation>
 <translation id="1523978563989812243">Машини за синтезиран говор</translation>
-<translation id="1524430321211440688">Клавиатура</translation>
 <translation id="1524563461097350801">Не, благодаря</translation>
 <translation id="1525740877599838384">Определяне на местоположението само посредством Wi-Fi</translation>
 <translation id="152629053603783244">Рестартиране на Linux</translation>
@@ -2214,7 +2213,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2643698698624765890">Управлявайте разширенията си, като кликнете върху „Разширения“ в менюто „Прозорец“.</translation>
 <translation id="2645047101481282803">Устройството ви се управлява от <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Този раздел се предава към <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодиране Base64, верига сертификати</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
@@ -3920,7 +3919,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3966072572894326936">Изберете друга папка...</translation>
 <translation id="3966094581547899417">Подробности за точката за достъп</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
-<translation id="3967841595862839006">Избиране на език и клавиатура</translation>
 <translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
@@ -4602,7 +4600,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4513872120116766993">Предвиждащо писане</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4515872537870654449">Обърнете се към Dell за обслужване. Докинг станцията ще се изключи, ако вентилаторът не работи.</translation>
-<translation id="4516008165284813420">Проверете дали устройството ви <ph name="DEVICE_TYPE" /> е свързано с интернет и опитайте отново. Можете също да посетите play.google.com/about/play-terms от друго устройство.</translation>
 <translation id="4518840066030486079">Стил на режимa за клавиша Shift</translation>
 <translation id="4519331665958994620">Сайтовете могат да извеждат запитвания за използване на камерата ви</translation>
 <translation id="4519605771716872386">Синхронизирането на файловете е включено</translation>

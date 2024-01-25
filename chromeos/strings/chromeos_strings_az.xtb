@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Daxili xəta</translation>
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">vurun</translation>
 <translation id="1145018782460575098">"Proqramı xarici cihazlar üçün güncəlləyin" pəncərəsi açıqdır. <ph name="NUM_UPDATES" /> güncəlləmə əlçatandır.</translation>
 <translation id="1145516343487477149">Ümumi Chromebook suallarına yardım məqalələri və cavablar tapın</translation>
 <translation id="1154390310959620237">Yalnız 5 qısayol fərdiləşdirmək olar. Yeni qısayol əlavə etmək üçün birini silin.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
 <translation id="1367951781824006909">Fayl seçin</translation>
+<translation id="1371650399987522809">Google AI tərəfindən dəstəklənən divar kağızı üçün rəy</translation>
 <translation id="1387854245479784695">Bu, bütün nüvələrin birləşməsidir</translation>
 <translation id="1394661041439318933">Keysin batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Giriş test edilə bilər</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1561927818299383735">fon işığı rəngi</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> cihazını güncəlləmək mümkün deyil</translation>
+<translation id="1566493343215789965">bölün</translation>
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
 <translation id="1578784163189013834">Ekran qoruyucusu üçün arxa fon seçin</translation>
 <translation id="160633243685262989">Şəkli Önizləyin</translation>
 <translation id="1611649489706141841">irəli</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
+<translation id="1615576200479539465">Şəkillər yaradılır...</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
 <translation id="1626590945318984973">Qısayol əlçatan deyil. Funksiya və <ph name="META_KEY" /> düymələrindən istifadə etmədən yeni qısayola basın.</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="2880569433548999039">"Bulud axını" ekran qoruyucusu</translation>
 <translation id="2926057806159140518">İstifadəçi adınızı və parolunuzu daxil edin və ya QR kodunuzu skan edin</translation>
+<translation id="2938573842839598578">Təxmini nəticə üçün <ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> dəyərinə <ph name="OPERATOR_TEXT" /></translation>
 <translation id="2940811910881150316">Cihazı test etmək mümkün deyil. Test etmək üçün qapağı yenidən açın.</translation>
 <translation id="2941112035454246133">Aşağı</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
+<translation id="3547264467365135390">Düstur</translation>
 <translation id="3557205324756024651">Lokal kimlik (istəyə görə)</translation>
 <translation id="3565064564551103223">İcazə verilən IP'lər</translation>
 <translation id="3569407787324516067">Ekran qoruyucu</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7184043045742675738">Düyməni fərdiləşdirmək üçün istənilən düyməyə klikləyin. Maus və ya ox düymələri ilə mövqenin dəyişdirilməsi düyməsi.</translation>
+<translation id="7206979415662233817">Xidmət şərtləri</translation>
 <translation id="7212547870105584639">Şəbəkə APN ayarlarını idarə edin. APN mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Xarici cihazlar üçün proqram güncəlləmələri</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">klaviatura rəngi</translation>
 <translation id="7317831949569936035">Məktəb qeydiyyatı</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">18 yaşınız tamam olmalıdır və Sİ divar kağızlarından istifadənin <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google Xidmət Şərtlərinə<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> və <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Generativ süni intellekt əlavə xidmət şərtlərinə<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> tabe olması ilə razılaşmalısınız.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Sİ ilə yalnız şəxsi və qeyri-kommersiya məqsədli istifadə üçün divar kağızı yarada bilərsiniz. Divar kağızı ilə bağlı kömək aldıqda divar kağızı təklifləri yaratmaq üçün mətn <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> əsasən Google AI-a göndərilir. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7353413232959255829">Axtarış nəticəsi <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Qısayola keçmək üçün Enter basın.</translation>

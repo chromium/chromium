@@ -12,7 +12,7 @@
 <translation id="1125124144982679672">Кој користи Chrome?</translation>
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
 <translation id="1149651794389918149">Најавете се на Chrome. Ако сакате да најавите сметка само еднократно, може <ph name="GUEST_LINK_BEGIN" />да го користите уредот како гостин<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">За Chrome OS</translation>
+<translation id="1152920704813762236">Повеќе за ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
 <translation id="1194807384646768652">Chrome го блокираше преземањево затоа што видот датотека не се презема често и можеби е опасен</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
@@ -88,7 +88,7 @@
 <translation id="234869673307233423">Chrome не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="235650106824528204">Податоците на Chrome што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Продолжи</translation>
-<translation id="2401189691232800402">Систем Chrome OS</translation>
+<translation id="2401189691232800402">Систем ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Една или повеќе екстензии за Chrome пристапуваа до 1 HID-уред}=1{Една или повеќе екстензии за Chrome пристапуваат до 1 HID-уред}one{Една или повеќе екстензии за Chrome пристапуваат до # HID-уред}other{Една или повеќе екстензии за Chrome пристапуваат до # HID-уреди}}</translation>
 <translation id="2424440923901031101">Екстензијава ги прекршува правилата на „Веб-продавницата на Chrome“, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
@@ -108,7 +108,7 @@
 <translation id="2597976513418770460">Преземете ги работите на прелистувачот Chrome од <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome редовно проверува за да се погрижи вашиот прелистувач да ги има најбезбедните поставки. Ќе ве известиме ако треба да се прегледа нешто.</translation>
 <translation id="2652691236519827073">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="2665296953892887393">Помогнете да го подобриме Google Chrome со испраќање извештаи за падови и <ph name="UMA_LINK" /> до Google</translation>
@@ -357,7 +357,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6851981911629679515">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chrome</translation>
 <translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>
-<translation id="6933858244219479645">Систем Chrome OS</translation>
+<translation id="6933858244219479645">Систем ChromeOS</translation>
 <translation id="6938166777909186039">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>

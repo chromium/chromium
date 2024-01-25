@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">Роботу сайту призупинено</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Не вдалося завантажити 1 файл}one{Не вдалося завантажити # файл}few{Не вдалося завантажити # файли}many{Не вдалося завантажити # файлів}other{Не вдалося завантажити # файлу}}</translation>
 <translation id="2067805253194386918">SMS</translation>
+<translation id="2079545284768500474">Відмінити</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Показано компактний перегляд</translation>
 <translation id="2093731487903423814">останні 15 хвилин</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
 <translation id="2781151931089541271">Залишилась 1 с</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
 <translation id="281504910091592009">Переглядайте збережені паролі й керуйте ними в <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню картки зі стрічки відкрито на половину висоти</translation>

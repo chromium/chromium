@@ -10,7 +10,7 @@
 <translation id="1125124144982679672">Kuka käyttää Chromea?</translation>
 <translation id="1142745911746664600">Chromen päivitys epäonnistui</translation>
 <translation id="1149651794389918149">Kirjaudu Chromeen. Jos haluat kirjautua tilille vain kerran, voit <ph name="GUEST_LINK_BEGIN" />käyttää laitetta vieraana<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Tietoa ChromeOS:stä</translation>
+<translation id="1152920704813762236">ChromeOS</translation>
 <translation id="1154147086299354128">Avaa Chr&amp;omessa</translation>
 <translation id="1194807384646768652">Chrome on estänyt tämän latauksen, koska tiedostotyyppiä ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
@@ -84,7 +84,7 @@
 <translation id="234869673307233423">Chrome ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
 <translation id="235650106824528204">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chrome-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2401189691232800402">Chrome-käyttöjärjestelmä</translation>
+<translation id="2401189691232800402">ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chrome-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chrome-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chrome-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2424440923901031101">Tämä laajennus rikkoo Chrome Web Storen käytäntöä ja saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="2467438592969358367">Google Chrome yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -104,7 +104,7 @@
 <translation id="2597976513418770460">Käytä tililtä <ph name="ACCOUNT_EMAIL" /> löytyvää Chrome-selaimen sisältöä</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
-<translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
@@ -349,7 +349,7 @@
 <translation id="6851981911629679515">Laita lisäsuojaus päälle Chromen JavaScript- ja WebAssembly-moottorissa</translation>
 <translation id="6881299373831449287">Päivitetään Chromea</translation>
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
-<translation id="6933858244219479645">Chrome-käyttöjärjestelmä</translation>
+<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>

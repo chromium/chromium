@@ -682,7 +682,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1521933835545997395">Yhdistetty Android-puhelimeen</translation>
 <translation id="1523279371236772909">Nähty viimeisen kuukauden aikana</translation>
 <translation id="1523978563989812243">Tekstistä puheeksi ‑moottorit</translation>
-<translation id="1524430321211440688">Näppäimistö</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1525740877599838384">Käytä vain Wi-Fi-yhteyttä sijainnin määrittämiseen</translation>
 <translation id="152629053603783244">Käynnistä Linux uudelleen</translation>
@@ -2217,7 +2216,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2643698698624765890">Hallinnoi laajennuksiasi valitsemalla Ikkuna-valikosta Laajennukset.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> ylläpitää laitettasi</translation>
 <translation id="2645388244376970260">Välilehteä striimataan tänne: <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Base64-koodattu ASCII, varmenneketju</translation>
 <translation id="265156376773362237">Vakioesilataus</translation>
@@ -3919,7 +3918,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3966072572894326936">Valitse toinen kansio...</translation>
 <translation id="3966094581547899417">Hotspotin tiedot</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
-<translation id="3967841595862839006">Kielen ja näppäimistön valinta</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Tunnus</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
@@ -4601,7 +4599,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4513872120116766993">Ennakoiva tekstinsyöttö</translation>
 <translation id="4513946894732546136">Palaute</translation>
 <translation id="4515872537870654449">Ota yhteyttä Delliin. Teline sammuu, jos tuuletin ei toimi.</translation>
-<translation id="4516008165284813420">Varmista, että <ph name="DEVICE_TYPE" /> on yhteydessä internetiin, ja yritä uudelleen. Voit myös siirtyä toisella laitteella osoitteeseen play.google.com/about/play-terms.</translation>
 <translation id="4518840066030486079">Vaihtonäppäintilan tyyli</translation>
 <translation id="4519331665958994620">Sivustot saavat pyytää kameran käyttölupaa</translation>
 <translation id="4519605771716872386">Tiedostojen synkronointi on päällä</translation>
@@ -8865,7 +8862,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7880823633812189969">Paikallinen data poistetaan uudelleenkäynnistyksen yhteydessä</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Näytä tili</translation>
-<translation id="7883792253546618164">Voit peruuttaa tilauksen milloin tahansa.</translation>
+<translation id="7883792253546618164">Voit perua tilauksen milloin tahansa.</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{Tarkista 1 sivusto, jolta on lähetetty paljon ilmoituksia viime aikoina}other{Tarkista {NUM_SITES} sivustoa, joilta on lähetetty paljon ilmoituksia viime aikoina}}</translation>
 <translation id="788453346724465748">Ladataan tilitietoja…</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{kohde}other{# kohdetta}}</translation>

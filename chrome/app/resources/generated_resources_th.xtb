@@ -679,7 +679,6 @@
 <translation id="1521933835545997395">เชื่อมต่อกับโทรศัพท์ Android แล้ว</translation>
 <translation id="1523279371236772909">ดูในเดือนที่ผ่านมา</translation>
 <translation id="1523978563989812243">เครื่องมือการอ่านออกเสียงข้อความ</translation>
-<translation id="1524430321211440688">แป้นพิมพ์</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1525740877599838384">ใช้ Wi-Fi เพื่อระบุตำแหน่งเท่านั้น</translation>
 <translation id="152629053603783244">รีสตาร์ท Linux</translation>
@@ -2203,7 +2202,7 @@
 <translation id="2643698698624765890">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "หน้าต่าง"</translation>
 <translation id="2645047101481282803">อุปกรณ์ของคุณจัดการโดย <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">กำลังแคสต์แท็บนี้ไปยัง <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">ตาบอดสีแดง</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, กลุ่มใบรับรอง (Certificate Chain)</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
@@ -3908,7 +3907,6 @@
 <translation id="3966072572894326936">เลือกโฟลเดอร์อื่น...</translation>
 <translation id="3966094581547899417">รายละเอียดของฮอตสปอต</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
-<translation id="3967841595862839006">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="3968739731834770921">คะนะ</translation>
 <translation id="3970114302595058915">รหัส</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
@@ -4589,7 +4587,6 @@
 <translation id="4513872120116766993">การเขียนแบบช่วยคาดเดา</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4515872537870654449">ติดต่อ Dell เพื่อส่งซ่อม แท่นชาร์จจะปิดหากพัดลมไม่ทำงาน</translation>
-<translation id="4516008165284813420">ตรวจสอบว่า <ph name="DEVICE_TYPE" /> เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง หรือไปที่ play.google.com/about/play-terms บนอุปกรณ์อื่นก็ได้</translation>
 <translation id="4518840066030486079">รูปแบบโหมดแป้น Shift</translation>
 <translation id="4519331665958994620">เว็บไซต์ขอใช้กล้องของคุณได้</translation>
 <translation id="4519605771716872386">การซิงค์ไฟล์เปิดอยู่</translation>

@@ -389,7 +389,7 @@
 <translation id="2624588537172718173">เสียงจากอุปกรณ์และไมโครโฟน</translation>
 <translation id="263399434338050016">"เลือกทั้งหมด"</translation>
 <translation id="2644422758626431000">ปักหมุดหน้าต่างไว้ทางด้านซ้าย</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">การจับภาพหน้าต่าง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2658778018866295321">คลิกแล้วลาก</translation>
@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">โทรศัพท์ต้องมืออินเทอร์เน็ตมือถือเพื่อการใช้งานเป็นฮอตสปอต</translation>
 <translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
+<translation id="2744221223678373668">ที่แชร์</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ลบ"</translation>
 <translation id="2750941250130734256">เลิกตรึงหน้าต่างที่ใช้งานแล้ว</translation>
 <translation id="2761723519669354964">เปิดรายการที่ไฮไลต์ไว้จากแถบ</translation>
+<translation id="2762000892062317888">เมื่อสักครู่</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> จนถึง <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Search + S</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> จัดการโดย <ph name="MANAGER" /></translation>

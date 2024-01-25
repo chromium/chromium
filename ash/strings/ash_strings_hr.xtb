@@ -409,10 +409,12 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2726420622004325180">Telefon mora imati mobilne podatke da bi osigurao žarišnu točku</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je priključen na punjač male snage. Punjenje baterije možda nije pouzdano.</translation>
+<translation id="2744221223678373668">Dijeljeno</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Izbriši"</translation>
 <translation id="2750941250130734256">Aktivan prozor je premješten.</translation>
 <translation id="2761723519669354964">Otvaranje istaknute stavke na traci</translation>
+<translation id="2762000892062317888">upravo sada</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + Pretraživanje + S</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
@@ -1498,6 +1500,7 @@ Novo instaliranje</translation>
 <translation id="6981291220124935078">Uključi pristup</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Sve datoteke i lokalni podaci povezani s ovim korisnikom trajno će se izbrisati nakon uklanjanja korisnika.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Krenite u kratki obilazak i naučite upotrebljavati značajke Chromebooka. Pokrenite se u šest koraka.</translation>
 <translation id="7004910047186208204">Povežite se s mobilnom podatkovnom mrežom</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da biste započeli</translation>

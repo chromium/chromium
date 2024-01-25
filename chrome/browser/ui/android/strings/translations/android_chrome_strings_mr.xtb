@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">साइट थांबवली</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{एक डाउनलोड करता आले नाही}other{# डाउनलोड करता आले नाहीत}}</translation>
 <translation id="2067805253194386918">मजकूर</translation>
+<translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2091863218454846791">संक्षिप्त दृश्य दाखवत आहे</translation>
 <translation id="2093731487903423814">मागील १५ मिनिटांमधील</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
 <translation id="2781151931089541271">1 सेकंद शिल्लक</translation>
+<translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> टॅब बंद केला जाईल</translation>
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पहा आणि व्यवस्थापित करा</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>

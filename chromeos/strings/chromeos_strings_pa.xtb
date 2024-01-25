@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">ਅੰਦਰੂਨੀ ਗੜਬੜ</translation>
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">ਗੁਣਾ ਕਰੋ</translation>
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
 <translation id="1154390310959620237">ਤੁਸੀਂ ਸਿਰਫ਼ 5 ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਕਿਸੇ ਇੱਕ ਨੂੰ ਮਿਟਾਓ।</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ਸਕੈਨ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="1367951781824006909">ਇੱਕ ਫਾਈਲ ਚੁਣੋ</translation>
+<translation id="1371650399987522809">Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ ਵਾਲਪੇਪਰ ਲਈ ਵਿਚਾਰ</translation>
 <translation id="1387854245479784695">ਇਹ ਸਾਰੇ ਕੋਰ ਅੰਕੜਿਆਂ ਦਾ ਇਕੱਤਰੀਕਰਨ ਹੈ</translation>
 <translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
 <translation id="1561927818299383735">ਬੈਕਲਿਟ ਰੰਗ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1566493343215789965">ਭਾਗ ਕਰੋ</translation>
 <translation id="1567064801249837505">ਐਲਬਮਾਂ</translation>
 <translation id="1572585716423026576">ਵਾਲਪੇਪਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1578784163189013834">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੈਕਗ੍ਰਾਊਂਡ ਚੁਣੋ</translation>
 <translation id="160633243685262989">ਚਿੱਤਰ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1611649489706141841">ਅੱਗੇ ਭੇਜੋ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ਤੋਂ ਡਾਟਾ ਵਰਤੋਂ</translation>
+<translation id="1615576200479539465">ਚਿੱਤਰ ਸਿਰਜੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1626590945318984973">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਫੰਕਸ਼ਨ ਅਤੇ <ph name="META_KEY" /> ਕੁੰਜੀਆਂ ਨੂੰ ਵਰਤੇ ਬਿਨਾਂ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਖਤਮ ਹੋਈ।</translation>
 <translation id="2880569433548999039">ਬੱਦਲ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="2926057806159140518">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ ਜਾਂ ਆਪਣਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
+<translation id="2938573842839598578">ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CONVERSION_RATE" /> 'ਤੇ <ph name="OPERATOR_TEXT" /> ਨੂੰ <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="2940811910881150316">ਡੀਵਾਈਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਜਾਂਚ ਕਰਨ ਲਈ ਢੱਕਣ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="2941112035454246133">ਘੱਟ</translation>
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
+<translation id="3547264467365135390">ਫ਼ਾਰਮੂਲਾ</translation>
 <translation id="3557205324756024651">ਸਥਾਨਕ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
 <translation id="3569407787324516067">ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7180865173735832675">ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7184043045742675738">ਆਪਣੇ ਬਟਨ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਮਾਊਸ ਜਾਂ ਤੀਰ ਕੁੰਜੀਆਂ ਨਾਲ ਕੁੰਜੀ ਦੀ ਥਾਂ ਬਦਲੋ।</translation>
+<translation id="7206979415662233817">ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
 <translation id="7212547870105584639">ਨੈੱਟਵਰਕ APN ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। APN ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ ਵਿਚਕਾਰ ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਕਰਦੇ ਹਨ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">ਕੀ-ਬੋਰਡ ਦਾ ਰੰਗ</translation>
 <translation id="7317831949569936035">ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">ਤੁਹਾਡੀ ਉਮਰ ਘੱਟੋ-ਘੱਟ 18 ਸਾਲ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੀ AI ਵਾਲਪੇਪਰਾਂ ਦੀ ਵਰਤੋਂ <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> ਅਤੇ <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ਜਨਰੇਟਿਵ AI ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ਦੇ ਅਧੀਨ ਹੈ।
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ਤੁਸੀਂ ਸਿਰਫ਼ ਨਿੱਜੀ ਅਤੇ ਗੈਰ-ਵਪਾਰਕ ਵਰਤੋਂ ਲਈ AI ਨਾਲ ਵਾਲਪੇਪਰ ਬਣਾ ਸਕਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ ਵਾਲਪੇਪਰ ਸੰਬੰਧੀ ਸਹਾਇਤਾ ਪ੍ਰਾਪਤ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੀ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਵਾਲਪੇਪਰ ਸੰਬੰਧੀ ਸੁਝਾਅ ਤਿਆਰ ਕਰਨ ਲਈ ਲਿਖਤ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ਵਿੱਚ ਨਤੀਜਾ ਦੇਖਣ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="7343649194310845056">ਨੈੱਟਵਰਕ ਡੀਵਾਈਸ</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> ਵਿੱਚੋਂ <ph name="LIST_POSITION" /> ਖੋਜ ਨਤੀਜਾ: <ph name="SEARCH_RESULT_TEXT" />। ਸ਼ਾਰਟਕੱਟ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>

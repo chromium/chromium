@@ -679,7 +679,6 @@
 <translation id="1521933835545997395">დაკავშირებულია Android ტელეფონთან</translation>
 <translation id="1523279371236772909">ნანახია წინა თვეში</translation>
 <translation id="1523978563989812243">ტექსტის გახმოვანების ძრავები</translation>
-<translation id="1524430321211440688">კლავიატურა</translation>
 <translation id="1524563461097350801">არა, გმადლობთ</translation>
 <translation id="1525740877599838384">მდებარეობის დასადგენად მხოლოდ Wi-Fi ქსელის გამოყენება</translation>
 <translation id="152629053603783244">Linux-ის გადატვირთვა</translation>
@@ -3908,7 +3907,6 @@
 <translation id="3966072572894326936">აირჩიეთ სხვა საქაღალდე...</translation>
 <translation id="3966094581547899417">უსადენო ქსელის დეტალები</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
-<translation id="3967841595862839006">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="3968739731834770921">კანა</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
@@ -4589,7 +4587,6 @@
 <translation id="4513872120116766993">პროგნოზირებული წერა</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="4515872537870654449">მომსახურების მისაღებად დაუკავშირდით Dell-ს. სამაგრი გამოირთვება, თუ ვენტილატორი არ იმუშავებს.</translation>
-<translation id="4516008165284813420">დარწმუნდით, რომ თქვენი <ph name="DEVICE_TYPE" /> დაკავშირებულია ინტერნეტთან და ცადეთ ხელახლა. ამას გარდა, შეგიძლიათ მოინახულოთ play.google.com/about/play-terms სხვა მოწყობილობიდან.</translation>
 <translation id="4518840066030486079">Shift კლავიშის რეჟიმის სტილი</translation>
 <translation id="4519331665958994620">საიტებს შეუძლია თქვენი კამერის გამოყენების თხოვნა</translation>
 <translation id="4519605771716872386">ფაილების სინქრონიზაცია ჩართულია</translation>

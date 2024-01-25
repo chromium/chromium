@@ -703,7 +703,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="230286397113210245">Knappen Öppna ett inkognitofönster: aktivera om du vill öppna ett nytt inkognitofönster och surfa privat</translation>
 <translation id="2312234273148520048">Smakförstärkare och dressingar</translation>
 <translation id="2316087952091171402">Mindre än <ph name="UPPER_ESTIMATE" /> Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
-<translation id="2316159751672436664">Anpassa tillgänglighetsverktygen i inställningarna för Chrome OS</translation>
+<translation id="2316159751672436664">Anpassa tillgänglighetsverktygen i inställningarna för ChromeOS</translation>
 <translation id="2316887270356262533">Frigör mindre än 1 MB. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>
 <translation id="2318594867107319532">Senaste tidsstämpel för princip:</translation>
@@ -1594,7 +1594,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4123572138124678573">Tre hål längst ned</translation>
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
 <translation id="4127317221386336246">Accessoarer</translation>
-<translation id="4127575959421463246">Letar du efter Chrome OS-flaggor? Besök</translation>
+<translation id="4127575959421463246">Letar du efter ChromeOS-flaggor? Besök</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
 <translation id="4130226655945681476">Kontrollera nätverkskablar, modem och router</translation>
 <translation id="4132448310531350254">Dubbla hanterare för filnamnstillägget <ph name="FILE_EXTENSION" /> refereras av apparna <ph name="POLICY_IDS_LIST" />.</translation>
@@ -2060,7 +2060,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="503498442187459473"><ph name="HOST" /> vill använda kameran och mikrofonen</translation>
 <translation id="5035135400558156732">Trädgårdsarbete</translation>
 <translation id="503574301575803523">SRA3</translation>
-<translation id="5036337510084622581">Logga in igen och återgå sedan till den här fliken för att få hjälp med att skriva</translation>
 <translation id="5039762155821394373">Teckensnittsstorlek</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Integritet</translation>
@@ -2301,7 +2300,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5521782189689806907">Skåp</translation>
 <translation id="5523118979700054094">Policynamn</translation>
 <translation id="5525755241743357906">Filen har kopierats eller flyttats</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för Chrome OS.</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för ChromeOS.</translation>
 <translation id="5528532273234423708">Automatisering i hemmet</translation>
 <translation id="55293785478302737">Kanthäftning</translation>
 <translation id="553377674408670169">Jobb inom utbildning</translation>
@@ -3697,7 +3696,7 @@ Mer information.
 <translation id="8249463483885748674">Standardprov och inträdesprov</translation>
 <translation id="824968735947741546">Översätter <ph name="SOURCE" /> (identifierades automatiskt) till <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Den här adressen har sparats på den här enheten. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="ACCOUNT" />.</translation>
-<translation id="8252991034201168845">Knappen Hantera tillgänglighetsinställningar: tryck på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för Chrome OS</translation>
+<translation id="8252991034201168845">Knappen Hantera tillgänglighetsinställningar: tryck på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för ChromeOS</translation>
 <translation id="8253091569723639551">En faktureringsadress måste anges</translation>
 <translation id="8257387598443225809">Den här appen har utformats för mobila enheter</translation>
 <translation id="825929999321470778">Visa alla sparade lösenord</translation>

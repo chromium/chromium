@@ -679,7 +679,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1521933835545997395">Connectat al telèfon Android</translation>
 <translation id="1523279371236772909">S'ha vist el darrer mes</translation>
 <translation id="1523978563989812243">Motors de text a parla</translation>
-<translation id="1524430321211440688">Teclat</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1525740877599838384">Utilitza només una xarxa Wi-Fi per determinar la ubicació</translation>
 <translation id="152629053603783244">Reinicia Linux</translation>
@@ -3907,7 +3906,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3966072572894326936">Tria una altra carpeta...</translation>
 <translation id="3966094581547899417">Detalls del punt d'accés Wi-Fi</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
-<translation id="3967841595862839006">Tria l'idioma i el teclat</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identificador</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
@@ -4588,7 +4586,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4513872120116766993">Escriptura predictiva</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4515872537870654449">Contacta amb Dell per obtenir assistència tècnica. La base s'apagarà si el ventilador no funciona.</translation>
-<translation id="4516008165284813420">Assegura't que el teu dispositiu (<ph name="DEVICE_TYPE" />) estigui connectat a Internet i torna-ho a provar. També pots visitar play.google.com/about/play-terms en un altre dispositiu.</translation>
 <translation id="4518840066030486079">Estil del mode de la tecla Maj</translation>
 <translation id="4519331665958994620">Els llocs web poden demanar permís per utilitzar la càmera</translation>
 <translation id="4519605771716872386">La sincronització de fitxers s'ha activat</translation>

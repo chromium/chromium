@@ -681,7 +681,6 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1521933835545997395">Pripojené k telefónu s Androidom</translation>
 <translation id="1523279371236772909">Zobrazené v uplynulom mesiaci</translation>
 <translation id="1523978563989812243">Nástroje prevodu textu na reč</translation>
-<translation id="1524430321211440688">Klávesnica</translation>
 <translation id="1524563461097350801">Nie, ďakujem</translation>
 <translation id="1525740877599838384">Na zistenie polohy používať iba Wi-Fi</translation>
 <translation id="152629053603783244">Reštartovať Linux</translation>
@@ -3910,7 +3909,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="3966072572894326936">Vybrať iný priečinok...</translation>
 <translation id="3966094581547899417">Podrobnosti o hotspote</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
-<translation id="3967841595862839006">Výber jazyka a klávesnice</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifikátor</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
@@ -4591,7 +4589,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4513872120116766993">Predvídanie písania</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4515872537870654449">Ak potrebujete servis, kontaktujte spoločnosť Dell. Ak ventilátor nefunguje, dok sa vypne.</translation>
-<translation id="4516008165284813420">Skontrolujte, či je zariadenie <ph name="DEVICE_TYPE" /> pripojené k internetu, a skúste to znova. Môžete prejsť na play.google.com/about/play-terms v inom zariadení.</translation>
 <translation id="4518840066030486079">Štýl režimu klávesa Shift</translation>
 <translation id="4519331665958994620">Weby môžu žiadať o použitie kamery</translation>
 <translation id="4519605771716872386">Synchronizácia súborov je zapnutá</translation>

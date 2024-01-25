@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">Ο ιστότοπος τέθηκε σε παύση</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>
 <translation id="2067805253194386918">κείμενο</translation>
+<translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Εμφάνιση συμπαγούς προβολής</translation>
 <translation id="2093731487903423814">τελευταία 15 λεπτά</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
 <translation id="2779651927720337254">απέτυχε</translation>
 <translation id="2781151931089541271">Απομένει 1 δευτερόλεπτο</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" />.</translation>
 <translation id="281504910091592009">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Μενού της κάρτας ροής στο μισό ύψος</translation>

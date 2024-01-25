@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">Байланыш түйүнү катары колдонуу үчүн телефонуңузда мобилдик Интернет болушу керек.</translation>
 <translation id="2727175239389218057">Жооп берүү</translation>
 <translation id="2727977024730340865">Кубаттуулугу төмөн кубаттагычка сайылды. Батареяны кубаттоо аракети ишенимдүү эмес.</translation>
+<translation id="2744221223678373668">Бөлүшүлгөн</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Өчүрүү"</translation>
 <translation id="2750941250130734256">Активдүү терезе ажыратылды.</translation>
 <translation id="2761723519669354964">Текчедеги бөлүнүп көрсөтүлгөн нерсени ачуу</translation>
+<translation id="2762000892062317888">жаңы эле</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />—<ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> түзмөгү <ph name="MANAGER" /> тарабынан башкарылат</translation>
@@ -1498,6 +1500,7 @@
 <translation id="6981291220124935078">Мүмкүнчүлүк берүү</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>
 <translation id="698231206551913481">Колдонуучуга тийиштүү бардык файлдар менен жергиликтүү дайындар көзөмөлдөнгөн колдонуучу чыгарылып салынганда биротоло жок болот.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Герц) дааналыкты колдоого албайт. Дааналык төмөнкүгө өзгөртүлдү: <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Герц). Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку параметрлер <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="6989752354829085073">Chromebook'ту колдонуу боюнча кеңештерди алыңыз. Аны 6 кадам менен тууралап аласыз.</translation>
 <translation id="7004910047186208204">Мобилдик трафикке туташуу</translation>
 <translation id="7005239792648594238">Баштоо үчүн колдонмону ачыңыз</translation>

@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">தளம் இடைநிறுத்தப்பட்டுள்ளது</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் தோல்வியடைந்தது}other{# பதிவிறக்கங்கள் தோல்வியடைந்தன}}</translation>
 <translation id="2067805253194386918">உரை</translation>
+<translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2091863218454846791">சுருக்கக் காட்சியில் காட்டுகிறது</translation>
 <translation id="2093731487903423814">கடந்த 15 நிமிடங்களில்</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> வினாடிகள் மீதமுள்ளன</translation>
 <translation id="2779651927720337254">தோல்வியுற்றது</translation>
 <translation id="2781151931089541271">1 வினாடி மீதமுள்ளது</translation>
+<translation id="2789486458103222910">சரி</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> பக்கம் மூடப்படும்</translation>
 <translation id="281504910091592009">உங்கள் <ph name="BEGIN_LINK" />Google கணக்கில்<ph name="END_LINK" /> சேமிக்கப்பட்ட கடவுச்சொற்களைப் பார்த்து, நிர்வகிக்கவும்</translation>
 <translation id="2827278682606527653">ஃபீட் கார்டு மெனு பாதி அளவிற்குத் திறக்கப்பட்டுள்ளது</translation>

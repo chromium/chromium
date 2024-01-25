@@ -487,7 +487,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="137651782282853227">Las direcciones guardadas aparecerán aquí</translation>
 <translation id="1376771218494401509">Asignar nombre a &amp;ventana...</translation>
 <translation id="1377600615067678409">Saltarpor ahora</translation>
-<translation id="1378613616312864539"><ph name="NAME" /> controla esta configuración</translation>
+<translation id="1378613616312864539"><ph name="NAME" /> controla esta opción</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No hay contraseñas vulneradas}=1{1 contraseña vulnerada}other{{NUM_COMPROMISED} contraseñas vulneradas}}</translation>
 <translation id="1380028686461971526">Conectarse automáticamente a la red</translation>
 <translation id="1381567580865186407">Lo que se diga en <ph name="LANGUAGE" /> se enviará a Google para procesarse</translation>
@@ -679,7 +679,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1521933835545997395">Conectado a teléfono Android</translation>
 <translation id="1523279371236772909">Visto el mes pasado</translation>
 <translation id="1523978563989812243">Motores de conversión de texto a voz</translation>
-<translation id="1524430321211440688">Teclado</translation>
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1525740877599838384">Usar solo redes Wi‑Fi para determinar la ubicación</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
@@ -3908,7 +3907,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3966072572894326936">Seleccionar otra carpeta...</translation>
 <translation id="3966094581547899417">Detalles del punto de acceso</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
-<translation id="3967841595862839006">Seleccionar idioma y teclado</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -4589,7 +4587,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4513872120116766993">Escritura predictiva</translation>
 <translation id="4513946894732546136">Comentarios</translation>
 <translation id="4515872537870654449">Ponte en contacto con Dell para obtener ayuda. La base se apagará si el ventilador no funciona.</translation>
-<translation id="4516008165284813420">Comprueba que tu <ph name="DEVICE_TYPE" /> esté conectado a Internet y vuelve a intentarlo. También puedes acceder a play.google.com/about/play-terms en otro dispositivo.</translation>
 <translation id="4518840066030486079">Estilo del modo de la tecla Mayús</translation>
 <translation id="4519331665958994620">Los sitios pueden solicitar permiso para usar la cámara</translation>
 <translation id="4519605771716872386">Sincronización de archivos activada</translation>

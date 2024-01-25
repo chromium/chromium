@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">ಹಾಟ್‌ಸ್ಪಾಟ್ ಒದಗಿಸಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಮೊಬೈಲ್ ಡೇಟಾ ಇರಬೇಕು.</translation>
 <translation id="2727175239389218057">ಪ್ರತ್ಯುತ್ತರಿಸಿ</translation>
 <translation id="2727977024730340865">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್‌ಗೆ ಪ್ಲಗ್ ಮಾಡಲಾಗಿದೆ. ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲದಿರಬಹುದು.</translation>
+<translation id="2744221223678373668">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವುದು</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ಅಳಿಸಿ"</translation>
 <translation id="2750941250130734256">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಅನ್‌ಡಾಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2761723519669354964">ಶೆಲ್ಫ್‌ನಿಂದ ಹೈಲೈಟ್ ಮಾಡಿದ ಐಟಂ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ರಿಂದ <ph name="KEY_TWO" /> ವರೆಗೆ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
@@ -1498,6 +1500,7 @@
 <translation id="6981291220124935078">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="698231206551913481">ಒಮ್ಮೆ ಈ ಬಳಕೆದಾರರನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ರೆಸಲ್ಯೂಷನ್ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಈ ರೆಸಲ್ಯೂಷನ್‌‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳನ್ನು ಸೇವ್ ಮಾಡಲು 'ಖಚಿತಪಡಿಸಿ' ಕ್ಲಿಕ್ ಮಾಡಿ. ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6989752354829085073">ನಿಮ್ಮ Chromebook ಅನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುವುದು ಎಂಬುದನ್ನು ತಿಳಿಯಲು ತ್ವರಿತ ಪ್ರವಾಸವನ್ನು ವೀಕ್ಷಿಸಿ. ಇದು ಕೇವಲ 6 ಹಂತಗಳಲ್ಲಿ ತಕ್ಷಣವೇ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="7004910047186208204">ಮೊಬೈಲ್ ಡೇಟಾಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7005239792648594238">ಪ್ರಾರಂಭಿಸಲು ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>

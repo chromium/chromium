@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">ໂທລະສັບຂອງທ່ານຕ້ອງມີອິນເຕີເນັດມືຖືເພື່ອໃຫ້ຮັອດສະປອດ</translation>
 <translation id="2727175239389218057">ຕອບກັບ</translation>
 <translation id="2727977024730340865">ສຽບໃສ່ເຄື່ອງສາກໄຟຕໍ່າແລ້ວ. ການສາກແບັດເຕີຣີອາດຈະບໍ່ເຊື່ອຖືໄດ້.</translation>
+<translation id="2744221223678373668">ແຊຣ໌ແລ້ວ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ລຶບ"</translation>
 <translation id="2750941250130734256">ຢຸດຈອດໜ້າຈໍທີ່ນຳໃຊ້ແລ້ວ.</translation>
 <translation id="2761723519669354964">ເປີດລາຍການທີ່ໄຮໄລ້ໄວ້ແລ້ວຈາກຖ້ານ</translation>
+<translation id="2762000892062317888">ຕອນນີ້</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ຫາ <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
@@ -1498,6 +1500,7 @@
 <translation id="6981291220124935078">ເປີດໃຊ້ສິດເຂົ້າເຖິງ</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="698231206551913481">ທຸກໄຟລ໌ ແລະ ຂໍ້ມູນພາຍໃນເຄື່ອງທີ່ເຊື່ອມໂຍງກັບຜູ້ໃຊ້ນີ້ຈະຖືກລຶບອອກໂດຍຖາວອນເມື່ອລຶບຜູ້ໃຊ້ນີ້ອອກ.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ບໍ່ຮອງຮັບ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). ຄວາມລະອຽດປ່ຽນເປັນ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">ເບິ່ງສາທິດສັ້ນໆສຳລັບວິທີໃຊ້ Chromebook ຂອງທ່ານ. ເລີ່ມຕົ້ນ ແລະ ພ້ອມໃຊ້ໃນ 6 ຂັ້ນຕອນ.</translation>
 <translation id="7004910047186208204">ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດມືຖື</translation>
 <translation id="7005239792648594238">ເປີດແອັບເພື່ອເລີ່ມຕົ້ນ</translation>

@@ -679,7 +679,6 @@
 <translation id="1521933835545997395">Android スマートフォンに接続しました</translation>
 <translation id="1523279371236772909">過去 1 か月以内に表示</translation>
 <translation id="1523978563989812243">テキスト読み上げエンジン</translation>
-<translation id="1524430321211440688">キーボード</translation>
 <translation id="1524563461097350801">スキップ</translation>
 <translation id="1525740877599838384">Wi-Fi のみを使用して現在地を特定する</translation>
 <translation id="152629053603783244">Linux を再起動</translation>
@@ -3901,7 +3900,6 @@
 <translation id="3966072572894326936">別のフォルダを選択...</translation>
 <translation id="3966094581547899417">アクセス ポイントの詳細</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
-<translation id="3967841595862839006">言語とキーボードの選択</translation>
 <translation id="3968739731834770921">かな</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -4581,7 +4579,6 @@
 <translation id="4513872120116766993">予測入力</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4515872537870654449">サポートについては、Dell にお問い合わせください。ファンが動作しない場合、ドックはシャットダウンされます。</translation>
-<translation id="4516008165284813420">お使いの <ph name="DEVICE_TYPE" /> がインターネットに接続されていることを確認してから、もう一度お試しください。別のデバイスで play.google.com/about/play-terms にアクセスすることもできます。</translation>
 <translation id="4518840066030486079">Shift キーモードのスタイル</translation>
 <translation id="4519331665958994620">サイトがカメラの使用を要求できるようにする</translation>
 <translation id="4519605771716872386">ファイルの同期がオンになっています</translation>

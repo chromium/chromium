@@ -564,7 +564,8 @@
 <translation id="1428770807407000502">هل تريد إيقاف المزامنة؟</translation>
 <translation id="1429300045468813835">تم محو الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
-<translation id="1431188203598586230">التحديث الأخير للبرنامج</translation>
+<translation id="1431188203598586230">التحديث الأخير للبرامج
+</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433478348197382180">وضع القراءة</translation>
 <translation id="1433980411933182122">التشغيل</translation>
@@ -681,7 +682,6 @@
 <translation id="1521933835545997395">‏تم الربط بهاتف Android.</translation>
 <translation id="1523279371236772909">تم الاطّلاع عليه في الشهر الماضي.</translation>
 <translation id="1523978563989812243">محرّكات "تحويل النص إلى كلام"</translation>
-<translation id="1524430321211440688">لوحة المفاتيح</translation>
 <translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1525740877599838384">‏استخدام شبكة Wi-Fi فقط لتحديد الموقع الجغرافي</translation>
 <translation id="152629053603783244">‏إعادة تشغيل نظام التشغيل Linux</translation>
@@ -2207,7 +2207,7 @@
 <translation id="2643698698624765890">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في القائمة "نافذة".</translation>
 <translation id="2645047101481282803">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">جارٍ بث علامة التبويب هذه على "<ph name="DEVICE_NAME" />"</translation>
-<translation id="2645435784669275700">‏نظام التشغيل Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">غَطَشُ الأحمر</translation>
 <translation id="2649045351178520408">‏حفظ سلسلة شهادات بتشفير ASCII المرمّز باستخدام Base64</translation>
 <translation id="265156376773362237">التحميل المُسبق العادي</translation>
@@ -3910,7 +3910,6 @@
 <translation id="3966072572894326936">اختيار مجلد آخر...</translation>
 <translation id="3966094581547899417">تفاصيل نقطة الاتصال</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
-<translation id="3967841595862839006">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="3968739731834770921">كانا</translation>
 <translation id="3970114302595058915">رقم التعريف</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
@@ -4591,7 +4590,6 @@
 <translation id="4513872120116766993">اقتراحات نصية توقّعية</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4515872537870654449">‏يُرجي التواصل مع فريق دعم Dell للحصول على الخدمة. ستتوقف محطة الإرساء عن العمل في حال توقفت مروحة التبريد عن العمل.</translation>
-<translation id="4516008165284813420">‏يُرجى التأكُّد من أنّ <ph name="DEVICE_TYPE" /> متصل بالإنترنت ثم إعادة المحاولة. ويمكنك أيضًا الانتقال إلى play.google.com/about/play-terms على جهاز آخر.</translation>
 <translation id="4518840066030486079">‏نمط وضع استخدام مفتاح Shift</translation>
 <translation id="4519331665958994620">السماح للمواقع الإلكترونية بطلب استخدام الكاميرا</translation>
 <translation id="4519605771716872386">تم تفعيل مزامنة الملفات.</translation>
@@ -10410,7 +10408,7 @@
 <translation id="9056788090206401048">يجب تفعيل البلوتوث لتتمكَّن من استخدام مفتاح المرور الخاص بك على جهاز مختلف. يمكنك متى شئت إدارة هذه الميزة من خلال الإعدادات.</translation>
 <translation id="9056810968620647706">لم يتم العثور على نتائج مطابقة.</translation>
 <translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
-<translation id="9057354806206861646">تعديل الجدول الزمني</translation>
+<translation id="9057354806206861646">الجدول الزمني للتحديثات</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{إشعار واحد تقريبًا في اليوم}zero{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}two{إشعاران ({NUM_NOTIFICATION}) تقريبًا في اليوم}few{{NUM_NOTIFICATION} إشعارات تقريبًا في اليوم}many{{NUM_NOTIFICATION} إشعارًا تقريبًا في اليوم}other{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}}</translation>
 <translation id="9058760336383947367">‏الاطّلاع على ملف PPD للطابعة</translation>
 <translation id="9061694916020926968">‏يجب تسجيل الدخول إلى حساب Google لاستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). يُرجى تسجيل الدخول وإعادة المحاولة.</translation>

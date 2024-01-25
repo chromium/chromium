@@ -258,6 +258,7 @@
 <translation id="1442987760062738829">Deşik açın</translation>
 <translation id="1446396933673057385">Dəqiqliyin yoxlanması</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" açar sözləri "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" açar sözləri ilə eyni lüğətdə ola bilməz</translation>
 <translation id="1452803302401719440">Valideynin seçdiyi ayarlar onlayn təhlükəsizliyinizi təmin edir</translation>
 <translation id="1455413310270022028">Pozan</translation>
 <translation id="1458140305240870199">Alt geyimləri</translation>
@@ -769,6 +770,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="2448295565072560657">Daxil olduğunuz zaman bu cihaza əlavə edilmiş köməkçi cihazlar</translation>
 <translation id="2450021089947420533">Baxışlar</translation>
+<translation id="2452837234288608067">Kömək etmək alınmadı. Yenidən cəhd edin.</translation>
 <translation id="2456755709261364512">Batareya <ph name="REQUIRED_BATTERY_PRECENT" />%-dən çox şarj edilməlidir</translation>
 <translation id="2462599289530201834"><ph name="KEYWORD_SHORT_NAME" /> axtarın</translation>
 <translation id="2463739503403862330">Doldurun</translation>
@@ -910,6 +912,7 @@
 <translation id="2725927759457695883">Adın doldurulması</translation>
 <translation id="2726001110728089263">Yan Qab</translation>
 <translation id="2728127805433021124">Server sertifikatı zəif imza alqoritmi istifadə olunaraq daxil edildi.</translation>
+<translation id="272937284275742856">Ödəniş detalları yoxlanır...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Klassik musiqi</translation>
 <translation id="2731382536835015353">44 x 68 düym</translation>
@@ -1009,6 +1012,7 @@
 <translation id="2958544468932521864">Kriket</translation>
 <translation id="2959113999220720579">Üz və bədənə qulluq</translation>
 <translation id="2962073860865348475">12 x 18 düym</translation>
+<translation id="2967098518029543669">Google Hesabında yadda saxlayın</translation>
 <translation id="2968103128155246731">Ven və minivenlər</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
@@ -1379,6 +1383,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> rəqəmli doğrulama kodu daxil edin</translation>
 <translation id="3681007416295224113">Sertifikat məlumatı</translation>
 <translation id="3681421644246505351">Chrome son baxış tarixçənizə əsaslanaraq maraqlandığınız mövzuları qeyd edir.</translation>
+<translation id="3682094733650754138">Ünvanın daxil edilməsi seçilib</translation>
 <translation id="3689867156802445220">Bina nömrəsi</translation>
 <translation id="3693327506115126094">Kimliyinizi necə doğrulayacağınızı seçin</translation>
 <translation id="3698629142018988477">"Sayt yaradın" düyməsi, aktivləşdirərək Google Saytda cəld yeni sayt yaradın</translation>
@@ -2056,7 +2061,6 @@
 <translation id="503498442187459473"><ph name="HOST" /> kameranızı və mikrofonunuzu istifadə etmək istəyir</translation>
 <translation id="5035135400558156732">Bağçılıq</translation>
 <translation id="503574301575803523">SRA3</translation>
-<translation id="5036337510084622581">Yazarkən kömək almaq üçün yenidən daxil olun, sonra bu taba qayıdın</translation>
 <translation id="5039762155821394373">Şrift Ölçüsü</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5040262127954254034">Məxfilik</translation>
@@ -2787,6 +2791,7 @@
 <translation id="6491663123807473970"><ph name="URL" /> MIDI cihazlarını istifadə etmək istəyir</translation>
 <translation id="6493924760403974580">Bu tətbiq yalnız bu ölçünü dəstəkləyir.</translation>
 <translation id="6494750904506170417">popap və yönləndirmələr</translation>
+<translation id="6495664197699704593">Bu parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6497295192259406877">Biznes əməliyyatları</translation>
 <translation id="6499038740797743453">Parol sıfırlansın?</translation>
 <translation id="6502510275417601303">Yeni ödəniş ayarı haqqında xəbərdarlıq bağlanıb</translation>
@@ -2901,6 +2906,7 @@
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6737708609449480586">Bişmiş məhsullar</translation>
 <translation id="6738516213925468394">Data <ph name="TIME" /> tarixində <ph name="BEGIN_LINK" />sinxronizasiya parolu<ph name="END_LINK" /> ilə şifrələnib. Sinxronizasiyanı başlatmaq üçün klikləyin.</translation>
+<translation id="6740851646645036700">Yazı köməyi limitinə çatdınız. Sonra cəhd edin.</translation>
 <translation id="674375294223700098">Naməlum server sertifikatı xətası</translation>
 <translation id="6744009308914054259">Bağlantı gözlənilərkən oflayn məqalələri oxumaq üçün Endirilənlərə baxa bilərsiniz.</translation>
 <translation id="6745592621698551453">İndi Güncəlləşdirin</translation>
@@ -2957,6 +2963,7 @@
 <translation id="6860888819347870819">Şəkildə şəkil rejiminə daxil olmaq istəyə bilər</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">İstehlak resursları</translation>
+<translation id="6865166112578825782">Ünvanı daxil edin</translation>
 <translation id="6865412394715372076">Bu kart hazırda doğrulana bilməz</translation>
 <translation id="6868573634057275953">Güncəllənməni davam etdirin</translation>
 <translation id="6869334554832814367">Şəxsi istiqrazlar</translation>
@@ -3426,6 +3433,7 @@
 <translation id="7701040980221191251">Heç biri</translation>
 <translation id="7701544340847569275">Güncəllənmədə xətalar oldu</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> ilə davam edin (güvənsiz)<ph name="END_LINK" /></translation>
+<translation id="7705085181312584869">Yazmağa kömək et</translation>
 <translation id="7705992072972338699">Optik disk (çox parlaq)</translation>
 <translation id="770607638235926858">Xizəksürmə və snoubordinq</translation>
 <translation id="7706689436519265630">Kopyaladığınız və ya köçürdüyünüz fayllar təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas data və ya zərərli proqrama görə skanlana və şirkət siyasətlərinə əsasən saxlana bilər.</translation>
@@ -3645,6 +3653,7 @@
 <translation id="8161095570253161196">Baxmağa davam edin</translation>
 <translation id="8163866351304776260">Soldan dördlü deşik açın</translation>
 <translation id="8164078261547504572">Qiymətlər düşəndə e-məktub almaq istəyirsiniz?</translation>
+<translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" açar sözləri eyni lüğətdə ola bilməz</translation>
 <translation id="8175796834047840627">Daxil olduğunuza görə Chrome kartları Google Hesabında yadda saxlamağı təklif edir. Bunu ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="8176440868214972690">Bu cihazın administratoru aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
 <translation id="817820454357658398">Qadınlar üçün gigiyena məhsulları</translation>
@@ -4040,6 +4049,7 @@
 <translation id="8949410982325929394">Ton</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Hüquq və hökümət</translation>
+<translation id="8952569554322479410">Veb-sayt indicə <ph name="REQUEST_TYPE" /> üçün giriş istədi. Bu 1 dəqiqəlik sorğuda iştirak edərək veb-sayt sorğularını təkmilləşdirməyə kömək edin.</translation>
 <translation id="8954252855949068147">Geyim</translation>
 <translation id="8956124158020778855">Bu ayarı aktiv etdikdən sonra yazmağa başlamaq üçün bu taba qayıdın.</translation>
 <translation id="8957210676456822347">Kaptiv Portal Doğrulanması</translation>

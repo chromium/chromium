@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">වෙබ් අඩවිය විරාම කළා</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් අසමත් විය}one{බාගැනීම් #ක් අසමත් විය}other{බාගැනීම් #ක් අසමත් විය}}</translation>
 <translation id="2067805253194386918">පාඨය</translation>
+<translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2082238445998314030">ප්‍රතිඵල <ph name="TOTAL_RESULTS" /> කින් <ph name="RESULT_NUMBER" /></translation>
 <translation id="2091863218454846791">සංයුක්ත දසුන පෙන්වමින්</translation>
 <translation id="2093731487903423814">පසුගිය විනාඩි 15</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389">තත්පර <ph name="SECONDS" />ක් ඉතිරියි</translation>
 <translation id="2779651927720337254">අසාර්ථකයි</translation>
 <translation id="2781151931089541271">තත්පර 1ක් ඉතිරියි</translation>
+<translation id="2789486458103222910">හරි</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ටැබය වසනු ඇත</translation>
 <translation id="281504910091592009">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> තුළ සුරකින ලද මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="2827278682606527653">සංග්‍රහ කාඩ්පත් මෙනුව අඩක් උස</translation>

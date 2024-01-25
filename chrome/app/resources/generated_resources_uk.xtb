@@ -685,7 +685,6 @@
 <translation id="1521933835545997395">Підключено до телефона Android</translation>
 <translation id="1523279371236772909">Переглянуто минулого місяця</translation>
 <translation id="1523978563989812243">Системи синтезу мовлення</translation>
-<translation id="1524430321211440688">Клавіатура</translation>
 <translation id="1524563461097350801">Ні, дякую</translation>
 <translation id="1525740877599838384">Визначати місцезнаходження лише за допомогою Wi-Fi</translation>
 <translation id="152629053603783244">Перезапустити Linux</translation>
@@ -2221,7 +2220,7 @@
 <translation id="2643698698624765890">Керуйте своїми розширеннями, натиснувши вкладку "Розширення" в меню Window (Вікно).</translation>
 <translation id="2645047101481282803">Вашим пристроєм керує <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Ця вкладка транслюється на пристрій "<ph name="DEVICE_NAME" />"</translation>
-<translation id="2645435784669275700">ОС Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Протаномалія</translation>
 <translation id="2649045351178520408">ASCII Base64-кодування, ланцюжок сертифікатів</translation>
 <translation id="265156376773362237">Звичайне попереднє завантаження</translation>
@@ -3230,7 +3229,7 @@
 <translation id="3446274660183028131">Щоб установити Windows, запустіть додаток Parallels Desktop.</translation>
 <translation id="344630545793878684">Переглядати ваші дані на декількох веб-сайтах</translation>
 <translation id="3446548199318150462">Вмикає новий дизайн Сhrome для комп’ютера. Також потрібно ввімкнути бічну панель "Налаштувати Chrome".</translation>
-<translation id="3447644283769633681">Заблокувати всі файли cookie третіх сторін</translation>
+<translation id="3447644283769633681">Заблокувати всі сторонні файли cookie</translation>
 <translation id="3447797901512053632">Вкладка "<ph name="TAB_NAME" />" транслюється на пристрій "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">Оновити обліковий запис</translation>
 <translation id="3449393517661170867">Нове вікно з вкладками</translation>
@@ -3926,7 +3925,6 @@
 <translation id="3966072572894326936">Вибрати іншу папку...</translation>
 <translation id="3966094581547899417">Відомості про точку доступу</translation>
 <translation id="3967822245660637423">Завантажено</translation>
-<translation id="3967841595862839006">Виберіть мову та клавіатуру</translation>
 <translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">ІДЕНТИФІКАТОР</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -4608,7 +4606,6 @@
 <translation id="4513872120116766993">Передбачення тексту</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4515872537870654449">Зверніться в Dell за обслуговуванням. Док-станція припинить роботу, якщо вентилятор не працює.</translation>
-<translation id="4516008165284813420">Переконайтеся, що <ph name="DEVICE_TYPE" /> підключено до Інтернету, і повторіть спробу. Ви також можете відкрити сторінку play.google.com/about/play-terms на іншому пристрої.</translation>
 <translation id="4518840066030486079">Стиль режиму клавіші Shift</translation>
 <translation id="4519331665958994620">Сайти можуть просити доступ до камери</translation>
 <translation id="4519605771716872386">Синхронізацію файлів увімкнено</translation>

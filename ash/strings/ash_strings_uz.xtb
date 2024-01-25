@@ -409,10 +409,12 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2726420622004325180">Telefon mobil internetsiz hotspot tarqata olmaydi</translation>
 <translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
+<translation id="2744221223678373668">Ulashilgan</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“Oʻchirish”</translation>
 <translation id="2750941250130734256">Faol oyna ajratildi.</translation>
 <translation id="2761723519669354964">Panelda ajratilgan elementni ochish</translation>
+<translation id="2762000892062317888">hozirgina</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> <ph name="KEY_TWO" /> orqali</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domeni tomonidan boshqariladi</translation>
@@ -1498,6 +1500,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6981291220124935078">Ruxsat berish</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="698231206551913481">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy ma’lumotlar foydalanuvchi olib tashlanganda butunlay o‘chib ketadi.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) tiniqlikda ishlamaydi. Tasvir <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) tiniqligiga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="6989752354829085073">Chromebook qurilmasidan qanday foydalanishni oʻrganish uchun tezkor tanishtiruvdan foydalaning. 6 ta bosqichda hammasi bilan tanishing.</translation>
 <translation id="7004910047186208204">Mobil internetga ulanish</translation>
 <translation id="7005239792648594238">Boshlash uchun ilovani oching</translation>

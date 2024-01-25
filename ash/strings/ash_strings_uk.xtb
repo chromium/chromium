@@ -389,7 +389,7 @@
 <translation id="2624588537172718173">Звук із пристрою і мікрофона</translation>
 <translation id="263399434338050016">"Вибрати все"</translation>
 <translation id="2644422758626431000">Закріпити вікно ліворуч</translation>
-<translation id="2645435784669275700">ОС Chrome</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Зйомка вікна</translation>
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2658778018866295321">Натиснути й перетягнути</translation>
@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
 <translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
+<translation id="2744221223678373668">Спільні</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
+<translation id="2762000892062317888">щойно</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> від <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl + пошук + s</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>

@@ -683,7 +683,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1521933835545997395">Tengt Android-síma</translation>
 <translation id="1523279371236772909">Skoðað undanfarinn mánuð</translation>
 <translation id="1523978563989812243">Talgervilsvélar</translation>
-<translation id="1524430321211440688">Lyklaborð</translation>
 <translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1525740877599838384">Nota aðeins Wi-Fi til að ákvarða staðsetningu</translation>
 <translation id="152629053603783244">Endurræsa Linux</translation>
@@ -3924,7 +3923,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3966072572894326936">Veldu aðra möppu...</translation>
 <translation id="3966094581547899417">Upplýsingar um heitan reit</translation>
 <translation id="3967822245660637423">Niðurhali lokið</translation>
-<translation id="3967841595862839006">Veldu tungumál og lyklaborð</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Auðkenni</translation>
 <translation id="397105322502079400">Reiknar...</translation>
@@ -4606,7 +4604,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4513872120116766993">Textatillögur</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4515872537870654449">Hafðu samband við Dell til að fá aðstoð. Dokkan slekkur á sér ef viftan virkar ekki.</translation>
-<translation id="4516008165284813420">Gakktu úr skugga um að <ph name="DEVICE_TYPE" /> sé nettengt og reyndu aftur. Þú getur einnig skoðað play.google.com/about/play-terms í öðru tæki.</translation>
 <translation id="4518840066030486079">Stillingastíll Shift-lykils</translation>
 <translation id="4519331665958994620">Vefsvæði geta beðið um að nota myndavélina þína</translation>
 <translation id="4519605771716872386">Kveikt á samstillingu skráa</translation>

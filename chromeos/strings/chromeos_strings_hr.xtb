@@ -21,6 +21,7 @@
 <translation id="1119447706177454957">Interna pogreška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1134416403025830762">množenje</translation>
 <translation id="1145018782460575098">Otvoren je prozor za ažuriranje opreme za vanjske uređaje. Dostupna ažuriranja: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Pronađite članke pomoći i odgovore na česta pitanja o Chromebooku</translation>
 <translation id="1154390310959620237">Možete prilagoditi samo 5 prečaca. Izbrišite prečac kako biste dodali novi.</translation>
@@ -56,6 +57,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području skeniranja</translation>
 <translation id="1367951781824006909">Odaberite datoteku</translation>
+<translation id="1371650399987522809">Povratne informacije za pozadinu koju omogućuje Googleov AI</translation>
 <translation id="1387854245479784695">Ovo je agregacija svih jezgri</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za kutijicu.</translation>
 <translation id="1397738625398125236">Pristupnik se može pingati</translation>
@@ -87,12 +89,14 @@
 <translation id="155865706765934889">Dodirna površina</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije moguće</translation>
+<translation id="1566493343215789965">dijeljenje</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
 <translation id="1578784163189013834">Odabir pozadine čuvara zaslona</translation>
 <translation id="160633243685262989">Pregled slike</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1615335640928990664">Potrošnja podatkovnog prometa od <ph name="FRIENDLY_DATE" /></translation>
+<translation id="1615576200479539465">Generiranje slika...</translation>
 <translation id="1621067168122174824">Pokreni test napunjenosti</translation>
 <translation id="1626590945318984973">Prečac nije dostupan. Pritisnite novi prečac bez upotrebe funkcijske tipke i tipke <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
@@ -265,6 +269,7 @@
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="2880569433548999039">Čuvar zaslona s oblakom</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
+<translation id="2938573842839598578">Za približan rezultat <ph name="OPERATOR_TEXT" /> vrijednost <ph name="CATEGORY_TEXT" /> s <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Testiranje uređaja nije uspjelo. Ponovo otvorite poklopac da biste testirali.</translation>
 <translation id="2941112035454246133">Nizak</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
@@ -337,6 +342,7 @@
 <translation id="3517001332549868749">Ažuriranje OS-a Chrome</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata pogreška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
+<translation id="3547264467365135390">Formula</translation>
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dopušteni IP-jevi</translation>
 <translation id="3569407787324516067">Čuvar zaslona</translation>
@@ -846,6 +852,7 @@
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7184043045742675738">Kliknite bilo koju tipku da biste prilagodili gumb. Premjestite tipku pomoću miša ili tipki sa strelicama.</translation>
+<translation id="7206979415662233817">Uvjeti pružanja usluge</translation>
 <translation id="7212547870105584639">Upravljajte postavkama APN-a mreže. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK_LEARN_MORE" />Saznaj više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ažuriranja opreme za vanjske uređaje</translation>
 <translation id="7216409898977639127">Davatelj mobilnih usluga</translation>
@@ -864,6 +871,10 @@
 <translation id="7311368985037279727">boja tipkovnice</translation>
 <translation id="7317831949569936035">Upis u školu</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7331297744262591636">Morate imati najmanje 18 godina i prihvatiti da se na vašu upotrebu AI pozadina primjenjuju <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googleovi uvjeti pružanja usluge<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> i <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />dodatni uvjeti pružanja usluge za generativni AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Pozadine pomoću AI-ja možete izraditi samo za osobnu i nekomercijalnu upotrebu. Kada dobijete pomoć za pozadinu, tekst se šalje poslužiteljima Googleovog AI-ja radi generiranja prijedloga za pozadinu, u skladu s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim pravilima o privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite Pretraži i razmaknicu da biste vidjeli rezultate u Google pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7353413232959255829">Rezultat pretraživanja <ph name="LIST_POSITION" /> od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da biste otvorili prečac.</translation>

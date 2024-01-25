@@ -685,7 +685,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1521933835545997395">Susieta su „Android“ telefonu</translation>
 <translation id="1523279371236772909">Žiūrėta pastarąjį mėnesį</translation>
 <translation id="1523978563989812243">Teksto į kalbą varikliai</translation>
-<translation id="1524430321211440688">Klaviatūra</translation>
 <translation id="1524563461097350801">Ačiū, ne</translation>
 <translation id="1525740877599838384">Naudoti tik „Wi‑Fi“ vietovei nustatyti</translation>
 <translation id="152629053603783244">Iš naujo paleisti „Linux“</translation>
@@ -2221,7 +2220,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2643698698624765890">„Lango“ meniu spustelėję „Plėtiniai“, tvarkykite plėtinius.</translation>
 <translation id="2645047101481282803">Įrenginį tvarko <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Šis skirtukas perduodamas į „<ph name="DEVICE_NAME" />“</translation>
-<translation id="2645435784669275700">„Chrome“ OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">„Base64“ užkoduotas ASCII, sertifikato grandinė</translation>
 <translation id="265156376773362237">Įprastas išankstinis įkėlimas</translation>
@@ -3926,7 +3925,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="3966072572894326936">Pasirinkti kitą aplanką...</translation>
 <translation id="3966094581547899417">Išsami viešosios interneto prieigos taško informacija</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
-<translation id="3967841595862839006">Kalbos ir klaviatūros pasirinkimas</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
@@ -4608,7 +4606,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4513872120116766993">Numatomi rašymo pasiūlymai</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4515872537870654449">Susisiekite su „Dell“ dėl techninės priežiūros paslaugų. Jei ventiliatorius neveikia, dokas išsijungs.</translation>
-<translation id="4516008165284813420">Įsitikinkite, kad „<ph name="DEVICE_TYPE" />“ prijungtas prie interneto, ir bandykite dar kartą. Be to, galite apsilankyti adresu play.google.com/about/play-terms kitame įrenginyje.</translation>
 <translation id="4518840066030486079">Klavišo „Shift“ režimo stilius</translation>
 <translation id="4519331665958994620">Svetainėse gali būti prašoma naudoti jūsų fotoaparatą</translation>
 <translation id="4519605771716872386">Failų sinchronizavimas įjungtas</translation>

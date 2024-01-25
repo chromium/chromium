@@ -678,7 +678,6 @@
 <translation id="1521933835545997395">Повезано са Android телефоном</translation>
 <translation id="1523279371236772909">Прегледали сте претходног месеца</translation>
 <translation id="1523978563989812243">Механизми за претварање текста у говор</translation>
-<translation id="1524430321211440688">Тастатура</translation>
 <translation id="1524563461097350801">Не, хвала</translation>
 <translation id="1525740877599838384">Користи само WiFi за одређивање локације</translation>
 <translation id="152629053603783244">Рестартуј Linux</translation>
@@ -3906,7 +3905,6 @@
 <translation id="3966072572894326936">Одабери други фолдер...</translation>
 <translation id="3966094581547899417">Детаљи о хотспоту</translation>
 <translation id="3967822245660637423">Преузимање је довршено</translation>
-<translation id="3967841595862839006">Изаберите језик и тастатуру</translation>
 <translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">ИД</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
@@ -4587,7 +4585,6 @@
 <translation id="4513872120116766993">Писање са предвиђањем</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="4515872537870654449">Обратите се Dell-у за услугу. Базна станица ће се искључити ако вентилатор не ради.</translation>
-<translation id="4516008165284813420">Уверите се да је уређај <ph name="DEVICE_TYPE" /> повезан на интернет и пробајте поново. Можете и да посетите play.google.com/about/play-terms на другом уређају.</translation>
 <translation id="4518840066030486079">Режим стила тастера Shift</translation>
 <translation id="4519331665958994620">Сајтови могу да траже да користе камеру</translation>
 <translation id="4519605771716872386">Синхронизација фајлова је укључена</translation>

@@ -680,7 +680,6 @@
 <translation id="1521933835545997395">‏به تلفن Android متصل است</translation>
 <translation id="1523279371236772909">در ماه گذشته مشاهده شده</translation>
 <translation id="1523978563989812243">موتورهای نوشتار به گفتار</translation>
-<translation id="1524430321211440688">صفحه‌کلید</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1525740877599838384">‏فقط از Wi-Fi برای تعیین مکان استفاده شود</translation>
 <translation id="152629053603783244">‏بازراه‌اندازی Linux</translation>
@@ -755,7 +754,7 @@
 <translation id="1574335334663388774">درحال‌حاضر نسخه <ph name="APP_VERSION" /> برنامه <ph name="APP_NAME" /> در این دستگاه نصب شده است</translation>
 <translation id="1575036763505533001">‏پانل کناری سفارشی‌سازی Chrome</translation>
 <translation id="1575741822946219011">زبان‌ها و ورودی‌ها</translation>
-<translation id="1576594961618857597">چهره‌نمای پیش‌فرض سفید</translation>
+<translation id="1576594961618857597">چهرک پیش‌فرض سفید</translation>
 <translation id="1576729678809834061">گزارش این نتیجه جستجو</translation>
 <translation id="1578558981922970608">بستن اجباری</translation>
 <translation id="157931050206866263">درباره اسکن بدافزار بیشتر بدانید</translation>
@@ -1232,7 +1231,7 @@
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1915734383465415025">شماره فروشگاه</translation>
 <translation id="1916260783734263714">برگه کنونی</translation>
-<translation id="1916502483199172559">چهره‌نمای پیش‌فرض قرمز</translation>
+<translation id="1916502483199172559">چهرک پیش‌فرض قرمز</translation>
 <translation id="1918141783557917887">&amp;کوچک تر</translation>
 <translation id="1919872106782726755">برای راه‌اندازی اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در بالا گوشه راست صفحه‌کلید، کنار دکمه روشن/خاموش لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="192015196730532810">می‌توانید گروه برگه خودتان را ایجاد کنید.</translation>
@@ -2126,7 +2125,7 @@
 <translation id="257088987046510401">طرح‌‌های قسمت</translation>
 <translation id="2571655996835834626">تنظیماتی را تغییر دهید که دسترسی وب‌سایت‌ها را به ویژگی‌هایی مثل کوکی‌ها، جاوا اسکریپت، افزایه، موقعیت جغرافیایی، میکروفون، دوربین و غیره کنترل می‌کنند.</translation>
 <translation id="2572032849266859634">مجوز دسترسی فقط خواندنی به <ph name="VOLUME_NAME" /> صادر شد.</translation>
-<translation id="2573276323521243649">برگشتن از صفحه انتخاب چهره‌نما</translation>
+<translation id="2573276323521243649">برگشتن از صفحه انتخاب چهرک</translation>
 <translation id="2573417407488272418">‏پیش‌از ارتقا، برنامه‌ها و فایل‌ها را در «Files &gt; فایل‌های من» پشتیبان‌گیری کنید.</translation>
 <translation id="2573831315551295105">اختصاص دادن کلید به کنش «<ph name="ACTION" />»</translation>
 <translation id="2575247648642144396">وقتی برنامه افزودنی بتواند در صفحه کنونی کار کند این نماد قابل مشاهده خواهد بود. با کلیک کردن روی نماد یا با فشار دادن <ph name="EXTENSION_SHORTCUT" /> از این برنامه افزودنی استفاده کنید.</translation>
@@ -2854,7 +2853,7 @@
 <translation id="3132996321662585180">بازآوری روزانه</translation>
 <translation id="3133184011320864289">‏همگام‌سازی را روشن کنید تا به Chrome اجازه دهید گروه‌های برگه پیشنهاد دهد و برگه‌های شما را مرتب نگه دارد</translation>
 <translation id="3134393957315651797">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید. شرح آزمایش: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3139925690611372679">چهره‌نمای پیش‌فرض زرد</translation>
+<translation id="3139925690611372679">چهرک پیش‌فرض زرد</translation>
 <translation id="3141093262818886744">درهرصورت باز شود</translation>
 <translation id="3141318088920353606">درحال گوش کردن...</translation>
 <translation id="3142562627629111859">گروه جدید</translation>
@@ -2946,7 +2945,7 @@
 <translation id="3222066309010235055">پیش رندر: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">اتصال به <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">دکمه بازنشانی</translation>
-<translation id="3225084153129302039">چهره‌نمای پیش‌فرض بنفش</translation>
+<translation id="3225084153129302039">چهرک پیش‌فرض بنفش</translation>
 <translation id="3225319735946384299">امضای کد</translation>
 <translation id="3226487301970807183">پنهان/نمایان کردن پانل کناری ترازشده به‌چپ</translation>
 <translation id="322708765617468434">هروقت بخواهید می‌توانید فرد دیگری را بعداز راه‌اندازی به دستگاه اضافه کنید. هر فرد می‌تواند تجربه‌اش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
@@ -3159,7 +3158,7 @@
 <translation id="3399432415385675819">اعلان‌ها غیرفعال خواهند شد</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> هرتز) - درهم‌بافته</translation>
 <translation id="3401484564516348917">خواندن اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزار نصب‌شده، فایل‌ها و مقادیر رجیستری</translation>
-<translation id="3402255108239926910">انتخاب چهره‌نما</translation>
+<translation id="3402255108239926910">انتخاب چهرک</translation>
 <translation id="3402585168444815892">درحال ثبت‌نام کردن در «حالت نمایشی»</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />، <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">هیچ گذرواژه‌ای برای این سایت ذخیره نشده است</translation>
@@ -3920,7 +3919,6 @@
 <translation id="3966072572894326936">انتخاب یک پوشه دیگر…</translation>
 <translation id="3966094581547899417">جزئیات نقطه اتصال</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
-<translation id="3967841595862839006">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="3968739731834770921">کانا</translation>
 <translation id="3970114302595058915">شناسه</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
@@ -4602,7 +4600,6 @@
 <translation id="4513872120116766993">پیشنهادهای نگارشی</translation>
 <translation id="4513946894732546136">بازخورد</translation>
 <translation id="4515872537870654449">‏برای سرویس با Dell تماس بگیرید. اگر پنکه کار نکند، پایه اتصال خاموش می‌شود.</translation>
-<translation id="4516008165284813420">‏مطمئن شوید <ph name="DEVICE_TYPE" /> به اینترنت متصل است و دوباره امتحان کنید. همچنین می‌توانید در دستگاه دیگری از play.google.com/about/play-terms بازدید کنید.</translation>
 <translation id="4518840066030486079">سبک حالت کلید تبدیل</translation>
 <translation id="4519331665958994620">سایت‌ها می‌توانند درخواست کنند از دوربین شما استفاده کنند</translation>
 <translation id="4519605771716872386">همگام‌سازی فایل روشن شد</translation>
@@ -4636,7 +4633,7 @@
 <translation id="4541706525461326392">درحال برداشتن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4542520061254486227">خواندن داده‌های شما در <ph name="WEBSITE_1" /> و <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">مدیر گواهی‌نامه</translation>
-<translation id="4544174279960331769">چهره‌نمای پیش‌فرض آبی</translation>
+<translation id="4544174279960331769">چهرک پیش‌فرض آبی</translation>
 <translation id="4545028762441890696">برای دوباره فعال کردن آن، مجوزهای جدید را بپذیرید:</translation>
 <translation id="4545759655004063573">به دلیل مجوزهای ناکافی ذخیره امکان‌پذیر نیست. لطفاً در محل دیگری ذخیره کنید.</translation>
 <translation id="4546345569117159016">دکمه راست</translation>
@@ -5158,7 +5155,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4951966678293618079">هرگز گذرواژه‌ها برای این سایت ذخیره نشود</translation>
-<translation id="4953808748584563296">چهره‌نمای پیش‌فرض نارنجی</translation>
+<translation id="4953808748584563296">چهرک پیش‌فرض نارنجی</translation>
 <translation id="4955707703665801001">رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">پین خودتان را انتخاب کنید</translation>
 <translation id="4959262764292427323">‏گذرواژه‌ها در حساب Google شما ذخیره می‌شود تا بتوانید در همه دستگاه‌هایتان از آن‌ها استفاده کنید</translation>
@@ -5488,7 +5485,7 @@
 <translation id="5225324770654022472">نمایش میان‌بر برنامه‌ها</translation>
 <translation id="52254442782792731">تنظیم رؤیت‌پذیری کنونی هنوز تنظیم نشده است</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
-<translation id="5227679487546032910">چهره‌نمای پیش‌فرض آبی سیر</translation>
+<translation id="5227679487546032910">چهرک پیش‌فرض آبی سیر</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> دستگاه متصل است</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5230190638672215545">‏برای دریافت «ươ»، ‏«uow» را تایپ کنید</translation>
@@ -8443,7 +8440,7 @@
 <translation id="7566118625369982896">‏مدیریت پیوندهای برنامه Play</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
-<translation id="756876171895853918">سفارشی کردن چهره‌نما</translation>
+<translation id="756876171895853918">سفارشی کردن چهرک</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
 <translation id="7569983096843329377">سیاه</translation>
 <translation id="7571643774869182231">فضای ذخیره‌سازی برای به‌روزرسانی کافی نیست</translation>
@@ -9116,7 +9113,7 @@
 <translation id="8061970399284390013">بررسی املا و دستور زبان</translation>
 <translation id="8061991877177392872">‏به‌نظر می‌رسد ازقبل Voice Match را با «دستیار» در دستگاه دیگری راه‌اندازی کرده‌اید. از این قطعه‌های قبلاً ضبط‌شده می‌توان برای ایجاد مدل صوتی در این دستگاه استفاده کرد.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{۱ برگ کاغذ}one{{COUNT} برگ کاغذ}other{{COUNT} برگ کاغذ}}</translation>
-<translation id="8063235345342641131">چهره‌نمای پیش‌فرض سبز</translation>
+<translation id="8063235345342641131">چهرک پیش‌فرض سبز</translation>
 <translation id="8063535366119089408">مشاهده فایل</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">گروه <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -9175,7 +9172,7 @@
 <translation id="8104088837833760645">بارگیری نمایه سیم‌کارت داخلی</translation>
 <translation id="8107015733319732394">‏«فروشگاه Google Play» در <ph name="DEVICE_TYPE" /> شما درحال نصب شدن است. ممکن است این کار چند دقیقه طول بکشد.</translation>
 <translation id="810728361871746125">وضوح نمایشگر</translation>
-<translation id="8109109153262930486">چهره‌نمای پیش‌فرض</translation>
+<translation id="8109109153262930486">چهرک پیش‌فرض</translation>
 <translation id="8109991406044913868">زمینه ساخته‌شده با هوش مصنوعی</translation>
 <translation id="8110393529211831722">اشتراک فقط در این دستگاه نصب شده است و با دیگر دستگاه‌های حسابتان همگام‌سازی نشده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">درحال بارگیری فهرست مخاطبین…</translation>

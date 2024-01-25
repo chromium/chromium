@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">ဝဘ်ဆိုက် ခဏရပ်ထားသည်</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ}}</translation>
 <translation id="2067805253194386918">စာသား</translation>
+<translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">ကျစ်လစ်သည့်ပြကွက်ကို ပြနေသည်</translation>
 <translation id="2093731487903423814">ပြီးခဲ့သော ၁၅ မိနစ်</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> စက္ကန့် ကျန်သည်</translation>
 <translation id="2779651927720337254">ဒေါင်းလုဒ် မပြီးဆုံးပါ</translation>
 <translation id="2781151931089541271">၁ စက္ကန့် ကျန်သည်</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> တဘ်ကို ပိတ်ပါမည်</translation>
 <translation id="281504910091592009">သိမ်းဆည်းထားသည့် စကားဝှက်များကို သင်၏ <ph name="BEGIN_LINK" />Google အကောင့်<ph name="END_LINK" /> တွင် ကြည့်ရှုစီမံပါ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>

@@ -685,7 +685,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1521933835545997395">Povezava s telefonom Android je vzpostavljena</translation>
 <translation id="1523279371236772909">Ogledano v zadnjem mesecu</translation>
 <translation id="1523978563989812243">Motorji pretvorbe besedila v govor</translation>
-<translation id="1524430321211440688">Tipkovnica</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1525740877599838384">Uporaba samo omrežja Wi-Fi za določanje lokacije</translation>
 <translation id="152629053603783244">Znova zaženi Linux</translation>
@@ -3926,7 +3925,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3966072572894326936">Izberite drugo mapo ...</translation>
 <translation id="3966094581547899417">Podrobnosti dostopne točke</translation>
 <translation id="3967822245660637423">Prenos končan</translation>
-<translation id="3967841595862839006">Izbira jezika in tipkovnice</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
@@ -4608,7 +4606,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4513872120116766993">Predvidevanje besedila</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4515872537870654449">Če potrebujete servisne storitve, se obrnite na družbo Dell. Če ventilator ne deluje, se bo priklopna postaja izklopila.</translation>
-<translation id="4516008165284813420">Prepričajte se, da je naprava <ph name="DEVICE_TYPE" /> povezana v internet, in poskusite znova. Odprete lahko tudi play.google.com/about/play-terms v drugi napravi.</translation>
 <translation id="4518840066030486079">Slog načina tipke Shift</translation>
 <translation id="4519331665958994620">Spletna mesta lahko zahtevajo uporabo kamere.</translation>
 <translation id="4519605771716872386">Sinhronizacija datotek je vklopljena</translation>

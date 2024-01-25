@@ -91,6 +91,7 @@
 <translation id="1416550906796893042">Версія праграмы</translation>
 <translation id="1428770807407000502">Выключыць сінхранізацыю?</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1435593198351412143">Адкрываць PDF аўтаматычна</translation>
 <translation id="1436784010935106834">Выдалены</translation>
 <translation id="1437543266176261764">Выконваецца ў <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упарадкоўвайце тавары, за якімі сочыце, у Закладках</translation>
@@ -190,6 +191,7 @@
 <translation id="2056878612599315956">Сайт прыпынены</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Збой 1 спампоўкі}one{Збой # спампоўкі}few{Збой # спамповак}many{Збой # спамповак}other{Збой # спампоўкі}}</translation>
 <translation id="2067805253194386918">тэкст</translation>
+<translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Выбрана кампактнае адлюстраванне</translation>
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
@@ -315,6 +317,7 @@
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
 <translation id="2781151931089541271">Засталася 1 секунда</translation>
+<translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
@@ -339,6 +342,7 @@
 <translation id="2894821468041866720">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
 <translation id="2900528713135656174">Стварыце падзею</translation>
 <translation id="2901411048554510387">Паказваюцца прапановы для сайта "<ph name="WEBSITE_TITLE" />"</translation>
+<translation id="2904300462646366554">Спампаваныя PDF аўтаматычна адкрываюцца ў адной з праграм для іх прагляду, усталяванай на прыладзе</translation>
 <translation id="2904414404539560095">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на ўвесь экран.</translation>
 <translation id="2908243544703713905">Ёсць непрачытаныя навіны</translation>
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
@@ -894,9 +898,11 @@
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="5822875253699806474">Каб хутка вяртацца на сайты, якія вы наведвалі, сінхранізуйце свае ўкладкі і гісторыю</translation>
+<translation id="5829586821381540080">Захавана ў папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5839058148541733625">Дыназаўр у Chrome</translation>
+<translation id="5848257610304005265">Адкрываць PDF у праграме "<ph name="APP_NAME" />"?</translation>
 <translation id="5853623416121554550">прыпынена</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Нешта пайшло не так. Абнавіць функцыю "Адсочванне цаны" не ўдалося.</translation>
@@ -1379,6 +1385,7 @@
 <translation id="8127542551745560481">Змяніць галоўную старонку</translation>
 <translation id="8130309322784422030">Уліковыя даныя могуць быць устарэлымі</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
+<translation id="8135406045838672858">Спампаваныя PDF аўтаматычна адкрываюцца ў праграме "<ph name="APP_NAME" />"</translation>
 <translation id="8137562778192957619">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google.</translation>
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>

@@ -682,7 +682,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1521933835545997395">Đã kết nối với điện thoại Android</translation>
 <translation id="1523279371236772909">Từng xem trong tháng trước</translation>
 <translation id="1523978563989812243">Các công cụ chuyển văn bản sang lời nói</translation>
-<translation id="1524430321211440688">Bàn phím</translation>
 <translation id="1524563461097350801">Không, cảm ơn</translation>
 <translation id="1525740877599838384">Chỉ sử dụng Wi-Fi để xác định vị trí</translation>
 <translation id="152629053603783244">Khởi động lại Linux</translation>
@@ -3923,7 +3922,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3966072572894326936">Chọn một thư mục khác...</translation>
 <translation id="3966094581547899417">Thông tin chi tiết về điểm phát sóng</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
-<translation id="3967841595862839006">Chọn ngôn ngữ và bàn phím của bạn</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Đang tính...</translation>
@@ -4605,7 +4603,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4513872120116766993">Gợi ý khi viết</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4515872537870654449">Hãy liên hệ với Dell để được bảo dưỡng. Đế sạc sẽ tắt nếu quạt không hoạt động.</translation>
-<translation id="4516008165284813420">Hãy đảm bảo <ph name="DEVICE_TYPE" /> đã kết nối với Internet rồi thử lại. Bạn cũng có thể truy cập play.google.com/about/play-terms trên một thiết bị khác.</translation>
 <translation id="4518840066030486079">Kiểu chế độ phím Shift</translation>
 <translation id="4519331665958994620">Các trang web có thể yêu cầu sử dụng máy ảnh của bạn</translation>
 <translation id="4519605771716872386">Tính năng đồng bộ hoá tệp đã bật</translation>

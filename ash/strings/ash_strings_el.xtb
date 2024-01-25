@@ -389,7 +389,7 @@
 <translation id="2624588537172718173">Ήχος συσκευής και μικρόφωνο</translation>
 <translation id="263399434338050016">"Επιλογή όλων"</translation>
 <translation id="2644422758626431000">Καρφίτσωμα παραθύρου στα αριστερά</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Λήψη παραθύρου</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2658778018866295321">Κάντε κλικ και σύρετε</translation>
@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">Το τηλέφωνό σας πρέπει να διαθέτει σύνδεση δεδομένων κινητής τηλεφωνίας για να παρέχει σημείο πρόσβασης Wi-Fi</translation>
 <translation id="2727175239389218057">Απάντηση</translation>
 <translation id="2727977024730340865">Σύνδεση με φορτιστή χαμηλής ισχύος. Η φόρτιση της μπαταρίας ενδέχεται να μη γίνεται με αξιόπιστο τρόπο.</translation>
+<translation id="2744221223678373668">Κοινόχρηστο</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Διαγραφή"</translation>
 <translation id="2750941250130734256">Έγινε απαγκύρωση του ενεργού παραθύρου.</translation>
 <translation id="2761723519669354964">Άνοιγμα επισημασμένου στοιχείου από το ράφι</translation>
+<translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> έως <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+αναζήτηση+s</translation>
 <translation id="2778650143428714839">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />.</translation>

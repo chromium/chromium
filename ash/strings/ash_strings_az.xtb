@@ -409,10 +409,12 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2726420622004325180">Hotspot təmin etmək üçün telefonunuzda mobil data olmalıdır</translation>
 <translation id="2727175239389218057">Cavablayın</translation>
 <translation id="2727977024730340865">Zəif şarjerə qoşulub. Ola bilər ki, enerji dolmasın.</translation>
+<translation id="2744221223678373668">Paylaşılan</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Silin"</translation>
 <translation id="2750941250130734256">Aktiv pəncərə çıxarılıb.</translation>
 <translation id="2761723519669354964">Rəfdə vurğulanan elementi açın</translation>
+<translation id="2762000892062317888">indicə</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> - <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+axtarış+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
@@ -1498,6 +1500,7 @@ Yeni quraşdırma</translation>
 <translation id="6981291220124935078">Girişi aktiv edin</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="698231206551913481">İstifadəçi silinən kimi onunla əlaqədar bütün fayl və data həmişəlik silinəcək.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hs) ayırdetmə dəqiqliyini dəstəkləmir. Ayırdetmə dəqiqliyi <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hs) olaraq dəyişdirildi. Dəyişiklikləri saxlamaq üçün "təsdiq edin" seçiminə klikləyin. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="6989752354829085073">Chromebook istifadəsi haqqında məlumat üçün nəzər salın. 6 addımlıq təlimat.</translation>
 <translation id="7004910047186208204">Mobil dataya qoşulun</translation>
 <translation id="7005239792648594238">Başlamaq üçün tətbiqi açın</translation>

@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">Сайттың жұмысы уақытша тоқтады.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 файл жүктеп алынбады}other{# файл жүктеп алынбады}}</translation>
 <translation id="2067805253194386918">мәтін</translation>
+<translation id="2079545284768500474">Қайтару</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ішінен <ph name="RESULT_NUMBER" /> нәтиже</translation>
 <translation id="2091863218454846791">Шағын көрініс таңдалды</translation>
 <translation id="2093731487903423814">соңғы 15 минут</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек қалды</translation>
 <translation id="2779651927720337254">қате шықты</translation>
 <translation id="2781151931089541271">1 сек қалды</translation>
+<translation id="2789486458103222910">Жарайды</translation>
 <translation id="2800066122460699237">"<ph name="TAB_TITLE" />" қойындысы жабылады.</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google аккаунтыңызда<ph name="END_LINK" /> сақталған құпия сөздерді көру және басқару</translation>
 <translation id="2827278682606527653">Фид картасының мәзірі жартылай ашылды.</translation>

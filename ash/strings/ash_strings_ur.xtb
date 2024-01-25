@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
+<translation id="2744221223678373668">اشتراک کردہ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف کریں"</translation>
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
 <translation id="2761723519669354964">شیلف سے نمایاں کردہ آئٹم کھولیں</translation>
+<translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
@@ -1497,6 +1499,7 @@
 <translation id="6981291220124935078">رسائی آن کریں</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="698231206551913481">اس صارف کو ہٹانے کے بعد اس صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
+<translation id="6984028004251196682">‏‫<ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />(Hz<ph name="SPECIFIED_REFRESH_RATE" />) کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) کر دیا گیا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="6989752354829085073">‏اپنے Chromebook کے استعمال کا طریقہ جاننے کے لیے مختصر ٹؤر لیں۔ آگے بڑھ کر جلدی 6 مراحل مکمل کریں۔</translation>
 <translation id="7004910047186208204">موبائل ڈیٹا سے منسلک ہوں</translation>
 <translation id="7005239792648594238">شروع کرنے کیلئے کوئی ایپ کھولیں</translation>

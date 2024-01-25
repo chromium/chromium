@@ -682,7 +682,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1521933835545997395">Ühendatud Android-telefoniga</translation>
 <translation id="1523279371236772909">Vaadati sel kuul</translation>
 <translation id="1523978563989812243">Kõnesünteesi mootorid</translation>
-<translation id="1524430321211440688">Klaviatuur</translation>
 <translation id="1524563461097350801">Ei, tänan</translation>
 <translation id="1525740877599838384">Asukoha määramine ainult WiFi-ühenduse kaudu</translation>
 <translation id="152629053603783244">Taaskäivita Linux</translation>
@@ -3914,7 +3913,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3966072572894326936">Vali muu kaust...</translation>
 <translation id="3966094581547899417">Kuumkoha üksikasjad</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
-<translation id="3967841595862839006">Valige oma keel ja klaviatuur</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
@@ -4595,7 +4593,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4513872120116766993">Ennustamisega sisestamine</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4515872537870654449">Hooldusteenuse saamiseks võtke ühendust Delliga. Kui ventilaator ei tööta, siis lülitub dokk välja.</translation>
-<translation id="4516008165284813420">Veenduge, et teie <ph name="DEVICE_TYPE" /> oleks internetiga ühendatud, ja proovige uuesti. Võite aadressi play.google.com/about/play-terms ka teises seadmes külastada.</translation>
 <translation id="4518840066030486079">Tõstuklahvi režiimi stiil</translation>
 <translation id="4519331665958994620">Saidid saavad küsida luba teie kaamera kasutamiseks</translation>
 <translation id="4519605771716872386">Failide sünkroonimine lülitati sisse</translation>

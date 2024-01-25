@@ -409,10 +409,12 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2726420622004325180">Ifoni yakho kumele ibe nedatha yeselula ukuze inikeze i-hotspot</translation>
 <translation id="2727175239389218057">Phendula</translation>
 <translation id="2727977024730340865">Ixhunye kushaja yamandla aphansi. Ukushaja ibhethri kungenzeka kungathembeki.</translation>
+<translation id="2744221223678373668">Okwabiwe</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Sula"</translation>
 <translation id="2750941250130734256">Iwindi elisebenzayo lisuse ukudokha.</translation>
 <translation id="2761723519669354964">Vula into egqanyisiwe eshelufini</translation>
+<translation id="2762000892062317888">khona manje</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> ukuya kokuthi <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839">I-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" /></translation>
@@ -1498,6 +1500,7 @@ Ukufaka okusha</translation>
 <translation id="6981291220124935078">Vula ukufinyelela</translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>
 <translation id="698231206551913481">Onke amafayela nedatha yendawo ehlotshaniswa nalo msebenzisi izosuswa ngunaphakade uma lo msebenzisi asuswa.</translation>
+<translation id="6984028004251196682">I-<ph name="DISPLAY_NAME" /> ayiyisekeli i-<ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Izinga lokucaca lishintshelwe ku-<ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Chofoza okuthi qinisekisa ukuze ugcine izinguquko. Amasethingi angaphambili azobuyiselwa esikhathini esingu-<ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Ake uthathe uhambo oluncane ukuze ufunde indlela yokusebenzisa i-Chromebook yakho. Sukuma ugijime ngezinyathelo eziyi-6.</translation>
 <translation id="7004910047186208204">Xhuma kudatha yeselula</translation>
 <translation id="7005239792648594238">Vula i-app ukuze uqalise</translation>

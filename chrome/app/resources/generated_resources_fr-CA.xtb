@@ -680,7 +680,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1521933835545997395">Connecté au téléphone Android</translation>
 <translation id="1523279371236772909">Consulté le mois dernier</translation>
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
-<translation id="1524430321211440688">Clavier</translation>
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1525740877599838384">Utiliser uniquement le réseau Wi-Fi pour déterminer l'emplacement</translation>
 <translation id="152629053603783244">Redémarrer Linux</translation>
@@ -3911,7 +3910,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3966072572894326936">Choisir un autre dossier...</translation>
 <translation id="3966094581547899417">Détails du point d'accès sans fil</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
-<translation id="3967841595862839006">Choisir votre langue et votre clavier</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifiant</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -4592,7 +4590,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4513872120116766993">Rédaction prédictive</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4515872537870654449">Communiquez avec Dell pour faire réparer votre appareil. La station d'accueil s'éteindra si le ventilateur ne fonctionne pas.</translation>
-<translation id="4516008165284813420">Assurez-vous que votre appareil <ph name="DEVICE_TYPE" /> est connecté à Internet et réessayez. Vous pouvez également visiter play.google.com/about/play-terms sur un autre appareil.</translation>
 <translation id="4518840066030486079">Style de mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="4519605771716872386">Synchronisation des fichiers activée</translation>

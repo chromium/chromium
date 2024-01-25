@@ -191,6 +191,7 @@
 <translation id="2056878612599315956">સાઇટ રોકવામાં આવી</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ડાઉનલોડ નિષ્ફળ થયું}one{# ડાઉનલોડ નિષ્ફળ થયું}other{# ડાઉનલોડ નિષ્ફળ થયાં}}</translation>
 <translation id="2067805253194386918">ટેક્સ્ટ</translation>
+<translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
 <translation id="2091863218454846791">નાનો વ્યૂ બતાવી રહ્યાં છે</translation>
 <translation id="2093731487903423814">છેલ્લી 15 મિનિટ</translation>
@@ -316,6 +317,7 @@
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
+<translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ટૅબ બંધ કરવામાં આવશે</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -900,6 +902,7 @@
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5848257610304005265"><ph name="APP_NAME" /> વડે PDF ખોલીએ?</translation>
 <translation id="5853623416121554550">થોભાવેલ</translation>
 <translation id="5855546874025048181">આને સુધારો: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">કંઈક ખોટું થયું. કિંમત અપડેટ કરી શક્યા નથી.</translation>
@@ -1382,6 +1385,7 @@
 <translation id="8127542551745560481">હોમપેજમાં ફેરફાર કરો</translation>
 <translation id="8130309322784422030">તમારી સ્ટોર કરેલી સાઇન ઇનની માહિતી જૂની હોઈ શકે છે</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
+<translation id="8135406045838672858">ડાઉનલોડ કરેલી PDFs <ph name="APP_NAME" /> વડે ઑટોમૅટિક રીતે ખુલે છે</translation>
 <translation id="8137562778192957619">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તેને Google Password Managerમાં સાચવવામાં આવશે.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ફાઇલ બાકી છે</translation>
 <translation id="8190358571722158785">1 દિવસ બાકી</translation>

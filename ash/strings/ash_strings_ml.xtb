@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">ഹോട്ട്‌സ്പോട്ട് നൽകാൻ നിങ്ങളുടെ ഫോണിൽ മൊബൈൽ ഡാറ്റ ഉണ്ടായിരിക്കണം</translation>
 <translation id="2727175239389218057">മറുപടി നൽകുക</translation>
 <translation id="2727977024730340865">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജ്ജറിലേക്ക് പ്ലഗ് ചെയ്‌തിരിക്കുന്നു. ബാറ്ററി ചാർജുചെയ്യൽ വിശ്വസനീയമാകണമെന്നില്ല.</translation>
+<translation id="2744221223678373668">പങ്കിട്ടു</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ഇല്ലാതാക്കുക"</translation>
 <translation id="2750941250130734256">സജീവ വിൻഡോ അൺഡോക്ക് ചെയ്തു.</translation>
 <translation id="2761723519669354964">ഷെൽഫിൽ നിന്ന് ഹൈലൈറ്റ് ചെയ്‌ത ഇനം തുറക്കുക</translation>
+<translation id="2762000892062317888">ഇപ്പോൾ</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> മുതൽ <ph name="KEY_TWO" /> വരെ</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
@@ -1498,6 +1500,7 @@
 <translation id="6981291220124935078">ആക്സസ് ഓണാക്കുക</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
+<translation id="6984028004251196682"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷൻ പിന്തുണയ്‌ക്കുന്നില്ല. <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) എന്നതിലേക്ക് റെസല്യൂഷൻ മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="6989752354829085073">നിങ്ങളുടെ Chromebook-നെ കുറിച്ച് മനസ്സിലാക്കാൻ ഒരു ദ്രുത ടൂർ നടത്തുക. വെറും 6 ഘട്ടങ്ങൾ മാത്രം.</translation>
 <translation id="7004910047186208204">മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7005239792648594238">ആരംഭിക്കാൻ ഒരു ആപ്പ് തുറക്കുക</translation>

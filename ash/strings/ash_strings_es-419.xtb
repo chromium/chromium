@@ -409,10 +409,12 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
+<translation id="2744221223678373668">Compartidas</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Borrar"</translation>
 <translation id="2750941250130734256">Se desancló la ventana activa.</translation>
 <translation id="2761723519669354964">Abrir el elemento destacado de la barra</translation>
+<translation id="2762000892062317888">recién</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl + búsqueda + s</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
@@ -1281,7 +1283,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6074087755403037157">Canal beta</translation>
 <translation id="6093867385179428431">El administrador lo inhabilitó</translation>
-<translation id="6095008505822982596">Velocidad de voz</translation>
+<translation id="6095008505822982596">Velocidad de habla</translation>
 <translation id="6095425951508823973">Agregar conexión con <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
 <translation id="6103838137565245112">sistema</translation>

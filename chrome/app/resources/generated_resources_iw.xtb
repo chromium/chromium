@@ -681,7 +681,6 @@
 <translation id="1521933835545997395">‏מחובר לטלפון Android</translation>
 <translation id="1523279371236772909">נצפה בחודש האחרון</translation>
 <translation id="1523978563989812243">‏מנוע המרת טקסט לדיבור (TTS)</translation>
-<translation id="1524430321211440688">מקלדת</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
 <translation id="1525740877599838384">‏קביעת מיקום רק באמצעות Wi-Fi</translation>
 <translation id="152629053603783244">‏הפעלת Linux מחדש</translation>
@@ -3923,7 +3922,6 @@
 <translation id="3966072572894326936">בחירת תיקייה אחרת...</translation>
 <translation id="3966094581547899417">‏פרטי הנקודה לשיתוף אינטרנט (Hotspot)</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
-<translation id="3967841595862839006">בחר שפה ומקלדת</translation>
 <translation id="3968739731834770921">קאנה</translation>
 <translation id="3970114302595058915">מזהה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -4606,7 +4604,6 @@
 <translation id="4513872120116766993">השלמה אוטומטית</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4515872537870654449">‏יש לפנות אל Dell כדי לקבל סיוע. אביזר העגינה יכבה אם המאוורר לא פועל.</translation>
-<translation id="4516008165284813420">‏כדאי לוודא שמכשיר <ph name="DEVICE_TYPE" /> מחובר לאינטרנט ולנסות שוב. אפשר גם לעבור לכתובת play.google.com/about/play-terms במכשיר אחר.</translation>
 <translation id="4518840066030486079">‏הסגנון של מקש Shift</translation>
 <translation id="4519331665958994620">אתרים יכולים לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="4519605771716872386">סנכרון הקבצים מופעל</translation>

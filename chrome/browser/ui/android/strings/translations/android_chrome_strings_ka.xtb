@@ -190,6 +190,7 @@
 <translation id="2056878612599315956">საიტი დაპაუზებულია</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა ვერ მოხერხდა}other{# ჩამოტვირთვა ვერ მოხერხდა}}</translation>
 <translation id="2067805253194386918">ტექსტი</translation>
+<translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2091863218454846791">ნაჩვენებია კომპაქტური ხედი</translation>
 <translation id="2093731487903423814">ბოლო 15 წუთში</translation>
@@ -315,6 +316,7 @@
 <translation id="2777555524387840389">დარჩენილია <ph name="SECONDS" /> წმ</translation>
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
 <translation id="2781151931089541271">დარჩენილია 1 წმ</translation>
+<translation id="2789486458103222910">კარგი</translation>
 <translation id="2800066122460699237">ჩანართი „<ph name="TAB_TITLE" />“ დაიხურება</translation>
 <translation id="281504910091592009">ნახეთ და მართეთ შენახული პაროლები თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">არხის ბარათის მენიუ ნახევარ სიმაღლეზე</translation>

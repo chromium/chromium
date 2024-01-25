@@ -389,7 +389,7 @@
 <translation id="2624588537172718173">Аудио од уредот и микрофонот</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
 <translation id="2644422758626431000">Закачете прозорец на левата страна</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Снимање прозорец</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2658778018866295321">Кликни и повлечи</translation>
@@ -409,10 +409,12 @@
 <translation id="2726420622004325180">Телефонот мора да има мобилен интернет за да обезбеди точка на пристап</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Приклучен на полнач со мало напојување. Полнењето на батеријата може да не е веродостојно.</translation>
+<translation id="2744221223678373668">Споделени</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Избриши“</translation>
 <translation id="2750941250130734256">Активниот прозорец е изваден од приклучок.</translation>
 <translation id="2761723519669354964">Отворете нагласена ставка од полицата</translation>
+<translation id="2762000892062317888">пред малку</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">Ctrl+Search+S</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>

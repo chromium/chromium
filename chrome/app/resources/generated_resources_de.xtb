@@ -676,7 +676,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1521933835545997395">Mit Android-Smartphone verbunden</translation>
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
 <translation id="1523978563989812243">Sprachausgabe-Engines</translation>
-<translation id="1524430321211440688">Tastatur</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
 <translation id="1525740877599838384">Zur Standortbestimmung nur WLAN nutzen</translation>
 <translation id="152629053603783244">Linux neu starten</translation>
@@ -2200,7 +2199,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2643698698624765890">Klicke zum Verwalten deiner Erweiterungen im Menü „Fenster“ auf „Erweiterungen“.</translation>
 <translation id="2645047101481282803">Das Gerät wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="2645388244376970260">Dieser Tab wird auf „<ph name="DEVICE_NAME" />“ gestreamt</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Base64-codierter ASCII-Code, Zertifikatkette</translation>
 <translation id="265156376773362237">Standard-Vorabladen</translation>
@@ -3905,7 +3904,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3966072572894326936">Anderen Ordner wählen...</translation>
 <translation id="3966094581547899417">Hotspot-Details</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
-<translation id="3967841595862839006">Sprache und Tastatur wählen</translation>
 <translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -4586,7 +4584,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4513872120116766993">Wortvorschläge</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4515872537870654449">Wende dich für eine Reparatur an Dell. Wenn der Lüfter nicht funktioniert, wird das Dock ausgeschaltet.</translation>
-<translation id="4516008165284813420">Vergewissere dich, dass das Gerät <ph name="DEVICE_TYPE" /> mit dem Internet verbunden ist, und versuche es noch einmal. Du kannst play.google.com/about/play-terms auch auf einem anderen Gerät aufrufen.</translation>
 <translation id="4518840066030486079">Modusstil der Umschalttaste</translation>
 <translation id="4519331665958994620">Websites dürfen nachfragen, wenn sie meine Kamera verwenden möchten</translation>
 <translation id="4519605771716872386">Dateisynchronisierung aktiviert</translation>

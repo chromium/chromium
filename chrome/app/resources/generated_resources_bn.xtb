@@ -683,7 +683,6 @@
 <translation id="1521933835545997395">Android ফোনে কানেক্ট করা আছে</translation>
 <translation id="1523279371236772909">গত মাসে দেখা হয়েছে</translation>
 <translation id="1523978563989812243">টেক্সট-টু-স্পিচ ইঞ্জিন</translation>
-<translation id="1524430321211440688">কীবোর্ড</translation>
 <translation id="1524563461097350801">না থাক</translation>
 <translation id="1525740877599838384">লোকেশন নির্ধারণ করার জন্য ওয়াই-ফাই ব্যবহার করুন</translation>
 <translation id="152629053603783244">Linux রিস্টার্ট করুন</translation>
@@ -3923,7 +3922,6 @@
 <translation id="3966072572894326936">অন্য ফোল্ডার বেছে নিন...</translation>
 <translation id="3966094581547899417">হটস্পটের বিবরণ</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
-<translation id="3967841595862839006">আপনার ভাষা ও কীবোর্ড বেছে নিন</translation>
 <translation id="3968739731834770921">কানা</translation>
 <translation id="3970114302595058915">আইডি</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
@@ -4606,7 +4604,6 @@
 <translation id="4513872120116766993">লেখার সাজেশন</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4515872537870654449">সার্ভিসিংয়ের জন্য Dell-এর সাথে যোগাযোগ করুন। ফ্যান কাজ না করলে ডকিং স্টেশন বন্ধ হয়ে যাবে।</translation>
-<translation id="4516008165284813420">আপনার <ph name="DEVICE_TYPE" /> ইন্টারনেটের সাথে কানেক্ট করা আছে কিনা ভালোভাবে দেখে নিয়ে আবার চেষ্টা করুন। এছাড়াও অন্য ডিভাইস থেকে আপনি play.google.com/about/play-terms ভিজিট করতে পারবেন।</translation>
 <translation id="4518840066030486079">Shift কী মোড স্টাইল</translation>
 <translation id="4519331665958994620">সাইট আপনার ক্যামেরা ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="4519605771716872386">ফাইল সিঙ্ক করার প্রসেস চালু আছে</translation>
