@@ -361,12 +361,6 @@ BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
              "AutofillHighlightOnlyChangedValuesInPreviewMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill will use new logic to strip both prefixes
-// and suffixes when setting FormStructure::parseable_name_
-BASE_FEATURE(kAutofillLabelAffixRemoval,
-             "AutofillLabelAffixRemoval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/1465926): Remove when launched.

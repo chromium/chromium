@@ -212,8 +212,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillPageLanguageDetection,
           // TODO(crbug.com/1311937): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-          // TODO(crbug.com/1355264): Remove once launched.
-          features::kAutofillLabelAffixRemoval,
           // TODO(crbug.com/1441057): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           // TODO(crbug.com/1474308): Clean up when launched.
