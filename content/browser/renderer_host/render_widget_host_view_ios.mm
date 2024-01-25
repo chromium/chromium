@@ -444,13 +444,14 @@ bool RenderWidgetHostViewIOS::HasFocus() {
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {
   return view_bounds_;
 }
-blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockMouse(bool) {
+blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockPointer(bool) {
   return {};
 }
-blink::mojom::PointerLockResult RenderWidgetHostViewIOS::ChangeMouseLock(bool) {
+blink::mojom::PointerLockResult RenderWidgetHostViewIOS::ChangePointerLock(
+    bool) {
   return {};
 }
-void RenderWidgetHostViewIOS::UnlockMouse() {}
+void RenderWidgetHostViewIOS::UnlockPointer() {}
 
 uint32_t RenderWidgetHostViewIOS::GetCaptureSequenceNumber() const {
   return latest_capture_sequence_number_;
@@ -780,7 +781,7 @@ void RenderWidgetHostViewIOS::SetActive(bool active) {
   // if (HasFocus())
   //  SetTextInputActive(active);
   if (!active) {
-    UnlockMouse();
+    UnlockPointer();
   }
 }
 
