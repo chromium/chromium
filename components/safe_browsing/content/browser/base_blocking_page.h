@@ -56,9 +56,11 @@ class BaseBlockingPage
   // Checks the threat type to decide if we should report ThreatDetails.
   static bool ShouldReportThreatDetails(SBThreatType threat_type);
 
-  // Populates the report details for |unsafe_resources|.
+  // Populates the report details for |unsafe_resources| and
+  // |blocked_page_shown_timestamp|.
   static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
-      const UnsafeResourceList& unsafe_resources);
+      const UnsafeResourceList& unsafe_resources,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   // Can be used by implementations of SafeBrowsingBlockingPageFactory.
   static std::unique_ptr<
@@ -69,7 +71,8 @@ class BaseBlockingPage
       BaseUIManager* ui_manager,
       PrefService* pref_service,
       std::unique_ptr<security_interstitials::SettingsPageHelper>
-          settings_page_helper);
+          settings_page_helper,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   BaseSafeBrowsingErrorUI* sb_error_ui() const;
 

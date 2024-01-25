@@ -336,8 +336,10 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   auto* ui_manager =
       g_browser_process->safe_browsing_service()->ui_manager().get();
   return base::WrapUnique<security_interstitials::SecurityInterstitialPage>(
-      ui_manager->CreateBlockingPage(web_contents, main_frame_url, {resource},
-                                     /*forward_extension_event=*/false));
+      ui_manager->CreateBlockingPage(
+          web_contents, main_frame_url, {resource},
+          /*forward_extension_event=*/false,
+          /*blocked_page_shown_timestamp=*/absl::nullopt));
 }
 
 std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(

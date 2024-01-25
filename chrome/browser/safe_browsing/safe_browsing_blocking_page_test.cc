@@ -173,6 +173,7 @@ const char kMaliciousFencedFrameOwner[] =
 const char kMaliciousFencedFrame[] = "/safe_browsing/malware_fenced_frame.html";
 
 const char kInterstitialCloseHistogram[] = "interstitial.CloseReason";
+const char kInterstitialPreCommitPageHistogramSuffix[] = ".before_page_shown";
 
 std::string GetHistogramPrefix(const SBThreatType& threat_type) {
   if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
@@ -463,7 +464,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
       bool is_proceed_anyway_disabled,
       bool is_safe_browsing_surveys_enabled,
       base::OnceCallback<void(bool, SBThreatType)>
-          trust_safety_sentiment_service_trigger)
+          trust_safety_sentiment_service_trigger,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp)
       : SafeBrowsingBlockingPage(
             manager,
             web_contents,
@@ -472,7 +474,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
                 web_contents,
                 unsafe_resources,
-                manager),
+                manager,
+                blocked_page_shown_timestamp),
             display_options,
             should_trigger_reporting,
             HistoryServiceFactory::GetForProfile(
@@ -522,7 +525,8 @@ class TestSafeBrowsingBlockingPageFactory
       WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting) override {
+      bool should_trigger_reporting,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp) override {
     PrefService* prefs =
         Profile::FromBrowserContext(web_contents->GetBrowserContext())
             ->GetPrefs();
@@ -561,7 +565,8 @@ class TestSafeBrowsingBlockingPageFactory
             ? base::BindOnce(&MockTrustSafetySentimentService::
                                  InteractedWithSafeBrowsingInterstitial,
                              base::Unretained(mock_sentiment_service_))
-            : base::NullCallback());
+            : base::NullCallback(),
+        blocked_page_shown_timestamp);
   }
 
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
@@ -1569,6 +1574,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string decision_histogram = "interstitial." + prefix + ".decision";
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
+  const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
+  const std::string threat_source = ".from_device_v4";
 
   // TODO(nparker): Check for *.from_device as well.
 
@@ -1581,6 +1588,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 1);
   histograms.ExpectBucketCount(decision_histogram,
                                security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram + kInterstitialPreCommitPageHistogramSuffix,
+      security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectTimeBucketCount(delay_histogram, base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_histogram + threat_source,
+                                   base::TimeDelta::Min(), 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
@@ -1602,6 +1615,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       decision_histogram, security_interstitials::MetricsHelper::DONT_PROCEED,
       1);
+  histograms.ExpectBucketCount(
+      decision_histogram + kInterstitialPreCommitPageHistogramSuffix,
+      security_interstitials::MetricsHelper::DONT_PROCEED, 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
@@ -1632,6 +1648,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   const std::string decision_histogram = "interstitial." + prefix + ".decision";
   const std::string interaction_histogram =
       "interstitial." + prefix + ".interaction";
+  const std::string delay_histogram = "interstitial." + prefix + ".show_delay";
+  const std::string threat_source = ".from_device_v4";
 
   // Histograms should start off empty.
   histograms.ExpectTotalCount(decision_histogram, 0);
@@ -1642,6 +1660,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 1);
   histograms.ExpectBucketCount(decision_histogram,
                                security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram + kInterstitialPreCommitPageHistogramSuffix,
+      security_interstitials::MetricsHelper::SHOW, 1);
+  histograms.ExpectTimeBucketCount(delay_histogram, base::TimeDelta::Min(), 1);
+  histograms.ExpectTimeBucketCount(delay_histogram + threat_source,
+                                   base::TimeDelta::Min(), 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
@@ -1656,6 +1680,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectTotalCount(decision_histogram, 2);
   histograms.ExpectBucketCount(
       decision_histogram, security_interstitials::MetricsHelper::PROCEED, 1);
+  histograms.ExpectBucketCount(
+      decision_histogram + kInterstitialPreCommitPageHistogramSuffix,
+      security_interstitials::MetricsHelper::PROCEED, 1);
   histograms.ExpectTotalCount(interaction_histogram, 2);
   histograms.ExpectBucketCount(
       interaction_histogram,
@@ -3579,7 +3606,8 @@ class SafeBrowsingBlockingPageIDNTest
     return ui_manager->CreateBlockingPage(
         contents,
         is_subresource ? GURL("http://mainframe.example.com/") : request_url,
-        {resource}, /*forward_extension_event=*/false);
+        {resource}, /*forward_extension_event=*/false,
+        /*blocked_page_shown_timestamp=*/absl::nullopt);
   }
 };
 

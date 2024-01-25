@@ -28,6 +28,11 @@ chromium-metrics-reviews@google.com.
   <variant name="origin_policy." summary=""/>
 </variants>
 
+<variants name="IsPostCommitInterstitialSuffix">
+  <variant name=".after_page_shown" summary="shown"/>
+  <variant name=".before_page_shown" summary="not shown"/>
+</variants>
+
 <variants name="RepeatVisit">
   <variant name=".repeat_visit"
       summary=", on a site that the user had previously visited"/>
@@ -339,6 +344,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
+    enum="SecurityInterstitialDecision" expires_after="2024-07-23">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User decision when presented with a security interstitial{RepeatVisit}. The
+    original page was {IsPostCommitInterstitialSuffix} before the interstitial
+    is shown.
+
+    {SecurityInterstitialSBType}
+  </summary>
+  <token key="SecurityInterstitialSBType"
+      variants="SecurityInterstitialSBType"/>
+  <token key="RepeatVisit" variants="RepeatVisit">
+    <variant name=""/>
+  </token>
+  <token key="IsPostCommitInterstitialSuffix"
+      variants="IsPostCommitInterstitialSuffix"/>
+</histogram>
+
+<histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{SecurityInterstitialSBWithSourceType}"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
@@ -368,6 +394,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="interstitial.{SecurityInterstitialSBType}interaction{IsPostCommitInterstitialSuffix}"
+    enum="SecurityInterstitialInteraction" expires_after="2024-07-23">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User interactions with a security interstitial. The original page was
+    {IsPostCommitInterstitialSuffix} before the interstitial is shown.
+
+    {SecurityInterstitialSBType}
+  </summary>
+  <token key="SecurityInterstitialSBType"
+      variants="SecurityInterstitialSBType"/>
+  <token key="IsPostCommitInterstitialSuffix"
+      variants="IsPostCommitInterstitialSuffix"/>
+</histogram>
+
+<histogram
     name="interstitial.{SecurityInterstitialSBType}interaction{SecurityInterstitialSBWithSourceType}"
     enum="SecurityInterstitialInteraction" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
@@ -381,6 +424,25 @@ chromium-metrics-reviews@google.com.
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
+    {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
+  </summary>
+  <token key="SecurityInterstitialSBType"
+      variants="SecurityInterstitialSBType"/>
+  <token key="SecurityInterstitialSBWithSourceType"
+      variants="SecurityInterstitialSBWithSourceType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{SecurityInterstitialSBType}show_delay{SecurityInterstitialSBWithSourceType}"
+    units="ms" expires_after="2024-07-23">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time between when the blocked page is shown and when the interstitial is
+    shown. 0 if the blocked page is not shown.
+
     {SecurityInterstitialSBType} {SecurityInterstitialSBWithSourceType}
   </summary>
   <token key="SecurityInterstitialSBType"

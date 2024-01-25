@@ -65,10 +65,14 @@ AwSafeBrowsingNavigationThrottle::WillFailRequest() {
               /*is_in_outermost_main_frame=*/true, handle->HasUserGesture(),
               handle->GetRequestHeaders());
       request->is_renderer_initiated = handle->IsRendererInitiated();
+      // blocked_page_shown_timestamp is set to nullopt because this blocking
+      // page is triggered through navigation throttle, so the blocked page is
+      // never shown.
       AwSafeBrowsingBlockingPage* blocking_page =
           AwSafeBrowsingBlockingPage::CreateBlockingPage(
               manager, handle->GetWebContents(), handle->GetURL(), resource,
-              std::move(request));
+              std::move(request),
+              /*blocked_page_shown_timestamp=*/absl::nullopt);
       std::string error_page_content = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle, base::WrapUnique(blocking_page));

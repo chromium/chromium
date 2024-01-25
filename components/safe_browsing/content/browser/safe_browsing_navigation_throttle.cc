@@ -59,10 +59,14 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
     DCHECK(handle->IsInPrimaryMainFrame() ||
            handle->IsInPrerenderedMainFrame());
 
+    // blocked_page_shown_timestamp is set to nullopt because this blocking
+    // page is triggered through navigation throttle, so the blocked page is
+    // never shown.
     security_interstitials::SecurityInterstitialPage* blocking_page =
-        manager_->CreateBlockingPage(handle->GetWebContents(), handle->GetURL(),
-                                     {resource},
-                                     /*forward_extension_event=*/true);
+        manager_->CreateBlockingPage(
+            handle->GetWebContents(), handle->GetURL(), {resource},
+            /*forward_extension_event=*/true,
+            /*blocked_page_shown_timestamp=*/absl::nullopt);
     std::string error_page_content = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle, base::WrapUnique(blocking_page));

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
@@ -37,6 +38,9 @@ class SecurityInterstitialPage {
   SecurityInterstitialPage& operator=(const SecurityInterstitialPage&) = delete;
 
   virtual ~SecurityInterstitialPage();
+
+  // Called when the interstitial is committed.
+  void OnInterstitialShown();
 
   // Prevents creating the actual interstitial view for testing.
   void DontCreateViewForTesting();

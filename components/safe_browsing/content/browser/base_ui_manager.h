@@ -55,13 +55,16 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
   // Creates a blocking page, used for both pre commit and post commit warnings.
   // Also forwards an interstitial shown extension event to embedder if
-  // |forward_extension_event| is true. Should be overridden with a blocking
+  // |forward_extension_event| is true. |blocked_page_shown_timestamp| is set to
+  // the time when the |blocked_url| is committed. If |blocked_url| is never
+  // committed, it will be set to nullopt. Should be overridden with a blocking
   // page implementation.
   virtual SecurityInterstitialPage* CreateBlockingPage(
       content::WebContents* contents,
       const GURL& blocked_url,
       const UnsafeResource& unsafe_resource,
-      bool forward_extension_event);
+      bool forward_extension_event,
+      absl::optional<base::TimeTicks> blocked_page_shown_timestamp);
 
   // This is a no-op in the base class, but should be overridden to send threat
   // details. Called on the UI thread by the ThreatDetails with the report.

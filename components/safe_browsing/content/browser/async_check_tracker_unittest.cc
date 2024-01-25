@@ -274,6 +274,29 @@ TEST_P(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 }
 
+TEST_P(AsyncCheckTrackerTest, GetBlockedPageCommittedTimestamp) {
+  content::MockNavigationHandle handle(web_contents());
+  UnsafeResource resource;
+  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
+  resource.navigation_id = handle.GetNavigationId();
+
+  AsyncCheckTracker* tracker =
+      AsyncCheckTracker::FromWebContents(web_contents());
+  EXPECT_FALSE(AsyncCheckTracker::GetBlockedPageCommittedTimestamp(resource)
+                   .has_value());
+
+  tracker->DidFinishNavigation(&handle);
+  // The navigation is not committed.
+  EXPECT_FALSE(AsyncCheckTracker::GetBlockedPageCommittedTimestamp(resource)
+                   .has_value());
+
+  handle.set_has_committed(true);
+  tracker->DidFinishNavigation(&handle);
+  EXPECT_TRUE(AsyncCheckTracker::GetBlockedPageCommittedTimestamp(resource)
+                  .has_value());
+}
+
 TEST_P(AsyncCheckTrackerTest,
        PendingCheckersManagement_TransferWithSameNavigationId) {
   EXPECT_EQ(tracker_->PendingCheckersSizeForTesting(), 0u);

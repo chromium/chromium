@@ -430,10 +430,12 @@ GURL SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
 }
 
 security_interstitials::SecurityInterstitialPage*
-SafeBrowsingUIManager::CreateBlockingPage(content::WebContents* contents,
-                                          const GURL& blocked_url,
-                                          const UnsafeResource& unsafe_resource,
-                                          bool forward_extension_event) {
+SafeBrowsingUIManager::CreateBlockingPage(
+    content::WebContents* contents,
+    const GURL& blocked_url,
+    const UnsafeResource& unsafe_resource,
+    bool forward_extension_event,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   security_interstitials::SecurityInterstitialPage* blocking_page = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   if (unsafe_resource.threat_type ==
@@ -464,7 +466,7 @@ SafeBrowsingUIManager::CreateBlockingPage(content::WebContents* contents,
 #endif  // !BUILDFLAG(IS_ANDROID)
   blocking_page = blocking_page_factory_->CreateSafeBrowsingPage(
       this, contents, blocked_url, {unsafe_resource},
-      /*should_trigger_reporting=*/true);
+      /*should_trigger_reporting=*/true, blocked_page_shown_timestamp);
 
   // Report that we showed an interstitial.
   if (forward_extension_event) {

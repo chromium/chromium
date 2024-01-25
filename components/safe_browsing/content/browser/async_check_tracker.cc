@@ -48,6 +48,21 @@ bool AsyncCheckTracker::IsMainPageLoadPending(
   return resource.IsMainPageLoadPendingWithSyncCheck();
 }
 
+// static
+absl::optional<base::TimeTicks>
+AsyncCheckTracker::GetBlockedPageCommittedTimestamp(
+    const security_interstitials::UnsafeResource& resource) {
+  content::WebContents* web_contents =
+      unsafe_resource_util::GetWebContentsForResource(resource);
+  if (web_contents && AsyncCheckTracker::FromWebContents(web_contents) &&
+      resource.navigation_id.has_value() &&
+      base::FeatureList::IsEnabled(kSafeBrowsingAsyncRealTimeCheck)) {
+    return AsyncCheckTracker::FromWebContents(web_contents)
+        ->GetNavigationCommittedTimestamp(resource.navigation_id.value());
+  }
+  return absl::nullopt;
+}
+
 AsyncCheckTracker::AsyncCheckTracker(content::WebContents* web_contents,
                                      scoped_refptr<BaseUIManager> ui_manager)
     : content::WebContentsUserData<AsyncCheckTracker>(*web_contents),
@@ -100,7 +115,15 @@ void AsyncCheckTracker::PendingCheckerCompleted(
 }
 
 bool AsyncCheckTracker::IsNavigationPending(int64_t navigation_id) {
-  return !base::Contains(committed_navigation_ids_, navigation_id);
+  return !base::Contains(committed_navigation_timestamps_, navigation_id);
+}
+
+absl::optional<base::TimeTicks>
+AsyncCheckTracker::GetNavigationCommittedTimestamp(int64_t navigation_id) {
+  if (!base::Contains(committed_navigation_timestamps_, navigation_id)) {
+    return absl::nullopt;
+  }
+  return committed_navigation_timestamps_[navigation_id];
 }
 
 void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
@@ -111,11 +134,11 @@ void AsyncCheckTracker::DidFinishNavigation(content::NavigationHandle* handle) {
     // an async check is performed on the current WebContents (so
     // AsyncCheckTracker is created) and then a prerendered navigation starts
     // on the same WebContents.
-    committed_navigation_ids_.insert(navigation_id);
+    committed_navigation_timestamps_[navigation_id] = base::TimeTicks::Now();
   }
   base::UmaHistogramCounts10000(
       "SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize",
-      committed_navigation_ids_.size());
+      committed_navigation_timestamps_.size());
 
   if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument() ||
       !handle->HasCommitted()) {

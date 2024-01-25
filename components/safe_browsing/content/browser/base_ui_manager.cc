@@ -356,9 +356,10 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     // In some cases the interstitial must be loaded here since there will be
     // no navigation to intercept in the throttle.
     std::unique_ptr<security_interstitials::SecurityInterstitialPage>
-        blocking_page = base::WrapUnique(
-            CreateBlockingPage(web_contents, unsafe_url, resource,
-                               /*forward_extension_event=*/true));
+        blocking_page = base::WrapUnique(CreateBlockingPage(
+            web_contents, unsafe_url, resource,
+            /*forward_extension_event=*/true,
+            AsyncCheckTracker::GetBlockedPageCommittedTimestamp(resource)));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
         web_contents->GetController().LoadPostCommitErrorPage(
             web_contents->GetPrimaryMainFrame(), unsafe_url,
@@ -382,10 +383,12 @@ void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {}
 
 security_interstitials::SecurityInterstitialPage*
-BaseUIManager::CreateBlockingPage(content::WebContents* contents,
-                                  const GURL& blocked_url,
-                                  const UnsafeResource& unsafe_resource,
-                                  bool forward_extension_event) {
+BaseUIManager::CreateBlockingPage(
+    content::WebContents* contents,
+    const GURL& blocked_url,
+    const UnsafeResource& unsafe_resource,
+    bool forward_extension_event,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // TODO(carlosil): This can be removed once all implementations of SB use
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed

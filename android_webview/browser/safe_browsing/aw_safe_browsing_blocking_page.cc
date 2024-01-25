@@ -94,7 +94,8 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     content::WebContents* web_contents,
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
-    std::unique_ptr<AwWebResourceRequest> resource_request) {
+    std::unique_ptr<AwWebResourceRequest> resource_request,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // Log the request destination that triggers the safe browsing blocking page.
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                             unsafe_resource.request_destination);
@@ -137,7 +138,8 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   return new AwSafeBrowsingBlockingPage(
       ui_manager, web_contents, url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager,
-                             pref_service, /*settings_page_helper*/ nullptr),
+                             pref_service, /*settings_page_helper*/ nullptr,
+                             blocked_page_shown_timestamp),
       display_options, errorType, std::move(resource_request));
 }
 

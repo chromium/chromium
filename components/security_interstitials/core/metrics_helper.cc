@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -183,6 +184,11 @@ void MetricsHelper::RecordUserDecisionToMetrics(
     RecordSingleDecisionToMetrics(
         decision, histogram_name + "." + settings_.extra_suffix);
   }
+  std::string has_page_shown_suffix =
+      settings_.blocked_page_shown_timestamp.has_value() ? "after_page_shown"
+                                                         : "before_page_shown";
+  RecordSingleDecisionToMetrics(decision,
+                                histogram_name + "." + has_page_shown_suffix);
 }
 
 void MetricsHelper::RecordUserInteraction(Interaction interaction) {
@@ -193,12 +199,32 @@ void MetricsHelper::RecordUserInteraction(Interaction interaction) {
     RecordSingleInteractionToMetrics(
         interaction, histogram_name + "." + settings_.extra_suffix);
   }
+  std::string has_page_shown_suffix =
+      settings_.blocked_page_shown_timestamp.has_value() ? "after_page_shown"
+                                                         : "before_page_shown";
+  RecordSingleInteractionToMetrics(
+      interaction, histogram_name + "." + has_page_shown_suffix);
 
   MaybeRecordInteractionAsAction(interaction, settings_.metric_prefix);
 }
 
 void MetricsHelper::RecordShutdownMetrics() {
   RecordExtraShutdownMetrics();
+}
+
+void MetricsHelper::RecordInterstitialShowDelay() {
+  const std::string histogram_name("interstitial." + settings_.metric_prefix +
+                                   ".show_delay");
+  base::TimeDelta delay =
+      settings_.blocked_page_shown_timestamp.has_value()
+          ? base::TimeTicks::Now() -
+                settings_.blocked_page_shown_timestamp.value()
+          : base::TimeDelta::Min();
+  base::UmaHistogramTimes(histogram_name, delay);
+  if (!settings_.extra_suffix.empty()) {
+    base::UmaHistogramTimes(histogram_name + "." + settings_.extra_suffix,
+                            delay);
+  }
 }
 
 int MetricsHelper::NumVisits() {

@@ -263,7 +263,9 @@ void BaseBlockingPage::set_proceeded(bool proceeded) {
 
 // static
 security_interstitials::MetricsHelper::ReportDetails
-BaseBlockingPage::GetReportingInfo(const UnsafeResourceList& unsafe_resources) {
+BaseBlockingPage::GetReportingInfo(
+    const UnsafeResourceList& unsafe_resources,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason =
       GetInterstitialReason(unsafe_resources);
 
@@ -271,6 +273,7 @@ BaseBlockingPage::GetReportingInfo(const UnsafeResourceList& unsafe_resources) {
   reporting_info.metric_prefix =
       GetMetricPrefix(unsafe_resources, interstitial_reason);
   reporting_info.extra_suffix = GetExtraMetricsSuffix(unsafe_resources);
+  reporting_info.blocked_page_shown_timestamp = blocked_page_shown_timestamp;
   return reporting_info;
 }
 
@@ -282,13 +285,15 @@ BaseBlockingPage::CreateControllerClient(
     BaseUIManager* ui_manager,
     PrefService* pref_service,
     std::unique_ptr<security_interstitials::SettingsPageHelper>
-        settings_page_helper) {
+        settings_page_helper,
+    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   history::HistoryService* history_service =
       ui_manager->history_service(web_contents);
 
   std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper =
       std::make_unique<security_interstitials::MetricsHelper>(
-          unsafe_resources[0].url, GetReportingInfo(unsafe_resources),
+          unsafe_resources[0].url,
+          GetReportingInfo(unsafe_resources, blocked_page_shown_timestamp),
           history_service);
 
   return std::make_unique<SafeBrowsingControllerClient>(
