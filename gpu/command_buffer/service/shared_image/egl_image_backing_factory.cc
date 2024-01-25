@@ -116,10 +116,6 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
-    return false;
-  }
-
   if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
     return false;
   }
@@ -183,14 +179,14 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     return nullptr;
   }
 
-  // EGLImageBacking only supports single-planar textures (so far).
+  // EGLImageBacking can support single-planar and multi-planar textures.
   auto format_info = GetFormatInfo(format);
-  DCHECK_EQ(format_info.size(), 1u);
+  CHECK_EQ(static_cast<int>(format_info.size()), format.NumberOfPlanes());
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), estimated_size.value(), format_info[0],
-      workarounds_, use_passthrough_, pixel_data);
+      std::move(debug_label), estimated_size.value(), format_info, workarounds_,
+      use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu
