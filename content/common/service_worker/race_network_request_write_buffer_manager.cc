@@ -123,6 +123,20 @@ size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteDataWithSize(
   CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   CHECK_GE(buffer_size(), num_bytes_to_consume);
   CHECK_GE(read_buffer.size(), num_bytes_to_consume);
+  // Check if all memory spaces are available to access. `volatile` to avoid the
+  // compiler optimization.
+  // TODO(crbug.com/1502946) Remove this code once we confirmed the root cause
+  // of the crash.
+  volatile const char* read_buffer_v =
+      static_cast<volatile const char*>(read_buffer.data());
+  for (size_t i = 0; i < read_buffer.size(); ++i) {
+    read_buffer_v[i];
+  }
+  volatile const char* write_buffer_v =
+      static_cast<volatile char*>(buffer_.data());
+  for (size_t i = 0; i < buffer_size(); ++i) {
+    write_buffer_v[i];
+  }
   memcpy(buffer_.data(), read_buffer.data(), num_bytes_to_consume);
   MojoResult result = EndWriteData(num_bytes_to_consume);
   CHECK_EQ(result, MOJO_RESULT_OK);
