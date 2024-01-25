@@ -2159,7 +2159,7 @@
       "fhorschig@chromium.org",
       "//components/autofill/android/OWNERS"
     ],
-    "expiry_milestone": 123
+    "expiry_milestone": 126
   },
   {
     "name": "enable-background-blur",
