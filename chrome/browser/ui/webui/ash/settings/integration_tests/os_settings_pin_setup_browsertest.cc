@@ -276,7 +276,8 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupCryptohomeOnlyTest,
 
   cryptohome_.SetNextOperationError(
       FakeUserDataAuthClient::Operation::kAddAuthFactor,
-      ::user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED);
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          ::user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED));
   pin_settings.SetPinButInternalError(kFirstPin);
 
   pin_settings.AssertHasPin(false);

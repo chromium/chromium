@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
@@ -134,8 +135,9 @@ void GaiaPasswordChangedScreen::OnPasswordAuthentication(
     std::optional<AuthenticationError> error) {
   context()->user_context = std::move(user_context);
   if (error.has_value()) {
-    if (error->get_cryptohome_code() ==
-        user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED) {
+    if (cryptohome::ErrorMatches(
+            error->get_cryptohome_error(),
+            user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
       RecordScreenAction(UserAction::kIncorrectOldPassword);
       view_->ShowWrongPasswordError();
       return;

@@ -55,7 +55,8 @@ TEST(OperationChainRunnerTest, TestSingleFailedOperation) {
         std::move(callback).Run(
             std::move(context),
             AuthenticationError{
-                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+                cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                    user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
       }));
 
   bool chain_finished = false;
@@ -132,7 +133,8 @@ TEST(OperationChainRunnerTest, TestFailedMiddleOperation) {
         std::move(callback).Run(
             std::move(context),
             AuthenticationError{
-                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+                cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                    user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
       }));
   operations.push_back(
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,

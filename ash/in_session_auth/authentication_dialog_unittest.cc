@@ -175,8 +175,9 @@ TEST_F(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
             password == kExpectedPassword
                 ? std::nullopt
                 : std::optional<AuthenticationError>{AuthenticationError{
-                      user_data_auth::
-                          CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND}});
+                      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                          user_data_auth::
+                              CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND)}});
       });
 
   PressOkButton();
@@ -200,18 +201,20 @@ TEST_F(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
   EXPECT_CALL(*auth_performer_,
               AuthenticateWithPassword(kCryptohomeGaiaKeyLabel,
                                        kExpectedPassword, _, _))
-      .WillRepeatedly([&number_of_calls](
-                          const std::string& key_label,
-                          const std::string& password,
-                          std::unique_ptr<UserContext> user_context,
-                          AuthOperationCallback callback) {
-        std::move(callback).Run(
-            std::move(user_context),
-            number_of_calls++
-                ? std::nullopt
-                : std::optional<AuthenticationError>{AuthenticationError{
-                      user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN}});
-      });
+      .WillRepeatedly(
+          [&number_of_calls](const std::string& key_label,
+                             const std::string& password,
+                             std::unique_ptr<UserContext> user_context,
+                             AuthOperationCallback callback) {
+            std::move(callback).Run(
+                std::move(user_context),
+                number_of_calls++
+                    ? std::nullopt
+                    : std::optional<AuthenticationError>{AuthenticationError{
+                          cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                              user_data_auth::
+                                  CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)}});
+          });
 
   EXPECT_CALL(*auth_token_provider_, ExchangeForToken)
       .WillOnce(testing::Invoke(this, &AuthenticationDialogTest::GetAuthToken));

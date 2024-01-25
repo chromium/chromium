@@ -71,7 +71,8 @@ void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
     LOGIN_LOG(ERROR) << "Adding Kiosk key while one already exists";
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED)});
     return;
   }
 

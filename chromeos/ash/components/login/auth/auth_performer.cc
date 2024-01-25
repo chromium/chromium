@@ -221,7 +221,8 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
       LOGIN_LOG(ERROR) << "Could not find Password key";
       std::move(callback).Run(
           std::move(context),
-          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+              user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
       return;
     }
     key->SetLabel(factor->ref().label().value());
@@ -323,7 +324,8 @@ void AuthPerformer::AuthenticateWithPassword(
                      << key_label;
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
@@ -363,7 +365,8 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
     LOGIN_LOG(ERROR) << "User does not have PIN as factor";
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   DCHECK_EQ(factor->ref().label().value(), kCryptohomePinLabel);
@@ -391,7 +394,8 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
     LOGIN_LOG(ERROR) << "Could not find Kiosk key";
     std::move(callback).Run(
         std::move(context),
-        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
     return;
   }
   cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});

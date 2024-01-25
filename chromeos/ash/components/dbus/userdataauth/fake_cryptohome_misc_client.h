@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
   }
 
   // Sets the CryptohomeError value to return.
-  void set_cryptohome_error(::cryptohome::ErrorWrapper error) {
+  void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
     cryptohome_error_ = error;
   }
 
@@ -99,8 +99,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
       chromeos::DBusMethodCallback<ReplyType> callback);
 
   // The next error code to return for various functions.
-  ::cryptohome::ErrorWrapper cryptohome_error_ =
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
+      ::user_data_auth::CRYPTOHOME_ERROR_NOT_SET;
 
   // The system salt to return.
   std::vector<uint8_t> system_salt_{GetStubSystemSalt()};

@@ -88,7 +88,8 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     LOG(ERROR) << "Could not find password key";
     std::move(callback).Run(
         std::nullopt, ash::AuthenticationError(
-                          user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+                          cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                              user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)));
     return;
   }
 

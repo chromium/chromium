@@ -19,6 +19,7 @@ component("auth") {
     "//base",
     "//base:i18n",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
