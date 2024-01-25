@@ -1222,6 +1222,12 @@ interface CapturedMouseEvent : Event
     getter surfaceX
     getter surfaceY
     method constructor
+interface CaretPosition
+    attribute @@toStringTag
+    getter offset
+    getter offsetNode
+    method constructor
+    method getClientRect
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -1989,6 +1995,7 @@ interface Document : Node
     method ariaNotify
     method browsingTopics
     method captureEvents
+    method caretPositionFromPoint
     method caretRangeFromPoint
     method clear
     method close
