@@ -6,12 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/check.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 @interface PrivacyGuideHistorySyncCoordinator () <
+    PrivacyGuideViewControllerPresentationDelegate,
     PromoStyleViewControllerDelegate>
 @end
 
@@ -36,8 +39,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // TODO(crbug.com/1520481): Implement History Sync view controller.
   _viewController = [[PrivacyGuideHistorySyncViewController alloc] init];
+  _viewController.presentationDelegate = self;
+  // TODO(crbug.com/1520481): Implement History Sync mediator.
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController
@@ -46,6 +50,13 @@
 
 - (void)stop {
   _viewController = nil;
+}
+
+#pragma mark - PrivacyGuideViewControllerPresentationDelegate
+
+- (void)privacyGuideViewControllerDidRemove:(UIViewController*)controller {
+  CHECK_EQ(controller, _viewController);
+  [self.delegate privacyGuideCoordinatorDidRemove:self];
 }
 
 @end

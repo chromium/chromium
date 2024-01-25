@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_utils.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -70,8 +70,7 @@ enum ItemIdentifier {
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   if (!parent) {
-    [self.presentationDelegate
-        privacyGuideURLUsageViewControllerDidRemove:self];
+    [self.presentationDelegate privacyGuideViewControllerDidRemove:self];
   }
 }
 

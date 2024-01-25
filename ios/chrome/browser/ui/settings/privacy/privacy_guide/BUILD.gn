@@ -4,6 +4,7 @@
 
 source_set("privacy_guide") {
   sources = [
+    "privacy_guide_coordinator_delegate.h",
     "privacy_guide_history_sync_coordinator.h",
     "privacy_guide_history_sync_coordinator.mm",
     "privacy_guide_main_coordinator.h",
@@ -11,7 +12,6 @@ source_set("privacy_guide") {
     "privacy_guide_main_coordinator_delegate.h",
     "privacy_guide_url_usage_coordinator.h",
     "privacy_guide_url_usage_coordinator.mm",
-    "privacy_guide_url_usage_coordinator_delegate.h",
     "privacy_guide_url_usage_mediator.h",
     "privacy_guide_url_usage_mediator.mm",
     "privacy_guide_welcome_coordinator.h",
@@ -40,9 +40,9 @@ source_set("privacy_guide_ui") {
     "privacy_guide_url_usage_view_controller.h",
     "privacy_guide_url_usage_view_controller.mm",
     "privacy_guide_url_usage_view_controller_delegate.h",
-    "privacy_guide_url_usage_view_controller_presentation_delegate.h",
     "privacy_guide_utils.h",
     "privacy_guide_utils.mm",
+    "privacy_guide_view_controller_presentation_delegate.h",
     "privacy_guide_welcome_view_controller.h",
     "privacy_guide_welcome_view_controller.mm",
   ]

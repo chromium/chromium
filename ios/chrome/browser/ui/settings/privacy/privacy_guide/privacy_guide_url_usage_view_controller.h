@@ -9,16 +9,15 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @protocol PrivacyGuideURLUsageViewControllerDelegate;
-@protocol PrivacyGuideURLUsageViewControllerPresentationDelegate;
+@protocol PrivacyGuideViewControllerPresentationDelegate;
 
 // View controller for the Privacy Guide URL usage step.
 @interface PrivacyGuideURLUsageViewController
     : PromoStyleViewController <PrivacyGuideURLUsageConsumer>
 
 // Presentation delegate.
-@property(nonatomic, weak)
-    id<PrivacyGuideURLUsageViewControllerPresentationDelegate>
-        presentationDelegate;
+@property(nonatomic, weak) id<PrivacyGuideViewControllerPresentationDelegate>
+    presentationDelegate;
 
 // Model delegate.
 @property(nonatomic, weak) id<PrivacyGuideURLUsageViewControllerDelegate>

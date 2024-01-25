@@ -7,8 +7,13 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol PrivacyGuideCoordinatorDelegate;
+
 // Coordinator for the History Sync step of the Privacy Guide.
 @interface PrivacyGuideHistorySyncCoordinator : ChromeCoordinator
+
+// Delegate.
+@property(nonatomic, weak) id<PrivacyGuideCoordinatorDelegate> delegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

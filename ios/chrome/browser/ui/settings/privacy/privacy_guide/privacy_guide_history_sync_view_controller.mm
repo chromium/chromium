@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_utils.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -62,6 +63,12 @@ enum ItemIdentifier {
 
   [self setupTableView];
   [self loadModel];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  if (!parent) {
+    [self.presentationDelegate privacyGuideViewControllerDidRemove:self];
+  }
 }
 
 #pragma mark - UITableViewDelegate

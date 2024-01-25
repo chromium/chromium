@@ -13,15 +13,15 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_welcome_coordinator.h"
 
 @interface PrivacyGuideMainCoordinator () <
     PrivacyGuideCommands,
-    PrivacyGuideURLUsageCoordinatorDelegate,
+    PrivacyGuideCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -92,15 +92,11 @@
   [self.delegate privacyGuideMainCoordinatorDidRemove:self];
 }
 
-#pragma mark - PrivacyGuideURLUsageCoordinatorDelegate
+#pragma mark - PrivacyGuideCoordinatorDelegate
 
-- (void)privacyGuideURLUsageCoordinatorDidRemove:
-    (PrivacyGuideURLUsageCoordinator*)coordinator {
+- (void)privacyGuideCoordinatorDidRemove:(ChromeCoordinator*)coordinator {
   CHECK([self.childCoordinators containsObject:coordinator]);
-
-  coordinator.delegate = nil;
   [coordinator stop];
-
   [self.childCoordinators removeObject:coordinator];
 }
 
@@ -135,7 +131,9 @@
       [[PrivacyGuideHistorySyncCoordinator alloc]
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser];
+  coordinator.delegate = self;
   [coordinator start];
+
   [self.childCoordinators addObject:coordinator];
 }
 

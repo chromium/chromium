@@ -11,13 +11,13 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_commands.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller.h"
-#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_view_controller_presentation_delegate.h"
 
 @interface PrivacyGuideURLUsageCoordinator () <
-    PrivacyGuideURLUsageViewControllerPresentationDelegate,
+    PrivacyGuideViewControllerPresentationDelegate,
     PromoStyleViewControllerDelegate>
 @end
 
@@ -64,12 +64,11 @@
   _mediator = nil;
 }
 
-#pragma mark - PrivacyGuideURLUsageViewControllerPresentationDelegate
+#pragma mark - PrivacyGuideViewControllerPresentationDelegate
 
-- (void)privacyGuideURLUsageViewControllerDidRemove:
-    (PrivacyGuideURLUsageViewController*)controller {
+- (void)privacyGuideViewControllerDidRemove:(UIViewController*)controller {
   CHECK_EQ(_viewController, controller);
-  [self.delegate privacyGuideURLUsageCoordinatorDidRemove:self];
+  [self.delegate privacyGuideCoordinatorDidRemove:self];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate

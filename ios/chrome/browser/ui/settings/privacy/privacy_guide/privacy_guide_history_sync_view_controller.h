@@ -7,8 +7,15 @@
 
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@protocol PrivacyGuideViewControllerPresentationDelegate;
+
 // View controller for the Privacy Guide History Sync step.
 @interface PrivacyGuideHistorySyncViewController : PromoStyleViewController
+
+// Presentation delegate.
+@property(nonatomic, weak) id<PrivacyGuideViewControllerPresentationDelegate>
+    presentationDelegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_GUIDE_PRIVACY_GUIDE_HISTORY_SYNC_VIEW_CONTROLLER_H_
