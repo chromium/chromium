@@ -58,7 +58,9 @@ void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
   base::FilePath wallpaper_dir;
   CHECK(
       base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpaper_dir));
-  const base::FilePath sea_pen_wallpaper_dir = wallpaper_dir.Append("sea_pen/");
+  const base::FilePath sea_pen_wallpaper_dir =
+      wallpaper_dir.Append("sea_pen/")
+          .Append(GetAccountId(profile_).GetAccountIdKey());
   ash::EnumerateJpegFilesFromDir(profile_, sea_pen_wallpaper_dir,
                                  std::move(callback));
 }
