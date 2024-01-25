@@ -169,7 +169,8 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // being explicitly marked in discard padding.
   bool should_discard_decoder_delay_ = true;
 
-  // Derived values from mandatory and optional parameters above:
+  // Derived values from mandatory and optional parameters above.
+  // A frame contains samples across all channels.
 
   int bytes_per_channel_ = 0;
   int bytes_per_frame_ = 0;
