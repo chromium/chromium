@@ -593,11 +593,17 @@ class VideoResourceUpdater::HardwarePlaneResource
         use_gpu_memory_buffer_resources &&
         sii->GetCapabilities().supports_scanout_shared_images &&
         CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
-    // These SharedImages will have the contents of VideoFrames written into
-    // them via the GLES2 interface and then will be sent over to the display
-    // compositor as TransferableResources.
-    uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    // These SharedImages will be sent over to the display compositor as
+    // TransferableResources.
+    uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    if (CanUseRasterInterface()) {
+      // RasterInterface which in turn uses RasterDecoder writes the contents of
+      // video frames into SharedImages.
+      shared_image_usage |= gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+    } else {
+      // GLES2 interface writes the contents of video frames into SharedImages.
+      shared_image_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    }
     if (overlay_candidate_) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target_ = gpu::GetBufferTextureTarget(
@@ -1146,6 +1152,9 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
   if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
     return viz::SinglePlaneFormat::kR_16;
   }
+  if (shared_image_caps.is_r16f_supported) {
+    return viz::SinglePlaneFormat::kR_F16;
+  }
   if (caps.texture_half_float_linear &&
       shared_image_caps.supports_luminance_shared_images) {
     return viz::SinglePlaneFormat::kLUMINANCE_F16;
@@ -1364,6 +1373,7 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
   // if the need a bit downshift or if the strides need to be reconciled.
   const bool needs_conversion =
       plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+      plane_si_format == viz::SinglePlaneFormat::kR_F16 ||
       needs_bit_downshifting;
 
   constexpr size_t kDefaultUnpackRowLength = 0;
@@ -1405,7 +1415,8 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
       }
     }
 
-    if (plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+    if (plane_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+        plane_si_format == viz::SinglePlaneFormat::kR_F16) {
       for (int row = 0; row < resource_size_pixels.height(); ++row) {
         uint16_t* dst = reinterpret_cast<uint16_t*>(
             &upload_pixels_[upload_image_stride * row]);
@@ -1601,13 +1612,15 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   const auto yuv_si_format = output_si_format;
   DCHECK(yuv_si_format.is_single_plane());
   DCHECK(yuv_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+         yuv_si_format == viz::SinglePlaneFormat::kR_F16 ||
          yuv_si_format == viz::SinglePlaneFormat::kR_16 ||
          yuv_si_format == viz::SinglePlaneFormat::kLUMINANCE_8 ||
          yuv_si_format == viz::SinglePlaneFormat::kR_8)
       << yuv_si_format.ToString();
 
   std::unique_ptr<HalfFloatMaker> half_float_maker;
-  if (yuv_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+  if (yuv_si_format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
+      yuv_si_format == viz::SinglePlaneFormat::kR_F16) {
     half_float_maker = HalfFloatMaker::NewHalfFloatMaker(bits_per_channel);
     external_resources.offset = half_float_maker->Offset();
     external_resources.multiplier = half_float_maker->Multiplier();

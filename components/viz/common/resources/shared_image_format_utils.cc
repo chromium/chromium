@@ -74,7 +74,8 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kA16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16) {
     return kA16_float_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_88) {
     return kR8G8_unorm_SkColorType;
@@ -319,7 +320,8 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
              format == SinglePlaneFormat::kBGRX_8888) {
     return GL_RGB;
   } else if (format == SinglePlaneFormat::kR_8 ||
-             format == SinglePlaneFormat::kR_16) {
+             format == SinglePlaneFormat::kR_16 ||
+             format == SinglePlaneFormat::kR_F16) {
     return GL_RED_EXT;
   } else if (format == SinglePlaneFormat::kRG_88 ||
              format == SinglePlaneFormat::kRG_1616) {
@@ -349,6 +351,7 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
              format == SinglePlaneFormat::kRGB_565) {
     return GL_UNSIGNED_SHORT_5_6_5;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
+             format == SinglePlaneFormat::kR_F16 ||
              format == SinglePlaneFormat::kRGBA_F16) {
     return GL_HALF_FLOAT_OES;
   } else if (format == SinglePlaneFormat::kR_16 ||
@@ -389,6 +392,8 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return GL_RG8_EXT;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
     return GL_LUMINANCE16F_EXT;
+  } else if (format == SinglePlaneFormat::kR_F16) {
+    return GL_R16F_EXT;
   } else if (format == SinglePlaneFormat::kR_16) {
     return GL_R16_EXT;
   } else if (format == SinglePlaneFormat::kRG_1616) {

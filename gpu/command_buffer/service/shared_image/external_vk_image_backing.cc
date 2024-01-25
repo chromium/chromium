@@ -755,7 +755,6 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   auto& vulkan_image = vk_texture.vulkan_image;
   gfx::Size plane_size = vulkan_image->size();
   auto plane_format = GLTextureHolder::GetPlaneFormat(format(), plane_index);
-
   DCHECK_EQ(gl_textures_.size(), plane_index);
   auto& gl_texture = gl_textures_.emplace_back(plane_format, plane_size,
                                                is_passthrough, nullptr);
