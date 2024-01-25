@@ -242,6 +242,9 @@ void BackForwardMenuModel::MenuWillShow() {
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
   menu_model_open_timestamp_ = base::TimeTicks::Now();
+  // Observe the web contents for navigation changes which could
+  // happen while the menu is open.
+  content::WebContentsObserver::Observe(GetWebContents());
 
   // Close the IPH popup if the user opens the menu.
   browser_->window()->CloseFeaturePromo(
@@ -249,11 +252,25 @@ void BackForwardMenuModel::MenuWillShow() {
 }
 
 void BackForwardMenuModel::MenuWillClose() {
+  content::WebContentsObserver::Observe(nullptr);
   CHECK(menu_model_open_timestamp_.has_value());
   base::TimeDelta time =
       base::TimeTicks::Now() - menu_model_open_timestamp_.value();
   base::UmaHistogramLongTimes(
       "Navigation.BackForward.TimeFromOpenBackNavigationMenuToCloseMenu", time);
+}
+
+void BackForwardMenuModel::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  if (menu_model_delegate()) {
+    menu_model_delegate()->OnMenuStructureChanged();
+  }
+}
+
+void BackForwardMenuModel::NavigationEntriesDeleted() {
+  if (menu_model_delegate()) {
+    menu_model_delegate()->OnMenuStructureChanged();
+  }
 }
 
 bool BackForwardMenuModel::IsSeparator(size_t index) const {
