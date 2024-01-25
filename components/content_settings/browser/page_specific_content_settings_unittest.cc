@@ -961,8 +961,7 @@ class PageSpecificContentSettingsWithBDMTest
   PageSpecificContentSettingsWithBDMTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{browsing_data::features::kMigrateStorageToBDM, {}},
-         {browsing_data::features::kDeprecateCookiesTreeModel, {}}},
+        {{browsing_data::features::kDeprecateCookiesTreeModel, {}}},
         /*disabled_features=*/{});
   }
 

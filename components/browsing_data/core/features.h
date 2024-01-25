@@ -16,10 +16,6 @@ BASE_DECLARE_FEATURE(kEnableBrowsingDataLifetimeManager);
 // Deprecate CookiesTReeModel and use BrowsingDataModel as the only browsing
 // data interface.
 BASE_DECLARE_FEATURE(kDeprecateCookiesTreeModel);
-
-// Enables `BrowsingDataModel` to be the sole handler for storage i.e. local
-// storage and quota managed storage.
-BASE_DECLARE_FEATURE(kMigrateStorageToBDM);
 }  // namespace browsing_data::features
 
 #endif  // COMPONENTS_BROWSING_DATA_CORE_FEATURES_H_

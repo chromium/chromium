@@ -896,8 +896,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       attribution_reporting::features::kConversionMeasurement);
   bool is_private_aggregation_enabled =
       base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
-  bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
-      browsing_data::features::kMigrateStorageToBDM);
   bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
       browsing_data::features::kDeprecateCookiesTreeModel);
 
@@ -910,17 +908,22 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   // until `finished_callback` has been run. Thus, it's safe to pass raw `this`
   // to backend callbacks.
 
-  // Issued Trust Tokens:
+  // Issued Trust Tokens
   storage_partition_->GetNetworkContext()->GetStoredTrustTokenCounts(
       base::BindOnce(&OnTrustTokenIssuanceInfoLoaded, this, completion));
 
+  // Quota Storage
+  quota_helper_->StartFetching(
+      base::BindOnce(&OnQuotaStorageLoaded, this, completion));
+  storage_partition_->GetDOMStorageContext()->GetLocalStorageUsage(
+      base::BindOnce(&OnLocalStorageLoaded, this, completion));
   // Shared storage origins
   if (is_shared_storage_enabled) {
     storage_partition_->GetSharedStorageManager()->FetchOrigins(
         base::BindOnce(&OnSharedStorageLoaded, this, completion));
   }
 
-  // Shared Dictionaries.
+  // Shared Dictionaries
   if (is_shared_dictionary_enabled) {
     storage_partition_->GetNetworkContext()->GetSharedDictionaryUsageInfo(
         base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
@@ -944,13 +947,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
         base::BindOnce(&OnPrivateAggregationLoaded, this, completion));
   }
 
-  if (is_migrate_storage_to_bdm_enabled) {
-    quota_helper_->StartFetching(
-        base::BindOnce(&OnQuotaStorageLoaded, this, completion));
-    storage_partition_->GetDOMStorageContext()->GetLocalStorageUsage(
-        base::BindOnce(&OnLocalStorageLoaded, this, completion));
-  }
-
+  // Cookies
   if (is_cookies_tree_model_deprecated) {
     storage_partition_->GetCookieManagerForBrowserProcess()->GetAllCookies(
         base::BindOnce(&OnCookiesLoaded, this, completion));

@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -1513,16 +1512,8 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
 void PageInfo::PresentSiteData(base::OnceClosure done) {
   auto* settings = GetPageSpecificContentSettings();
-  if (settings) {
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM) &&
-        weak_factory_.GetWeakPtr()) {
-      PresentSiteDataInternal(std::move(done));
-    } else {
-      settings->allowed_local_shared_objects().UpdateIgnoredEmptyStorageKeys(
-          base::BindOnce(&PageInfo::PresentSiteDataInternal,
-                         weak_factory_.GetWeakPtr(), std::move(done)));
-    }
+  if (settings && weak_factory_.GetWeakPtr()) {
+    PresentSiteDataInternal(std::move(done));
   } else {
     std::move(done).Run();
   }

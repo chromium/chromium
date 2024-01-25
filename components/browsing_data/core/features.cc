@@ -14,8 +14,4 @@ BASE_FEATURE(kEnableBrowsingDataLifetimeManager,
 BASE_FEATURE(kDeprecateCookiesTreeModel,
              "DeprecateCookiesTreeModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMigrateStorageToBDM,
-             "MigrateStorageToBDM",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace browsing_data::features
