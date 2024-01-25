@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
+#include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
@@ -268,19 +269,6 @@ struct PhysicalOffset;
 struct WebPrintPageDescription;
 
 using MouseEventWithHitTestResults = EventWithHitTestResults<WebMouseEvent>;
-
-enum NodeListInvalidationType : int {
-  kDoNotInvalidateOnAttributeChanges = 0,
-  kInvalidateOnClassAttrChange,
-  kInvalidateOnIdNameAttrChange,
-  kInvalidateOnNameAttrChange,
-  kInvalidateOnForAttrChange,
-  kInvalidateForFormControls,
-  kInvalidateOnHRefAttrChange,
-  kInvalidateOnAnyAttrChange,
-  kInvalidateOnPopoverInvokerAttrChange,
-};
-const int kNumNodeListInvalidationTypes = kInvalidateOnAnyAttrChange + 1;
 
 // Specifies a class of document. Values are not mutually exclusive, and can be
 // combined using `DocumentClassFlags`.

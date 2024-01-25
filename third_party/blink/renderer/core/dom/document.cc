@@ -8873,8 +8873,9 @@ bool ShouldInvalidateNodeListCachesForAttr<kNumNodeListInvalidationTypes>(
 bool Document::ShouldInvalidateNodeListCaches(
     const QualifiedName* attr_name) const {
   if (attr_name) {
-    return ShouldInvalidateNodeListCachesForAttr<
-        kDoNotInvalidateOnAttributeChanges + 1>(node_lists_, *attr_name);
+    return node_lists_.NeedsInvalidateOnAttributeChange() &&
+           ShouldInvalidateNodeListCachesForAttr<
+               kDoNotInvalidateOnAttributeChanges + 1>(node_lists_, *attr_name);
   }
 
   // If the invalidation is not for an attribute, invalidation is needed if

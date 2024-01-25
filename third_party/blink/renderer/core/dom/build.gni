@@ -176,6 +176,7 @@ blink_core_sources_dom = [
   "live_node_list_base.h",
   "live_node_list_registry.cc",
   "live_node_list_registry.h",
+  "node_list_invalidation_type.h",
   "mutation_observer.cc",
   "mutation_observer.h",
   "mutation_observer_interest_group.cc",
