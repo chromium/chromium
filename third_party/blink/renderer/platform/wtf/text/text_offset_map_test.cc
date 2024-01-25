@@ -29,6 +29,12 @@ TEST(TextOffsetMapTest, MergeConstructor) {
       {{{1, 2}, {2, 4}, {4, 7}}, {{5, 6}}, {{1, 2}, {2, 4}, {3, 6}, {4, 8}}},
       // "abcde" -> "abde" -> "aabdde"
       {{{3, 2}}, {{1, 2}, {3, 5}}, {{1, 2}, {3, 3}, {4, 5}}},
+
+      // crbug.com/1520775
+      // "ABabCDcdE" -> "ABbCDdE" -> "ABCDE"
+      {{{3, 2}, {7, 5}}, {{3, 2}, {6, 4}}, {{4, 2}, {8, 4}}},
+      // "ABC" -> "AaBCc" -> "AbaBCdc"
+      {{{1, 2}, {3, 5}}, {{1, 2}, {4, 6}}, {{1, 3}, {3, 7}}},
   };
 
   for (const auto& data : kTestData) {
