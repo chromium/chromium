@@ -117,7 +117,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
       kCardUnmaskPromptTableViewAccessibilityID;
 
   self.title =
-      base::SysUTF16ToNSString(_bridge->GetController()->GetWindowTitle());
+      base::SysUTF16ToNSString(_bridge->GetController()->GetNavigationTitle());
 
   // Disable selection.
   self.tableView.allowsSelection = NO;

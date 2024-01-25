@@ -143,7 +143,7 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 #pragma mark - Public Methods
 
 - (NSString*)navigationTitle {
-  return base::SysUTF16ToNSString(_unmaskingController->GetWindowTitle());
+  return base::SysUTF16ToNSString(_unmaskingController->GetNavigationTitle());
 }
 
 - (NSString*)instructionMessage {

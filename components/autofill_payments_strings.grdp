@@ -445,7 +445,7 @@
     </message>
   </if>
   <if expr="is_ios">
-    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_NAVIGATION_TITLE" desc="Title for the credit card unmasking dialog navigation bar.">
       Confirm Card
     </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS" desc="Text explaining what the user should do in the card unmasking dialog.">

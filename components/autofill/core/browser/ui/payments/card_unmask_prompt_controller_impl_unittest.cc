@@ -326,7 +326,8 @@ TEST_F(CardUnmaskPromptControllerImplTest, DisplayCardInformation) {
 TEST_F(CardUnmaskPromptControllerImplTest, TitleAndInstructionMessage) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"");
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
                 u". After you confirm, card details from your Google Account "
@@ -353,7 +354,8 @@ TEST_F(CardUnmaskPromptControllerImplTest, TitleAndInstructionMessageAmex) {
   card_ = test::GetMaskedServerCardAmex();
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"");
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
                 u". After you confirm, card details from your Google Account "
@@ -381,7 +383,8 @@ TEST_F(CardUnmaskPromptControllerImplTest,
   card_ = test::GetExpiredCreditCard();
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetNavigationTitle(), u"Confirm Card");
+  EXPECT_EQ(controller_->GetWindowTitle(), u"");
   EXPECT_EQ(
       controller_->GetInstructionsMessage(),
       u"Enter the expiration date and CVC for " +

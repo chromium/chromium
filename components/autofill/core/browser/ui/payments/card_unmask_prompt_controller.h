@@ -28,6 +28,11 @@ class CardUnmaskPromptController {
   virtual void NewCardLinkClicked() = 0;
 
   // State.
+#if BUILDFLAG(IS_IOS)
+  // On IOS, a separate string other than the window title is needed to be shown
+  // as the title of the navigation bar.
+  virtual std::u16string GetNavigationTitle() const = 0;
+#endif
   virtual std::u16string GetWindowTitle() const = 0;
   virtual std::u16string GetInstructionsMessage() const = 0;
   virtual std::u16string GetOkButtonLabel() const = 0;
