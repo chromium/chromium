@@ -220,39 +220,10 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   metrics->ratio_distance_top_to_visible_top =
       ratio_distance_top_to_visible_top;
 
-  float ratio_distance_center_to_visible_top =
-      (target.y() + target.height() / 2.0) / base_height;
-  metrics->ratio_distance_center_to_visible_top =
-      ratio_distance_center_to_visible_top;
-
   float ratio_distance_root_top =
       (target.y() + root_frame_view->LayoutViewport()->ScrollOffsetInt().y()) /
       base_height;
   metrics->ratio_distance_root_top = ratio_distance_root_top;
-
-  // Here we use the target location in the root viewport, and calculate
-  // the distance from the bottom of the anchor element to the root bottom.
-  int root_height = GetTopDocument(anchor_element)
-                        ->GetLayoutView()
-                        ->GetScrollableArea()
-                        ->ContentsSize()
-                        .height();
-
-  int root_scrolled = root_frame_view->LayoutViewport()->ScrollOffsetInt().y();
-  float ratio_distance_root_bottom =
-      (root_height - root_scrolled - target.y() - target.height()) /
-      base_height;
-  metrics->ratio_distance_root_bottom = ratio_distance_root_bottom;
-
-  // Get the anchor element rect that intersects with the viewport.
-  gfx::Rect target_visible = target;
-  target_visible.Intersect(gfx::Rect(viewport.size()));
-
-  // It guarantees to be less or equal to 1.
-  float ratio_visible_area = (target_visible.height() / base_height) *
-                             (target_visible.width() / base_width);
-  DCHECK_GE(1.0, ratio_visible_area);
-  metrics->ratio_visible_area = ratio_visible_area;
 
   return metrics;
 }

@@ -577,11 +577,8 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
   MockNavigationPredictorForTesting::AnchorId ReportNewAnchorElementWithDetails(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
       float ratio_area,
-      float ratio_visible_area,
       float ratio_distance_top_to_visible_top,
-      float ratio_distance_center_to_visible_top,
       float ratio_distance_root_top,
-      float ratio_distance_root_bottom,
       bool is_in_iframe,
       bool contains_image,
       bool is_same_host,
@@ -593,13 +590,9 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
     metrics.push_back(CreateMetricsPtr());
 
     metrics[0]->ratio_area = ratio_area;
-    metrics[0]->ratio_visible_area = ratio_visible_area;
     metrics[0]->ratio_distance_top_to_visible_top =
         ratio_distance_top_to_visible_top;
-    metrics[0]->ratio_distance_center_to_visible_top =
-        ratio_distance_center_to_visible_top;
     metrics[0]->ratio_distance_root_top = ratio_distance_root_top;
-    metrics[0]->ratio_distance_root_bottom = ratio_distance_root_bottom;
     metrics[0]->is_in_iframe = is_in_iframe;
     metrics[0]->contains_image = contains_image;
     metrics[0]->is_same_host = is_same_host;
@@ -1258,11 +1251,8 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   auto anchor_id = ReportNewAnchorElementWithDetails(
       predictor_service.get(),
       /*ratio_area=*/0.1,
-      /*ratio_visible_area=*/0.1,
       /*ratio_distance_top_to_visible_top=*/0.0,
-      /*ratio_distance_center_to_visible_top=*/0.0,
       /*ratio_distance_root_top=*/0.0,
-      /*ratio_distance_root_bottom=*/0.0,
       /*is_in_iframe=*/false,
       /*contains_image=*/true,
       /*is_same_host=*/true,
