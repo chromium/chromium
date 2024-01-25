@@ -195,9 +195,17 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // the long fetch handler execution. and test case the mechanism to wait for
   // the fetch handler
   void ReadAndWrite(MojoResult mojo_result);
-  void WatchDataUpdate();
+  // Begins a two-phase read from |body_|, the data pipe consumer. If succeed,
+  // the read buffer is returned. If there are no data to read from the data
+  // pipe, this internally calls |OnDataTransferComplete()| and return nothing.
+  //
+  // Since this starts a two-phase read process, `EndReadData()` in |body_|
+  // has to be called after calling this function.
+  std::optional<base::span<const char>> StartReadData(
+      MojoResult initial_mojo_result);
   std::pair<MojoResult, base::span<const char>> BeginReadData();
   void CompleteReadData(uint32_t num_bytes_to_consume);
+  void WatchDataUpdate();
 
   void Abort();
 

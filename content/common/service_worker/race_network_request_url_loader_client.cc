@@ -397,43 +397,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
-    MojoResult mojo_result) {
-  if (!owner_) {
-    return;
-  }
-  if (state_ == State::kDataTransferFinished) {
-    return;
-  }
-
-  RecordMojoResultForDataTransfer(mojo_result, "Initial");
-  if (mojo_result != MOJO_RESULT_OK) {
+    MojoResult result) {
+  std::optional<base::span<const char>> read_buffer = StartReadData(result);
+  if (!read_buffer.has_value()) {
     return;
   }
 
   uint32_t num_bytes_to_consume = 0;
-  auto [result, read_buffer] = BeginReadData();
-  TRACE_EVENT_WITH_FLOW2(
-      "ServiceWorker",
-      "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
-      "read_data_result", result);
-  RecordMojoResultForDataTransfer(result, "Read");
-  switch (result) {
-    case MOJO_RESULT_OK:
-      break;
-    case MOJO_RESULT_FAILED_PRECONDITION:
-      // Successfully read the whole data.
-      OnDataTransferComplete();
-      return;
-    case MOJO_RESULT_BUSY:
-    case MOJO_RESULT_SHOULD_WAIT:
-      return;
-    default:
-      NOTREACHED() << "BeginReadData result:" << result;
-      return;
-  }
-
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If both data pipes are watched, write data to both pipes. Cancel writing
@@ -489,11 +459,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     // Copy data and call EndWriteData.
     uint32_t bytes_for_race_network_request =
         write_buffer_manager_for_race_network_request_
-            .CopyAndCompleteWriteDataWithSize(read_buffer,
+            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
                                               max_num_bytes_to_consume);
     uint32_t bytes_for_fetch_handler =
         write_buffer_manager_for_fetch_handler_
-            .CopyAndCompleteWriteDataWithSize(read_buffer,
+            .CopyAndCompleteWriteDataWithSize(read_buffer.value(),
                                               max_num_bytes_to_consume);
     CHECK_EQ(bytes_for_race_network_request, bytes_for_fetch_handler);
     num_bytes_to_consume = bytes_for_race_network_request;
@@ -517,7 +487,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     }
     num_bytes_to_consume =
         write_buffer_manager_for_race_network_request_.CopyAndCompleteWriteData(
-            read_buffer);
+            read_buffer.value());
   } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
@@ -538,9 +508,48 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     }
     num_bytes_to_consume =
         write_buffer_manager_for_fetch_handler_.CopyAndCompleteWriteData(
-            read_buffer);
+            read_buffer.value());
   }
   CompleteReadData(num_bytes_to_consume);
+}
+
+std::optional<base::span<const char>>
+ServiceWorkerRaceNetworkRequestURLLoaderClient::StartReadData(
+    MojoResult initial_mojo_result) {
+  if (!owner_) {
+    return std::nullopt;
+  }
+  if (state_ == State::kDataTransferFinished) {
+    return std::nullopt;
+  }
+
+  RecordMojoResultForDataTransfer(initial_mojo_result, "Initial");
+  if (initial_mojo_result != MOJO_RESULT_OK) {
+    return std::nullopt;
+  }
+
+  auto [result, read_buffer] = BeginReadData();
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker",
+      "ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite",
+      TRACE_ID_LOCAL(this),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
+      "read_data_result", result);
+  RecordMojoResultForDataTransfer(result, "Read");
+  switch (result) {
+    case MOJO_RESULT_OK:
+      return read_buffer;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // Successfully read the whole data.
+      OnDataTransferComplete();
+      return std::nullopt;
+    case MOJO_RESULT_BUSY:
+    case MOJO_RESULT_SHOULD_WAIT:
+      return std::nullopt;
+    default:
+      NOTREACHED() << "BeginReadData result:" << result;
+      return std::nullopt;
+  }
 }
 
 std::pair<MojoResult, base::span<const char>>
