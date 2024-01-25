@@ -279,13 +279,10 @@ void EnclaveWebSocketClient::ReadFromDataPipe(MojoResult,
 }
 
 void EnclaveWebSocketClient::ProcessCompletedResponse() {
-  std::vector<uint8_t> pending_read_data;
-  pending_read_data.swap(pending_read_data_);
+  on_response_.Run(SocketStatus::kOk, pending_read_data_);
   pending_read_data_index_ = 0;
   pending_read_finished_ = false;
-
-  on_response_.Run(SocketStatus::kOk, std::move(pending_read_data));
-  // `this` may have been deleted at this point.
+  pending_read_data_.clear();
 }
 
 void EnclaveWebSocketClient::ClosePipe(SocketStatus status) {
@@ -299,7 +296,6 @@ void EnclaveWebSocketClient::ClosePipe(SocketStatus status) {
   pending_read_finished_ = false;
   pending_read_data_.clear();
   on_response_.Run(status, std::vector<uint8_t>());
-  // `this` may have been deleted at this point.
 }
 
 void EnclaveWebSocketClient::OnMojoPipeDisconnect() {
