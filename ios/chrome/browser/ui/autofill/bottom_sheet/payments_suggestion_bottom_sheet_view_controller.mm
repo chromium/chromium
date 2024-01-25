@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
@@ -551,7 +552,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.accessibilityIdentifier = cell.textLabel.text;
+
+  // If we have the potential presence of a virtual card, the textLabel on its
+  // own is no longer a unique identifier, so we include the description.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableVirtualCards)) {
+    cell.accessibilityIdentifier = [self accessibleCardNameAtRow:indexPath.row];
+  } else {
+    cell.accessibilityIdentifier = cell.textLabel.text;
+  }
+
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
   [cell setIconImage:[self iconAtRow:indexPath.row]
             tintColor:nil

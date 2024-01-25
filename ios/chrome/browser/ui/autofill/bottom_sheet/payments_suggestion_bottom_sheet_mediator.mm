@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -182,6 +183,21 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
       [[NSMutableArray alloc] initWithCapacity:creditCards.size()];
   for (const autofill::CreditCard* creditCard : creditCards) {
     CHECK(creditCard);
+    // If the current card is enrolled to be a virtual card, create the virtual
+    // card and add it to creditCardData array directly before the original
+    // card.
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableVirtualCards) &&
+        creditCard->virtual_card_enrollment_state() ==
+            autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+      const autofill::CreditCard virtualCard =
+          autofill::CreditCard::CreateVirtualCard(*creditCard);
+      [creditCardData
+          addObject:[[CreditCardData alloc]
+                        initWithCreditCard:&virtualCard
+                                      icon:[self
+                                               iconForCreditCard:creditCard]]];
+    }
     [creditCardData
         addObject:[[CreditCardData alloc]
                       initWithCreditCard:creditCard

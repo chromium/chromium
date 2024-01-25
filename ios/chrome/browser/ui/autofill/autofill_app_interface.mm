@@ -455,6 +455,19 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
 
++ (NSString*)saveMaskedCreditCardEnrolledInVirtualCard {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  autofill::CreditCard card =
+      autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  CHECK_NE(card.record_type(), autofill::CreditCard::RecordType::kLocalCard);
+
+  personalDataManager->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(card));
+  personalDataManager->NotifyPersonalDataObserver();
+  return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
+}
+
 + (void)setUpSaveCardInfobarEGTestHelper {
   autofill::SaveCardInfobarEGTestHelper::SharedInstance()->SetUp();
 }
