@@ -120,7 +120,7 @@ static_library("search_engines") {
     ]
   }
 
-  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+  if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
       "site_search_policy_handler.cc",
       "site_search_policy_handler.h",
@@ -220,7 +220,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+  if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [ "site_search_policy_handler_unittest.cc" ]
   }
 
