@@ -5,6 +5,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 
 #include "base/apple/bundle_locations.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
@@ -127,8 +128,8 @@ class AutofillAgentTests : public web::WebTest {
   // frames.
   autofill::TestAutofillClient client_;
   web::FakeWebState fake_web_state_;
-  web::FakeWebFrame* fake_main_frame_ = nullptr;
-  web::FakeWebFramesManager* fake_web_frames_manager_ = nullptr;
+  raw_ptr<web::FakeWebFrame> fake_main_frame_ = nullptr;
+  raw_ptr<web::FakeWebFramesManager> fake_web_frames_manager_ = nullptr;
   AutofillAgent* autofill_agent_;
 };
 

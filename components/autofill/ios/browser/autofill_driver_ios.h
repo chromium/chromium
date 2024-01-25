@@ -9,6 +9,7 @@
 
 #import "base/containers/flat_map.h"
 #import "base/containers/flat_set.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
@@ -149,7 +150,7 @@ class AutofillDriverIOS : public AutofillDriver,
   using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
 
   // The WebState with which this object is associated.
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // The id of the WebFrame with which this object is associated.
   // "" if frame messaging is disabled.
@@ -175,7 +176,7 @@ class AutofillDriverIOS : public AutofillDriver,
   bool processed_ = false;
 
   // The embedder's AutofillClient instance.
-  AutofillClient* client_;
+  raw_ptr<AutofillClient> client_;
 
   // BrowserAutofillManager instance via which this object drives the shared
   // Autofill code.

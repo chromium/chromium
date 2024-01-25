@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
 // Protocol duplicating all Reading List Model Observer methods in Objective-C.
@@ -83,7 +84,7 @@ class ReadingListModelBridge : public ReadingListModelObserver {
 
   __unsafe_unretained id<ReadingListModelBridgeObserver> observer_;
 
-  ReadingListModel* model_;  // weak
+  raw_ptr<ReadingListModel> model_;  // weak
 };
 
 #endif  // COMPONENTS_READING_LIST_IOS_READING_LIST_MODEL_BRIDGE_OBSERVER_H_

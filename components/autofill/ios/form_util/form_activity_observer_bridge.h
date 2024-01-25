@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 
 @protocol FormActivityObserver<NSObject>
@@ -67,7 +68,7 @@ class FormActivityObserverBridge : public FormActivityObserver {
                    const FormRemovalParams& params) override;
 
  private:
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<FormActivityObserver> owner_ = nil;
 };
 
