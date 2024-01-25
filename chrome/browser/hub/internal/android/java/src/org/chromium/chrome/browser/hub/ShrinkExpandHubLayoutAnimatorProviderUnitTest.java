@@ -48,6 +48,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimatorProvider.ImageViewWeakRefBitmapCallback;
 import org.chromium.ui.base.TestActivity;
 
@@ -99,6 +100,14 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     @Test
     @SmallTest
     public void testShrinkTab() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("GridTabSwitcher.FramePerSecond.Shrink")
+                        .expectAnyRecord("GridTabSwitcher.MaxFrameInterval.Shrink")
+                        .expectAnyRecord("Android.GridTabSwitcher.Animation.TotalDuration.Shrink")
+                        .expectAnyRecord(
+                                "Android.GridTabSwitcher.Animation.FirstFrameLatency.Shrink")
+                        .build();
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
                         mHubContainerView,
@@ -131,11 +140,20 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+        watcher.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testExpandTab() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("GridTabSwitcher.FramePerSecond.Expand")
+                        .expectAnyRecord("GridTabSwitcher.MaxFrameInterval.Expand")
+                        .expectAnyRecord("Android.GridTabSwitcher.Animation.TotalDuration.Expand")
+                        .expectAnyRecord(
+                                "Android.GridTabSwitcher.Animation.FirstFrameLatency.Expand")
+                        .build();
         HubLayoutAnimatorProvider animatorProvider =
                 ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
                         mHubContainerView,
@@ -168,6 +186,7 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
+        watcher.assertExpected();
     }
 
     @Test

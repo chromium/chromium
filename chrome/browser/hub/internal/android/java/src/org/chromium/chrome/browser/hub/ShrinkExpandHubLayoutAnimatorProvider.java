@@ -10,6 +10,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
@@ -20,8 +21,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
+import org.chromium.ui.animation.AnimationPerformanceTracker;
+import org.chromium.ui.animation.AnimationPerformanceTracker.AnimationMetrics;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.lang.ref.WeakReference;
@@ -60,6 +64,8 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         }
     }
 
+    private final @Nullable AnimationPerformanceTracker mAnimationTracker;
+    private final long mCreationTime = SystemClock.elapsedRealtime();
     private final @HubLayoutAnimationType int mAnimationType;
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull SyncOneshotSupplierImpl<HubLayoutAnimator> mAnimatorSupplier;
@@ -68,6 +74,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
     private final @Nullable ImageViewWeakRefBitmapCallback mBitmapCallback;
     private final long mDurationMs;
 
+    private boolean mWasForcedToFinish;
     private @Nullable ShrinkExpandImageView mShrinkExpandImageView;
     private boolean mLayoutSatisfied;
 
@@ -96,6 +103,10 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
             @ColorInt int backgroundColor,
             long durationMs) {
+        assert animationType == HubLayoutAnimationType.EXPAND_NEW_TAB
+                        || animationType == HubLayoutAnimationType.EXPAND_TAB
+                        || animationType == HubLayoutAnimationType.SHRINK_TAB
+                : "Invalid shrink expand HubLayoutAnimationType: " + animationType;
         mAnimationType = animationType;
         mHubContainerView = hubContainerView;
         mAnimatorSupplier = new SyncOneshotSupplierImpl<HubLayoutAnimator>();
@@ -112,6 +123,14 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         ? new ImageViewWeakRefBitmapCallback(
                                 mShrinkExpandImageView, this::maybeSupplyAnimation)
                         : null;
+
+        if (animationType == HubLayoutAnimationType.SHRINK_TAB
+                || animationType == HubLayoutAnimationType.EXPAND_TAB) {
+            mAnimationTracker = new AnimationPerformanceTracker();
+            mAnimationTracker.addListener(this::recordAnimationMetrics);
+        } else {
+            mAnimationTracker = null;
+        }
 
         mAnimationDataSupplier.onAvailable(this::onAnimationDataAvailable);
     }
@@ -229,6 +248,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         animationData.getInitialRect(),
                         animationData.getFinalRect());
         shrinkExpandAnimator.setInterpolator(getInterpolator(mAnimationType));
+        if (mAnimationTracker != null) {
+            shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
+        }
 
         // TODO(crbug/1492207): Add the ability to change corner radii of the ShrinkExpandImageView
         // via ShrinkExpandAnimator as part of the animation. For radiii use data supplied through
@@ -248,6 +270,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         toolbarView.setAlpha(initialAlpha);
                         mHubContainerView.setVisibility(View.VISIBLE);
                         mShrinkExpandImageView.setVisibility(View.VISIBLE);
+                        if (mAnimationTracker != null) mAnimationTracker.onStart();
                     }
 
                     @Override
@@ -263,6 +286,11 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         // the layout dimensions match the expected final state rather than being
                         // transformed from the initial layout parameters.
                         mShrinkExpandImageView.resetKeepingBitmap(animationData.getFinalRect());
+
+                        if (mAnimationTracker != null) {
+                            mWasForcedToFinish = wasForcedToFinish;
+                            mAnimationTracker.onEnd();
+                        }
                     }
 
                     @Override
@@ -293,5 +321,25 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             return Interpolators.STANDARD_INTERPOLATOR;
         }
         return Interpolators.EMPHASIZED;
+    }
+
+    private void recordAnimationMetrics(AnimationMetrics metrics) {
+        if (mWasForcedToFinish || metrics.getFrameCount() == 0) return;
+
+        long totalDurationMs = metrics.getLastFrameTimeMs() - mCreationTime;
+
+        assert mAnimationType != HubLayoutAnimationType.EXPAND_NEW_TAB;
+        String suffix = mAnimationType == HubLayoutAnimationType.SHRINK_TAB ? ".Shrink" : ".Expand";
+
+        RecordHistogram.recordCount100Histogram(
+                "GridTabSwitcher.FramePerSecond" + suffix,
+                Math.round(metrics.getFramesPerSecond()));
+        RecordHistogram.recordTimesHistogram(
+                "GridTabSwitcher.MaxFrameInterval" + suffix, metrics.getMaxFrameIntervalMs());
+        RecordHistogram.recordTimesHistogram(
+                "Android.GridTabSwitcher.Animation.TotalDuration" + suffix, totalDurationMs);
+        RecordHistogram.recordTimesHistogram(
+                "Android.GridTabSwitcher.Animation.FirstFrameLatency" + suffix,
+                metrics.getFirstFrameLatencyMs());
     }
 }
