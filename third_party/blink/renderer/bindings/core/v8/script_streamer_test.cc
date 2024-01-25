@@ -396,7 +396,13 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
 TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
   // If we notice before streaming that there is a compile hints cache, we use
   // it for eager compilation.
-  base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
+
+  // Disable features::kProduceCompileHints2 forcefully, because local compile
+  // hints are not used when producing crowdsourced compile hints.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureStates({{features::kLocalCompileHints, true},
+                                  {features::kProduceCompileHints2, false}});
+
   V8TestingScope scope;
 
   CachedMetadataHandler* cache_handler = resource_->CacheHandler();
@@ -418,6 +424,11 @@ TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
       /*code_cache_host*/ nullptr,
       V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
       cached_data->length);
+
+  // Checks for debugging failures in this test.
+  EXPECT_TRUE(V8CodeCache::HasCompileHints(
+      cache_handler, CachedMetadataHandler::kAllowUnchecked));
+  EXPECT_TRUE(V8CodeCache::HasHotTimestamp(cache_handler));
 
   AppendData("/*this doesn't matter*/");
   Finish();
