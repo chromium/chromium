@@ -99,14 +99,12 @@ void ConnectionFactoryImpl::Initialize(
 
   network_connection_tracker_->AddNetworkConnectionObserver(this);
   auto type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-  // TODO(b/314617075): check what happens when GetConnectionType() returns
-  // synchronously (i.e. OnConnectionChanged() is not called).
-  network_connection_tracker_->GetConnectionType(
-      &type, base::BindOnce(&ConnectionFactoryImpl::OnConnectionChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-  waiting_for_network_online_ =
-      type == network::mojom::ConnectionType::CONNECTION_NONE ||
-      type == network::mojom::ConnectionType::CONNECTION_UNKNOWN;
+  if (network_connection_tracker_->GetConnectionType(
+          &type, base::BindOnce(&ConnectionFactoryImpl::OnConnectionChanged,
+                                weak_ptr_factory_.GetWeakPtr()))) {
+    waiting_for_network_online_ =
+        type == network::mojom::ConnectionType::CONNECTION_NONE;
+  }
 }
 
 ConnectionHandler* ConnectionFactoryImpl::GetConnectionHandler() const {
@@ -167,7 +165,11 @@ void ConnectionFactoryImpl::ConnectWithBackoff() {
   // otherwise it's possible to hit a use-after-free in the connection handler.
   // crbug.com/462319
   CloseSocket();
-  ConnectImpl(/*ignore_connection_failure=*/false);
+  if (!waiting_for_network_online_ ||
+      !base::FeatureList::IsEnabled(
+          gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable)) {
+    ConnectImpl(/*ignore_connection_failure=*/false);
+  }
 }
 
 bool ConnectionFactoryImpl::IsEndpointReachable() const {
@@ -317,9 +319,9 @@ void ConnectionFactoryImpl::ConnectImpl(bool ignore_connection_failure) {
 void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
   DCHECK(!IsEndpointReachable());
   CHECK(!socket_);
-
-  // TODO(zea): if the network is offline, don't attempt to connect.
-  // See crbug.com/396687
+  CHECK(!waiting_for_network_online_ ||
+        !base::FeatureList::IsEnabled(
+            gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable));
 
   connecting_ = true;
   GURL current_endpoint = GetCurrentEndpoint();
