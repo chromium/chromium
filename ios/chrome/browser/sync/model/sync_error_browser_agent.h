@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_ERROR_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_ERROR_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
@@ -58,7 +59,7 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   // Returns the state of the Browser
   ChromeBrowserState* GetBrowserState();
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // To observe unrealized WebStates.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>

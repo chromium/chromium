@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_CLIENT_H_
 #define IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/trusted_vault/trusted_vault_client.h"
