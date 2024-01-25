@@ -649,7 +649,11 @@ void BrowserAccessibilityManager::OnLocationChanges(
                       change->new_location.bounds,
                       change->new_location.transform.get());
   }
-  SendLocationChangeEvents(changes);
+  // Only send location change events when the page is not in back/forward
+  // cache.
+  if (CanFireEvents()) {
+    SendLocationChangeEvents(changes);
+  }
   if (!location_change_callback_for_testing_.is_null())
     location_change_callback_for_testing_.Run();
 }

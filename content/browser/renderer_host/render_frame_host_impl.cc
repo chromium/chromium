@@ -322,6 +322,10 @@ BASE_FEATURE(kEvictOnAXEvents,
              "EvictOnAXEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDoNotEvictOnAXLocationChange,
+             "DoNotEvictOnAXLocationChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(https://crbug.com/1502760): This is a kill switch landed in M122. Please
 // remove after M124.
 BASE_FEATURE(kForceBrowserInitiatedPageClose,
@@ -7222,7 +7226,15 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
       // accessibility events without evicting unless the kEvictOnAXEvents flag
       // is on.
       if (!base::FeatureList::IsEnabled(features::kEvictOnAXEvents))
-        DCHECK_NE(reason, kAXEvent);
+        CHECK_NE(reason, kAXEvent);
+      // This function should not be called with kAXLocationChange when the
+      // page is in back/forward cache, because `HandleAXLocationChange()` will
+      // continue to process accessibility location changes unless
+      // kDoNotEvictOnAXLocationChange is off.
+      if (base::FeatureList::IsEnabled(
+              features::kDoNotEvictOnAXLocationChange)) {
+        CHECK_NE(reason, kAXLocationChange);
+      }
       BackForwardCacheCanStoreDocumentResult can_store_flat;
       can_store_flat.NoDueToDisallowActivation(reason);
       EvictFromBackForwardCacheWithFlattenedReasons(can_store_flat);
@@ -9469,9 +9481,12 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     return;
   }
 
-  if (IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kAXLocationChange)) {
-    return;
+  if (!base::FeatureList::IsEnabled(features::kDoNotEvictOnAXLocationChange)) {
+    // If the flag is off, we should evict the back/forward cache entry.
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kAXLocationChange)) {
+      return;
+    }
   }
 
   BrowserAccessibilityManager* manager =

@@ -243,6 +243,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 
 // Feature to evict when accessibility events occur while in back/forward cache.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEvictOnAXEvents);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
+
 }  // namespace features
 
 namespace content {
@@ -3219,6 +3222,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            BlockNameUpdateForBackForwardCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
                            BlockNameUpdateForPendingDelete);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithFlagForAXLocationChange,
+      EvictOnAXLocationChangeOrNot);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowsingContextStateBrowserTest,
                            SlowUnloadHandlerInIframe);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
