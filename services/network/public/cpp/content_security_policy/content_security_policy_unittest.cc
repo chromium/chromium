@@ -196,9 +196,12 @@ TEST(ContentSecurityPolicy, ParseFrameAncestors) {
       // Dot separation.
       {"a", {{{"", "a"}}}},
       {"a.b.c", {{{"", "a.b.c"}}}},
-      {"a.b."},
       {".b.c"},
       {"a..c"},
+
+      // Trailing dots
+      {"a.", {{{"", "a."}}}},
+      {"a.b.", {{{"", "a.b."}}}},
 
       // Valid/Invalid characters.
       {"az09-", {{{"", "az09-"}}}},

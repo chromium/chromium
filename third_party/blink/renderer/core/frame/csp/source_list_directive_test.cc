@@ -523,7 +523,7 @@ TEST_F(SourceListDirectiveTest, ParseSourceListHost) {
 
       // Dots.
       {"a.b.c", true},
-      {"a.b.", false},
+      {"a.b.", true},
       {".b.c", false},
       {"a..c", false},
 
