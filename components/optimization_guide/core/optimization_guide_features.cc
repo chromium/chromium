@@ -449,9 +449,9 @@ bool IsModelQualityLoggingEnabledForFeature(
       base::ToLowerASCII(proto::ModelExecutionFeature_Name(feature_name));
   bool default_value = true;
 
-  // Disable compose feature by default.
+  // Disable logging for test feature.
   if (feature_name ==
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE) {
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
     default_value = false;
   }
   return GetFieldTrialParamByFeatureAsBool(kModelQualityLogging, param_name,
