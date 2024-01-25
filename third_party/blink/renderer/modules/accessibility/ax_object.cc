@@ -1856,7 +1856,6 @@ String AXObject::KeyboardShortcut() const {
 void AXObject::SerializeOtherScreenReaderAttributes(
     ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
-  DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
   if (IsA<Document>(GetNode())) {
     // The busy attribute is only relevant for actual Documents, not popups.
