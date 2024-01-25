@@ -498,4 +498,63 @@ absl::optional<uint64_t> GetProductClusterIdFromBookmark(
              : absl::nullopt;
 }
 
+void RemoveDanglingSubscriptions(
+    ShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    base::OnceCallback<void(size_t)> completed_callback) {
+  if (!shopping_service || !bookmark_model) {
+    return;
+  }
+
+  shopping_service->GetAllSubscriptions(
+      commerce::SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingService> service,
+             bookmarks::BookmarkModel* model,
+             base::OnceCallback<void(size_t)> callback,
+             std::vector<CommerceSubscription> subscriptions) {
+            if (!service) {
+              std::move(callback).Run(0);
+              return;
+            }
+
+            std::unique_ptr<std::vector<CommerceSubscription>> dangling_subs =
+                std::make_unique<std::vector<CommerceSubscription>>();
+
+            for (CommerceSubscription sub : subscriptions) {
+              if (sub.management_type != ManagementType::kUserManaged) {
+                continue;
+              }
+
+              uint64_t cluster_id;
+              if (!base::StringToUint64(sub.id, &cluster_id)) {
+                continue;
+              }
+
+              // If there is at least one bookmark with the corresponding
+              // subscription, no need to clean up.
+              if (GetBookmarksWithClusterId(model, cluster_id, 1).size() > 0) {
+                continue;
+              }
+
+              dangling_subs->push_back(sub);
+            }
+
+            size_t sub_count = dangling_subs->size();
+            if (sub_count > 0) {
+              service->Unsubscribe(
+                  std::move(dangling_subs),
+                  base::BindOnce(
+                      [](base::OnceCallback<void(size_t)> callback,
+                         size_t count,
+                         bool success) { std::move(callback).Run(count); },
+                      std::move(callback), sub_count));
+            } else {
+              std::move(callback).Run(0);
+            }
+          },
+          shopping_service->AsWeakPtr(), bookmark_model,
+          std::move(completed_callback)));
+}
+
 }  // namespace commerce

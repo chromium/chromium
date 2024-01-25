@@ -487,6 +487,21 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.DanglingUserSubscriptionCountAtStartup"
+    units="subscriptions" expires_after="2024-07-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.org</owner>
+  <summary>
+    Records the number of dangling subscriptions (user-tracked subscriptions
+    without at least one corresponding bookmark) that a user has when the
+    browser starts. This is recorded in the process of removing these
+    subscriptions since the user has no way of interacting with them. This will
+    only be recorded for clients where the subscriptions manager is created,
+    namely, for enabled countries and localed.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
     enum="PriceNotificationEmailState" expires_after="2024-06-30">
   <owner>ayman@chromium.org</owner>
