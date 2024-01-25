@@ -1961,9 +1961,6 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/1466855): Disabled on non-Aura due to WaitForResizeComplete()
-// not being implemented.
-#if defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     WindowSetResizableBlocksResizeToAndResizeByApis) {
@@ -1980,7 +1977,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set the initial window size to something != 1000x1000.
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(800,800);"));
-  WaitForResizeComplete(web_contents);
+  EXPECT_TRUE(RunUntil([&]() {
+    return EvalJs(web_contents, "window.outerWidth").ExtractInt() == 800;
+  }));
 
   gfx::Size client_view_size_before =
       browser_view->frame()->client_view()->size();
@@ -1990,17 +1989,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // window.resizeTo API no longer takes action.
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
-  WaitForResizeComplete(web_contents);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
                                browser_view->frame()->client_view()->size()));
 
   // window.resizeBy API no longer takes action.
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeBy(10,10);"));
-  WaitForResizeComplete(web_contents);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
                                browser_view->frame()->client_view()->size()));
 }
-#endif  // defined(USE_AURA)
 
 // Test to ensure crbug.com/1513330 won't reproduce.
 IN_PROC_BROWSER_TEST_F(
