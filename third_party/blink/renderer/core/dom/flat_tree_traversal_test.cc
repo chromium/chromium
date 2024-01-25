@@ -59,7 +59,7 @@ void FlatTreeTraversalTest::AttachOpenShadowRoot(
     Element& shadow_host,
     const char* shadow_inner_html) {
   ShadowRoot& shadow_root =
-      shadow_host.AttachShadowRootInternal(ShadowRootType::kOpen);
+      shadow_host.AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
 }
 

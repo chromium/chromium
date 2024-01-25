@@ -551,7 +551,7 @@ TEST_P(ParameterizedStyleResolverTest, BackgroundImageFetch) {
 
   GetDocument()
       .getElementById(AtomicString("host"))
-      ->AttachShadowRootInternal(ShadowRootType::kOpen);
+      ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   auto* none = GetDocument().getElementById(AtomicString("none"));
@@ -984,7 +984,7 @@ TEST_P(ParameterizedStyleResolverTest, EnsureComputedStyleSlotFallback) {
   ShadowRoot& shadow_root =
       GetDocument()
           .getElementById(AtomicString("host"))
-          ->AttachShadowRootInternal(ShadowRootType::kOpen);
+          ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <style>
       slot { color: red }
@@ -1161,7 +1161,7 @@ TEST_P(ParameterizedStyleResolverTest, TreeScopedReferences) {
 
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
-  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  ShadowRoot& root = host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   root.setInnerHTML(R"HTML(
     <style>
       ::slotted(span) { animation-name: anim-slotted }
@@ -1175,7 +1175,7 @@ TEST_P(ParameterizedStyleResolverTest, TreeScopedReferences) {
   Element* inner_host = root.getElementById(AtomicString("inner-host"));
   ASSERT_TRUE(inner_host);
   ShadowRoot& inner_root =
-      inner_host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      inner_host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   inner_root.setInnerHTML(R"HTML(
     <style>
       ::slotted(span) { animation-name: anim-inner-slotted }

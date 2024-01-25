@@ -5399,10 +5399,13 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
     return false;
   }
 
+  // TODO(crbug.com/1521128): Declarative shadow roots should set the registry
+  // argument here.
   // TODO(crbug.com/1517959): declarative shadow roots should support the
   // `serializable` attribute here, by creating a serializable shadow root.
-  ShadowRoot& shadow_root =
-      AttachShadowRootInternal(type, focus_delegation, slot_assignment);
+  ShadowRoot& shadow_root = AttachShadowRootInternal(
+      type, focus_delegation, slot_assignment, /*registry*/ nullptr,
+      /*serializable*/ false);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);

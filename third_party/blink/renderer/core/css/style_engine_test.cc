@@ -911,7 +911,7 @@ TEST_F(StyleEngineTest, RuleSetInvalidationHost) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   shadow_root.setInnerHTML("<div></div><div></div><div></div>");
   UpdateAllLifecyclePhases();
@@ -962,7 +962,7 @@ TEST_F(StyleEngineTest, RuleSetInvalidationSlotted) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   shadow_root.setInnerHTML("<slot name=other></slot><slot></slot>");
   UpdateAllLifecyclePhases();
@@ -987,7 +987,7 @@ TEST_F(StyleEngineTest, RuleSetInvalidationHostContext) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   shadow_root.setInnerHTML("<div></div><div class=a></div><div></div>");
   UpdateAllLifecyclePhases();
@@ -1296,7 +1296,7 @@ TEST_F(StyleEngineTest, StyleSheetsForStyleSheetList_ShadowRoot) {
 
   UpdateAllLifecyclePhases();
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   shadow_root.setInnerHTML("<style>span { color: green }</style>");
   EXPECT_TRUE(GetStyleEngine().NeedsActiveStyleUpdate());
@@ -2570,7 +2570,7 @@ TEST_F(StyleEngineTest, ShadowRootStyleRecalcCrash) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   shadow_root.setInnerHTML(R"HTML(
     <span id=span></span>
@@ -2600,7 +2600,7 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTreeCrash) {
 
   GetDocument()
       .getElementById(AtomicString("host"))
-      ->AttachShadowRootInternal(ShadowRootType::kOpen);
+      ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhases();
   GetDocument().body()->EnsureComputedStyle();
   GetDocument()
@@ -3097,7 +3097,7 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
   auto* inner = GetDocument().getElementById(AtomicString("inner"));
   auto* innermost = GetDocument().getElementById(AtomicString("innermost"));
 
-  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhases();
 
   EXPECT_TRUE(host->GetComputedStyle());
@@ -3166,9 +3166,9 @@ TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   auto* span = host1->firstChild();
 
   ShadowRoot& shadow_root =
-      host1->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host1->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<slot></slot>");
-  host2->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host2->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   UpdateAllLifecyclePhases();
 
@@ -3185,7 +3185,7 @@ TEST_F(StyleEngineTest, StyleRecalcRootInShadowTree) {
   )HTML");
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<div><span></span></div>");
   UpdateAllLifecyclePhases();
 
@@ -3207,7 +3207,7 @@ TEST_F(StyleEngineTest, StyleRecalcRootOutsideFlatTree) {
   auto* ensured = GetDocument().getElementById(AtomicString("ensured"));
   auto* span = To<Element>(ensured->firstChild());
 
-  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   UpdateAllLifecyclePhases();
 
@@ -3236,7 +3236,7 @@ TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
   auto* span = To<Element>(host->firstChild());
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<div><slot></slot></div>");
 
   UpdateAllLifecyclePhases();
@@ -3270,7 +3270,7 @@ TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
   auto* span = To<Element>(host->firstChild());
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <div><slot name="default"></slot></div>
   )HTML");
@@ -3305,7 +3305,7 @@ TEST_F(StyleEngineTest, ForceReattachRecalcRootAttachShadow) {
 
   // Attaching the shadow root will call FlatTreePositionChanged() on the span
   // child of the host. The style recalc root should still be #reattach.
-  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   EXPECT_EQ(reattach, GetStyleRecalcRoot());
 }
 
@@ -4640,7 +4640,7 @@ TEST_F(StyleEngineTest, FastRejectForHostChild) {
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <slot></slot>
   )HTML");
@@ -4675,7 +4675,7 @@ TEST_F(StyleEngineTest, RejectSlottedSelector) {
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <style>
       .notfound ::slotted(span) {
@@ -4902,7 +4902,7 @@ TEST_F(StyleEngineTest, NonDirtyStyleRecalcRoot) {
   auto* slotted = GetDocument().getElementById(AtomicString("slotted"));
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<slot></slot>");
   UpdateAllLifecyclePhases();
 
@@ -5349,7 +5349,7 @@ TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
   GetDocument().body()->setInnerHTML("<div id=host></div>");
   auto* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
-  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhases();
 
   // Add a child element to a shadow host with no slots. The inserted element is

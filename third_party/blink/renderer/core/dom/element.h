@@ -735,12 +735,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    SlotAssignmentMode);
 
   ShadowRoot& CreateUserAgentShadowRoot();
-  ShadowRoot& AttachShadowRootInternal(
-      ShadowRootType,
-      FocusDelegation focus_delegation = FocusDelegation::kNone,
-      SlotAssignmentMode slot_assignment_mode = SlotAssignmentMode::kNamed,
-      CustomElementRegistry* registry = nullptr,
-      bool serializable = false);
+  ShadowRoot& AttachShadowRootInternal(ShadowRootType,
+                                       FocusDelegation,
+                                       SlotAssignmentMode,
+                                       CustomElementRegistry*,
+                                       bool serializable);
+  // This version is for testing only, and allows easy attachment of a shadow
+  // root, specifying only the type and none of the other arguments.
+  ShadowRoot& AttachShadowRootForTesting(ShadowRootType type) {
+    return AttachShadowRootInternal(type, FocusDelegation::kNone,
+                                    SlotAssignmentMode::kNamed,
+                                    /*registry*/ nullptr,
+                                    /*serializable*/ false);
+  }
 
   // Returns the shadow root attached to this element if it is a shadow host.
   ShadowRoot* GetShadowRoot() const;

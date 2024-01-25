@@ -93,7 +93,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form1->AppendChild(form1div);
   ShadowRoot& form1root =
-      form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form1div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLFormElement* form2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   form1root.AppendChild(form2);
@@ -105,7 +105,7 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form3->AppendChild(form3div);
   ShadowRoot& form3root =
-      form3div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form3div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLInputElement* input =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());
@@ -267,7 +267,7 @@ TEST_F(HTMLFormElementTest, ListedElementsAfterIncludeShadowTrees) {
       MakeGarbageCollected<HTMLDivElement>(GetDocument());
   form1->AppendChild(form1div);
   ShadowRoot& form1root =
-      form1div->AttachShadowRootInternal(ShadowRootType::kOpen);
+      form1div->AttachShadowRootForTesting(ShadowRootType::kOpen);
 
   HTMLInputElement* input2 =
       MakeGarbageCollected<HTMLInputElement>(GetDocument());

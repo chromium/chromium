@@ -2324,7 +2324,7 @@ TEST_F(DocumentRulesTest, LinkInShadowTreeIncluded) {
 
   Document& document = page_holder.GetDocument();
   ShadowRoot& shadow_root =
-      document.body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+      document.body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
   auto* shadow_tree_link = AddAnchor(shadow_root, "https://foo.com/bar.html");
   AddAnchor(*document.body(), "https://foo.com/unslotted");
 
@@ -2528,7 +2528,7 @@ TEST_F(DocumentRulesTest, DisconnectedLinkInShadowTree) {
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
     div = MakeGarbageCollected<HTMLDivElement>(document);
     ShadowRoot& shadow_root =
-        div->AttachShadowRootInternal(ShadowRootType::kOpen);
+        div->AttachShadowRootForTesting(ShadowRootType::kOpen);
     link = AddAnchor(shadow_root, "https://foo.com/blah.html");
     document.body()->AppendChild(div);
   });
@@ -3131,7 +3131,7 @@ TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
   Document& document = page_holder.GetDocument();
 
   ShadowRoot& shadow_root =
-      document.body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+      document.body()->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
@@ -3464,7 +3464,7 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle) {
   // stop being rendered. It should trigger an update and be removed from
   // the candidate list.
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
-    important_section->AttachShadowRootInternal(ShadowRootType::kOpen);
+    important_section->AttachShadowRootForTesting(ShadowRootType::kOpen);
   });
   EXPECT_THAT(candidates, HasURLs());
 }

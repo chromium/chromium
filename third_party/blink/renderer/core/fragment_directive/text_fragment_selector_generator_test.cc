@@ -1377,7 +1377,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeBeginsOnShadowHost) {
   )HTML");
 
   Element* host = GetDocument().getElementById(AtomicString("host"));
-  ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  ShadowRoot& root = host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
   root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
 
@@ -1833,7 +1833,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   )HTML");
   ShadowRoot& shadow1 = GetDocument()
                             .getElementById(AtomicString("host1"))
-                            ->AttachShadowRootInternal(ShadowRootType::kOpen);
+                            ->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow1.setInnerHTML(R"HTML(
     <p id='p'>Right click the link below to experience a crash:</p>
     <style>

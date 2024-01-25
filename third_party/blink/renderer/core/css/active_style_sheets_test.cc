@@ -441,7 +441,7 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   CSSStyleSheet* sheet = CreateSheet("body * { color:red }");
@@ -480,7 +480,7 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
   CSSStyleSheet* sheet =
@@ -505,7 +505,7 @@ TEST_F(ApplyRulesetsTest, RemoveSheetFromShadowTree) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
   shadow_root.setInnerHTML("<style>::slotted(#dummy){color:pink}</style>");
   UpdateAllLifecyclePhasesForTest();
 

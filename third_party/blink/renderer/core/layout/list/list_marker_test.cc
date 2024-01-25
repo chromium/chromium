@@ -274,8 +274,8 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
   EXPECT_EQ("X. ", GetMarkerText("foo"));
 
   // Attach a shadow tree with counter styles. Shouldn't affect anything outside
-  ShadowRoot& shadow1 =
-      GetElementById("host1")->AttachShadowRootInternal(ShadowRootType::kOpen);
+  ShadowRoot& shadow1 = GetElementById("host1")->AttachShadowRootForTesting(
+      ShadowRootType::kOpen);
   shadow1.setInnerHTML(R"HTML(
     <style>
       @counter-style foo {
@@ -297,8 +297,8 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
 
   // Attach another shadow tree with counter styles. Shouldn't affect anything
   // outside.
-  ShadowRoot& shadow2 =
-      GetElementById("host2")->AttachShadowRootInternal(ShadowRootType::kOpen);
+  ShadowRoot& shadow2 = GetElementById("host2")->AttachShadowRootForTesting(
+      ShadowRootType::kOpen);
   shadow2.setInnerHTML(R"HTML(
     <style>
       @counter-style foo {

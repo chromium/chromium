@@ -130,7 +130,7 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTestShadowDOM) {
         "<div id='host_a'>"
         "</div>");
     auto* host_a = GetElementById("host_a");
-    auto& shadow_a = host_a->AttachShadowRootInternal(root_type);
+    auto& shadow_a = host_a->AttachShadowRootForTesting(root_type);
     shadow_a.setInnerHTML(
         "<style>"
         "label {"
