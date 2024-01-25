@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -385,7 +386,8 @@ bool IsSameOriginRedirect(const std::vector<GURL>& url_chain) {
 
 #if DCHECK_IS_ON()
 void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
-                              const network::mojom::ParsedHeadersPtr& rhs) {
+                              const network::mojom::ParsedHeadersPtr& rhs,
+                              const GURL& url) {
   // If we're running this function it means we're re-parsing the headers from
   // cache and checking if they equal the prior parsing results. As the
   // Clear-Site-Data header isn't cached we want to be sure not to fail just
@@ -401,6 +403,21 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   if (mojo::Equals(adjusted_lhs, rhs)) {
     return;
   }
+
+  // TODO(https://crbug.com/1362779) Remove this instrumentation once fixed.
+  auto to_string = [](const auto& policies) {
+    std::string out;
+    for (const auto& csp : policies) {
+      out += csp->header->header_value + " | ";
+    }
+    return out;
+  };
+  SCOPED_CRASH_KEY_STRING256("bug1362779", "csp_adjusted_lhs",
+                             to_string(adjusted_lhs->content_security_policy));
+  SCOPED_CRASH_KEY_STRING256("bug1362779", "csp_rhs",
+                             to_string(rhs->content_security_policy));
+  SCOPED_CRASH_KEY_STRING32("bug1362779", "url", url.possibly_invalid_spec());
+
   CHECK(mojo::Equals(adjusted_lhs->content_security_policy,
                      rhs->content_security_policy));
   CHECK(mojo::Equals(adjusted_lhs->allow_csp_from, rhs->allow_csp_from));
@@ -412,7 +429,7 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
                      rhs->origin_agent_cluster));
   CHECK(mojo::Equals(adjusted_lhs->accept_ch, rhs->accept_ch));
   CHECK(mojo::Equals(adjusted_lhs->critical_ch, rhs->critical_ch));
-  DCHECK_EQ(adjusted_lhs->xfo, rhs->xfo);
+  CHECK_EQ(adjusted_lhs->xfo, rhs->xfo);
   CHECK(mojo::Equals(adjusted_lhs->link_headers, rhs->link_headers));
   CHECK(mojo::Equals(adjusted_lhs->timing_allow_origin,
                      rhs->timing_allow_origin));
@@ -1259,14 +1276,14 @@ void NavigationURLLoaderImpl::ParseHeaders(
 #if DCHECK_IS_ON()
     // In debug mode, force reparsing the headers and check that they match.
     auto check = [](base::OnceClosure continuation,
-                    network::mojom::URLResponseHead* head,
+                    network::mojom::URLResponseHead* head, GURL url,
                     network::mojom::ParsedHeadersPtr parsed_headers) {
-      CheckParsedHeadersEquals(parsed_headers, head->parsed_headers);
+      CheckParsedHeadersEquals(parsed_headers, head->parsed_headers, url);
       std::move(continuation).Run();
     };
     GetNetworkService()->ParseHeaders(
         url, head->headers,
-        base::BindOnce(check, std::move(continuation), head));
+        base::BindOnce(check, std::move(continuation), head, url));
 #else
     std::move(continuation).Run();
 #endif
