@@ -6471,16 +6471,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "policy-logs-page-android",
-    "owners": [ "esalma@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "policy-logs-page-ios",
-    "owners": [ "esalma@chromium.org", "ftirelo@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "policy-provided-trust-anchors-allowed-at-lock-screen",
     "owners": [ "acostinas@chromium.org", "suprnet@google.com" ],
     "expiry_milestone": 118
