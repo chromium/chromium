@@ -221,6 +221,20 @@ who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.12.3"
 
+[[audits.qr_code]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0"
+notes = """
+* This crate was imported into Chromium back in May 2023:
+    - CL: https://crrev.com/c/4497329
+    - Google-internal audit notes: go/qr-code-chromium-security-review
+* Certification today is mostly based on the old audit.
+  The only checks performed today are:
+    - `grep`ped for `unsafe` and verified that the only hit comes
+      from `#![forbid(unsafe_code)]`
+"""
+
 [[audits.rand]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
