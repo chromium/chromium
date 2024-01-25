@@ -67,7 +67,7 @@ config("mediapipe_internal_config") {
 config("mediapipe_flags") {
   # This config is added to the public_config. Don't add cflags that disable
   # warnings here.
-  defines = [ "MEDIAPIPE_PROTO_LITE=1", "MEDIAPIPE_LOGGING_HAS_LOGGING_OPERATOR" ]
+  defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
 
   if (!mediapipe_build_with_gpu_support) {
     defines += [ "MEDIAPIPE_DISABLE_GPU=1" ]
