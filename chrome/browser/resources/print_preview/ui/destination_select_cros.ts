@@ -18,13 +18,14 @@ import '../strings.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
+import type {Destination} from '../data/destination.js';
+import {DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, getStatusTextColorClass, PrinterStatusReason} from '../data/printer_status_cros.js';
 
-import {PrintPreviewDestinationDropdownCrosElement} from './destination_dropdown_cros.js';
+import type {PrintPreviewDestinationDropdownCrosElement} from './destination_dropdown_cros.js';
 import {getTemplate} from './destination_select_cros.html.js';
 import {SelectMixin} from './select_mixin.js';
-import {PrintPreviewSettingsSectionElement} from './settings_section.js';
+import type {PrintPreviewSettingsSectionElement} from './settings_section.js';
 
 export interface PrintPreviewDestinationSelectCrosElement {
   $: {

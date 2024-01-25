@@ -5,10 +5,13 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
 
-import {Destination, DestinationOptionalParams, DestinationOrigin, PrinterType} from './destination.js';
+import type {DestinationOptionalParams} from './destination.js';
+import {Destination, DestinationOrigin, PrinterType} from './destination.js';
+
 // <if expr="is_chromeos">
 import {DestinationProvisionalType} from './destination.js';
-import {PrinterStatus} from './printer_status_cros.js';
+import type {PrinterStatus} from './printer_status_cros.js';
+
 // </if>
 
 interface ObjectMap {

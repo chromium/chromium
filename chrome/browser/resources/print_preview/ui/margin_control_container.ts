@@ -9,12 +9,13 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
-import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
-import {MeasurementSystem} from '../data/measurement_system.js';
-import {Size} from '../data/size.js';
+import type {Margins, MarginsSetting} from '../data/margins.js';
+import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
+import type {MeasurementSystem} from '../data/measurement_system.js';
+import type {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
-import {PrintPreviewMarginControlElement} from './margin_control.js';
+import type {PrintPreviewMarginControlElement} from './margin_control.js';
 import {getTemplate} from './margin_control_container.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 

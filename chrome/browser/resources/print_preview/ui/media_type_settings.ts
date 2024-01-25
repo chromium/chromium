@@ -9,7 +9,7 @@ import './settings_select.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MediaTypeCapability, MediaTypeOption, SelectOption} from '../data/cdd.js';
+import type {MediaTypeCapability, MediaTypeOption, SelectOption} from '../data/cdd.js';
 
 import {getTemplate} from './media_type_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';

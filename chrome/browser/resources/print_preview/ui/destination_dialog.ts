@@ -18,19 +18,20 @@ import '../strings.m.js';
 import './throbber.css.js';
 import './destination_list_item.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
+import type {Destination} from '../data/destination.js';
+import type {DestinationStore} from '../data/destination_store.js';
+import {DestinationStoreEventType} from '../data/destination_store.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './destination_dialog.html.js';
-import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
-import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
+import type {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
+import type {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 
 export interface PrintPreviewDestinationDialogElement {
   $: {

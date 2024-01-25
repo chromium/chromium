@@ -8,7 +8,7 @@ import '../strings.m.js';
 import '../data/document_info.js';
 import './sidebar.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -16,18 +16,22 @@ import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin, PrinterType} from '../data/destination.js';
-import {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
-import {Margins} from '../data/margins.js';
+import type {Destination} from '../data/destination.js';
+import {DestinationOrigin, PrinterType} from '../data/destination.js';
+import type {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
+import type {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
-import {DuplexMode, PrintPreviewModelElement, whenReady} from '../data/model.js';
-import {PrintableArea} from '../data/printable_area.js';
+import type {PrintPreviewModelElement} from '../data/model.js';
+import {DuplexMode, whenReady} from '../data/model.js';
+import type {PrintableArea} from '../data/printable_area.js';
 // <if expr="is_chromeos">
 import {computePrinterState, PrintAttemptOutcome, PrinterState} from '../data/printer_status_cros.js';
 // </if>
-import {Size} from '../data/size.js';
-import {Error, PrintPreviewStateElement, State} from '../data/state.js';
-import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
+import type {Size} from '../data/size.js';
+import type {PrintPreviewStateElement} from '../data/state.js';
+import {Error, State} from '../data/state.js';
+import type {NativeInitialSettings, NativeLayer} from '../native_layer.js';
+import {NativeLayerImpl} from '../native_layer.js';
 // <if expr="is_chromeos">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
@@ -35,9 +39,10 @@ import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
-import {PreviewAreaState, PrintPreviewPreviewAreaElement} from './preview_area.js';
+import type {PrintPreviewPreviewAreaElement} from './preview_area.js';
+import {PreviewAreaState} from './preview_area.js';
 import {SettingsMixin} from './settings_mixin.js';
-import {PrintPreviewSidebarElement} from './sidebar.js';
+import type {PrintPreviewSidebarElement} from './sidebar.js';
 
 export interface PrintPreviewAppElement {
   $: {

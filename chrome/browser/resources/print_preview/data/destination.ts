@@ -8,12 +8,14 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 // <if expr="is_chromeos">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
+
 // </if>
 
-import {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
+import type {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
 
 // <if expr="is_chromeos">
-import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
+import type {PrinterStatus} from './printer_status_cros.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
 /**
