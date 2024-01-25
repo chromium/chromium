@@ -43,6 +43,7 @@ class FakeDownloadControllerDelegate : public DownloadControllerDelegate {
                          std::unique_ptr<DownloadTask>) override;
   void OnDownloadControllerDestroyed(DownloadController*) override;
 
+  raw_ptr<DownloadControllerDelegate> old_delegate_ = nullptr;
   raw_ptr<DownloadController> controller_ = nullptr;
   AliveDownloadTaskList alive_download_tasks_;
 };

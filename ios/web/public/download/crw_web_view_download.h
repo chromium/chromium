@@ -12,6 +12,7 @@
 @protocol CRWWebViewDownload <NSObject>
 
 // Cancels the download with a completion block.
+// Local downloads (from file:// URL) cannot be cancelled.
 - (void)cancelDownload:(ProceduralBlock)completion;
 
 @end

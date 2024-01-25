@@ -13,6 +13,7 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
+#import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
@@ -388,6 +389,14 @@ void FakeWebState::OnVisibleSecurityStateChanged() {
   }
 }
 
+void FakeWebState::OnDownloadFinished(NSError* error) {
+  if (error) {
+    [download_delegate_ downloadDidFailWithError:error];
+  } else {
+    [download_delegate_ downloadDidFinish];
+  }
+}
+
 void FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
     WebStatePolicyDecider::RequestInfo request_info,
@@ -463,6 +472,11 @@ void FakeWebState::SetCanTakeSnapshot(bool can_take_snapshot) {
 void FakeWebState::SetFindInteraction(id<CRWFindInteraction> find_interaction)
     API_AVAILABLE(ios(16)) {
   find_interaction_ = find_interaction;
+}
+
+void FakeWebState::SetWebViewDownload(
+    id<CRWWebViewDownload> web_view_download) {
+  web_view_download_ = web_view_download;
 }
 
 CRWWebViewProxyType FakeWebState::GetWebViewProxy() const {
@@ -558,7 +572,10 @@ NSDictionary<NSNumber*, NSNumber*>* FakeWebState::GetStatesForAllPermissions()
 void FakeWebState::DownloadCurrentPage(
     NSString* destination_file,
     id<CRWWebViewDownloadDelegate> delegate,
-    void (^handler)(id<CRWWebViewDownload>)) {}
+    void (^handler)(id<CRWWebViewDownload>)) {
+  download_delegate_ = delegate;
+  handler(web_view_download_);
+}
 
 bool FakeWebState::IsFindInteractionSupported() {
   return true;

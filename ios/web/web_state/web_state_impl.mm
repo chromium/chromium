@@ -813,12 +813,9 @@ void WebStateImpl::DownloadCurrentPage(
     id<CRWWebViewDownloadDelegate> delegate,
     void (^handler)(id<CRWWebViewDownload>)) {
   CRWWebController* web_controller = GetWebController();
-  NSURLRequest* request =
-      [NSURLRequest requestWithURL:net::NSURLWithGURL(GetLastCommittedURL())];
-  [web_controller downloadCurrentPageWithRequest:request
-                                 destinationPath:destination_file
-                                        delegate:delegate
-                                         handler:handler];
+  [web_controller downloadCurrentPageToDestinationPath:destination_file
+                                              delegate:delegate
+                                               handler:handler];
 }
 
 bool WebStateImpl::IsFindInteractionSupported() {

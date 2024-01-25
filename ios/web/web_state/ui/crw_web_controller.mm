@@ -912,11 +912,18 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
                                   currentURL:self.currentURL];
 }
 
-- (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
-                       destinationPath:(NSString*)destination
-                              delegate:(id<CRWWebViewDownloadDelegate>)delegate
-                               handler:
-                                   (void (^)(id<CRWWebViewDownload>))handler {
+- (void)downloadCurrentPageToDestinationPath:(NSString*)destination
+                                    delegate:
+                                        (id<CRWWebViewDownloadDelegate>)delegate
+                                     handler:(void (^)(id<CRWWebViewDownload>))
+                                                 handler {
+  const NavigationManagerImpl* navigationManager = self.navigationManagerImpl;
+  GURL url = navigationManager->GetLastCommittedItem()
+                 ? navigationManager->GetLastCommittedItem()->GetURL()
+                 : [self currentURL];
+
+  NSURLRequest* request = [NSURLRequest requestWithURL:net::NSURLWithGURL(url)];
+
   CRWWebViewDownload* download =
       [[CRWWebViewDownload alloc] initWithPath:destination
                                        request:request

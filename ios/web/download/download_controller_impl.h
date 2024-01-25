@@ -55,6 +55,10 @@ class DownloadControllerImpl : public DownloadController,
                                 const std::string& mime_type,
                                 DownloadNativeTaskBridge* download) override;
 
+  void CreateWebStateDownloadTask(WebState* web_state,
+                                  NSString* identifier,
+                                  int64_t total_bytes) override;
+
   void SetDelegate(DownloadControllerDelegate* delegate) override;
   DownloadControllerDelegate* GetDelegate() const override;
 

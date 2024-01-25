@@ -36,6 +36,8 @@ source_set("download") {
     "download_task_impl.mm",
     "download_task_observer.mm",
     "download_task_observer_bridge.mm",
+    "web_state_content_download_task.h",
+    "web_state_content_download_task.mm",
   ]
 
   frameworks = [ "UIKit.framework" ]
@@ -79,12 +81,14 @@ source_set("download_unittests") {
   ]
 
   sources = [
+    "crw_web_view_download_unittest.mm",
     "data_url_download_task_unittest.mm",
     "download_controller_impl_unittest.mm",
     "download_native_task_impl_unittest.mm",
     "download_session_cookie_storage_unittest.mm",
     "download_session_task_impl_unittest.mm",
     "download_task_impl_unittest.mm",
+    "web_state_content_download_task_unittest.mm",
   ]
 }
 
