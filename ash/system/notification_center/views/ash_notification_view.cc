@@ -1483,8 +1483,6 @@ void AshNotificationView::UpdateCornerRadius(int top_radius,
   UpdateBackground(top_radius, bottom_radius);
 }
 
-void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
-
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);

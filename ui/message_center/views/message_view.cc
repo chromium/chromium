@@ -253,7 +253,12 @@ void MessageView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MessageView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateControlButtonsVisibility();
   MessageCenter::Get()->OnMessageViewHovered(notification_id_);
+}
+
+void MessageView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateControlButtonsVisibility();
 }
 
 bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -303,25 +308,10 @@ void MessageView::OnBlur() {
 }
 
 void MessageView::OnGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN: {
-      SetDrawBackgroundAsActive(true);
-      break;
-    }
-    case ui::ET_GESTURE_TAP_CANCEL:
-    case ui::ET_GESTURE_END: {
-      SetDrawBackgroundAsActive(false);
-      break;
-    }
-    case ui::ET_GESTURE_TAP: {
-      SetDrawBackgroundAsActive(false);
-      MessageCenter::Get()->ClickOnNotification(notification_id_);
-      event->SetHandled();
-      return;
-    }
-    default: {
-      // Do nothing
-    }
+  if (event->type() == ui::ET_GESTURE_TAP) {
+    MessageCenter::Get()->ClickOnNotification(notification_id_);
+    event->SetHandled();
+    return;
   }
 
   if (!event->IsScrollGestureEvent() && !event->IsFlingScrollEvent()) {
@@ -561,9 +551,8 @@ bool MessageView::ShouldParentHandleSlide() const {
 
 void MessageView::UpdateBackgroundPainter() {
   const auto* color_provider = GetColorProvider();
-  SkColor background_color = color_provider->GetColor(
-      is_active_ ? ui::kColorNotificationBackgroundActive
-                 : ui::kColorNotificationBackgroundInactive);
+  SkColor background_color =
+      color_provider->GetColor(ui::kColorNotificationBackgroundActive);
 
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
@@ -591,11 +580,6 @@ void MessageView::UpdateControlButtonsVisibility() {
   auto* control_buttons_view = GetControlButtonsView();
   if (control_buttons_view)
     control_buttons_view->ShowButtons(ShouldShowControlButtons());
-}
-
-void MessageView::SetDrawBackgroundAsActive(bool active) {
-  is_active_ = active;
-  UpdateBackgroundPainter();
 }
 
 void MessageView::UpdateControlButtonsVisibilityWithNotification(

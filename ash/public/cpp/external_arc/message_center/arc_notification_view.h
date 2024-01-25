@@ -48,7 +48,6 @@ class ArcNotificationView : public message_center::MessageView,
   // Overridden from MessageView:
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
-  void SetDrawBackgroundAsActive(bool active) override;
   void UpdateControlButtonsVisibility() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   message_center::NotificationControlButtonsView* GetControlButtonsView()

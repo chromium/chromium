@@ -120,7 +120,6 @@ class ASH_EXPORT AshNotificationView
   void SetExpandButtonVisibility(bool visible) override;
   bool IsExpandable() const override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
-  void SetDrawBackgroundAsActive(bool active) override;
   void OnThemeChanged() override;
   std::unique_ptr<message_center::NotificationInputContainer>
   GenerateNotificationInputContainer() override;

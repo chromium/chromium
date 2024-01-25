@@ -104,7 +104,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void UpdateWithNotification(const Notification& notification) override;
   NotificationControlButtonsView* GetControlButtonsView() const override;

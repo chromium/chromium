@@ -230,10 +230,6 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
   // - To make it look similar to ArcNotificationContentView::EventForwarder.
   AddPreTargetHandler(click_activator_.get());
 
-  DCHECK(views::FocusRing::Get(this));
-  views::FocusRing::Get(this)->SetPathGenerator(
-      std::make_unique<MessageView::HighlightPathGenerator>());
-
   UpdateCornerRadius(kNotificationCornerRadius, kNotificationCornerRadius);
 }
 
@@ -312,20 +308,6 @@ void NotificationViewBase::OnMouseReleased(const ui::MouseEvent& event) {
     return;
 
   MessageView::OnMouseReleased(event);
-}
-
-void NotificationViewBase::OnMouseEvent(ui::MouseEvent* event) {
-  switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
-      UpdateControlButtonsVisibility();
-      break;
-    case ui::ET_MOUSE_EXITED:
-      UpdateControlButtonsVisibility();
-      break;
-    default:
-      break;
-  }
-  View::OnMouseEvent(event);
 }
 
 void NotificationViewBase::OnGestureEvent(ui::GestureEvent* event) {

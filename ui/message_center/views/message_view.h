@@ -171,6 +171,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -221,8 +222,6 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   bool pinned() const { return pinned_; }
 
-  bool is_active() const { return is_active_; }
-
   void set_parent_message_view(MessageView* parent_message_view) {
     parent_message_view_ = parent_message_view;
   }
@@ -243,9 +242,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   virtual void UpdateControlButtonsVisibility();
-
-  // Changes the background color and schedules a paint.
-  virtual void SetDrawBackgroundAsActive(bool active);
 
   // Updates the background painter using the themed background color and radii.
   virtual void UpdateBackgroundPainter();
@@ -292,10 +288,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   std::string notification_id_;
   const NotifierId notifier_id_;
   base::Time timestamp_;
-
-  // Tracks whether background should be drawn as active based on gesture
-  // events.
-  bool is_active_ = false;
 
   // Flag if the notification is set to pinned or not. See the comment in
   // MessageView::Mode for detail.
