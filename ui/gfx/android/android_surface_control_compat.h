@@ -14,7 +14,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -196,9 +195,7 @@ class GFX_EXPORT SurfaceControl {
     void DestroyIfNeeded();
 
     int id_;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION ASurfaceTransaction* transaction_;
+    raw_ptr<ASurfaceTransaction> transaction_;
     OnCommitCb on_commit_cb_;
     OnCompleteCb on_complete_cb_;
     bool need_to_apply_ = false;

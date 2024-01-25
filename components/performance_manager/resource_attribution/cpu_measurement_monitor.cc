@@ -383,16 +383,16 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
 
   absl::visit(base::Overloaded{
                   [&nodes_to_skip](GraphChangeAddFrame change) {
-                    nodes_to_skip.insert(change.frame_node);
+                    nodes_to_skip.insert(change.frame_node.get());
                   },
                   [&nodes_to_skip](GraphChangeAddWorker change) {
-                    nodes_to_skip.insert(change.worker_node);
+                    nodes_to_skip.insert(change.worker_node.get());
                   },
                   [&extra_nodes](GraphChangeRemoveFrame change) {
-                    extra_nodes.insert(change.frame_node);
+                    extra_nodes.insert(change.frame_node.get());
                   },
                   [&extra_nodes](GraphChangeRemoveWorker change) {
-                    extra_nodes.insert(change.worker_node);
+                    extra_nodes.insert(change.worker_node.get());
                   },
                   [](auto change) {
                     // Do nothing.

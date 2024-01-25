@@ -853,7 +853,7 @@ void UsbDeviceHandleMac::RefreshEndpointMap() {
     uint8_t pipe_reference = 1;
     for (const auto& endpoint : interface_info.alternate->endpoints) {
       endpoint_map_[ConvertEndpointNumberToAddress(*endpoint)] = {
-          interface_info.interface, endpoint.get(), pipe_reference};
+          interface_info.interface.get(), endpoint.get(), pipe_reference};
       pipe_reference++;
     }
   }

@@ -56,7 +56,7 @@ class ArrayIterator<Traits, MaybeConstUserType, true> {
   const MaybeConstUserType& input() const { return input_; }
 
  private:
-  // `input_` is not a raw_ref<...> as that leads to a binary size increase.
+  // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION MaybeConstUserType& input_;
   IteratorType iter_;
 };
@@ -78,7 +78,7 @@ class ArrayIterator<Traits, MaybeConstUserType, false> {
   const MaybeConstUserType& input() const { return input_; }
 
  private:
-  // `input_` is not a raw_ref<...> as it leads to a binary size increase.
+  // RAW_PTR_EXCLUSION: Binary size increase.
   RAW_PTR_EXCLUSION MaybeConstUserType& input_;
   size_t iter_;
 };

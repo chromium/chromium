@@ -772,16 +772,16 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
-    switch (event.event_params.event) {
+    switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-        OnSelection(event.event_params.event_from);
+        OnSelection(event.event_params->event_from);
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       case ui::AXEventGenerator::Event::ALERT:
         requires_distillation_ = true;
         break;
       case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-        OnScroll(event.event_params.event_from_action ==
+        OnScroll(event.event_params->event_from_action ==
                      ax::mojom::Action::kSetSelection,
                  /* from_reading_mode= */ false);
         break;

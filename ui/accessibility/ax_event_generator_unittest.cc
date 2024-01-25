@@ -18,7 +18,7 @@ namespace ui {
 
 // Required by gmock to print TargetedEvent in a human-readable way.
 void PrintTo(const AXEventGenerator::TargetedEvent& event, std::ostream* os) {
-  *os << event.event_params.event << " on " << event.node_id;
+  *os << event.event_params->event << " on " << event.node_id;
 }
 
 namespace {
@@ -37,10 +37,10 @@ MATCHER_P2(HasEventAtNode,
                PrintToString(expected_node_id)) {
   const auto& event = arg;
   std::string failure_message;
-  if (!Matches(expected_event_type)(event.event_params.event)) {
+  if (!Matches(expected_event_type)(event.event_params->event)) {
     failure_message +=
         "Expected event type: " + PrintToString(expected_event_type) +
-        ", actual event type: " + PrintToString(event.event_params.event);
+        ", actual event type: " + PrintToString(event.event_params->event);
   }
   if (!Matches(expected_node_id)(event.node_id)) {
     if (!failure_message.empty()) {
@@ -172,10 +172,10 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
         << (map_iter != expected_event_map.end());
 
     std::set<AXEventGenerator::Event>& node_events = map_iter->second;
-    auto event_iter = node_events.find(targeted_event.event_params.event);
+    auto event_iter = node_events.find(targeted_event.event_params->event);
 
     ASSERT_NE(event_iter, node_events.end())
-        << "Event=" << targeted_event.event_params.event
+        << "Event=" << targeted_event.event_params->event
         << ", on node_id=" << targeted_event.node_id
         << " NOT found in |expected_event_map|";
 
