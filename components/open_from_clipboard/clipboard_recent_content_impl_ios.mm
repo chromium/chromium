@@ -464,39 +464,46 @@ NSString* const kDefaultScheme = @"https";
   __weak __typeof(self) weakSelf = self;
   NSSet<UIPasteboardDetectionPattern>* urlPattern =
       [NSSet setWithObject:UIPasteboardDetectionPatternProbableWebURL];
-  [pasteboard
-      detectValuesForPatterns:urlPattern
-            completionHandler:^(
-                NSDictionary<UIPasteboardDetectionPattern, id>* values,
-                NSError* error) {
-              // On iOS 16, users can deny access to the clipboard.
-              if (error) {
-                weakSelf.cachedURL = nil;
-                callback(nil);
-                return;
-              }
-              NSURL* url = [NSURL
-                  URLWithString:
-                      values[UIPasteboardDetectionPatternProbableWebURL]];
+  [pasteboard detectValuesForPatterns:urlPattern
+                    completionHandler:^(
+                        NSDictionary<UIPasteboardDetectionPattern, id>* values,
+                        NSError* error) {
+                      [weakSelf callCompletionHandlerWithValues:values
+                                                       callback:callback
+                                                          error:error];
+                    }];
+}
 
-              // |detectValuesForPatterns:| will return a url even if the url
-              // is missing a scheme. In this case, default to https.
-              if (url && url.scheme == nil) {
-                NSURLComponents* components =
-                    [[NSURLComponents alloc] initWithURL:url
-                                 resolvingAgainstBaseURL:NO];
-                components.scheme = kDefaultScheme;
-                url = components.URL;
-              }
+// Helper method for completion handler block to ensure `self` isn't retained.
+- (void)callCompletionHandlerWithValues:
+            (NSDictionary<UIPasteboardDetectionPattern, id>*)values
+                               callback:(void (^)(NSURL*))callback
+                                  error:(NSError*)error {
+  // On iOS 16, users can deny access to the clipboard.
+  if (error) {
+    self.cachedURL = nil;
+    callback(nil);
+    return;
+  }
+  NSURL* url =
+      [NSURL URLWithString:values[UIPasteboardDetectionPatternProbableWebURL]];
 
-              if (![self.authorizedSchemes containsObject:url.scheme]) {
-                weakSelf.cachedURL = nil;
-                callback(nil);
-              } else {
-                weakSelf.cachedURL = url;
-                callback(url);
-              }
-            }];
+  // |detectValuesForPatterns:| will return a url even if the url
+  // is missing a scheme. In this case, default to https.
+  if (url && url.scheme == nil) {
+    NSURLComponents* components = [[NSURLComponents alloc] initWithURL:url
+                                               resolvingAgainstBaseURL:NO];
+    components.scheme = kDefaultScheme;
+    url = components.URL;
+  }
+
+  if (![self.authorizedSchemes containsObject:url.scheme]) {
+    self.cachedURL = nil;
+    callback(nil);
+  } else {
+    self.cachedURL = url;
+    callback(url);
+  }
 }
 
 // The underlying logic to check the recent text, with the addition of a
