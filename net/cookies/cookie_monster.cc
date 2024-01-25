@@ -1692,10 +1692,9 @@ void CookieMonster::SetCanonicalCookie(
       }
     }
 
-    bool is_partitioned_cookie = cc->IsPartitioned();
-    CookiePartitionKey cookie_partition_key;
-    if (is_partitioned_cookie)
-      cookie_partition_key = cc->PartitionKey().value();
+    absl::optional<CookiePartitionKey> cookie_partition_key =
+        cc->PartitionKey();
+    CHECK_EQ(cc->IsPartitioned(), cookie_partition_key.has_value());
 
     // Realize that we might be setting an expired cookie, and the only point
     // was to delete the cookie which we've already done.
@@ -1726,7 +1725,7 @@ void CookieMonster::SetCanonicalCookie(
         cc->SetCreationDate(creation_date_to_inherit);
       }
 
-      if (is_partitioned_cookie) {
+      if (cookie_partition_key.has_value()) {
         InternalInsertPartitionedCookie(key, std::move(cc), true,
                                         access_result);
       } else {
@@ -1742,9 +1741,9 @@ void CookieMonster::SetCanonicalCookie(
     // make sure that we garbage collect...  We can also make the assumption
     // that if a cookie was set, in the common case it will be used soon after,
     // and we will purge the expired cookies in GetCookies().
-    if (is_partitioned_cookie) {
-      GarbageCollectPartitionedCookies(creation_date, cookie_partition_key,
-                                       key);
+    if (cookie_partition_key.has_value()) {
+      GarbageCollectPartitionedCookies(creation_date,
+                                       cookie_partition_key.value(), key);
     } else {
       GarbageCollect(creation_date, key);
     }
