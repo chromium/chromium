@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
+#include "net/base/backoff_entry.h"
 
 class Profile;
 
@@ -26,6 +27,10 @@ namespace app_list {
 class EssentialSearchManager : public ash::SessionObserver,
                                public SocsCookieFetcher::Consumer {
  public:
+  // Backoff policy for socs cookie fetch retry attempts in case cookie fetch
+  // failed or returned invalid data.
+  static const net::BackoffEntry::Policy kFetchSocsCookieRetryBackoffPolicy;
+
   explicit EssentialSearchManager(Profile* primary_profile);
   ~EssentialSearchManager() override;
 
@@ -47,6 +52,12 @@ class EssentialSearchManager : public ash::SessionObserver,
  private:
   void FetchSocsCookie();
 
+  // Refetch after given `delay`.
+  void RefetchAfter(base::TimeDelta delay);
+
+  // Cancel all active requests
+  void CancelPendingRequests();
+
   // Used to observe the change in session state.
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       scoped_observation_{this};
@@ -54,6 +65,8 @@ class EssentialSearchManager : public ash::SessionObserver,
   const raw_ptr<Profile> primary_profile_;
 
   std::unique_ptr<SocsCookieFetcher> socs_cookie_fetcher_;
+
+  net::BackoffEntry retry_backoff_;
 
   base::WeakPtrFactory<EssentialSearchManager> weak_ptr_factory_{this};
 };
