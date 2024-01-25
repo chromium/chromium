@@ -620,6 +620,7 @@ component("skia") {
     sources += skia_skresources_sources
     sources += skia_sksg_sources
     sources += skia_shaper_primitive_sources
+    defines += [ "SKOTTIE_TRIVIAL_FONTRUN_ITER" ]
   }
 }
 
