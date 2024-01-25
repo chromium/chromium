@@ -209,6 +209,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Save Image in Google Photos"/>
   <int value="43" label="Close Other Tabs"/>
   <int value="44" label="Add Tab to New Group"/>
+  <int value="45" label="Add Tab to Existing Group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

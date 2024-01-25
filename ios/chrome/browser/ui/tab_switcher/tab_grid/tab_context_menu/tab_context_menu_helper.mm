@@ -115,11 +115,34 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   }
 
   if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
-    [menuElements addObject:[actionFactory actionToAddTabToNewGroupWithBlock:^{
-                    [self.contextMenuDelegate
-                        createNewTabGroupWithIdentifier:cell.itemIdentifier
-                                              incognito:self.incognito];
-                  }]];
+    // The `groupTitleAndIdentifiers`is for demo purposes only, it will be
+    // replaced when the group tab model is available.
+    GroupTitleAndIdentifier* firstGroupTitleAndIdentifier =
+        [[GroupTitleAndIdentifier alloc] init];
+    GroupTitleAndIdentifier* secondGroupTitleAndIdentifier =
+        [[GroupTitleAndIdentifier alloc] init];
+
+    firstGroupTitleAndIdentifier.groupTitle = @"Group 1";
+    firstGroupTitleAndIdentifier.groupID = @"Group 1";
+
+    secondGroupTitleAndIdentifier.groupTitle = @"Group 2";
+    secondGroupTitleAndIdentifier.groupID = @"Group 2";
+
+    NSArray<GroupTitleAndIdentifier*>* groupTitleAndIdentifiers =
+        @[ firstGroupTitleAndIdentifier, secondGroupTitleAndIdentifier ];
+    UIMenu* addTabToGroupMenu = [actionFactory
+        menuToAddTabToGroupWithGroupTitleAndIdentifiers:groupTitleAndIdentifiers
+                                                  block:^(NSString* title) {
+                                                    if (!title) {
+                                                      [self.contextMenuDelegate
+                                                          createNewTabGroupWithIdentifier:
+                                                              cell.itemIdentifier
+                                                                                incognito:
+                                                                                    self.incognito];
+                                                    }
+                                                  }];
+
+    [menuElements addObject:addTabToGroupMenu];
   }
 
   if (!IsURLNewTabPage(item.URL)) {

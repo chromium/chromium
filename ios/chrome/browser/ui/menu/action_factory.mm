@@ -354,6 +354,57 @@
   return action;
 }
 
+- (UIMenu*)menuToAddTabToGroupWithGroupTitleAndIdentifiers:
+               (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
+                                                     block:(void (^)(NSString*))
+                                                               block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a tab group context menu action "
+         "outside the Tab Groups experiment.";
+
+  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
+                                              kSymbolActionPointSize);
+
+  NSMutableArray<UIMenuElement*>* groupsMenu = [[NSMutableArray alloc] init];
+
+  for (GroupTitleAndIdentifier* groupTitleAndIdentifier in
+           groupTitleAndIdentifiers) {
+    NSString* groupID = [groupTitleAndIdentifier.groupID copy];
+    ProceduralBlock groupBlock = ^{
+      if (block) {
+        block(groupID);
+      }
+    };
+
+    UIAction* groupAction =
+        [self actionWithTitle:groupTitleAndIdentifier.groupTitle
+                        image:nil
+                         type:MenuActionType::AddTabToExistingGroup
+                        block:groupBlock];
+    [groupsMenu addObject:groupAction];
+  }
+
+  UIMenu* menu = [UIMenu menuWithTitle:@""
+                                 image:nil
+                            identifier:nil
+                               options:UIMenuOptionsDisplayInline
+                              children:groupsMenu];
+  ProceduralBlock addTabToNewGroupBlock = ^{
+    if (block) {
+      block(nil);
+    }
+  };
+  NSArray<UIMenuElement*>* addToGroupMenuElements =
+      @[ [self actionToAddTabToNewGroupWithBlock:addTabToNewGroupBlock], menu ];
+
+  return [UIMenu menuWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP)
+                         image:image
+                    identifier:nil
+                       options:UIMenuOptionsSingleSelection
+                      children:addToGroupMenuElements];
+}
+
 #pragma mark - Private
 
 // Creates a UIAction instance for closing a tab with a provided `title`.
@@ -369,4 +420,7 @@
   return action;
 }
 
+@end
+
+@implementation GroupTitleAndIdentifier
 @end
