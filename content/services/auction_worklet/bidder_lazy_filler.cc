@@ -5,6 +5,7 @@
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -103,8 +104,9 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
 
 }  // namespace
 
-InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper)
-    : LazyFiller(v8_helper) {}
+InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
+                                                 AuctionV8Logger* v8_logger)
+    : LazyFiller(v8_helper), v8_logger_(v8_logger) {}
 
 void InterestGroupLazyFiller::ReInitialize(
     const mojom::BidderWorkletNonSharedParams*
@@ -125,6 +127,10 @@ bool InterestGroupLazyFiller::FillInObject(v8::Local<v8::Object> object) {
   }
   if (bidder_worklet_non_shared_params_->priority_vector &&
       !DefineLazyAttribute(object, "priorityVector", &HandlePriorityVector)) {
+    return false;
+  }
+  if (!DefineLazyAttribute(object, "useBiddingSignalsPrioritization",
+                           &HandleUseBiddingSignalsPrioritization)) {
     return false;
   }
   return true;
@@ -206,6 +212,21 @@ void InterestGroupLazyFiller::HandlePriorityVector(
   } else {
     SetResult(info, v8::Null(isolate));
   }
+}
+
+// static
+void InterestGroupLazyFiller::HandleUseBiddingSignalsPrioritization(
+    v8::Local<v8::Name> name,
+    const v8::PropertyCallbackInfo<v8::Value>& info) {
+  InterestGroupLazyFiller* self = GetSelf<InterestGroupLazyFiller>(info);
+  v8::Isolate* isolate = self->v8_helper()->isolate();
+
+  self->v8_logger_->LogConsoleWarning(
+      "interestGroup.useBiddingSignalsPrioritization is deprecated."
+      " Please use interestGroup.enableBiddingSignalsPrioritization instead.");
+  SetResult(info, v8::Boolean::New(
+                      isolate, self->bidder_worklet_non_shared_params_
+                                   ->enable_bidding_signals_prioritization));
 }
 
 BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(

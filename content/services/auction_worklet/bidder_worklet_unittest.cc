@@ -2434,6 +2434,107 @@ TEST_F(BidderWorkletTest,
       "interestGroup.enableBiddingSignalsPrioritization === true");
 }
 
+// This is deprecated and slated to be removed, but should work in the meantime.
+//
+// TODO(https://crbug.com/1517121): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest,
+       GenerateBidInterestGroupUseBiddingSignalsPrioritization) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.useBiddingSignalsPrioritization === false");
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.useBiddingSignalsPrioritization === true");
+}
+
+// Check that accessing `useBiddingSignalsPrioritization` displays a warning.
+//
+// TODO(https://crbug.com/1517121): Remove this test when the field itself is
+// removed.
+TEST_F(BidderWorkletTest, UseBiddingSignalsPrioritizationDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.useBiddingSignalsPrioritization) return;"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      "[{\"type\":\"string\", "
+      "\"value\":\"interestGroup.useBiddingSignalsPrioritization is "
+      "deprecated. Please use interestGroup.enableBiddingSignalsPrioritization "
+      "instead.\"}]",
+      /*stack_trace_size=*/1, /*function=*/"generateBid",
+      interest_group_bidding_url_, /*line_number=*/4);
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+  load_script_run_loop_.reset();
+}
+
+// Check that accessing `enableBiddingSignalsPrioritization` does not display a
+// warning.
+//
+// TODO(https://crbug.com/1517121): Remove this test when
+// useBiddingSignalsPrioritization is removed.
+TEST_F(BidderWorkletTest,
+       EnableBiddingSignalsPrioritizationNoDeprecationWarning) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateGenerateBidScript(
+          R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
+          "if (!interestGroup.enableBiddingSignalsPrioritization) return;"));
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_id_for_testing();
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  GenerateBid(worklet.get());
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+
+  // Make sure all events have been received.
+  task_environment_.RunUntilIdle();
+
+  std::list<TestChannel::Event> events = channel->TakeAllEvents();
+  for (const auto& event : events) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupPriorityVector) {
   RunGenerateBidExpectingExpressionIsTrue(
       "interestGroup.priorityVector === undefined");

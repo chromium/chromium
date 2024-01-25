@@ -16,10 +16,14 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/values_test_util.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_inspector_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "v8/include/v8-inspector.h"
 
 namespace auction_worklet {
@@ -94,6 +98,35 @@ TestChannel::Event TestChannel::WaitForMethodNotification(
         return (candidate_method && *candidate_method == method);
       },
       method));
+}
+
+void TestChannel::WaitForAndValidateConsoleMessage(std::string_view type,
+                                                   std::string_view json_args,
+                                                   size_t stack_trace_size,
+                                                   std::string_view function,
+                                                   const GURL& url,
+                                                   int line_number) {
+  TestChannel::Event message =
+      WaitForMethodNotification("Runtime.consoleAPICalled");
+  const std::string* actual_type =
+      message.value.GetDict().FindStringByDottedPath("params.type");
+  ASSERT_TRUE(actual_type);
+  EXPECT_EQ(type, *actual_type);
+  const base::Value::List* args =
+      message.value.GetDict().FindListByDottedPath("params.args");
+  ASSERT_TRUE(args);
+  EXPECT_THAT(*args, base::test::IsJson(json_args));
+
+  const base::Value::List* stack_trace =
+      message.value.GetDict().FindListByDottedPath(
+          "params.stackTrace.callFrames");
+  ASSERT_TRUE(stack_trace);
+  ASSERT_EQ(stack_trace_size, stack_trace->size());
+  const base::Value::Dict* stack_trace_dict = (*stack_trace)[0].GetIfDict();
+  ASSERT_TRUE(stack_trace_dict);
+  EXPECT_EQ(function, *stack_trace_dict->FindString("functionName"));
+  EXPECT_EQ(url.spec(), *stack_trace_dict->FindString("url"));
+  EXPECT_EQ(line_number, stack_trace_dict->FindInt("lineNumber"));
 }
 
 void TestChannel::sendResponse(
@@ -193,6 +226,14 @@ TestChannel* ScopedInspectorSupport::ConnectDebuggerSession(
                      run_loop.QuitClosure()));
   run_loop.Run();
   return result;
+}
+
+TestChannel* ScopedInspectorSupport::ConnectDebuggerSessionAndRuntimeEnable(
+    int context_group_id) {
+  TestChannel* channel = ConnectDebuggerSession(context_group_id);
+  channel->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  return channel;
 }
 
 ScopedInspectorSupport::V8State::V8State() = default;

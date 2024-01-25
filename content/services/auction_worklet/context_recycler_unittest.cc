@@ -837,6 +837,7 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
     ig_params->priority_vector.emplace();
     ig_params->priority_vector->insert(
         std::pair<std::string, double>("e", 12.0));
+    ig_params->enable_bidding_signals_prioritization = true;
 
     mojom::BiddingBrowserSignalsPtr bs_params =
         mojom::BiddingBrowserSignals::New();
@@ -867,6 +868,7 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
         "{\"userBiddingSignals\":{\"k\":2},"
         "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
         "\"priorityVector\":{\"e\":12},"
+        "\"useBiddingSignalsPrioritization\":true,"
         "\"prevWins\":[[240,[\"d\"]],[180,[\"c\"]]],"
         "\"prevWinsMs\":[[240000,[\"d\"]],[180000,[\"c\"]]]}",
         str_result);
@@ -961,6 +963,7 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
         "{\"userBiddingSignals\":null,"
         "\"trustedBiddingSignalsKeys\":null,"
         "\"priorityVector\":null,"
+        "\"useBiddingSignalsPrioritization\":false,"
         "\"prevWins\":[],"
         "\"prevWinsMs\":[]}",
         str_result);

@@ -1258,12 +1258,6 @@ BidderWorklet::V8State::GenerateSingleBid(
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
   if (!interest_group_dict.Set("owner", owner_.Serialize()) ||
       !interest_group_dict.Set("name", bidder_worklet_non_shared_params.name) ||
-      // TODO(https://crbug.com/1517121): This field is deprecated in favor of
-      // "enableBiddingSignalsPrioritization". Remove this when it can be done
-      // safely.
-      !interest_group_dict.Set("useBiddingSignalsPrioritization",
-                               bidder_worklet_non_shared_params
-                                   .enable_bidding_signals_prioritization) ||
       !interest_group_dict.Set("enableBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
