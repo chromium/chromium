@@ -10,13 +10,18 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 
 namespace enterprise_watermark {
 
 WatermarkView::WatermarkView() : WatermarkView(std::string("")) {}
 
-WatermarkView::WatermarkView(std::string text) : text_(std::move(text)) {}
+WatermarkView::WatermarkView(std::string text) : text_(std::move(text)) {
+  SetCanProcessEventsWithinSubtree(false);
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+}
 
 WatermarkView::~WatermarkView() = default;
 
