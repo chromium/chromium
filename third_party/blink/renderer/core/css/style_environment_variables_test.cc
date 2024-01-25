@@ -699,10 +699,8 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
   // This test asserts that the titlebar area environment variables should be
-  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame when the
-  // WindowControlsOverlay runtime flag is set for PWAs with display_override
-  // "window-controls-overlay".
-  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame for PWAs
+  // with display_override "window-controls-overlay".
 
   // Simulate browser sending the titlebar area bounds.
   GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
@@ -742,9 +740,8 @@ TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
 
 TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterNavigation) {
   // This test asserts that the titlebar area environment variables should be
-  // set after a navigation when the WindowControlsOverlay runtime flag is set
-  // for PWAs with display_override "window-controls-overlay".
-  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+  // set after a navigation for PWAs with display_override
+  // "window-controls-overlay".
 
   // Simulate browser sending the titlebar area bounds.
   GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));

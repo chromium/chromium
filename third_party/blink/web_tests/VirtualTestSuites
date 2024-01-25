@@ -1245,14 +1245,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "web-app-window-controls-overlay",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-window-controls-overlay.html"],
-    "args": ["--enable-features=WebAppWindowControlsOverlay",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "first-party-sets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

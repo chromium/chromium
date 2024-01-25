@@ -5,8 +5,7 @@
 // https://github.com/WICG/window-controls-overlay/blob/master/explainer.md
 
 [
-    Exposed=Window,
-    RuntimeEnabled=WebAppWindowControlsOverlay
+    Exposed=Window
 ] interface WindowControlsOverlayGeometryChangeEvent : Event {
     constructor(DOMString type, WindowControlsOverlayGeometryChangeEventInit eventInitDict);
     [SameObject] readonly attribute DOMRect titlebarAreaRect;

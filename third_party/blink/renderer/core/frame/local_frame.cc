@@ -3183,11 +3183,6 @@ void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
 #if !BUILDFLAG(IS_ANDROID)
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
-  if (!RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
-          GetDocument()->GetExecutionContext())) {
-    return;
-  }
-
   // The rect passed to us from content is in DIP screen space, relative to the
   // main frame, and needs to move to CSS space. This doesn't take the page's
   // zoom factor into account so we must scale by the inverse of the page zoom
