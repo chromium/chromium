@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_OBSERVER_H_
-#define DEVICE_VR_OPENXR_OPENXR_SCENE_OBSERVER_H_
+#ifndef DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_OBSERVER_MSFT_H_
+#define DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_OBSERVER_MSFT_H_
 
 #include <memory>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "device/vr/openxr/openxr_extension_handle.h"
-#include "device/vr/openxr/openxr_scene.h"
-#include "device/vr/openxr/openxr_scene_bounds.h"
+#include "device/vr/openxr/msft/openxr_scene_msft.h"
+#include "device/vr/openxr/msft/openxr_scene_bounds_msft.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -19,21 +19,21 @@ namespace device {
 class OpenXrExtensionHelper;
 
 // C++ wrapper for XrSceneObserverMSFT
-class OpenXrSceneObserver {
+class OpenXrSceneObserverMsft {
  public:
-  OpenXrSceneObserver(const device::OpenXrExtensionHelper& extensions,
+  OpenXrSceneObserverMsft(const device::OpenXrExtensionHelper& extensions,
                       XrSession session);
-  ~OpenXrSceneObserver();
+  ~OpenXrSceneObserverMsft();
 
   XrResult ComputeNewScene(
       base::span<const XrSceneComputeFeatureMSFT> requested_features,
-      const OpenXrSceneBounds& bounds);
+      const OpenXrSceneBoundsMsft& bounds);
 
   XrSceneComputeStateMSFT GetSceneComputeState() const;
 
   bool IsSceneComputeCompleted() const;
 
-  std::unique_ptr<OpenXrScene> CreateScene() const;
+  std::unique_ptr<OpenXrSceneMsft> CreateScene() const;
 
   XrSceneObserverMSFT Handle() const { return scene_observer_.get(); }
 
@@ -44,4 +44,4 @@ class OpenXrSceneObserver {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_OPENXR_OPENXR_SCENE_OBSERVER_H_
+#endif  // DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_OBSERVER_MSFT_H_

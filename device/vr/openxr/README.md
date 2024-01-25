@@ -66,6 +66,11 @@ they can handle and then ordered by priority in that group (the creation code
 will create the first handler that provides the data that it wants), with
 platform-specific extensions usually coming first.
 
+Extension handlers for XR_EXT_ and XR_KHR_ extensions should be placed in
+//device/vr/openxr, whereas code to handle other extensions should be placed in
+a subfolder matching the extension vendor (e.g. fb/ for XR_FB_ or msft/ for
+XR_MSFT_).
+
 ## Input
 
 All input sources for WebXR must support at a bare minimum the ability to be

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_scene_bounds.h"
+#include "device/vr/openxr/msft/openxr_scene_bounds_msft.h"
 
 namespace device {
 
-OpenXrSceneBounds::OpenXrSceneBounds() = default;
-OpenXrSceneBounds::~OpenXrSceneBounds() = default;
+OpenXrSceneBoundsMsft::OpenXrSceneBoundsMsft() = default;
+OpenXrSceneBoundsMsft::~OpenXrSceneBoundsMsft() = default;
 
 }  // namespace device

@@ -9,12 +9,12 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "device/vr/openxr/fb/openxr_hand_tracker_fb.h"
+#include "device/vr/openxr/msft/openxr_scene_understanding_manager_msft.h"
+#include "device/vr/openxr/msft/openxr_unbounded_space_provider_msft.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
-#include "device/vr/openxr/openxr_hand_tracker_meta.h"
-#include "device/vr/openxr/openxr_scene_understanding_manager_msft.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
-#include "device/vr/openxr/openxr_unbounded_space_provider_msft.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
@@ -41,14 +41,14 @@ GetExtensionHandlerFactories() {
           // interaction profile can be enabled, and otherwise they should still
           // be able to supply any hand/joint data just as well as the default
           // hand tracker (which can essentially only provide joint data).
-          new OpenXrHandTrackerMetaFactory(),
+          new OpenXrHandTrackerFbFactory(),
           new OpenXrHandTrackerFactory(),
 
           new OpenXrStageBoundsProviderBasicFactory(),
 
-          new OpenXrUnboundedSpaceProviderMSFTFactory(),
+          new OpenXrUnboundedSpaceProviderMsftFactory(),
 
-          new OpenXrSceneUnderstandingManagerMSFTFactory(),
+          new OpenXrSceneUnderstandingManagerMsftFactory(),
 
           new OpenXrAnchorManagerFactory(),
       }};

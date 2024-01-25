@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_OPENXR_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_
-#define DEVICE_VR_OPENXR_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_
+#ifndef DEVICE_VR_OPENXR_MSFT_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_
+#define DEVICE_VR_OPENXR_MSFT_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_
 #include "device/vr/openxr/openxr_unbounded_space_provider.h"
 
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 namespace device {
-class OpenXrUnboundedSpaceProviderMSFT : public OpenXrUnboundedSpaceProvider {
+class OpenXrUnboundedSpaceProviderMsft : public OpenXrUnboundedSpaceProvider {
  public:
-  OpenXrUnboundedSpaceProviderMSFT();
-  ~OpenXrUnboundedSpaceProviderMSFT() override;
+  OpenXrUnboundedSpaceProviderMsft();
+  ~OpenXrUnboundedSpaceProviderMsft() override;
   XrReferenceSpaceType GetType() const override;
 };
 
-class OpenXrUnboundedSpaceProviderMSFTFactory
+class OpenXrUnboundedSpaceProviderMsftFactory
     : public OpenXrExtensionHandlerFactory {
  public:
-  OpenXrUnboundedSpaceProviderMSFTFactory();
-  ~OpenXrUnboundedSpaceProviderMSFTFactory() override;
+  OpenXrUnboundedSpaceProviderMsftFactory();
+  ~OpenXrUnboundedSpaceProviderMsftFactory() override;
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
@@ -31,4 +31,4 @@ class OpenXrUnboundedSpaceProviderMSFTFactory
       const OpenXrExtensionHelper& extension_helper) const override;
 };
 }  // namespace device
-#endif  // DEVICE_VR_OPENXR_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_
+#endif  // DEVICE_VR_OPENXR_MSFT_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_

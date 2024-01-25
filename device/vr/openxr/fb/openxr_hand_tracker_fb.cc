@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_hand_tracker_meta.h"
+#include "device/vr/openxr/fb/openxr_hand_tracker_fb.h"
 
 #include <optional>
 
@@ -20,35 +20,35 @@
 
 namespace device {
 
-OpenXrHandTrackerMeta::OpenXrHandTrackerMeta(
+OpenXrHandTrackerFb::OpenXrHandTrackerFb(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     OpenXrHandednessType type)
     : OpenXrHandTracker(extension_helper, session, type) {}
 
-OpenXrHandTrackerMeta::~OpenXrHandTrackerMeta() = default;
+OpenXrHandTrackerFb::~OpenXrHandTrackerFb() = default;
 
-const OpenXrHandController* OpenXrHandTrackerMeta::controller() const {
+const OpenXrHandController* OpenXrHandTrackerFb::controller() const {
   return this;
 }
 
-mojom::OpenXrInteractionProfileType OpenXrHandTrackerMeta::interaction_profile()
+mojom::OpenXrInteractionProfileType OpenXrHandTrackerFb::interaction_profile()
     const {
   return mojom::OpenXrInteractionProfileType::kMetaHandAim;
 }
 
-GamepadMapping OpenXrHandTrackerMeta::gamepad_mapping() const {
+GamepadMapping OpenXrHandTrackerFb::gamepad_mapping() const {
   return GamepadMapping::kNone;
 }
 
-std::optional<gfx::Transform> OpenXrHandTrackerMeta::GetBaseFromGripTransform()
+std::optional<gfx::Transform> OpenXrHandTrackerFb::GetBaseFromGripTransform()
     const {
   // We will treat the palm as our grip.
   return GetBaseFromPalmTransform();
 }
 
 std::optional<gfx::Transform>
-OpenXrHandTrackerMeta::GetGripFromPointerTransform() const {
+OpenXrHandTrackerFb::GetGripFromPointerTransform() const {
   if (!IsDataValid()) {
     return std::nullopt;
   }
@@ -67,7 +67,7 @@ OpenXrHandTrackerMeta::GetGripFromPointerTransform() const {
   return (grip_from_base * base_from_pointer);
 }
 
-std::optional<GamepadButton> OpenXrHandTrackerMeta::GetButton(
+std::optional<GamepadButton> OpenXrHandTrackerFb::GetButton(
     OpenXrButtonType type) const {
   if (!IsDataValid()) {
     return std::nullopt;
@@ -83,16 +83,16 @@ std::optional<GamepadButton> OpenXrHandTrackerMeta::GetButton(
   return std::nullopt;
 }
 
-void OpenXrHandTrackerMeta::AppendToLocationStruct(
+void OpenXrHandTrackerFb::AppendToLocationStruct(
     XrHandJointLocationsEXT& locations) {
   locations.next = &aim_state_;
 }
 
-OpenXrHandTrackerMetaFactory::OpenXrHandTrackerMetaFactory() = default;
-OpenXrHandTrackerMetaFactory::~OpenXrHandTrackerMetaFactory() = default;
+OpenXrHandTrackerFbFactory::OpenXrHandTrackerFbFactory() = default;
+OpenXrHandTrackerFbFactory::~OpenXrHandTrackerFbFactory() = default;
 
 const base::flat_set<std::string_view>&
-OpenXrHandTrackerMetaFactory::GetRequestedExtensions() const {
+OpenXrHandTrackerFbFactory::GetRequestedExtensions() const {
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
       {XR_EXT_HAND_TRACKING_EXTENSION_NAME,
        XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME});
@@ -100,7 +100,7 @@ OpenXrHandTrackerMetaFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrHandTrackerMetaFactory::GetSupportedFeatures(
+OpenXrHandTrackerFbFactory::GetSupportedFeatures(
     const OpenXrExtensionEnumeration* extension_enum) const {
   if (!IsEnabled(extension_enum)) {
     return {};
@@ -110,14 +110,14 @@ OpenXrHandTrackerMetaFactory::GetSupportedFeatures(
 }
 
 std::unique_ptr<OpenXrHandTracker>
-OpenXrHandTrackerMetaFactory::CreateHandTracker(
+OpenXrHandTrackerFbFactory::CreateHandTracker(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     OpenXrHandednessType type) const {
   bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
-    return std::make_unique<OpenXrHandTrackerMeta>(extension_helper, session,
+    return std::make_unique<OpenXrHandTrackerFb>(extension_helper, session,
                                                    type);
   }
 

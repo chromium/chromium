@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_scene_understanding_manager_msft.h"
+#include "device/vr/openxr/msft/openxr_scene_understanding_manager_msft.h"
 
 #include <algorithm>
 #include <memory>
@@ -51,8 +51,8 @@ OpenXRSceneUnderstandingManagerMSFT::OpenXRSceneUnderstandingManagerMSFT(
 void OpenXRSceneUnderstandingManagerMSFT::OnNewHitTestSubscription() {
   if (scene_compute_state_ == SceneComputeState::Off) {
     if (!scene_observer_) {
-      scene_observer_ =
-          std::make_unique<OpenXrSceneObserver>(*extension_helper_, session_);
+      scene_observer_ = std::make_unique<OpenXrSceneObserverMsft>(
+          *extension_helper_, session_);
       scene_compute_state_ = SceneComputeState::Idle;
     }
   }
@@ -216,20 +216,20 @@ OpenXRSceneUnderstandingManagerMSFT::RequestHitTest(
   return hit_results;
 }
 
-OpenXrSceneUnderstandingManagerMSFTFactory::
-    OpenXrSceneUnderstandingManagerMSFTFactory() = default;
-OpenXrSceneUnderstandingManagerMSFTFactory::
-    ~OpenXrSceneUnderstandingManagerMSFTFactory() = default;
+OpenXrSceneUnderstandingManagerMsftFactory::
+    OpenXrSceneUnderstandingManagerMsftFactory() = default;
+OpenXrSceneUnderstandingManagerMsftFactory::
+    ~OpenXrSceneUnderstandingManagerMsftFactory() = default;
 
 const base::flat_set<std::string_view>&
-OpenXrSceneUnderstandingManagerMSFTFactory::GetRequestedExtensions() const {
+OpenXrSceneUnderstandingManagerMsftFactory::GetRequestedExtensions() const {
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
       {XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME});
   return *kExtensions;
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrSceneUnderstandingManagerMSFTFactory::GetSupportedFeatures(
+OpenXrSceneUnderstandingManagerMsftFactory::GetSupportedFeatures(
     const OpenXrExtensionEnumeration* extension_enum) const {
   if (!IsEnabled(extension_enum)) {
     return {};
@@ -239,7 +239,7 @@ OpenXrSceneUnderstandingManagerMSFTFactory::GetSupportedFeatures(
 }
 
 std::unique_ptr<OpenXRSceneUnderstandingManager>
-OpenXrSceneUnderstandingManagerMSFTFactory::CreateSceneUnderstandingManager(
+OpenXrSceneUnderstandingManagerMsftFactory::CreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace mojo_space) const {

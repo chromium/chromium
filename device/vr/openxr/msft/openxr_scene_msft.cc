@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_scene.h"
+#include "device/vr/openxr/msft/openxr_scene_msft.h"
 
 #include <array>
 #include <vector>
@@ -23,8 +23,9 @@ void InsertExtensionStruct(XrStruct& xrStruct, XrExtension& xrExtension) {
 }
 }  // anonymous namespace
 
-OpenXrScene::OpenXrScene(const device::OpenXrExtensionHelper& extensions,
-                         XrSceneObserverMSFT scene_observer)
+OpenXrSceneMsft::OpenXrSceneMsft(
+    const device::OpenXrExtensionHelper& extensions,
+    XrSceneObserverMSFT scene_observer)
     : extensions_(extensions),
       scene_(XR_NULL_HANDLE,
              OpenXrExtensionHandleTraits<XrSceneMSFT>(
@@ -36,13 +37,14 @@ OpenXrScene::OpenXrScene(const device::OpenXrExtensionHelper& extensions,
           OpenXrExtensionHandle<XrSceneMSFT>::Receiver(scene_).get());
   DCHECK(XR_SUCCEEDED(create_scene_result));
 }
-OpenXrScene::~OpenXrScene() = default;
+OpenXrSceneMsft::~OpenXrSceneMsft() = default;
 
-XrResult OpenXrScene::GetPlanes(std::vector<OpenXrScenePlane>& out_planes) {
+XrResult OpenXrSceneMsft::GetPlanes(
+    std::vector<OpenXrScenePlaneMsft>& out_planes) {
   XrSceneComponentsGetInfoMSFT get_info{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
   get_info.componentType = XR_SCENE_COMPONENT_TYPE_PLANE_MSFT;
 
-  static constexpr std::array<OpenXrSceneObject::Type, 6> kPlaneFilters{
+  static constexpr std::array<OpenXrSceneObjectMsft::Type, 6> kPlaneFilters{
       XR_SCENE_OBJECT_TYPE_BACKGROUND_MSFT, XR_SCENE_OBJECT_TYPE_WALL_MSFT,
       XR_SCENE_OBJECT_TYPE_FLOOR_MSFT,      XR_SCENE_OBJECT_TYPE_CEILING_MSFT,
       XR_SCENE_OBJECT_TYPE_PLATFORM_MSFT,   XR_SCENE_OBJECT_TYPE_INFERRED_MSFT};
@@ -86,9 +88,10 @@ XrResult OpenXrScene::GetPlanes(std::vector<OpenXrScenePlane>& out_planes) {
   return XR_SUCCESS;
 }
 
-XrResult OpenXrScene::LocateObjects(XrSpace base_space,
-                                    XrTime time,
-                                    std::vector<OpenXrScenePlane>& planes) {
+XrResult OpenXrSceneMsft::LocateObjects(
+    XrSpace base_space,
+    XrTime time,
+    std::vector<OpenXrScenePlaneMsft>& planes) {
   std::vector<XrUuidMSFT> plane_ids;
   for (auto& plane : planes) {
     plane_ids.emplace_back(plane.id_);

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_scene_object.h"
+#include "device/vr/openxr/msft/openxr_scene_object_msft.h"
 
 namespace device {
 
-OpenXrSceneObject::OpenXrSceneObject() = default;
-OpenXrSceneObject::~OpenXrSceneObject() = default;
+OpenXrSceneObjectMsft::OpenXrSceneObjectMsft() = default;
+OpenXrSceneObjectMsft::~OpenXrSceneObjectMsft() = default;
 
 }  // namespace device

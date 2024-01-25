@@ -1,8 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_BOUNDS_H_
-#define DEVICE_VR_OPENXR_OPENXR_SCENE_BOUNDS_H_
+#ifndef DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_BOUNDS_MSFT_H_
+#define DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_BOUNDS_MSFT_H_
 
 #include <vector>
 
@@ -10,9 +10,9 @@
 
 namespace device {
 
-struct OpenXrSceneBounds {
-  OpenXrSceneBounds();
-  ~OpenXrSceneBounds();
+struct OpenXrSceneBoundsMsft {
+  OpenXrSceneBoundsMsft();
+  ~OpenXrSceneBoundsMsft();
   XrSpace space_;
   XrTime time_;
   std::vector<XrSceneSphereBoundMSFT> sphere_bounds_;
@@ -22,4 +22,4 @@ struct OpenXrSceneBounds {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_OPENXR_OPENXR_SCENE_BOUNDS_H_
+#endif  // DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_BOUNDS_MSFT_H_

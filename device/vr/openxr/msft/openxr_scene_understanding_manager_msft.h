@@ -1,8 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_
-#define DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_
+#ifndef DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_
+#define DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_
 
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 
@@ -12,10 +12,10 @@
 
 #include "base/memory/raw_ref.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
-#include "device/vr/openxr/openxr_scene.h"
-#include "device/vr/openxr/openxr_scene_bounds.h"
-#include "device/vr/openxr/openxr_scene_observer.h"
-#include "device/vr/openxr/openxr_scene_plane.h"
+#include "device/vr/openxr/msft/openxr_scene_msft.h"
+#include "device/vr/openxr/msft/openxr_scene_bounds_msft.h"
+#include "device/vr/openxr/msft/openxr_scene_observer_msft.h"
+#include "device/vr/openxr/msft/openxr_scene_plane_msft.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -56,9 +56,9 @@ class OpenXRSceneUnderstandingManagerMSFT
   XrSession session_;
   XrSpace mojo_space_;
 
-  std::unique_ptr<OpenXrSceneObserver> scene_observer_;
-  std::unique_ptr<OpenXrScene> scene_;
-  OpenXrSceneBounds scene_bounds_;
+  std::unique_ptr<OpenXrSceneObserverMsft> scene_observer_;
+  std::unique_ptr<OpenXrSceneMsft> scene_;
+  OpenXrSceneBoundsMsft scene_bounds_;
   XrTime next_scene_update_time_;
 
   // Scene Compute State Machine:
@@ -76,14 +76,14 @@ class OpenXRSceneUnderstandingManagerMSFT
   enum class SceneComputeState { Off, Idle, Waiting };
   SceneComputeState scene_compute_state_{SceneComputeState::Off};
 
-  std::vector<OpenXrScenePlane> planes_;
+  std::vector<OpenXrScenePlaneMsft> planes_;
 };
 
-class OpenXrSceneUnderstandingManagerMSFTFactory
+class OpenXrSceneUnderstandingManagerMsftFactory
     : public OpenXrExtensionHandlerFactory {
  public:
-  OpenXrSceneUnderstandingManagerMSFTFactory();
-  ~OpenXrSceneUnderstandingManagerMSFTFactory() override;
+  OpenXrSceneUnderstandingManagerMsftFactory();
+  ~OpenXrSceneUnderstandingManagerMsftFactory() override;
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
@@ -97,4 +97,4 @@ class OpenXrSceneUnderstandingManagerMSFTFactory
 };
 
 }  // namespace device
-#endif  // DEVICE_VR_OPENXR_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_
+#endif  // DEVICE_VR_OPENXR_MSFT_OPENXR_SCENE_UNDERSTANDING_MANAGER_MSFT_H_

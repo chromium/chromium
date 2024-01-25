@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_scene_observer.h"
+#include "device/vr/openxr/msft/openxr_scene_observer_msft.h"
 
 #include "base/check.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -10,7 +10,7 @@
 
 namespace device {
 
-OpenXrSceneObserver::OpenXrSceneObserver(
+OpenXrSceneObserverMsft::OpenXrSceneObserverMsft(
     const device::OpenXrExtensionHelper& extensions,
     XrSession session)
     : extensions_(extensions),
@@ -27,11 +27,11 @@ OpenXrSceneObserver::OpenXrSceneObserver(
               .get());
   DCHECK(XR_SUCCEEDED(create_scene_observer_result));
 }
-OpenXrSceneObserver::~OpenXrSceneObserver() = default;
+OpenXrSceneObserverMsft::~OpenXrSceneObserverMsft() = default;
 
-XrResult OpenXrSceneObserver::ComputeNewScene(
+XrResult OpenXrSceneObserverMsft::ComputeNewScene(
     base::span<const XrSceneComputeFeatureMSFT> requested_features,
-    const OpenXrSceneBounds& bounds) {
+    const OpenXrSceneBoundsMsft& bounds) {
   XrNewSceneComputeInfoMSFT compute_info{XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT};
   compute_info.requestedFeatureCount =
       static_cast<uint32_t>(requested_features.size());
@@ -54,7 +54,7 @@ XrResult OpenXrSceneObserver::ComputeNewScene(
       scene_observer_.get(), &compute_info);
 }
 
-XrSceneComputeStateMSFT OpenXrSceneObserver::GetSceneComputeState() const {
+XrSceneComputeStateMSFT OpenXrSceneObserverMsft::GetSceneComputeState() const {
   XrSceneComputeStateMSFT state{XR_SCENE_COMPUTE_STATE_NONE_MSFT};
   XrResult get_compute_state_result =
       extensions_->ExtensionMethods().xrGetSceneComputeStateMSFT(
@@ -63,14 +63,14 @@ XrSceneComputeStateMSFT OpenXrSceneObserver::GetSceneComputeState() const {
   return state;
 }
 
-bool OpenXrSceneObserver::IsSceneComputeCompleted() const {
+bool OpenXrSceneObserverMsft::IsSceneComputeCompleted() const {
   const XrSceneComputeStateMSFT state = GetSceneComputeState();
   return state == XR_SCENE_COMPUTE_STATE_COMPLETED_MSFT ||
          state == XR_SCENE_COMPUTE_STATE_COMPLETED_WITH_ERROR_MSFT;
 }
 
-std::unique_ptr<OpenXrScene> OpenXrSceneObserver::CreateScene() const {
-  return std::make_unique<OpenXrScene>(*extensions_, scene_observer_.get());
+std::unique_ptr<OpenXrSceneMsft> OpenXrSceneObserverMsft::CreateScene() const {
+  return std::make_unique<OpenXrSceneMsft>(*extensions_, scene_observer_.get());
 }
 
 }  // namespace device

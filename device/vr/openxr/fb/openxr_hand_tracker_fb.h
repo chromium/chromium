@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_OPENXR_OPENXR_HAND_TRACKER_META_H_
-#define DEVICE_VR_OPENXR_OPENXR_HAND_TRACKER_META_H_
+#ifndef DEVICE_VR_OPENXR_FB_OPENXR_HAND_TRACKER_FB_H_
+#define DEVICE_VR_OPENXR_FB_OPENXR_HAND_TRACKER_FB_H_
 
 #include "device/vr/openxr/openxr_hand_tracker.h"
 
@@ -14,13 +14,13 @@
 
 namespace device {
 
-class OpenXrHandTrackerMeta : public OpenXrHandTracker,
+class OpenXrHandTrackerFb : public OpenXrHandTracker,
                               public OpenXrHandController {
  public:
-  OpenXrHandTrackerMeta(const OpenXrExtensionHelper& extension_helper,
+  OpenXrHandTrackerFb(const OpenXrExtensionHelper& extension_helper,
                         XrSession session,
                         OpenXrHandednessType type);
-  ~OpenXrHandTrackerMeta() override;
+  ~OpenXrHandTrackerFb() override;
 
   const OpenXrHandController* controller() const override;
 
@@ -37,10 +37,10 @@ class OpenXrHandTrackerMeta : public OpenXrHandTracker,
   XrHandTrackingAimStateFB aim_state_ = {XR_TYPE_HAND_TRACKING_AIM_STATE_FB};
 };
 
-class OpenXrHandTrackerMetaFactory : public OpenXrExtensionHandlerFactory {
+class OpenXrHandTrackerFbFactory : public OpenXrExtensionHandlerFactory {
  public:
-  OpenXrHandTrackerMetaFactory();
-  ~OpenXrHandTrackerMetaFactory() override;
+  OpenXrHandTrackerFbFactory();
+  ~OpenXrHandTrackerFbFactory() override;
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
@@ -55,4 +55,4 @@ class OpenXrHandTrackerMetaFactory : public OpenXrExtensionHandlerFactory {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_OPENXR_OPENXR_HAND_TRACKER_META_H_
+#endif  // DEVICE_VR_OPENXR_FB_OPENXR_HAND_TRACKER_FB_H_

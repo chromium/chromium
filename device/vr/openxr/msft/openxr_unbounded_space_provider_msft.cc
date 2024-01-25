@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_unbounded_space_provider_msft.h"
+#include "device/vr/openxr/msft/openxr_unbounded_space_provider_msft.h"
 
 #include <set>
 
@@ -14,27 +14,27 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
-OpenXrUnboundedSpaceProviderMSFT::OpenXrUnboundedSpaceProviderMSFT() = default;
-OpenXrUnboundedSpaceProviderMSFT::~OpenXrUnboundedSpaceProviderMSFT() = default;
+OpenXrUnboundedSpaceProviderMsft::OpenXrUnboundedSpaceProviderMsft() = default;
+OpenXrUnboundedSpaceProviderMsft::~OpenXrUnboundedSpaceProviderMsft() = default;
 
-XrReferenceSpaceType OpenXrUnboundedSpaceProviderMSFT::GetType() const {
+XrReferenceSpaceType OpenXrUnboundedSpaceProviderMsft::GetType() const {
   return XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
 }
 
-OpenXrUnboundedSpaceProviderMSFTFactory::
-    OpenXrUnboundedSpaceProviderMSFTFactory() = default;
-OpenXrUnboundedSpaceProviderMSFTFactory::
-    ~OpenXrUnboundedSpaceProviderMSFTFactory() = default;
+OpenXrUnboundedSpaceProviderMsftFactory::
+    OpenXrUnboundedSpaceProviderMsftFactory() = default;
+OpenXrUnboundedSpaceProviderMsftFactory::
+    ~OpenXrUnboundedSpaceProviderMsftFactory() = default;
 
 const base::flat_set<std::string_view>&
-OpenXrUnboundedSpaceProviderMSFTFactory::GetRequestedExtensions() const {
+OpenXrUnboundedSpaceProviderMsftFactory::GetRequestedExtensions() const {
   static base::NoDestructor<base::flat_set<std::string_view>> kExtensions(
       {XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME});
   return *kExtensions;
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrUnboundedSpaceProviderMSFTFactory::GetSupportedFeatures(
+OpenXrUnboundedSpaceProviderMsftFactory::GetSupportedFeatures(
     const OpenXrExtensionEnumeration* extension_enum) const {
   if (!IsEnabled(extension_enum)) {
     return {};
@@ -44,12 +44,12 @@ OpenXrUnboundedSpaceProviderMSFTFactory::GetSupportedFeatures(
 }
 
 std::unique_ptr<OpenXrUnboundedSpaceProvider>
-OpenXrUnboundedSpaceProviderMSFTFactory::CreateUnboundedSpaceProvider(
+OpenXrUnboundedSpaceProviderMsftFactory::CreateUnboundedSpaceProvider(
     const OpenXrExtensionHelper& extension_helper) const {
   bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
-    return std::make_unique<OpenXrUnboundedSpaceProviderMSFT>();
+    return std::make_unique<OpenXrUnboundedSpaceProviderMsft>();
   }
 
   return nullptr;
