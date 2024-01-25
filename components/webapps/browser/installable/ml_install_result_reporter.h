@@ -11,8 +11,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace webapps {
-class AppBannerManager;
 enum class MlInstallUserResponse;
 
 // This class is responsible for reporting the result of the Ml installation
@@ -40,7 +43,7 @@ class MlInstallResultReporter {
   };
 
   MlInstallResultReporter(
-      base::WeakPtr<AppBannerManager> app_banner_manager,
+      base::WeakPtr<content::BrowserContext> browser_context,
       segmentation_platform::TrainingRequestId training_request,
       std::string ml_output_label,
       const GURL& manifest_id,
@@ -65,7 +68,7 @@ class MlInstallResultReporter {
   void ReportResultInternal(absl::optional<WebappInstallSource> source,
                             MlInstallResponse response);
 
-  const base::WeakPtr<AppBannerManager> app_banner_manager_;
+  const base::WeakPtr<content::BrowserContext> browser_context_;
   const segmentation_platform::TrainingRequestId training_request_;
   std::string ml_output_label_;
   const GURL manifest_id_;

@@ -129,19 +129,8 @@ class AppBannerManagerAndroid : public AppBannerManager {
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
-  bool IsWebAppConsideredInstalled() const override;
-  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
-  // Non-locally installed apps do not exist on Android.
-  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
-  bool IsInAppBrowsingContext() const override;
-  void SaveInstallationDismissedForMl(const GURL& manifest_id) override;
-  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
-  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override;
-  bool IsMlPromotionBlockedByHistoryGuardrail(const GURL& manifest_id) override;
-  segmentation_platform::SegmentationPlatformService*
-  GetSegmentationPlatformService() override;
 
   void CheckEngagementForAmbientBadge();
 

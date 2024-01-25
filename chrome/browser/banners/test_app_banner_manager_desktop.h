@@ -63,8 +63,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
   void ResetCurrentPageData() override;
-  segmentation_platform::SegmentationPlatformService*
-  GetSegmentationPlatformService() override;
 
   // AppBannerManagerDesktop:
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
@@ -92,8 +90,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   base::OnceClosure promotable_quit_closure_;
   base::OnceClosure on_done_;
   base::OnceClosure on_install_;
-  std::unique_ptr<segmentation_platform::MockSegmentationPlatformService>
-      segmentation_platform_service_;
 };
 
 }  // namespace webapps

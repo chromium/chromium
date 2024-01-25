@@ -16,22 +16,23 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
 
 MlInstallResultReporter::MlInstallResultReporter(
-    base::WeakPtr<AppBannerManager> app_banner_manager,
+    base::WeakPtr<content::BrowserContext> browser_context,
     segmentation_platform::TrainingRequestId training_request,
     std::string ml_output_label,
     const GURL& manifest_id,
     bool ml_promotion_blocked_by_guardrail)
-    : app_banner_manager_(app_banner_manager),
+    : browser_context_(browser_context),
       training_request_(training_request),
       ml_output_label_(ml_output_label),
       manifest_id_(manifest_id),
       ml_promotion_blocked_by_guardrail_(ml_promotion_blocked_by_guardrail) {
-  CHECK(app_banner_manager_);
+  CHECK(browser_context_);
   CHECK(manifest_id_.is_valid());
 }
 
@@ -82,8 +83,10 @@ void MlInstallResultReporter::ReportResult(
 void MlInstallResultReporter::ReportResultInternal(
     absl::optional<WebappInstallSource> source,
     MlInstallResponse response) {
-  if (reported_ || !app_banner_manager_ ||
-      !app_banner_manager_->GetSegmentationPlatformService()) {
+  WebappsClient* client = WebappsClient::Get();
+  CHECK(client);
+  if (reported_ || !browser_context_ ||
+      !client->GetSegmentationPlatformService(browser_context_.get())) {
     return;
   }
   // This training request can only be reported once.
@@ -99,14 +102,17 @@ void MlInstallResultReporter::ReportResultInternal(
   if (ml_promoted) {
     switch (response) {
       case MlInstallResponse::kAccepted:
-        app_banner_manager_->SaveInstallationAcceptedForMl(manifest_id_);
+        client->SaveInstallationAcceptedForMl(browser_context_.get(),
+                                              manifest_id_);
         break;
       case MlInstallResponse::kReporterDestroyed:
       case MlInstallResponse::kIgnored:
-        app_banner_manager_->SaveInstallationIgnoredForMl(manifest_id_);
+        client->SaveInstallationIgnoredForMl(browser_context_.get(),
+                                             manifest_id_);
         break;
       case MlInstallResponse::kCancelled:
-        app_banner_manager_->SaveInstallationDismissedForMl(manifest_id_);
+        client->SaveInstallationDismissedForMl(browser_context_.get(),
+                                               manifest_id_);
         break;
       case MlInstallResponse::kBlockedGuardrails:
         break;
@@ -134,7 +140,7 @@ void MlInstallResultReporter::ReportResultInternal(
   }
 
   segmentation_platform::SegmentationPlatformService* segmentation =
-      app_banner_manager_->GetSegmentationPlatformService();
+      client->GetSegmentationPlatformService(browser_context_.get());
   segmentation_platform::TrainingLabels training_labels;
   training_labels.output_metric =
       std::make_pair("WebApps.MlInstall.DialogResponse",

@@ -1924,6 +1924,8 @@ static_library("browser") {
       "user_education/user_education_service.h",
       "user_education/user_education_service_factory.cc",
       "user_education/user_education_service_factory.h",
+      "webapps/webapps_client_desktop.cc",
+      "webapps/webapps_client_desktop.h",
     ]
   }
 
@@ -3383,6 +3385,8 @@ static_library("browser") {
       "wallet/android/boarding_pass_detector.h",
       "webapps/pwa_restore_promo_utils_android.cc",
       "webapps/web_app_offline_android.cc",
+      "webapps/webapps_client_android.cc",
+      "webapps/webapps_client_android.h",
       "webauthn/android/cable_module_android.cc",
       "webauthn/android/cable_registration_state.cc",
       "webauthn/android/cable_registration_state.h",

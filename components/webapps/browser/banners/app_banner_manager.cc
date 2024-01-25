@@ -391,7 +391,9 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   if (content::HasWebUIScheme(validated_url_) &&
       (validated_url_.host() ==
        password_manager::kChromeUIPasswordManagerHost)) {
-    if (IsWebAppConsideredInstalled()) {
+    if (WebappsClient::Get()->IsWebAppConsideredFullyInstalled(
+            web_contents()->GetBrowserContext(), manifest_->start_url,
+            manifest_id_)) {
       TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
       SetInstallableWebAppCheckResult(
           InstallableWebAppCheckResult::kNo_AlreadyInstalled);
@@ -455,7 +457,11 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     return;
   }
 
-  if (IsWebAppConsideredInstalled() && !ShouldAllowWebAppReplacementInstall()) {
+  WebappsClient* client = WebappsClient::Get();
+  if (client->IsWebAppConsideredFullyInstalled(
+          web_contents()->GetBrowserContext(), manifest().start_url,
+          manifest_id_) &&
+      !ShouldAllowWebAppReplacementInstall()) {
     TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kNo_AlreadyInstalled);

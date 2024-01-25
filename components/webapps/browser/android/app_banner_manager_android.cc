@@ -175,17 +175,6 @@ void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
     InstallableCallback callback) {
   manager()->GetData(params, std::move(callback));
 }
-
-bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
-  // Also check if a WebAPK is currently being installed. Installation may take
-  // some time, so ensure we don't accidentally allow a new installation whilst
-  // one is in flight for the current site.
-  return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
-                                         manifest().start_url) ||
-         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest_id_);
-}
-
 void AppBannerManagerAndroid::ResetCurrentPageData() {
   // Reset |ambient_badge_manager_| to stop any running ambient badge pipeline
   // before clearing installable data.
@@ -542,54 +531,11 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
   return Java_AppBannerManager_isRelatedNonWebAppInstalled(env, java_id);
 }
 
-// TODO(eirage): Implement for Android.
-bool AppBannerManagerAndroid::IsAppFullyInstalledForSiteUrl(
-    const GURL& site_url) const {
-  return false;
-}
-
-bool AppBannerManagerAndroid::IsAppPartiallyInstalledForSiteUrl(
-    const GURL& site_url) const {
-  return false;
-}
-
-bool AppBannerManagerAndroid::IsInAppBrowsingContext() const {
-  return false;
-}
-
-void AppBannerManagerAndroid::SaveInstallationDismissedForMl(
-    const GURL& manifest_id) {
-  // TODO(https://crbug.com/1449993): Implement.
-}
-void AppBannerManagerAndroid::SaveInstallationIgnoredForMl(
-    const GURL& manifest_id) {
-  // TODO(https://crbug.com/1449993): Implement.
-}
-void AppBannerManagerAndroid::SaveInstallationAcceptedForMl(
-    const GURL& manifest_id) {
-  // TODO(https://crbug.com/1449993): Implement.
-}
-bool AppBannerManagerAndroid::IsMlPromotionBlockedByHistoryGuardrail(
-    const GURL& manifest_id) {
-  // TODO(https://crbug.com/1449993): Implement.
-  return false;
-}
 
 void AppBannerManagerAndroid::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
   // TODO(https://crbug.com/1449993): Implement.
-}
-
-segmentation_platform::SegmentationPlatformService*
-AppBannerManagerAndroid::GetSegmentationPlatformService() {
-  // TODO(https://crbug.com/1449993): Implement.
-  // Note: By returning a non-nullptr, all of the Ml code (after metrics
-  // gathering) in `MlInstallabilityPromoter` will execute, including requesting
-  // classifiction & eventually calling `OnMlInstallPrediction` above. Make sure
-  // that the contract of that class is being followed appropriately, and the ML
-  // parts are correct.
-  return nullptr;
 }
 
 void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(

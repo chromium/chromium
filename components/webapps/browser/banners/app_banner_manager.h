@@ -34,10 +34,6 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace segmentation_platform {
-class SegmentationPlatformService;
-}  // namespace segmentation_platform
-
 namespace webapps {
 class InstallableManager;
 class MLInstallabilityPromoter;
@@ -235,28 +231,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Tracks that the IPH has been shown. Only used on Android.
   void TrackIphWasShown();
 
-  // Tracks whether the current site URL obtained from the web_contents is fully
-  // installed. The only difference from IsWebAppConsideredInstalled() is that
-  // the former considers the scope obtained from a manifest as check for if an
-  // app is already installed.
-  virtual bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const = 0;
-
-  // Tracks whether the current site URL obtained from the web_contents is not
-  // locally installed.
-  virtual bool IsAppPartiallyInstalledForSiteUrl(
-      const GURL& site_url) const = 0;
-
-  // Returns if the web contents this manager is on is inside of an app context.
-  virtual bool IsInAppBrowsingContext() const = 0;
-
-  // The user has ignored the installation dialog and it went away due to
-  // another interaction (e.g. the tab was changed, page navigated, etc).
-  virtual void SaveInstallationIgnoredForMl(const GURL& manifest_id) = 0;
-  // The user has taken active action on the dialog to make it go away.
-  virtual void SaveInstallationDismissedForMl(const GURL& manifest_id) = 0;
-  virtual void SaveInstallationAcceptedForMl(const GURL& manifest_id) = 0;
-  virtual bool IsMlPromotionBlockedByHistoryGuardrail(
-      const GURL& manifest_id) = 0;
 
   // This is called by the MLInstallabilityPromoter when, for this current web
   // contents:
@@ -268,10 +242,6 @@ class AppBannerManager : public content::WebContentsObserver,
   //   classification.
   virtual void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                                      std::string result_label) = 0;
-
-  virtual segmentation_platform::SegmentationPlatformService*
-  GetSegmentationPlatformService() = 0;
-
  protected:
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;
@@ -328,14 +298,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // replacement for the manifest's web app.
   virtual bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const = 0;
-
-  // Returns whether the current page is already installed as a web app, or
-  // should be considered as installed. Returns true if there is an installed
-  // web app within the BrowserContext of |web_contents()| that contains |url|
-  // within its scope, and false otherwise. For example, the URL
-  // https://example.com/a/b/c/d.html is contained within a web app with scope
-  // https://example.com/a/b/.
-  virtual bool IsWebAppConsideredInstalled() const = 0;
 
   // Returns whether the installed web app at the current page can be
   // overwritten with a new app install for the current page.

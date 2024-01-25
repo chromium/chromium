@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -51,8 +52,7 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
                                     std::string dialog_name);
 
   bool NavigateAndAwaitInstallabilityCheck(const GURL& url);
-  segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation(
-      content::WebContents* custom_web_contents = nullptr);
+  segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation();
 
   net::EmbeddedTestServer* https_server();
   content::WebContents* web_contents();
@@ -67,6 +67,9 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
   // used by the NetworkService.
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
+  // Optional so it can be set after construction.
+  std::optional<WebappsClient::ScopedSegmentationServiceOverride>
+      service_override_;
 };
 
 }  // namespace webapps

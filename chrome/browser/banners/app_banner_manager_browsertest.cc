@@ -102,30 +102,8 @@ class AppBannerManagerTest : public AppBannerManager {
     on_banner_prompt_reply_ = std::move(on_banner_prompt_reply);
   }
 
-  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override {
-    return false;
-  }
-
-  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override {
-    return false;
-  }
-
-  bool IsInAppBrowsingContext() const override { return false; }
-
-  void SaveInstallationDismissedForMl(const GURL& manifest_id) override {}
-  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override {}
-  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override {}
-  bool IsMlPromotionBlockedByHistoryGuardrail(
-      const GURL& manifest_id) override {
-    return false;
-  }
   void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
                              std::string result_label) override {}
-
-  segmentation_platform::SegmentationPlatformService*
-  GetSegmentationPlatformService() override {
-    return nullptr;
-  }
 
  protected:
   // The overridden RequestAppBanner() can filter out about:blank calls
@@ -209,8 +187,6 @@ class AppBannerManagerTest : public AppBannerManager {
            base::EqualsASCII(related_app.id.value_or(std::u16string()),
                              "installed-extension-id");
   }
-
-  bool IsWebAppConsideredInstalled() const override { return false; }
 
   base::OnceClosure on_done_;
 

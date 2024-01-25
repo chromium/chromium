@@ -89,9 +89,6 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
-  segmentation_platform_service_ =
-      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
@@ -151,13 +148,6 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
   return false;
 }
 
-bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
-  return web_app::FindInstalledAppWithUrlInScope(
-             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-             manifest().start_url)
-      .has_value();
-}
-
 void AppBannerManagerDesktop::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
@@ -168,83 +158,6 @@ void AppBannerManagerDesktop::OnMlInstallPrediction(
                        weak_factory_.GetWeakPtr()));
   }
 }
-
-bool AppBannerManagerDesktop::IsAppFullyInstalledForSiteUrl(
-    const GURL& site_url) const {
-  return web_app::FindInstalledAppWithUrlInScope(
-             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-             site_url)
-      .has_value();
-}
-
-bool AppBannerManagerDesktop::IsAppPartiallyInstalledForSiteUrl(
-    const GURL& site_url) const {
-  return web_app::IsNonLocallyInstalledAppWithUrlInScope(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      site_url);
-}
-
-bool AppBannerManagerDesktop::IsInAppBrowsingContext() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
-    return false;
-  }
-  return web_app::WebAppProvider::GetForWebApps(profile)
-      ->ui_manager()
-      .IsInAppWindow(web_contents());
-}
-
-void AppBannerManagerDesktop::SaveInstallationDismissedForMl(
-    const GURL& manifest_id) {
-  CHECK(web_contents());
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordDismiss(web_app::GenerateAppIdFromManifestId(manifest_id),
-                     base::Time::Now());
-}
-
-void AppBannerManagerDesktop::SaveInstallationIgnoredForMl(
-    const GURL& manifest_id) {
-  CHECK(web_contents());
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordIgnore(web_app::GenerateAppIdFromManifestId(manifest_id),
-                    base::Time::Now());
-}
-
-void AppBannerManagerDesktop::SaveInstallationAcceptedForMl(
-    const GURL& manifest_id) {
-  CHECK(web_contents());
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
-      .RecordAccept(web_app::GenerateAppIdFromManifestId(manifest_id));
-}
-
-bool AppBannerManagerDesktop::IsMlPromotionBlockedByHistoryGuardrail(
-    const GURL& manifest_id) {
-  CHECK(web_contents());
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  CHECK(profile);
-  return web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(
-             profile->GetPrefs())
-      .IsBlockedByGuardrails(web_app::GenerateAppIdFromManifestId(manifest_id));
-}
-
-segmentation_platform::SegmentationPlatformService*
-AppBannerManagerDesktop::GetSegmentationPlatformService() {
-  return segmentation_platform_service_.get();
-}
-
 web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));

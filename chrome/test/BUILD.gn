@@ -362,6 +362,7 @@ static_library("test_support") {
     "//components/reporting/util:test_callbacks_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/spellcheck/renderer",
     "//components/tpcd/metadata",

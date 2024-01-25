@@ -47,7 +47,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "chrome/browser/webapps/chrome_webapps_client.h"
+#include "chrome/browser/webapps/webapps_client_desktop.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -1440,7 +1440,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, DISABLED_ShowAddShortcutDialog) {
   content::RenderFrameHostTester::CommitPendingLoad(
       &nav_params.navigated_or_inserted_contents->GetController());
 
-  webapps::ChromeWebappsClient::GetInstance();
+  webapps::WebappsClientDesktop::CreateSingleton();
   auto* provider = web_app::FakeWebAppProvider::Get(profile());
   // This test harness is handling web contents loading, so use the real web
   // contents manager.
