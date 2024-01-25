@@ -3057,6 +3057,8 @@ Called by update_net_error_codes.py.-->
   <int value="-402" label="CACHE_WRITE_FAILURE"/>
   <int value="-401" label="CACHE_READ_FAILURE"/>
   <int value="-400" label="CACHE_MISS"/>
+  <int value="-386" label="ZSTD_WINDOW_SIZE_TOO_BIG"/>
+  <int value="-385" label="BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS"/>
   <int value="-384"
       label="CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY"/>
   <int value="-383" label="INCONSISTENT_IP_ADDRESS_SPACE"/>
@@ -26809,6 +26811,8 @@ Called by update_net_error_codes.py.-->
   <int value="383" label="INCONSISTENT_IP_ADDRESS_SPACE"/>
   <int value="384"
       label="CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY"/>
+  <int value="385" label="BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS"/>
+  <int value="386" label="ZSTD_WINDOW_SIZE_TOO_BIG"/>
   <int value="400" label="CACHE_MISS"/>
   <int value="401" label="CACHE_READ_FAILURE"/>
   <int value="402" label="CACHE_WRITE_FAILURE"/>
