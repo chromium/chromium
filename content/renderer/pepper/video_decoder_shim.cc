@@ -36,13 +36,10 @@
 #include "media/filters/ffmpeg_video_decoder.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/media_buildflags.h"
-#include "media/renderers/video_frame_yuv_converter.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_errors.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
 
 namespace content {
 
@@ -409,8 +406,7 @@ void VideoDecoderShim::DecoderImpl::OnResetComplete() {
 std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
     PepperVideoDecoderHost* host,
     uint32_t texture_pool_size,
-    bool use_hw_decoder,
-    bool use_shared_images) {
+    bool use_hw_decoder) {
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider =
           RenderThreadImpl::current()->SharedMainThreadContextProvider();
@@ -418,53 +414,35 @@ std::unique_ptr<VideoDecoderShim> VideoDecoderShim::Create(
     return nullptr;
   }
 
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-      pepper_video_decode_context_provider;
-  if (use_hw_decoder) {
-    pepper_video_decode_context_provider =
-        RenderThreadImpl::current()->PepperVideoDecodeContextProvider();
-    if (!pepper_video_decode_context_provider)
-      return nullptr;
-  }
-
-  return base::WrapUnique(new VideoDecoderShim(
-      host, texture_pool_size, use_hw_decoder, use_shared_images,
-      std::move(shared_main_thread_context_provider),
-      std::move(pepper_video_decode_context_provider)));
+  return base::WrapUnique(
+      new VideoDecoderShim(host, texture_pool_size, use_hw_decoder,
+                           std::move(shared_main_thread_context_provider)));
 }
 
 VideoDecoderShim::VideoDecoderShim(
     PepperVideoDecoderHost* host,
     uint32_t texture_pool_size,
     bool use_hw_decoder,
-    bool use_shared_images,
     scoped_refptr<viz::ContextProviderCommandBuffer>
-        shared_main_thread_context_provider,
-    scoped_refptr<viz::ContextProviderCommandBuffer>
-        pepper_video_decode_context_provider)
+        shared_main_thread_context_provider)
     : state_(UNINITIALIZED),
       host_(host),
       media_task_runner_(
           RenderThreadImpl::current()->GetMediaSequencedTaskRunner()),
       shared_main_thread_context_provider_(
           std::move(shared_main_thread_context_provider)),
-      pepper_video_decode_context_provider_(
-          std::move(pepper_video_decode_context_provider)),
       texture_pool_size_(texture_pool_size),
       num_pending_decodes_(0),
-      use_hw_decoder_(use_hw_decoder),
-      use_shared_images_(use_shared_images) {
+      use_hw_decoder_(use_hw_decoder) {
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
   DCHECK(shared_main_thread_context_provider_.get());
-  DCHECK(!use_hw_decoder_ || pepper_video_decode_context_provider_.get());
   decoder_impl_ = std::make_unique<DecoderImpl>(weak_ptr_factory_.GetWeakPtr(),
                                                 use_hw_decoder_);
 }
 
 VideoDecoderShim::~VideoDecoderShim() {
   DCHECK(RenderThreadImpl::current());
-  texture_mailbox_map_.clear();
 
   CHECK(available_shared_images_.empty())
       << "VideoDecoderShim::Destroy() must be called before destructor";
@@ -557,51 +535,8 @@ void VideoDecoderShim::Decode(media::BitstreamBuffer bitstream_buffer) {
   num_pending_decodes_++;
 }
 
-void VideoDecoderShim::AssignPictureBuffers(
-    const std::vector<media::PictureBuffer>& buffers) {
-  CHECK(!use_shared_images_);
-
-  DCHECK(RenderThreadImpl::current());
-  DCHECK_NE(state_, UNINITIALIZED);
-  if (buffers.empty()) {
-    NOTREACHED();
-    return;
-  }
-  std::vector<gpu::Mailbox> mailboxes = host_->TakeMailboxes();
-  DCHECK_EQ(buffers.size(), mailboxes.size());
-  GLuint num_textures = base::checked_cast<GLuint>(buffers.size());
-  for (uint32_t i = 0; i < num_textures; i++) {
-    DCHECK_EQ(1u, buffers[i].client_texture_ids().size());
-    // Map the plugin texture id to the mailbox
-    uint32_t plugin_texture_id = buffers[i].client_texture_ids()[0];
-    texture_mailbox_map_[plugin_texture_id] = mailboxes[i];
-    available_textures_.insert(plugin_texture_id);
-  }
-  SendPictures();
-}
-
-void VideoDecoderShim::ReusePictureBuffer(int32_t picture_buffer_id) {
-  CHECK(!use_shared_images_);
-  CHECK(available_shared_images_.empty());
-
-  DCHECK(RenderThreadImpl::current());
-  uint32_t texture_id = static_cast<uint32_t>(picture_buffer_id);
-  if (base::Contains(textures_to_dismiss_, texture_id)) {
-    DismissTexture(texture_id);
-    return;
-  }
-  if (base::Contains(texture_mailbox_map_, texture_id)) {
-    available_textures_.insert(texture_id);
-    SendPictures();
-    return;
-  }
-  NOTREACHED();
-}
-
 void VideoDecoderShim::ReuseSharedImage(const gpu::Mailbox& mailbox,
                                         gfx::Size size) {
-  CHECK(use_shared_images_);
-  CHECK(available_textures_.empty());
   DCHECK(RenderThreadImpl::current());
 
   // Video resolution could have changed from the time the image was sent to
@@ -612,7 +547,7 @@ void VideoDecoderShim::ReuseSharedImage(const gpu::Mailbox& mailbox,
   }
 
   available_shared_images_.push_back(mailbox);
-  SendPictures();
+  SendSharedImages();
 }
 
 void VideoDecoderShim::Flush() {
@@ -694,158 +629,28 @@ void VideoDecoderShim::OnOutputComplete(std::unique_ptr<PendingFrame> frame) {
   DCHECK(frame->video_frame);
 
   if (texture_size_ != frame->video_frame->coded_size()) {
-    if (use_shared_images_) {
-      // If the size has changed, all current SharedImages must be destroyed.
-      // Destroy images that aren't in use by the plugin. We will destroy the
-      // rest as they are recycled.
-      for (const auto& mailbox : available_shared_images_) {
-        host_->DestroySharedImage(mailbox);
-      }
+    // If the size has changed, all current SharedImages must be destroyed.
+    // Destroy images that aren't in use by the plugin. We will destroy the
+    // rest as they are recycled.
+    for (const auto& mailbox : available_shared_images_) {
+      host_->DestroySharedImage(mailbox);
+    }
 
-      available_shared_images_.clear();
+    available_shared_images_.clear();
 
-      for (uint32_t i = 0; i < texture_pool_size_; i++) {
-        available_shared_images_.push_back(
-            host_->CreateSharedImage(frame->video_frame->coded_size()));
-      }
-    } else {
-      // If the size has changed, all current textures must be dismissed. Add
-      // all textures to |textures_to_dismiss_| and dismiss any that aren't in
-      // use by the plugin. We will dismiss the rest as they are recycled.
-      for (IdToMailboxMap::const_iterator it = texture_mailbox_map_.begin();
-           it != texture_mailbox_map_.end(); ++it) {
-        textures_to_dismiss_.insert(it->first);
-      }
-      for (auto texture : available_textures_) {
-        DismissTexture(texture);
-      }
-      available_textures_.clear();
-      FlushCommandBuffer();
-      host_->ProvidePictureBuffers(texture_pool_size_, media::PIXEL_FORMAT_ARGB,
-                                   1, frame->video_frame->coded_size(),
-                                   GL_TEXTURE_2D);
+    for (uint32_t i = 0; i < texture_pool_size_; i++) {
+      available_shared_images_.push_back(
+          host_->CreateSharedImage(frame->video_frame->coded_size()));
     }
 
     texture_size_ = frame->video_frame->coded_size();
   }
 
   pending_frames_.push(std::move(frame));
-  SendPictures();
-}
-
-void VideoDecoderShim::SendPictures() {
-  DCHECK(RenderThreadImpl::current());
-  DCHECK(host_);
-
-  if (use_shared_images_) {
-    return SendSharedImages();
-  }
-
-  gpu::gles2::GLES2Interface* gl = nullptr;
-  if (use_hw_decoder_) {
-    gl = pepper_video_decode_context_provider_->ContextGL();
-    if (!gl) {
-      host_->NotifyError(media::VideoDecodeAccelerator::PLATFORM_FAILURE);
-      return;
-    }
-  }
-
-  while (!pending_frames_.empty() && !available_textures_.empty()) {
-    const std::unique_ptr<PendingFrame>& frame = pending_frames_.front();
-
-    if (!frame->decode_id.has_value()) {
-      // This signals the completion of a flush: all frames should have been
-      // output by the underlying decoder (as required by the
-      // media::VideoDecoder API) and the plugin should not have sent any other
-      // decode requests while the flush was pending (this is validated by the
-      // PepperVideoDecoderHost).
-      pending_frames_.pop();
-      DCHECK(pending_frames_.empty());
-      DCHECK(!num_pending_decodes_);
-      DCHECK_EQ(state_, FLUSHING);
-      break;
-    }
-
-    auto it = available_textures_.begin();
-    uint32_t texture_id = *it;
-    available_textures_.erase(it);
-
-    gpu::MailboxHolder destination_holder;
-    destination_holder.mailbox = texture_mailbox_map_[texture_id];
-    destination_holder.texture_target = GL_TEXTURE_2D;
-    if (!use_hw_decoder_) {
-      media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-          frame->video_frame.get(), shared_main_thread_context_provider_.get(),
-          destination_holder);
-    } else {
-      // We don't need to wait on a SyncToken prior to consuming
-      // |destination_holder|.mailbox.name because this mailbox is generated by
-      // VideoDecoderResource::OnPluginMsgRequestTextures() which uses a command
-      // buffer on stream kGpuStreamIdDefault to create the mailbox and then
-      // does a Flush(). |gl| also uses a command buffer on stream
-      // kGpuStreamIdDefault. Therefore, by the time we issue the commands here,
-      // that stream already knows about the command that generated the mailbox.
-      //
-      // TODO(b/230007619): ideally, we shouldn't assume that the two components
-      // use the same stream. We should wire SyncTokens to make this more
-      // general.
-      //
-      // |destination_texture_id| is on the Pepper context provider
-      // (|pepper_video_decode_context_provider_|) while |texture_id| is on the
-      // Pepper client context.
-      const GLuint destination_texture_id =
-          gl->CreateAndConsumeTextureCHROMIUM(destination_holder.mailbox.name);
-      // After the call to `CopyVideoFrameTexturesToGLTexture()` returns true,
-      // the texture referenced by |destination_holder|.mailbox should be ready
-      // to be consumed by any command buffer that works over
-      // kGpuStreamIdDefault (in the current renderer process) without waiting
-      // on a SyncToken. That means that we don't need to plumb a SyncToken to
-      // VideoDecoderResource::OnPluginMsgPictureReady() since that component,
-      // and presumably the plugin, use PPB_Graphics3D_Impl which manages a
-      // command buffer that works over kGpuStreamIdDefault.
-      //
-      // TODO(b/230007619): ideally, we shouldn't assume that these components
-      // use the same stream. We should wire SyncTokens to make this more
-      // general.
-      const auto& gl_capabilities =
-          pepper_video_decode_context_provider_->ContextCapabilities();
-      if (!video_renderer_->CopyVideoFrameTexturesToGLTexture(
-              shared_main_thread_context_provider_.get(), gl, gl_capabilities,
-              frame->video_frame, destination_holder.texture_target,
-              base::strict_cast<unsigned int>(destination_texture_id), GL_RGBA,
-              GL_RGBA, GL_UNSIGNED_BYTE, 0,
-              /*premultiply_alpha=*/false, /*flip_y=*/false)) {
-        gl->DeleteTextures(1, &destination_texture_id);
-        gl->Flush();
-        available_textures_.insert(texture_id);
-        host_->NotifyError(media::VideoDecodeAccelerator::PLATFORM_FAILURE);
-        return;
-      }
-      gl->DeleteTextures(1, &destination_texture_id);
-    }
-    DCHECK(frame->decode_id.has_value());
-    host_->PictureReady(media::Picture(texture_id, frame->decode_id.value(),
-                                       frame->video_frame->visible_rect(),
-                                       gfx::ColorSpace(), false));
-    pending_frames_.pop();
-  }
-
-  FlushCommandBuffer();
-
-  if (pending_frames_.empty()) {
-    // If frames aren't backing up, notify the host of any completed decodes so
-    // it can send more buffers.
-    NotifyCompletedDecodes();
-
-    if (state_ == FLUSHING && !num_pending_decodes_) {
-      state_ = DECODING;
-      host_->NotifyFlushDone();
-    }
-  }
+  SendSharedImages();
 }
 
 void VideoDecoderShim::SendSharedImages() {
-  CHECK(use_shared_images_);
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
 
@@ -909,19 +714,6 @@ void VideoDecoderShim::OnResetComplete() {
     pending_frames_.pop();
   NotifyCompletedDecodes();
 
-  // Dismiss any old textures now.
-  if (use_shared_images_) {
-    // With SharedImages we don't have any textures. `textures_to_dismiss_` are
-    // textures that were in use by plugin when we handled resolution change and
-    // they are wrong size. With shared images we destroy wrong sized images
-    // right when plugin returns them to us.
-    CHECK(textures_to_dismiss_.empty());
-  } else {
-    while (!textures_to_dismiss_.empty()) {
-      DismissTexture(*textures_to_dismiss_.begin());
-    }
-  }
-
   state_ = DECODING;
   host_->NotifyResetDone();
 }
@@ -933,24 +725,8 @@ void VideoDecoderShim::NotifyCompletedDecodes() {
   }
 }
 
-void VideoDecoderShim::DismissTexture(uint32_t texture_id) {
-  CHECK(!use_shared_images_);
-
-  DCHECK(host_);
-  textures_to_dismiss_.erase(texture_id);
-  DCHECK(base::Contains(texture_mailbox_map_, texture_id));
-  texture_mailbox_map_.erase(texture_id);
-  host_->DismissPictureBuffer(texture_id);
-}
-
 void VideoDecoderShim::FlushCommandBuffer() {
   shared_main_thread_context_provider_->RasterInterface()->Flush();
-
-  if (use_hw_decoder_) {
-    if (auto* gl = pepper_video_decode_context_provider_->ContextGL()) {
-      gl->Flush();
-    }
-  }
 }
 
 }  // namespace content

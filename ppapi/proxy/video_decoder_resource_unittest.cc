@@ -32,11 +32,6 @@ const PP_Resource kGraphics3D = 7;
 const uint32_t kShmSize = 256;
 const size_t kDecodeBufferSize = 16;
 const uint32_t kDecodeId = 5;
-const uint32_t kTextureId1 = 1;
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
-const uint32_t kTextureId2 = 2;
-#endif
-const uint32_t kNumRequestedTextures = 2;
 
 class MockCompletionCallback {
  public:
@@ -59,18 +54,10 @@ class MockCompletionCallback {
   int32_t result_;
 };
 
-class VideoDecoderResourceTest : public PluginProxyTestHarness,
-                                 public testing::TestWithParam<bool> {
+class VideoDecoderResourceTest : public PluginProxyTest {
  public:
   VideoDecoderResourceTest()
-      : PluginProxyTestHarness(SINGLETON_GLOBALS),
-        decoder_iface_(thunk::GetPPB_VideoDecoder_1_1_Thunk()) {}
-
-  void SetUp() override { SetUpHarness(); }
-
-  void TearDown() override { TearDownHarness(); }
-
-  bool use_shared_images() { return GetParam(); }
+      : decoder_iface_(thunk::GetPPB_VideoDecoder_1_1_Thunk()) {}
 
   const PPB_VideoDecoder_1_1* decoder_iface() const { return decoder_iface_; }
 
@@ -129,8 +116,7 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
             PpapiHostMsg_VideoDecoder_Initialize::ID, &params, &msg))
       return 0;
     sink().ClearMessages();
-    SendReply(params, PP_OK,
-              PpapiPluginMsg_VideoDecoder_InitializeReply(use_shared_images()));
+    SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_InitializeReply());
     return decoder;
   }
 
@@ -216,14 +202,6 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
     SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_DecodeReply(shm_id));
   }
 
-  void SendPictureReady(const ResourceMessageCallParams& params,
-                        uint32_t decode_count,
-                        uint32_t texture_id) {
-    PP_Rect visible_rect = PP_MakeRectFromXYWH(0, 0, 640, 480);
-    SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_PictureReady(
-                                 decode_count, texture_id, visible_rect));
-  }
-
   void SendSharedImageReady(const ResourceMessageCallParams& params,
                             uint32_t decode_count,
                             const gpu::Mailbox& mailbox) {
@@ -241,12 +219,6 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
     SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_ResetReply());
   }
 
-  void SendRequestTextures(const ResourceMessageCallParams& params) {
-    SendReply(params, PP_OK,
-              PpapiPluginMsg_VideoDecoder_RequestTextures(
-                  kNumRequestedTextures, PP_MakeSize(320, 240), GL_TEXTURE_2D));
-  }
-
   void SendNotifyError(const ResourceMessageCallParams& params, int32_t error) {
     SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_NotifyError(error));
   }
@@ -262,17 +234,6 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
     sink().ClearMessages();
     return UnpackMessage<PpapiHostMsg_VideoDecoder_Decode>(
         msg, shm_id, size, decode_id);
-  }
-
-  bool CheckRecyclePictureMsg(ResourceMessageCallParams* params,
-                              uint32_t* texture_id) {
-    IPC::Message msg;
-    if (!sink().GetFirstResourceCallMatching(
-            PpapiHostMsg_VideoDecoder_RecyclePicture::ID, params, &msg))
-      return false;
-    sink().ClearMessages();
-    return UnpackMessage<PpapiHostMsg_VideoDecoder_RecyclePicture>(msg,
-                                                                   texture_id);
   }
 
   bool CheckRecycleSharedImageMsg(ResourceMessageCallParams* params,
@@ -316,7 +277,6 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
     return true;
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
   const PPB_VideoDecoder_1_1* decoder_iface_;
 
   char decode_buffer_[kDecodeBufferSize];
@@ -324,9 +284,7 @@ class VideoDecoderResourceTest : public PluginProxyTestHarness,
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(, VideoDecoderResourceTest, testing::Bool());
-
-TEST_P(VideoDecoderResourceTest, Initialize) {
+TEST_F(VideoDecoderResourceTest, Initialize) {
   // Initialize with 0 graphics3d_context should fail.
   {
     LockingResourceReleaser decoder(CreateDecoder());
@@ -388,14 +346,13 @@ TEST_P(VideoDecoderResourceTest, Initialize) {
     ASSERT_TRUE(sink().GetFirstResourceCallMatching(
         PpapiHostMsg_VideoDecoder_Initialize::ID, &params, &msg));
     sink().ClearMessages();
-    SendReply(params, PP_OK,
-              PpapiPluginMsg_VideoDecoder_InitializeReply(use_shared_images()));
+    SendReply(params, PP_OK, PpapiPluginMsg_VideoDecoder_InitializeReply());
     ASSERT_TRUE(cb.called());
     ASSERT_EQ(PP_OK, cb.result());
   }
 }
 
-TEST_P(VideoDecoderResourceTest, Uninitialized) {
+TEST_F(VideoDecoderResourceTest, Uninitialized) {
   // Operations on uninitialized decoders should fail.
   LockingResourceReleaser decoder(CreateDecoder());
   MockCompletionCallback uncalled_cb;
@@ -417,7 +374,7 @@ TEST_P(VideoDecoderResourceTest, Uninitialized) {
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
-TEST_P(VideoDecoderResourceTest, DecodeAndGetPicture) {
+TEST_F(VideoDecoderResourceTest, DecodeAndGetPicture) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params, params2;
   MockCompletionCallback decode_cb, get_picture_cb, uncalled_cb;
@@ -465,32 +422,20 @@ TEST_P(VideoDecoderResourceTest, DecodeAndGetPicture) {
             CallGetPicture(decoder.get(), &picture, &uncalled_cb));
   ASSERT_FALSE(uncalled_cb.called());
 
-  if (use_shared_images()) {
-    const auto mailbox1 = gpu::Mailbox::GenerateForSharedImage();
-    // Send a shared image ready message for Decode call 1. The GetPicture
-    // callback should complete.
-    SendSharedImageReady(params, 1U, mailbox1);
-  } else {
-    // Send 'request textures' message to initialize textures.
-    SendRequestTextures(params);
-    // Send a picture ready message for Decode call 1. The GetPicture callback
-    // should complete.
-    SendPictureReady(params, 1U, kTextureId1);
-  }
+  const auto mailbox1 = gpu::Mailbox::GenerateForSharedImage();
+  // Send a shared image ready message for Decode call 1. The GetPicture
+  // callback should complete.
+  SendSharedImageReady(params, 1U, mailbox1);
 
   ASSERT_TRUE(get_picture_cb.called());
   ASSERT_EQ(PP_OK, get_picture_cb.result());
   ASSERT_EQ(kDecodeId, picture.decode_id);
   get_picture_cb.Reset();
 
-  // Send a picture ready message for Decode call 2. Since there is no pending
-  // GetPicture call, the picture should be queued.
-  if (use_shared_images()) {
-    const auto mailbox2 = gpu::Mailbox::GenerateForSharedImage();
-    SendSharedImageReady(params, 2U, mailbox2);
-  } else {
-    SendPictureReady(params, 2U, kTextureId2);
-  }
+  // Send a shared image ready message for Decode call 2. Since there is no
+  // pending GetPicture call, the picture should be queued.
+  const auto mailbox2 = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 2U, mailbox2);
 
   // The next GetPicture should return synchronously.
   ASSERT_EQ(PP_OK, CallGetPicture(decoder.get(), &picture, &uncalled_cb));
@@ -503,7 +448,7 @@ TEST_P(VideoDecoderResourceTest, DecodeAndGetPicture) {
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
-TEST_P(VideoDecoderResourceTest, RecyclePicture) {
+TEST_F(VideoDecoderResourceTest, RecyclePicture) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params;
   MockCompletionCallback decode_cb, get_picture_cb, uncalled_cb;
@@ -517,39 +462,25 @@ TEST_P(VideoDecoderResourceTest, RecyclePicture) {
   CheckDecodeMsg(&params, &shm_id, &decode_size, &decode_id);
   SendDecodeReply(params, 0U);
 
-  if (!use_shared_images()) {
-    // Send 'request textures' message to initialize textures.
-    SendRequestTextures(params);
-  }
   // Call GetPicture and send 'picture ready' message to get a picture to
   // recycle.
   PP_VideoPicture picture;
   ASSERT_EQ(PP_OK_COMPLETIONPENDING,
             CallGetPicture(decoder.get(), &picture, &get_picture_cb));
 
-  if (use_shared_images()) {
-    const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-    SendSharedImageReady(params, 0U, mailbox);
+  const auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 0U, mailbox);
 
-    CallRecyclePicture(decoder.get(), picture);
-    gpu::Mailbox recycle_mailbox;
-    ASSERT_TRUE(CheckRecycleSharedImageMsg(&params, recycle_mailbox));
-    ASSERT_EQ(mailbox, recycle_mailbox);
-  } else {
-    SendPictureReady(params, 0U, kTextureId1);
-    ASSERT_EQ(kTextureId1, picture.texture_id);
-
-    CallRecyclePicture(decoder.get(), picture);
-    uint32_t texture_id;
-    ASSERT_TRUE(CheckRecyclePictureMsg(&params, &texture_id));
-    ASSERT_EQ(kTextureId1, texture_id);
-  }
+  CallRecyclePicture(decoder.get(), picture);
+  gpu::Mailbox recycle_mailbox;
+  ASSERT_TRUE(CheckRecycleSharedImageMsg(&params, recycle_mailbox));
+  ASSERT_EQ(mailbox, recycle_mailbox);
 
   ClearCallbacks(decoder.get());
 }
 #endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
 
-TEST_P(VideoDecoderResourceTest, Flush) {
+TEST_F(VideoDecoderResourceTest, Flush) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params, params2;
   MockCompletionCallback flush_cb, get_picture_cb, uncalled_cb, decode_cb;
@@ -563,15 +494,8 @@ TEST_P(VideoDecoderResourceTest, Flush) {
   CheckDecodeMsg(&params, &shm_id, &decode_size, &decode_id);
   SendDecodeReply(params, 0U);
 
-  gpu::Mailbox mailbox;
-  if (use_shared_images()) {
-    mailbox = gpu::Mailbox::GenerateForSharedImage();
-    SendSharedImageReady(params, 0U, mailbox);
-  } else {
-    // Send 'request textures' message to initialize textures.
-    SendRequestTextures(params);
-    SendPictureReady(params, 0U, kTextureId1);
-  }
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  SendSharedImageReady(params, 0U, mailbox);
 
   PP_VideoPicture picture;
   ASSERT_EQ(PP_OK, CallGetPicture(decoder.get(), &picture, &get_picture_cb));
@@ -597,14 +521,9 @@ TEST_P(VideoDecoderResourceTest, Flush) {
   // Plugin can call RecyclePicture while Flush is pending.
   CallRecyclePicture(decoder.get(), picture);
 
-  if (use_shared_images()) {
-    gpu::Mailbox recycle_mailbox;
-    ASSERT_TRUE(CheckRecycleSharedImageMsg(&params2, recycle_mailbox));
-    ASSERT_EQ(mailbox, recycle_mailbox);
-  } else {
-    uint32_t texture_id;
-    ASSERT_TRUE(CheckRecyclePictureMsg(&params2, &texture_id));
-  }
+  gpu::Mailbox recycle_mailbox;
+  ASSERT_TRUE(CheckRecycleSharedImageMsg(&params2, recycle_mailbox));
+  ASSERT_EQ(mailbox, recycle_mailbox);
 
   SendFlushReply(params);
   // Any pending GetPicture call is aborted.
@@ -621,7 +540,7 @@ TEST_P(VideoDecoderResourceTest, Flush) {
 // message for GetShm isn't received, causing Decode to fail.
 // http://crbug.com/379260
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_64_BITS)
-TEST_P(VideoDecoderResourceTest, NotifyError) {
+TEST_F(VideoDecoderResourceTest, NotifyError) {
   LockingResourceReleaser decoder(CreateAndInitializeDecoder());
   ResourceMessageCallParams params;
   MockCompletionCallback decode_cb, get_picture_cb, uncalled_cb;

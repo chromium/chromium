@@ -98,13 +98,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   void DestroySharedImageInternal(
       std::map<gpu::Mailbox, SharedImage>::iterator it);
 
-  void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                             media::VideoPixelFormat format,
-                             uint32_t textures_per_buffer,
-                             const gfx::Size& dimensions,
-                             uint32_t texture_target);
-  void DismissPictureBuffer(int32_t picture_buffer_id);
-  void PictureReady(const media::Picture& picture);
   void SharedImageReady(int32_t decode_id,
                         const gpu::Mailbox& mailbox,
                         gfx::Size size,
@@ -127,21 +120,12 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
                           uint32_t shm_id,
                           uint32_t size,
                           int32_t decode_id);
-  int32_t OnHostMsgAssignTextures(ppapi::host::HostMessageContext* context,
-                                  const PP_Size& size,
-                                  const std::vector<uint32_t>& texture_ids,
-                                  const std::vector<gpu::Mailbox>& mailboxes);
-  int32_t OnHostMsgRecyclePicture(ppapi::host::HostMessageContext* context,
-                                  uint32_t picture_id);
   int32_t OnHostMsgRecycleSharedImage(ppapi::host::HostMessageContext* context,
                                       const gpu::Mailbox& mailbox);
   int32_t OnHostMsgFlush(ppapi::host::HostMessageContext* context);
   int32_t OnHostMsgReset(ppapi::host::HostMessageContext* context);
 
   const uint8_t* DecodeIdToAddress(uint32_t decode_id);
-  std::vector<gpu::Mailbox> TakeMailboxes() {
-    return std::move(texture_mailboxes_);
-  }
 
   // Tries to initialize software decoder. Returns true on success.
   bool TryFallbackToSoftwareDecoder();
@@ -168,12 +152,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   // Used for UMA stats; not frame-accurate.
   gfx::Size coded_size_;
 
-  int pending_texture_requests_ = 0;
-
-  // Set after software decoder fallback to dismiss all outstanding texture
-  // requests.
-  int assign_textures_messages_to_dismiss_ = 0;
-
   // A vector holding our shm buffers, in sync with a similar vector in the
   // resource. We use a buffer's index in these vectors as its id on both sides
   // of the proxy. Only add buffers or update them in place so as not to
@@ -187,12 +165,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   std::vector<MappedBuffer> shm_buffers_;
 
   uint32_t min_picture_count_;
-  typedef std::map<uint32_t, PictureBufferState> PictureBufferMap;
-  PictureBufferMap picture_buffer_map_;
-
-  // Mailboxes corresponding to textures given to AssignPictureBuffers, to allow
-  // VideoDecoderShim to use them from another context.
-  std::vector<gpu::Mailbox> texture_mailboxes_;
 
   // Keeps list of pending decodes.
   PendingDecodeList pending_decodes_;
@@ -201,8 +173,6 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   ppapi::host::ReplyMessageContext reset_reply_context_;
 
   bool initialized_ = false;
-
-  const bool use_shared_images_;
 };
 
 }  // namespace content

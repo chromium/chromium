@@ -293,9 +293,6 @@ class CONTENT_EXPORT RenderThreadImpl
   scoped_refptr<viz::ContextProviderCommandBuffer>
   SharedMainThreadContextProvider();
 
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-  PepperVideoDecodeContextProvider();
-
   // For producing custom V8 histograms. Custom histograms are produced if all
   // `blink::WebView`s share the same host, and the host is in the pre-specified
   // set of hosts we want to produce custom diagrams for. The name for a custom
@@ -524,9 +521,6 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
 
   scoped_refptr<viz::ContextProviderCommandBuffer> shared_main_thread_contexts_;
-
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-      pepper_video_decode_contexts_;
 
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
 

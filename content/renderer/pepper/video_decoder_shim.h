@@ -33,8 +33,7 @@ class VideoDecoderShim {
  public:
   static std::unique_ptr<VideoDecoderShim> Create(PepperVideoDecoderHost* host,
                                                   uint32_t texture_pool_size,
-                                                  bool use_hw_decoder,
-                                                  bool use_shared_images);
+                                                  bool use_hw_decoder);
 
   VideoDecoderShim(const VideoDecoderShim&) = delete;
   VideoDecoderShim& operator=(const VideoDecoderShim&) = delete;
@@ -43,8 +42,6 @@ class VideoDecoderShim {
 
   bool Initialize(media::VideoCodecProfile profile);
   void Decode(media::BitstreamBuffer bitstream_buffer);
-  void AssignPictureBuffers(const std::vector<media::PictureBuffer>& buffers);
-  void ReusePictureBuffer(int32_t picture_buffer_id);
   void ReuseSharedImage(const gpu::Mailbox& mailbox, gfx::Size size);
   void Flush();
   void Reset();
@@ -70,21 +67,15 @@ class VideoDecoderShim {
   VideoDecoderShim(PepperVideoDecoderHost* host,
                    uint32_t texture_pool_size,
                    bool use_hw_decoder,
-                   bool use_shared_images,
                    scoped_refptr<viz::ContextProviderCommandBuffer>
-                       shared_main_thread_context_provider,
-                   scoped_refptr<viz::ContextProviderCommandBuffer>
-                       pepper_video_decode_context_provider);
+                       shared_main_thread_context_provider);
 
   void OnInitializeFailed();
   void OnDecodeComplete(int32_t result, std::optional<uint32_t> decode_id);
   void OnOutputComplete(std::unique_ptr<PendingFrame> frame);
-  void SendPictures();
   void SendSharedImages();
   void OnResetComplete();
   void NotifyCompletedDecodes();
-  void DismissTexture(uint32_t texture_id);
-  void DeleteTexture(uint32_t texture_id);
   // Call this whenever we change GL state that the plugin relies on, such as
   // creating picture textures.
   void FlushCommandBuffer();
@@ -96,21 +87,11 @@ class VideoDecoderShim {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<viz::ContextProviderCommandBuffer>
       shared_main_thread_context_provider_;
-  scoped_refptr<viz::ContextProviderCommandBuffer>
-      pepper_video_decode_context_provider_;
 
   // The current decoded frame size.
   gfx::Size texture_size_;
-  // Map that takes the plugin's GL texture id to the renderer's mailbox.
-  using IdToMailboxMap = std::unordered_map<uint32_t, gpu::Mailbox>;
-  IdToMailboxMap texture_mailbox_map_;
-  // Available textures (these are plugin ids.)
-  using TextureIdSet = std::unordered_set<uint32_t>;
-  TextureIdSet available_textures_;
-  std::vector<gpu::Mailbox> available_shared_images_;
 
-  // Track textures that are no longer needed (these are plugin ids.)
-  TextureIdSet textures_to_dismiss_;
+  std::vector<gpu::Mailbox> available_shared_images_;
 
   // Queue of completed decode ids, for notifying the host.
   using CompletedDecodeQueue = base::queue<uint32_t>;
@@ -128,8 +109,6 @@ class VideoDecoderShim {
   const bool use_hw_decoder_;
 
   std::unique_ptr<media::PaintCanvasVideoRenderer> video_renderer_;
-
-  const bool use_shared_images_;
 
   base::WeakPtrFactory<VideoDecoderShim> weak_ptr_factory_{this};
 };
