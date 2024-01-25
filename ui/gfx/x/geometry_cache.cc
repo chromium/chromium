@@ -85,6 +85,11 @@ void GeometryCache::OnGeometryChanged(const gfx::Rect& geometry) {
   NotifyGeometryChanged();
 }
 
+void GeometryCache::OnPositionChanged(const gfx::Point& origin) {
+  geometry_.set_origin(origin);
+  NotifyGeometryChanged();
+}
+
 bool GeometryCache::Ready() const {
   return have_geometry_ && have_parent_ && (!parent_ || parent_->Ready());
 }
@@ -124,6 +129,10 @@ void GeometryCache::OnEvent(const Event& xevent) {
   } else if (auto* reparent = xevent.As<ReparentNotifyEvent>()) {
     if (reparent->window == window_) {
       OnParentChanged(reparent->parent, gfx::Point(reparent->x, reparent->y));
+    }
+  } else if (auto* gravity = xevent.As<GravityNotifyEvent>()) {
+    if (gravity->window == window_) {
+      OnPositionChanged(gfx::Point(gravity->x, gravity->y));
     }
   }
 }
