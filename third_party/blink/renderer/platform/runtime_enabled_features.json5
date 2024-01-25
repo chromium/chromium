@@ -495,11 +495,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/880802
-      name: "BlockRubyConsoleMessage",
-      status: "stable",
-    },
-    {
       name: "BlockRubyWrappingInlineRuby",
       status: "stable",
     },
