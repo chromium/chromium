@@ -207,8 +207,7 @@ TEST_F(ReportQueueProviderTest, CreateMultipleQueues) {
   waiter.Signal();  // Release the waiter
 }
 
-// TODO(crbug.com/1521558): test is flaky.
-TEST_F(ReportQueueProviderTest, DISABLED_CreateMultipleSpeculativeQueues) {
+TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
   static constexpr std::array<std::pair<Priority, Destination>, 9> send_as{
       std::make_pair(FAST_BATCH, HEARTBEAT_EVENTS),
       std::make_pair(SLOW_BATCH, CRD_EVENTS),
