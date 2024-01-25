@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -78,6 +79,6 @@ class CommercePushNotificationClient : public PushNotificationClient {
 
   // Allows tests to override the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
-  ChromeBrowserState* last_used_browser_state_for_testing_ = nullptr;
+  raw_ptr<ChromeBrowserState> last_used_browser_state_for_testing_ = nullptr;
 };
 #endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_PUSH_NOTIFICATION_COMMERCE_PUSH_NOTIFICATION_CLIENT_H_

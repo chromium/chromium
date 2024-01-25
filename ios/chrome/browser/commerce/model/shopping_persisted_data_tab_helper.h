@@ -10,6 +10,7 @@
 #include <map>
 #include <optional>
 
+#import "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -117,7 +118,7 @@ class ShoppingPersistedDataTabHelper
     price_drop_ = std::move(price_drop);
   }
 
-  web::WebState* web_state_ = nullptr;
+  raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Caches payments::CurrencyFormatters per currency code
   std::map<std::string, payments::CurrencyFormatter> currency_formatter_map_;

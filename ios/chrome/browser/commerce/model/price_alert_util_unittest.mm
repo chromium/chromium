@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -72,7 +73,7 @@ class PriceAlertUtilTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  AuthenticationService* auth_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
 

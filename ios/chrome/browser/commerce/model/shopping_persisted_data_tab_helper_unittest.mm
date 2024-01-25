@@ -6,6 +6,7 @@
 
 #import "base/base64.h"
 #import "base/command_line.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -196,7 +197,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
   web::FakeNavigationContext context_;
   id<SystemIdentity> fake_identity_ = nil;
-  AuthenticationService* auth_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
 };
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceDrop) {
