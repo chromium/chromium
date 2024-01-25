@@ -43,15 +43,6 @@ def main():
                         default=DEFAULT_SYSROOT,
                         help='use cargo and rustc from here')
     (args, cargo_args) = parser.parse_known_args()
-
-    if sys.platform == 'darwin' and platform.machine() == 'arm64':
-        if args.rust_sysroot == 'third_party/rust-toolchain':
-            args.rust_sysroot = os.path.expanduser(
-                '~/.rustup/toolchains/nightly-aarch64-apple-darwin')
-            print('No "cargo" provided in the Chromium toolchain on Mac-ARM. '
-                  'Install cargo nightly to ~/.rustup or use --rust-sysroot:')
-            print("== To install: `rustup install nightly`")
-
     return RunCargo(args.rust_sysroot, None, cargo_args)
 
 

@@ -47,11 +47,6 @@ https://doc.rust-lang.org/cargo/reference/manifest.html), though the crate
 itself is never built, it is only used to collect dependencies through the
 `[dependencies]` section.
 
-These instructions require the presence of nightly `cargo` which is normally found
-in `//third_party/rust-toolchain/bin`. But [on Mac Arm](https://crbug.com/1515913)
-it is missing, and will need to be installed separately with
-[`rustup install nightly`](https://rustup.rs/) and added to the `PATH` environment.
-
 To use a third-party crate "bar" version 3 from first party code:
 1. Change directory to the root `src/` dir of Chromium.
 1. Add the crate to `//third_party/rust/chromium_crates_io/Cargo.toml`:
