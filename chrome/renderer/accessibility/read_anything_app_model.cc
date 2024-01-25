@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
 namespace {
@@ -1040,4 +1041,37 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
 
   std::string aria_level = GetAriaLevel(ax_node);
   return !aria_level.empty() ? "h" + aria_level : html_tag;
+}
+
+int ReadAnythingAppModel::GetNextSentence(const std::u16string& text,
+                                          int max_text_length) {
+  // TODO(crbug.com/1474941): Investigate providing correct line breaks
+  // or alternatively making adjustments to ax_text_utils to return boundaries
+  // that minimize choppiness.
+  std::vector<int> offsets;
+  const std::u16string shorter_string = text.substr(0, max_text_length);
+  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
+      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
+      ax::mojom::MoveDirection::kForward,
+      ax::mojom::TextAffinity::kDefaultValue);
+
+  // Compare the index result for the sentence of maximum text length and of
+  // the longer text string. If the two values are the same, the index is
+  // correct. If they are different, the maximum text length may have
+  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
+  // "this is a" or "this is a sentence"), so if this is the case, we'll want
+  // to use the last word boundary instead.
+  if (sentence_ends_short == sentence_ends_long) {
+    return sentence_ends_short;
+  }
+
+  size_t word_ends = ui::FindAccessibleTextBoundary(
+      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
+      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
+      ax::mojom::TextAffinity::kDefaultValue);
+  return word_ends;
 }

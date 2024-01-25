@@ -183,6 +183,13 @@ class ReadAnythingAppModel {
 
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
 
+  // Returns the index of the next sentence of the given text, such that the
+  // next sentence is equivalent to text.substr(0, <returned_index>).
+  // If the sentence exceeds the maximum text length, the sentence will be
+  // cropped to the nearest word boundary that doesn't exceed the maximum
+  // text length.
+  int GetNextSentence(const std::u16string& text, int max_text_length);
+
   // PDF handling.
   void SetIsPdf(const GURL& url);
   bool is_pdf() const { return is_pdf_; }

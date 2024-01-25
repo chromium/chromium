@@ -34,7 +34,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -1370,7 +1369,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
     int prev_index = current_text_index_;
     // Gets the starting index for the next sentence in the current node.
     int next_sentence_index =
-        GetNextSentence(text_substr, max_text_length) + prev_index;
+        model_.GetNextSentence(text_substr, max_text_length) + prev_index;
     // If our current index within the current node is greater than that node's
     // text, look at the next node. If the starting index of the next sentence
     // in the node is the same the current index within the node, this means
@@ -1409,7 +1408,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
       // Get the index of the next sentence if we're looking at the combined
       // previous and current node text.
       int combined_sentence_index =
-          GetNextSentence(combined_text, max_text_length);
+          model_.GetNextSentence(combined_text, max_text_length);
       // If the combined_sentence_index is the same as the current_text length,
       // the new node should not be considered part of the current sentence.
       // If these values differ, add the current node's text to the list of
@@ -1467,7 +1466,7 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
     text_substr = text.substr(current_text_index_);
     // Find the next sentence within the current node.
     int new_current_text_index =
-        GetNextSentence(text_substr, max_text_length) + prev_index;
+        model_.GetNextSentence(text_substr, max_text_length) + prev_index;
     // If adding the next piece of the sentence from the current node doesn't
     // make the returned text too long, add it to the list of nodes.
     if ((current_text.length() + new_current_text_index - prev_index) <
@@ -1631,39 +1630,6 @@ int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
       current_granularity.segments[node_id];
 
   return segment.text_end;
-}
-
-int ReadAnythingAppController::GetNextSentence(const std::u16string& text,
-                                               int max_text_length) {
-  // TODO(crbug.com/1474941): Investigate providing correct line breaks
-  // or alternatively making adjustments to ax_text_utils to return boundaries
-  // that minimize choppiness.
-  std::vector<int> offsets;
-  const std::u16string shorter_string = text.substr(0, max_text_length);
-  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
-      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
-      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-
-  // Compare the index result for the sentence of maximum text length and of
-  // the longer text string. If the two values are the same, the index is
-  // correct. If they are different, the maximum text length may have
-  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
-  // "this is a" or "this is a sentence"), so if this is the case, we'll want
-  // to use the last word boundary instead.
-  if (sentence_ends_short == sentence_ends_long) {
-    return sentence_ends_short;
-  }
-
-  size_t word_ends = ui::FindAccessibleTextBoundary(
-      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
-      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  return word_ends;
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from
