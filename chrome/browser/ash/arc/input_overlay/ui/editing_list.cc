@@ -47,7 +47,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -262,29 +261,11 @@ void EditingList::AddHeader() {
   // +-----------------------------------+
   // ||"Controls"|    |? button| |"Done"||
   // +-----------------------------------+
-  auto* header_container =
-      AddChildView(std::make_unique<views::TableLayoutView>());
-  header_container
-      ->AddColumn(/*h_align=*/views::LayoutAlignment::kStart,
-                  /*v_align=*/views::LayoutAlignment::kCenter,
-                  /*horizontal_resize=*/views::TableLayout::kFixedSize,
-                  /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/32)
-      .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
-                 /*v_align=*/views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/1.0f,
-                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/8)
-      .AddColumn(/*h_align=*/views::LayoutAlignment::kEnd,
-                 /*v_align=*/views::LayoutAlignment::kCenter,
-                 /*horizontal_resize=*/views::TableLayout::kFixedSize,
-                 /*size_type=*/views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, views::TableLayout::kFixedSize);
+  auto* header_container = AddChildView(std::make_unique<views::View>());
+  auto* layout =
+      header_container->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   header_container->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, kEditingListInsideBorderInsets, kHeaderBottomMargin,
@@ -297,21 +278,31 @@ void EditingList::AddHeader() {
           l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_LIST_TITLE),
           cros_tokens::kCrosSysOnSurface));
 
+  editing_header_label_->SetProperty(views::kMarginsKey,
+                                     gfx::Insets::TLBR(0, 0, 0, 32));
+  editing_header_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // Buttons should be right aligned, so flex label to fill empty space.
+  layout->SetFlexForView(editing_header_label_, /*flex=*/1);
+
   // Add helper button.
-  header_container->AddChildView(std::make_unique<ash::IconButton>(
-      base::BindRepeating(&EditingList::OnHelpButtonPressed,
-                          base::Unretained(this)),
-      // TODO(b/296126993): Add the UX provided back arrow icon.
-      ash::IconButton::Type::kMedium, &ash::kGdHelpIcon,
-      // TODO(b/279117180): Update a11y string.
-      IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+  auto* help_button =
+      header_container->AddChildView(std::make_unique<ash::IconButton>(
+          base::BindRepeating(&EditingList::OnHelpButtonPressed,
+                              base::Unretained(this)),
+          ash::IconButton::Type::kMedium, &ash::kGdHelpIcon,
+          IDS_INPUT_OVERLAY_EDITING_LIST_HELP_BUTTON_NAME));
+  help_button->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 8));
 
   // Add done button.
-  header_container->AddChildView(std::make_unique<ash::PillButton>(
-      base::BindRepeating(&EditingList::OnDoneButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL),
-      ash::PillButton::Type::kSecondaryWithoutIcon));
+  auto* done_button =
+      header_container->AddChildView(std::make_unique<ash::PillButton>(
+          base::BindRepeating(&EditingList::OnDoneButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL),
+          ash::PillButton::Type::kSecondaryWithoutIcon));
+  done_button->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL));
 }
 
 void EditingList::AddControlListContent() {

@@ -4817,6 +4817,12 @@
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_TITLE" desc="The title in the header row of the Game Controls editor menu." translateable="false">
           Controls
         </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_HELP_BUTTON_NAME" desc="Helper button tooltip text and a11y label." translateable="false">
+          Get help
+        </message>
+        <message name="IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL" desc="Done button a11y label. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
+          Done editing
+        </message>
         <!-- End of Arc Input Overlay -->
       </if>
 
