@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
@@ -155,8 +156,8 @@ class BackgroundDownloadServiceTest
 
  private:
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  download::BackgroundDownloadService* service_;
-  FakeClient* fake_client_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService> service_;
+  raw_ptr<FakeClient> fake_client_ = nullptr;
   base::FilePath temp_file_path_;
   base::FilePath temp_file_path_to_delete_;
 };
