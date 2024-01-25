@@ -343,13 +343,6 @@
     'blink_bluetooth': {
       'filepath': 'third_party/(WebKit|blink)/.*[Bb]luetooth'
     },
-    'blink_client_hints': {
-      'filepath': 'third_party/blink/renderer/core/loader/accept_client_hints' \
-                  '|third_party/blink/renderer/core/loader/frame_fetch_context' \
-                  '|third_party/blink/renderer/core/loader/resource/image_resource' \
-                  '|third_party/blink/renderer/platform/loader/fetch/fetch_context' \
-                  '|third_party/blink/renderer/platform/loader/fetch/resource_fetcher'
-    },
     'blink_clipboard': {
       'filepath': 'third_party/blink/renderer/core/clipboard' \
                   '|third_party/blink/renderer/core/page/.*drag' \
@@ -2548,7 +2541,6 @@
     'blink_bindings_serialization': ['jbroman+watch@chromium.org'],
     'blink_bluetooth': ['mattreynolds+watch@chromium.org',
                         'odejesush+watch@chromium.org'],
-    'blink_client_hints': ['yoavweiss@chromium.org'],
     'blink_clipboard': ['dcheng@chromium.org'],
     'blink_common': ['kinuko+watch@chromium.org'],
     'blink_controller': [],
@@ -2598,8 +2590,7 @@
     'blink_media': ['feature-media-reviews@chromium.org',
                     'eric.carlson@apple.com',
                     'srirama.m@samsung.com'],
-    'blink_media_queries': ['kenneth.christiansen@gmail.com',
-                            'yoavweiss@chromium.org'],
+    'blink_media_queries': ['kenneth.christiansen@gmail.com'],
     'blink_mediastream': ['tommyw+watchlist@chromium.org'],
     'blink_navigator_content_utils': ['gyuyoung.kim@chromium.org'],
     'blink_out_of_process_frames': ['dcheng@chromium.org'],

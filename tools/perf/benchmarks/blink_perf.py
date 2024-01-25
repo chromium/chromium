@@ -620,7 +620,7 @@ class BlinkPerfPaint(_BlinkPerfBenchmark):
     return 'blink_perf.paint'
 
 
-@benchmark.Info(emails=['yoavweiss@chromium.org'],
+@benchmark.Info(emails=['sullivan@chromium.org'],
                 component='Blink>PerformanceAPIs',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfPerformanceAPIs(_BlinkPerfBenchmark):

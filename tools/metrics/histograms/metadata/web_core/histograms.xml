@@ -142,30 +142,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime"
-    units="microseconds" expires_after="2019-09-30">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Time in which non-AppCache requests have been delayed after being discovered
-    by the HTMLPreloadScanner, due to document element not being yet available,
-    which is required for AppCache support. Recorded per document.
-  </summary>
-</histogram>
-
-<histogram
-    name="WebCore.HTMLDocumentParser.PreloadScannerAppCacheDelayTime.MainFrame"
-    units="microseconds" expires_after="2019-09-30">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Time in which non-AppCache requests have been delayed after being discovered
-    by the HTMLPreloadScanner, due to document element not being yet available,
-    which is required for AppCache support. Recorded per document, but applies
-    only to main frames.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.BackingStore.Action" enum="IDBAction"
     expires_after="never">
 <!-- expires-never: indexeddb heartbeat metric; used for chirp alerts (go/chrome-indexeddb-heartbeat) -->
