@@ -84,8 +84,8 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
       result, /*triggerMouseControllerInterval=*/ true);
 
   cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-  assertEquals(594, cursorPosition.x);
-  assertEquals(404, cursorPosition.y);
+  assertEquals(360, cursorPosition.x);
+  assertEquals(560, cursorPosition.y);
 
   // Move to where we were. Since the buffer size is 1, should end up at the
   // exact same location.
@@ -97,14 +97,32 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
   assertEquals(600, cursorPosition.x);
   assertEquals(400, cursorPosition.y);
 
-  // Try a larger movement.
+  // Try a larger movement, 10% of the screen.
   result =
-      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.4, 0.5);
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.12, 0.22);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ true);
   cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-  assertEquals(409, cursorPosition.x);
-  assertEquals(528, cursorPosition.y);
+  assertEquals(120, cursorPosition.x);
+  assertEquals(720, cursorPosition.y);
+
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.1, 0.2);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertEquals(600, cursorPosition.x);
+  assertEquals(400, cursorPosition.y);
+
+  // Try a very small movement, 0.5% of the screen, which ends up being about
+  // one pixel.
+  result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+      0.101, 0.201);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
+  assertEquals(580, cursorPosition.x);
+  assertEquals(420, cursorPosition.y);
 });
 
 // Test that if the forehead location is moving around a different part of
@@ -126,8 +144,8 @@ AX_TEST_F(
       this.processFaceLandmarkerResult(
           result, /*triggerMouseControllerInterval=*/ true);
       cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-      assertEquals(594, cursorPosition.x);
-      assertEquals(404, cursorPosition.y);
+      assertEquals(360, cursorPosition.x);
+      assertEquals(560, cursorPosition.y);
 
       // Move to where we were. Since the buffer size is 1, should end up at the
       // exact same location.
@@ -160,8 +178,8 @@ AX_TEST_F(
           result, /*triggerMouseControllerInterval=*/ true);
 
       cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-      assertEquals(694, cursorPosition.x);
-      assertEquals(454, cursorPosition.y);
+      assertEquals(460, cursorPosition.x);
+      assertEquals(610, cursorPosition.y);
 
       // Move to where we were. Since the buffer size is 1, should end up at the
       // exact same location.
@@ -215,42 +233,208 @@ AX_TEST_F('FaceGazeTest', 'UpdateMouseLocationWithBuffer', async function() {
 });
 
 AX_TEST_F(
-    'FaceGazeTest', 'UpdateMouseLocationWithAcceleration', async function() {
+    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move1', async function() {
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+      // With mouse acceleration off and buffer size 1, one-pixel head movements
+      // correspond to one-pixel changes on screen.
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+
+      for (let i = 1; i < 10; i++) {
+        const result =
+            new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+                0.1 + px * i, 0.2 + py * i);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(600 - i, cursorPosition.x);
+        assertEquals(400 + i, cursorPosition.y);
+      }
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move5', async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+
+      // Move further. Should get a linear increase in position.
+      for (let i = 0; i < 5; i++) {
+        result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+            0.1 + px * i * 5, 0.2 + py * i * 5);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(600 - i * 5, cursorPosition.x);
+        assertEquals(400 + i * 5, cursorPosition.y);
+      }
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithSpeed1Move20', async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+
+      // Move even further. Should get a linear increase in position.
+      for (let i = 0; i < 5; i++) {
+        result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+            0.1 + px * i * 20, 0.2 + py * i * 20);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(600 - i * 20, cursorPosition.x);
+        assertEquals(400 + i * 20, cursorPosition.y);
+      }
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove1',
+    async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1)
                          .withMouseAcceleration();
       await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
 
-      // With mouse acceleration on, small movements are smaller than without
-      // it.
-      let result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
-          0.11, 0.21);
-      this.processFaceLandmarkerResult(
-          result, /*triggerMouseControllerInterval=*/ true);
-      let cursorPosition =
-          this.mockAccessibilityPrivate.getLatestCursorPosition();
-      assertEquals(595, cursorPosition.x);
-      assertEquals(402, cursorPosition.y);
+      // With mouse acceleration off and buffer size 1, one-pixel head movements
+      // correspond to one-pixel changes on screen.
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+      let xLocation = 0.1;
+      let yLocation = 0.2;
 
-      // Move to where we were. Since the buffer size is 1, should end up at the
-      // exact same location.
-      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
-          0.1, 0.2);
-      this.processFaceLandmarkerResult(
-          result, /*triggerMouseControllerInterval=*/ true);
-      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-      assertEquals(600, cursorPosition.x);
-      assertEquals(400, cursorPosition.y);
+      // With these settings, moving the face by one pixel at a time is not ever
+      // enough to move the cursor.
+      for (let i = 1; i < 10; i++) {
+        xLocation += px;
+        yLocation += py;
+        const result =
+            new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+                xLocation, yLocation);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(600, cursorPosition.x);
+        assertEquals(400, cursorPosition.y);
+      }
+    });
 
-      // Big movements are bigger than without mouse acceleration.
-      result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
-          0.4, 0.5);
-      this.processFaceLandmarkerResult(
-          result, /*triggerMouseControllerInterval=*/ true);
-      cursorPosition = this.mockAccessibilityPrivate.getLatestCursorPosition();
-      assertEquals(370, cursorPosition.x);
-      assertEquals(553, cursorPosition.y);
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove5',
+    async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1)
+                         .withMouseAcceleration();
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+      let xLocation = 0.1;
+      let yLocation = 0.2;
+
+      // Move by 5 pixels at a time to get a non-linear increase of 3 (movement
+      // still dampened by sigmoid).
+      for (let i = 1; i < 5; i++) {
+        xLocation += px * 5;
+        yLocation += py * 5;
+        const result =
+            new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+                xLocation, yLocation);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(600 - i * 3, cursorPosition.x);
+        assertEquals(400 + i * 3, cursorPosition.y);
+      }
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove10',
+    async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1)
+                         .withMouseAcceleration();
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+      // With mouse acceleration off and buffer size 1, one-pixel head movements
+      // correspond to one-pixel changes on screen.
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+      let xLocation = 0.1;
+      let yLocation = 0.2;
+
+      // Move by 10 pixels at a time to get a linear increase of 10 (sigma at
+      // 1).
+      for (let i = 1; i < 5; i++) {
+        xLocation += px * 10;
+        yLocation += py * 10;
+        const initialCursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        const result =
+            new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+                xLocation, yLocation);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(-10, cursorPosition.x - initialCursorPosition.x);
+        assertEquals(10, cursorPosition.y - initialCursorPosition.y);
+      }
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'UpdateMouseLocationWithAccelerationMove20',
+    async function() {
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withSpeeds(1, 1, 1, 1)
+                         .withMouseAcceleration();
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+      const px = 1.0 / 1200;
+      const py = 1.0 / 800;
+      let xLocation = 0.1;
+      let yLocation = 0.2;
+
+      // Finally, do a large movement of 20 px. It should be magnified further.
+      for (let i = 1; i < 5; i++) {
+        xLocation += px * 20;
+        yLocation += py * 20;
+        const initialCursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        const result =
+            new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
+                xLocation, yLocation);
+        this.processFaceLandmarkerResult(
+            result, /*triggerMouseControllerInterval=*/ true);
+        const cursorPosition =
+            this.mockAccessibilityPrivate.getLatestCursorPosition();
+        assertEquals(-24, cursorPosition.x - initialCursorPosition.x);
+        assertEquals(24, cursorPosition.y - initialCursorPosition.y);
+      }
     });
 
 AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {

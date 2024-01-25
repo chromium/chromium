@@ -263,6 +263,7 @@ export class MouseController {
    * the smoothing kernel so that it is the right length.
    */
   private calcSmoothKernel_(): void {
+    this.smoothKernel_ = [];
     let sum = 0;
     for (let i = 0; i < this.targetBufferSize_; i++) {
       const value = .54 -

@@ -18,6 +18,8 @@ class Config {
     this.bufferSize = -1;
     /** @type {boolean} */
     this.useMouseAcceleration = false;
+    /** @type {?Map<string, number>} */
+    this.speeds = null;
   }
 
   /**
@@ -61,6 +63,18 @@ class Config {
    */
   withMouseAcceleration() {
     this.useMouseAcceleration = true;
+    return this;
+  }
+
+  /**
+   * @param {number} up
+   * @param {number} down
+   * @param {number} left
+   * @param {number} right
+   * @return {!Config}
+   */
+  withSpeeds(up, down, left, right) {
+    this.speeds = {up, down, left, right};
     return this;
   }
 }
@@ -192,6 +206,14 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     if (config.bufferSize !== -1) {
       faceGaze.mouseController_.targetBufferSize_ = config.bufferSize;
+      faceGaze.mouseController_.calcSmoothKernel_();
+    }
+
+    if (config.speeds) {
+      faceGaze.mouseController_.spdUp_ = config.speeds.up;
+      faceGaze.mouseController_.spdDown_ = config.speeds.down;
+      faceGaze.mouseController_.spdLeft_ = config.speeds.left;
+      faceGaze.mouseController_.spdRight_ = config.speeds.right;
     }
 
     faceGaze.mouseController_.useMouseAcceleration_ =
