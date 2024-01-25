@@ -294,13 +294,12 @@ export class EnterpriseEnrollmentElement extends
     return skipConfirmationDialog;
   }
 
-  get authenticator(): Authenticator {
+  get authenticator(): Authenticator|undefined {
     return this.getGaiaDialog().getAuthenticator();
   }
 
   get authView(): chrome.webviewTag.WebView {
-    // TODO(b/314762562): remove type cast once gaia_dialog is migrated to TS.
-    return this.getGaiaDialog().getFrame() as chrome.webviewTag.WebView;
+    return this.getGaiaDialog().getFrame();
   }
 
   override ready(): void {
@@ -347,6 +346,7 @@ export class EnterpriseEnrollmentElement extends
               'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
         });
 
+    assert(this.authenticator);
     this.authenticator.insecureContentBlockedCallback = (url: string) => {
       this.showError(
           loadTimeData.getStringF('insecureURLEnrollmentError', url), false);
@@ -356,9 +356,11 @@ export class EnterpriseEnrollmentElement extends
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
     };
 
-    this.authenticator.addEventListener('getDeviceId', (_e: Event) => {
-      sendWithPromise('getDeviceIdForEnrollment')
-          .then(deviceId => this.authenticator.getDeviceIdResponse(deviceId));
+    this.authenticator.addEventListener('getDeviceId', () => {
+      sendWithPromise('getDeviceIdForEnrollment').then(deviceId => {
+        assert(this.authenticator);
+        this.authenticator.getDeviceIdResponse(deviceId);
+      });
     });
   }
 
@@ -418,6 +420,7 @@ export class EnterpriseEnrollmentElement extends
         gaiaParams.email = data.email;
       }
 
+      assert(this.authenticator);
       this.authenticator.setWebviewPartition(
           data.webviewPartitionName ? data.webviewPartitionName : '');
 
@@ -529,6 +532,7 @@ export class EnterpriseEnrollmentElement extends
   }
 
   doReload(): void {
+    assert(this.authenticator);
     this.authenticator.reload();
   }
 

@@ -1087,7 +1087,7 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     const gaiaDialog =
         this.shadowRoot?.querySelector<GaiaDialog>('#signin-frame-dialog');
     assert(!!gaiaDialog);
-    gaiaDialog.isQuickStartEnabled_ = true;
+    gaiaDialog.isQuickStartEnabled = true;
   }
 
   private recordUmaHistogramForEnrollmentNudgeUserAction(

@@ -27,38 +27,37 @@ import './common_styles/oobe_dialog_host_styles.css.js';
 import './dialogs/oobe_content_dialog.js';
 import './quick_start_entry_point.js';
 
-import {sendWithPromise} from '//resources/ash/common/cr.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Authenticator, AuthFlow} from '//oobe/gaia_auth_host/authenticator.js';
+import {assert} from '//resources/js/assert.js';
+import {sendWithPromise} from '//resources/js/cr.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Authenticator, AuthFlow} from '../../../gaia_auth_host/authenticator.js';
-
-import {OobeDialogHostBehavior} from './behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from './behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import type {OobeTextButton} from './buttons/oobe_text_button.js';
+import {getTemplate} from './gaia_dialog.html.js';
 import {OobeTypes} from './oobe_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeI18nBehaviorInterface}
- */
-const GaiaDialogBase =
-    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
+export const GaiaDialogBase =
+    mixinBehaviors(
+        [OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement) as {
+      new (): PolymerElement & OobeI18nBehaviorInterface &
+          OobeDialogHostBehaviorInterface,
+    };
 
 const CHROMEOS_GAIA_PASSWORD_METRIC = 'ChromeOS.Gaia.PasswordFlow';
 
-/**
- * @polymer
- */
 export class GaiaDialog extends GaiaDialogBase {
   static get is() {
-    return 'gaia-dialog';
+    return 'gaia-dialog' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Whether SAML page uses camera.
@@ -120,7 +119,6 @@ export class GaiaDialog extends GaiaDialogBase {
 
       /**
        * Used to display SAML notice.
-       * @private
        */
       authDomain: {
         type: String,
@@ -154,36 +152,32 @@ export class GaiaDialog extends GaiaDialogBase {
 
       /**
        * Controls label on the primary action button.
-       * @private
        */
-      primaryActionButtonLabel_: {
+      primaryActionButtonLabel: {
         type: String,
         value: null,
       },
 
       /**
        * Controls availability of the primary action button.
-       * @private
        */
-      primaryActionButtonEnabled_: {
+      primaryActionButtonEnabled: {
         type: Boolean,
         value: false,
       },
 
       /**
        * Controls label on the secondary action button.
-       * @private
        */
-      secondaryActionButtonLabel_: {
+      secondaryActionButtonLabel: {
         type: String,
         value: null,
       },
 
       /**
        * Controls availability of the secondary action button.
-       * @private
        */
-      secondaryActionButtonEnabled_: {
+      secondaryActionButtonEnabled: {
         type: Boolean,
         value: false,
       },
@@ -201,14 +195,13 @@ export class GaiaDialog extends GaiaDialogBase {
        * Whether a pop-up overlay should be shown. This overlay is necessary
        * when GAIA shows an overlay within their iframe. It covers the parts
        * of the screen that would otherwise not show an overlay.
-       * @private
        */
-      isPopUpOverlayVisible_: {
+      isPopUpOverlayVisible: {
         type: Boolean,
-        computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)',
+        computed: 'showOverlay(navigationEnabled, isSamlSsoVisible)',
       },
 
-      isSamlBackButtonHidden_: {
+      samlBackButtonHidden: {
         type: Boolean,
         computed: 'isSamlBackButtonHidden(isDefaultSsoProvider, isClosable)',
       },
@@ -216,120 +209,133 @@ export class GaiaDialog extends GaiaDialogBase {
       /**
        * Whether Quick start feature is enabled. If it's enabled the quick start
        * button will be shown in the signin screen.
-       * @type {boolean}
-       * @private
        */
-      isQuickStartEnabled_: Boolean,
+      isQuickStartEnabled: Boolean,
     };
   }
+
+  private videoEnabled: boolean;
+  private authFlow: number;
+  private gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType;
+  private isClosable: boolean;
+  private isSamlSsoVisible: boolean;
+  private isDefaultSsoProvider: boolean;
+  private hideBackButtonIfCantGoBack: boolean;
+  private authDomain: string;
+  private navigationEnabled: boolean;
+  private navigationHidden: boolean;
+  private webviewName: string;
+  private primaryActionButtonLabel: string;
+  private primaryActionButtonEnabled: boolean;
+  private secondaryActionButtonLabel: string;
+  private secondaryActionButtonEnabled: boolean;
+  private canGoBack: boolean;
+  private isPopUpOverlayVisible: boolean;
+  private samlBackButtonHidden: boolean;
+  isQuickStartEnabled: boolean;
+  private clickPrimaryActionButtonForTesting: boolean;
+  private authenticator: Authenticator|undefined;
 
   constructor() {
     super();
     /**
      * Emulate click on the primary action button when it is visible and
      * enabled.
-     * @type {boolean}
-     * @private
      */
-    this.clickPrimaryActionButtonForTesting_ = false;
+    this.clickPrimaryActionButtonForTesting = false;
 
-    /**
-     * @type {!Authenticator|undefined}
-     * @private
-     */
-    this.authenticator_ = undefined;
+    this.authenticator = undefined;
 
-    this.isQuickStartEnabled_ = false;
+    this.isQuickStartEnabled = false;
   }
 
-  getAuthenticator() {
-    return this.authenticator_;
+  getAuthenticator(): Authenticator|undefined {
+    return this.authenticator;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
-    const webview = /** @type {!WebView} */ (this.$['signin-frame']);
-    this.authenticator_ = new Authenticator(webview);
+    const webview = this.getFrame();
+    this.authenticator = new Authenticator(webview);
     /**
      * Event listeners for the events triggered by the authenticator.
      */
-    const authenticatorEventListeners = {
+    const authenticatorEventListeners: Record<string, (e: any) => void> = {
       // Note for the lowercase of fired events.
-      'identifierEntered': (e) => {
+      'identifierEntered': (e: CustomEvent) => {
         this.dispatchEvent(new CustomEvent(
             'identifierentered',
             {bubbles: true, composed: true, detail: e.detail}));
       },
-      'loadAbort': (e) => {
+      'loadAbort': (e: CustomEvent) => {
         this.dispatchEvent(new CustomEvent(
             'webviewerror', {bubbles: true, composed: true, detail: e.detail}));
       },
-      'ready': (e) => {
-        this.dispatchEvent(new CustomEvent(
-            'ready', {bubbles: true, composed: true, detail: e.detail}));
+      'ready': () => {
+        this.dispatchEvent(
+            new CustomEvent('ready', {bubbles: true, composed: true}));
       },
-      'showView': (e) => {
-        this.dispatchEvent(new CustomEvent(
-            'showview', {bubbles: true, composed: true, detail: e.detail}));
+      'showView': () => {
+        this.dispatchEvent(
+            new CustomEvent('showview', {bubbles: true, composed: true}));
       },
-      'menuItemClicked': (e) => {
+      'menuItemClicked': (e: CustomEvent) => {
         if (e.detail == 'ee') {
           this.dispatchEvent(new CustomEvent(
               'startenrollment', {bubbles: true, composed: true}));
         }
       },
-      'backButton': (e) => {
+      'backButton': (e: CustomEvent) => {
         this.canGoBack = !!e.detail;
         this.getFrame().focus();
       },
 
-      'setPrimaryActionEnabled': (e) => {
-        this.primaryActionButtonEnabled_ = e.detail;
-        this.maybeClickPrimaryActionButtonForTesting_();
+      'setPrimaryActionEnabled': (e: CustomEvent) => {
+        this.primaryActionButtonEnabled = e.detail;
+        this.maybeClickPrimaryActionButtonForTesting();
       },
-      'setPrimaryActionLabel': (e) => {
-        this.primaryActionButtonLabel_ = e.detail;
-        this.maybeClickPrimaryActionButtonForTesting_();
+      'setPrimaryActionLabel': (e: CustomEvent) => {
+        this.primaryActionButtonLabel = e.detail;
+        this.maybeClickPrimaryActionButtonForTesting();
       },
-      'setSecondaryActionEnabled': (e) => {
-        this.secondaryActionButtonEnabled_ = e.detail;
+      'setSecondaryActionEnabled': (e: CustomEvent) => {
+        this.secondaryActionButtonEnabled = e.detail;
       },
-      'setSecondaryActionLabel': (e) => {
-        this.secondaryActionButtonLabel_ = e.detail;
+      'setSecondaryActionLabel': (e: CustomEvent) => {
+        this.secondaryActionButtonLabel = e.detail;
       },
-      'setAllActionsEnabled': (e) => {
-        this.primaryActionButtonEnabled_ = e.detail;
-        this.secondaryActionButtonEnabled_ = e.detail;
-        this.maybeClickPrimaryActionButtonForTesting_();
+      'setAllActionsEnabled': (e: CustomEvent) => {
+        this.primaryActionButtonEnabled = e.detail;
+        this.secondaryActionButtonEnabled = e.detail;
+        this.maybeClickPrimaryActionButtonForTesting();
       },
-      'videoEnabledChange': (e) => {
+      'videoEnabledChange': (e: CustomEvent) => {
         this.videoEnabled = e.detail.newValue;
       },
-      'authFlowChange': (e) => {
+      'authFlowChange': (e: CustomEvent) => {
         this.authFlow = e.detail.newValue;
       },
-      'authDomainChange': (e) => {
+      'authDomainChange': (e: CustomEvent) => {
         this.authDomain = e.detail.newValue;
       },
-      'dialogShown': (e) => {
+      'dialogShown': () => {
         this.navigationEnabled = false;
         chrome.send('enableShelfButtons', [false]);
       },
-      'dialogHidden': (e) => {
+      'dialogHidden': () => {
         this.navigationEnabled = true;
         chrome.send('enableShelfButtons', [true]);
       },
-      'exit': (e) => {
-        this.dispatchEvent(new CustomEvent(
-            'exit', {bubbles: true, composed: true, detail: e.detail}));
+      'exit': () => {
+        this.dispatchEvent(
+            new CustomEvent('exit', {bubbles: true, composed: true}));
       },
-      'removeUserByEmail': (e) => {
+      'removeUserByEmail': (e: CustomEvent) => {
         this.dispatchEvent(new CustomEvent(
             'removeuserbyemail',
             {bubbles: true, composed: true, detail: e.detail}));
       },
-      'apiPasswordAdded': (e) => {
+      'apiPasswordAdded': () => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
         if (this.authFlow !== AuthFlow.DEFAULT) {
           return;
@@ -339,7 +345,7 @@ export class GaiaDialog extends GaiaDialogBase {
             [CHROMEOS_GAIA_PASSWORD_METRIC, false]);
         chrome.send('passwordEntered');
       },
-      'authCompleted': (e) => {
+      'authCompleted': (e: CustomEvent) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
         if (this.authFlow === AuthFlow.DEFAULT) {
           chrome.send(
@@ -353,7 +359,7 @@ export class GaiaDialog extends GaiaDialogBase {
     };
 
     for (const eventName in authenticatorEventListeners) {
-      this.authenticator_.addEventListener(
+      this.authenticator.addEventListener(
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
@@ -361,64 +367,64 @@ export class GaiaDialog extends GaiaDialogBase {
         .then(this.updateSshWarningVisibility.bind(this));
   }
 
-  updateSshWarningVisibility(show) {
-    this.$.sshWarning.hidden = !show;
+  private updateSshWarningVisibility(show: boolean): void {
+    const sshWarning = this.shadowRoot?.querySelector('#sshWarning');
+    if (sshWarning instanceof HTMLElement) {
+      sshWarning.hidden = !show;
+    }
   }
 
-  show() {
+  show(): void {
     this.navigationEnabled = true;
     chrome.send('enableShelfButtons', [true]);
     this.getFrame().focus();
   }
 
-  getFrame() {
-    // Note: Can't use |this.$|, since it returns cached references to elements
-    // originally present in DOM, while the signin-frame is  dynamically
-    // recreated (see Authenticator.setWebviewPartition()).
-    return this.shadowRoot.querySelector('#signin-frame');
+  getFrame(): chrome.webviewTag.WebView {
+    const frame = this.shadowRoot?.querySelector('#signin-frame');
+    assert(!!frame);
+    return frame as chrome.webviewTag.WebView;
   }
 
-  clickPrimaryButtonForTesting() {
-    this.clickPrimaryActionButtonForTesting_ = true;
-    this.maybeClickPrimaryActionButtonForTesting_();
+  clickPrimaryButtonForTesting(): void {
+    this.clickPrimaryActionButtonForTesting = true;
+    this.maybeClickPrimaryActionButtonForTesting();
   }
 
-  maybeClickPrimaryActionButtonForTesting_() {
-    if (!this.clickPrimaryActionButtonForTesting_) {
+  maybeClickPrimaryActionButtonForTesting(): void {
+    if (!this.clickPrimaryActionButtonForTesting) {
       return;
     }
 
-    const button = this.$['primary-action-button'];
+    const button = this.shadowRoot!.querySelector<OobeTextButton>(
+        '#primary-action-button')!;
     if (button.hidden || button.disabled) {
       return;
     }
 
-    this.clickPrimaryActionButtonForTesting_ = false;
+    this.clickPrimaryActionButtonForTesting = false;
     button.click();
   }
 
-  /* @private */
-  getSamlNoticeMessage_(locale, videoEnabled, authDomain) {
+  private getSamlNoticeMessage(
+      locale: string, videoEnabled: boolean, authDomain: string): string {
     if (videoEnabled) {
-      return this.i18n('samlNoticeWithVideo', authDomain);
+      return this.i18nDynamic(locale, 'samlNoticeWithVideo', authDomain);
     }
-    return this.i18n('samlNotice', authDomain);
+    return this.i18nDynamic(locale, 'samlNotice', authDomain);
   }
 
-  /* @private */
-  close_() {
+  private close(): void {
     this.dispatchEvent(
         new CustomEvent('closesaml', {bubbles: true, composed: true}));
   }
 
-  /* @private */
-  onChangeSigninProviderClicked_() {
+  private onChangeSigninProviderClicked(): void {
     this.dispatchEvent(new CustomEvent(
         'changesigninprovider', {bubbles: true, composed: true}));
   }
 
-  /* @private */
-  onBackButtonClicked_() {
+  private onBackButtonClicked(): void {
     if (this.canGoBack) {
       this.getFrame().back();
       return;
@@ -429,52 +435,48 @@ export class GaiaDialog extends GaiaDialogBase {
 
   /**
    * Handles clicks on Quick start button.
-   * @private
    */
-  onQuickStartClicked_() {
+  private onQuickStartClicked(): void {
     this.dispatchEvent(new CustomEvent(
         'quick-start-clicked', {bubbles: true, composed: true}));
   }
 
   /**
    * Handles clicks on "PrimaryAction" button.
-   * @private
    */
-  onPrimaryActionButtonClicked_() {
-    this.authenticator_.sendMessageToWebview('primaryActionHit');
+  private onPrimaryActionButtonClicked(): void {
+    assert(this.authenticator);
+    this.authenticator.sendMessageToWebview('primaryActionHit');
   }
 
   /**
    * Handles clicks on "SecondaryAction" button.
-   * @private
    */
-  onSecondaryActionButtonClicked_() {
-    this.authenticator_.sendMessageToWebview('secondaryActionHit');
+  private onSecondaryActionButtonClicked(): void {
+    assert(this.authenticator);
+    this.authenticator.sendMessageToWebview('secondaryActionHit');
   }
 
   /**
    * Handles clicks on Kiosk enrollment button.
-   * @private
    */
-  onKioskButtonClicked_() {
-    this.setLicenseType_(OobeTypes.LicenseType.KIOSK);
-    this.onPrimaryActionButtonClicked_();
+  private onKioskButtonClicked(): void {
+    this.setLicenseType(OobeTypes.LicenseType.KIOSK);
+    this.onPrimaryActionButtonClicked();
   }
 
   /**
    * Handles clicks on Kiosk enrollment button.
-   * @private
    */
-  onEnterpriseButtonClicked_() {
-    this.setLicenseType_(OobeTypes.LicenseType.ENTERPRISE);
-    this.onPrimaryActionButtonClicked_();
+  private onEnterpriseButtonClicked(): void {
+    this.setLicenseType(OobeTypes.LicenseType.ENTERPRISE);
+    this.onPrimaryActionButtonClicked();
   }
 
   /**
-   * @param {number} licenseType - license to use.
-   * @private
+   * @param licenseType - license to use.
    */
-  setLicenseType_(licenseType) {
+  private setLicenseType(licenseType: OobeTypes.LicenseType): void {
     this.dispatchEvent(new CustomEvent(
         'licensetypeselected',
         {bubbles: true, composed: true, detail: licenseType}));
@@ -482,54 +484,51 @@ export class GaiaDialog extends GaiaDialogBase {
 
   /**
    * Whether the button is enabled.
-   * @param {boolean} navigationEnabled - whether navigation in general is
+   * @param navigationEnabled - whether navigation in general is
    * enabled.
-   * @param {boolean} buttonEnabled - whether a specific button is enabled.
-   * @private
+   * @param buttonEnabled - whether a specific button is enabled.
    */
-  isButtonEnabled_(navigationEnabled, buttonEnabled) {
+  private isButtonEnabled(navigationEnabled: boolean, buttonEnabled: boolean):
+      boolean {
     return navigationEnabled && buttonEnabled;
   }
 
   /**
    * Whether the back button is hidden.
-   * @param {boolean} navigationHidden - whether navigation in general is hidden
-   * @param {boolean} hideBackButtonIfCantGoBack - whether it should be hidden.
-   * @param {boolean} canGoBack - whether the form can go back.
-   * @private
+   * @param navigationHidden - whether navigation in general is hidden
+   * @param hideBackButtonIfCantGoBack - whether it should be hidden.
+   * @param canGoBack - whether the form can go back.
    */
-  isBackButtonHidden(navigationHidden, hideBackButtonIfCantGoBack, canGoBack) {
+  private isBackButtonHidden(
+      navigationHidden: boolean, hideBackButtonIfCantGoBack: boolean,
+      canGoBack: boolean): boolean {
     return navigationHidden || (hideBackButtonIfCantGoBack && !canGoBack);
   }
 
   /**
    * Whether the back button on SAML screen is hidden.
-   * @param {boolean} isDefaultSsoProvider - whether it is default SAML page.
-   * @param {boolean} isClosable - whether the form can be closed.
-   * @private
+   * @param isDefaultSsoProvider - whether it is default SAML page.
+   * @param isClosable - whether the form can be closed.
    */
-  isSamlBackButtonHidden(isDefaultSsoProvider, isClosable) {
+  private isSamlBackButtonHidden(
+      isDefaultSsoProvider: boolean, isClosable: boolean): boolean {
     return isDefaultSsoProvider && !isClosable;
   }
 
   /**
    * Whether popup overlay should be open.
-   * @param {boolean} navigationEnabled
-   * @param {boolean} isSamlSsoVisible
-   * @return {boolean}
    */
-  showOverlay_(navigationEnabled, isSamlSsoVisible) {
+  private showOverlay(navigationEnabled: boolean, isSamlSsoVisible: boolean):
+      boolean {
     return !navigationEnabled || isSamlSsoVisible;
   }
 
   /**
    * Whether default navigation (original, as gaia has) is shown.
-   * @param {boolean} canGoBack
-   * @param {string} gaiaDialogButtonsType
-   * @return {boolean}
-   * @private
    */
-  isDefaultNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+  private isDefaultNavigationShown(
+      canGoBack: boolean,
+      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return !canGoBack ||
         gaiaDialogButtonsType == OobeTypes.GaiaDialogButtonsType.DEFAULT;
   }
@@ -537,12 +536,10 @@ export class GaiaDialog extends GaiaDialogBase {
   /**
    * Whether Enterprise navigation is shown. Two buttons: primary for
    * Enterprise enrollment and secondary for Kiosk enrollment.
-   * @param {boolean} canGoBack
-   * @param {string} gaiaDialogButtonsType
-   * @return {boolean}
-   * @private
    */
-  isEnterpriseNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+  private isEnterpriseNavigationShown(
+      canGoBack: boolean,
+      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return canGoBack &&
         gaiaDialogButtonsType ==
         OobeTypes.GaiaDialogButtonsType.ENTERPRISE_PREFERRED;
@@ -551,15 +548,19 @@ export class GaiaDialog extends GaiaDialogBase {
   /**
    * Whether Kiosk navigation is shown. Two buttons: primary for
    * Kiosk enrollment and secondary for Enterprise enrollment.
-   * @param {boolean} canGoBack
-   * @param {string} gaiaDialogButtonsType
-   * @return {boolean}
-   * @private
    */
-  isKioskNavigationShown_(canGoBack, gaiaDialogButtonsType) {
+  private isKioskNavigationShown(
+      canGoBack: boolean,
+      gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType): boolean {
     return canGoBack &&
         gaiaDialogButtonsType ==
         OobeTypes.GaiaDialogButtonsType.KIOSK_PREFERRED;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [GaiaDialog.is]: GaiaDialog;
   }
 }
 

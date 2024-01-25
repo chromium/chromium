@@ -415,6 +415,7 @@ export function invokePolymerMethod(element, name, ...args) {
 
     /**
      * Trigger of play down animation for current screen step.
+     * @suppress {missingProperties} defaultControl may be not defined.
      */
     triggerDown() {
       const innerContainer = $('inner-container');
