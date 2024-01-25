@@ -581,6 +581,7 @@ try_.builder(
         "ci/linux-lacros-dbg",
     ],
     gn_args = "ci/linux-lacros-dbg",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
@@ -635,6 +636,7 @@ try_.builder(
             "ci/linux-chromeos-dbg",
         ],
     ),
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -654,6 +656,7 @@ try_.builder(
             "enable_backup_ref_ptr_feature_flag",
         ],
     ),
+    siso_enabled = True,
 )
 
 try_.builder(
@@ -668,6 +671,7 @@ try_.builder(
         ],
     ),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    siso_enabled = True,
     tryjob = try_.job(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
