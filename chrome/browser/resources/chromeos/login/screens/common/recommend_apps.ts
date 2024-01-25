@@ -11,41 +11,47 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_text_button.js';
+import '../../components/oobe_apps_list.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeAppsList} from '../../components/oobe_apps_list.js';
 
 import {getTemplate} from './recommend_apps.html.js';
 
+enum RecommendAppsUiState {
+  LOADING = 'loading',
+  LIST = 'list',
+}
 
+interface AppFetchedData {
+  title: string;
+  icon_url: string;
+  category: string;
+  in_app_purchases: boolean;
+  was_installed: boolean;
+  content_rating: string;
+  description: string;
+  contains_ads: boolean;
+  package_name: string;
+}
 
-/**
- * UI mode for the dialog.
- * @enum {string}
- */
-const RecommendAppsUiState = {
-  LOADING: 'loading',
-  LIST: 'list',
-};
+interface AppData {
+  title: string;
+  icon_url: string;
+  tags: string[];
+  description: string;
+  package_name: string;
+  checked: boolean;
+}
 
-const BLANK_PAGE_URL = 'about:blank';
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- */
 const RecommendAppsElementBase = mixinBehaviors(
     [
       OobeI18nBehavior,
@@ -53,57 +59,54 @@ const RecommendAppsElementBase = mixinBehaviors(
       LoginScreenBehavior,
       MultiStepBehavior,
     ],
-    PolymerElement);
+    PolymerElement) as {
+      new ():
+        PolymerElement & OobeI18nBehaviorInterface &
+        LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface &
+        MultiStepBehaviorInterface,
+  };
 
-/**
- * @typedef {{
- *   appsDialog:  OobeAdaptiveDialog,
- *   appView:  WebView,
- * }}
- */
-RecommendAppsElementBase.$;
-
-/**
- * @polymer
- */
 class RecommendAppsElement extends RecommendAppsElementBase {
-
   static get is() {
-    return 'recommend-apps-element';
+    return 'recommend-apps-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      appsSelected_: {
+      appsSelected: {
         type: Number,
         value: 0,
       },
 
-      appList_: {
+      appList: {
         type: Array,
         value: [],
       },
     };
   }
 
+  appsSelected: number;
+  appList: AppData[];
+  initialized: boolean;
+
   constructor() {
     super();
-    this.initialized_ = false;
+    this.initialized = false;
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return ['loadAppList'];
   }
 
-  get UI_STEPS() {
+  override get UI_STEPS() {
     return RecommendAppsUiState;
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('RecommendAppsScreen');
   }
@@ -112,44 +115,50 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Resets screen to initial state.
    * Currently is used for debugging purposes only.
    */
-  reset() {
+  reset(): void {
     this.setUIStep(RecommendAppsUiState.LOADING);
-    this.appsSelected_ = 0;
-    this.appList_ = [];
+    this.appsSelected = 0;
+    this.appList = [];
   }
 
   /**
    * Returns the control which should receive initial focus.
    */
-  get defaultControl() {
-    return /** @type {HTMLElement} */ (this.$.appsDialog);
+  override get defaultControl(): HTMLElement|null {
+    const appsDialog = this.shadowRoot?.querySelector<HTMLElement>(
+      '#appsDialog');
+    if (appsDialog instanceof HTMLElement) {
+      return appsDialog;
+    }
+    return null;
   }
 
-  defaultUIStep() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): string {
     return RecommendAppsUiState.LOADING;
   }
 
   /**
    * Initial UI State for screen
    */
-  getOobeUIInitialState() {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): number {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
-  onBeforeHide() {
-    this.appList_ = [];
-    return;
+  onBeforeHide(): void {
+    this.appList = [];
   }
 
   /**
    * Generates the contents in the webview.
    */
-  loadAppList(appList) {
+  loadAppList(appList: AppFetchedData[]): void {
     const recommendAppsContainsAdsStr = this.i18n('recommendAppsContainsAds');
     const recommendAppsInAppPurchasesStr =
         this.i18n('recommendAppsInAppPurchases');
     const recommendAppsWasInstalledStr = this.i18n('recommendAppsWasInstalled');
-    this.appList_ = appList.map(app => {
+    this.appList = appList.map((app: AppFetchedData) => {
       const tagList = [app.category];
       if (app.contains_ads) {
         tagList.push(recommendAppsContainsAdsStr);
@@ -172,39 +181,49 @@ class RecommendAppsElement extends RecommendAppsElementBase {
         checked: false,
       };
     });
-    return;
   }
 
   /**
    * Handles event when contents in the webview is generated.
    */
-  onFullyLoaded_() {
+  private onFullyLoaded(): void {
     this.setUIStep(RecommendAppsUiState.LIST);
-    this.shadowRoot.querySelector('#appsList').focus();
+    const appsList = this.shadowRoot?.querySelector<HTMLElement>(
+      '#appsList');
+    if (appsList instanceof HTMLElement) {
+      appsList.focus();
+    }
   }
 
   /**
    * Handles Skip button click.
    */
-  onSkip_() {
+  private onSkip(): void {
     this.userActed('recommendAppsSkip');
   }
 
   /**
    * Handles Install button click.
    */
-  onInstall_() {
+  private onInstall(): void {
     // Button should be disabled if nothing is selected.
-    assert(this.appsSelected_ > 0);
-    // Can't use this.$.appsList here as the element is in a <dom-if>.
-    const appsList = this.shadowRoot.querySelector('#appsList');
-    /** @suppress {checkTypes} */
-    const packageNames = appsList.getSelectedApps();
-    this.userActed(['recommendAppsInstall', packageNames]);
+    assert(this.appsSelected > 0);
+    const appsList = this.shadowRoot?.querySelector(
+      '#appsList');
+    if (appsList instanceof OobeAppsList) {
+      const packageNames = appsList.getSelectedApps();
+      this.userActed(['recommendAppsInstall', packageNames]);
+    }
   }
 
-  canProceed_(appsSelected) {
+  private canProceed(appsSelected: number): boolean {
     return appsSelected > 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [RecommendAppsElement.is]: RecommendAppsElement;
   }
 }
 

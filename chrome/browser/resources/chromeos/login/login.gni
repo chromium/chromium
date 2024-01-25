@@ -141,7 +141,7 @@ common_screens_js_files = [
 
   # Template used by the `tools/oobe/generate_screen_template.py` script.
   "screens/common/placeholder.ts",
-  "screens/common/recommend_apps.js",
+  "screens/common/recommend_apps.ts",
   "screens/common/saml_confirm_password.ts",
   "screens/common/signin_fatal_error.js",
   "screens/common/smart_privacy_protection.ts",

@@ -26,7 +26,6 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent",
     ":error_message",
     ":offline_ad_login",
-    ":recommend_apps",
     ":signin_fatal_error",
   ]
 }
@@ -78,23 +77,6 @@ js_library("offline_ad_login") {
 }
 
 # Template used by the `tools/oobe/generate_screen_template.py` script.
-
-js_library("recommend_apps") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.js" ]
-  deps = [
-    "../../components:oobe_types",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/webview_tag.js" ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("signin_fatal_error") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/signin_fatal_error.js" ]
