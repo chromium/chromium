@@ -26,7 +26,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-class EnclaveManager;
 class PrefService;
 class Profile;
 
@@ -237,21 +236,13 @@ class ChromeAuthenticatorRequestDelegate
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            ShouldCreateInICloudKeychain);
 
-  class EnclaveManagerObserver;
-
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   content::BrowserContext* GetBrowserContext() const;
 
-  void ShowUI(device::FidoRequestHandlerBase::TransportAvailabilityInfo data);
-
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
-
-  // Called each time `enclave_manager_` has finished processing all pending
-  // actions.
-  void OnEnclaveManagerIdle();
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
@@ -342,20 +333,8 @@ class ChromeAuthenticatorRequestDelegate
   // available that can service requests for synced GPM passkeys.
   bool can_use_synced_phone_passkeys_ = false;
 
-  // Non-null when the cloud enclave authenticator is available for use. The
-  // `EnclaveManager` is a `KeyedService` for the current profile and so
-  // outlives this object.
-  raw_ptr<EnclaveManager> enclave_manager_ = nullptr;
-
-  // Used to observe `enclave_manager_` without implementing the Observer
-  // interface directly and thus needing to #include all of `enclave_manager.h`
-  // in this header file.
-  std::unique_ptr<EnclaveManagerObserver> enclave_manager_observer_;
-
-  // Stores the TransportAvailabilityInfo while we're waiting for the enclave
-  // state to load from the disk.
-  std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-      pending_transport_availability_info_;
+  // True when the cloud enclave authenticator is available for use.
+  bool is_enclave_authenticator_available_ = false;
 
   // Fetcher for OAuth access tokens needed to use the enclave authenticator.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
