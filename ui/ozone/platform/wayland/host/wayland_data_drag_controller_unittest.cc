@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
@@ -37,6 +38,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
@@ -199,6 +201,17 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     os_exchange_data.SetString(sample_text_for_dnd());
     origin_window->StartDrag(
         os_exchange_data, operations, DragEventSource::kMouse, /*cursor=*/{},
+        /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
+        /*loation delegate=*/nullptr);
+  }
+
+  void RunTouchDragWithSampleData(WaylandWindow* origin_window,
+                                  int operations) {
+    ASSERT_TRUE(origin_window);
+    OSExchangeData os_exchange_data;
+    os_exchange_data.SetString(sample_text_for_dnd());
+    origin_window->StartDrag(
+        os_exchange_data, operations, DragEventSource::kTouch, /*cursor=*/{},
         /*can_grab_pointer=*/true, drag_finished_callback_->callback(),
         /*loation delegate=*/nullptr);
   }
@@ -1241,6 +1254,60 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
   EXPECT_FALSE(data_device()->drag_delegate_);
   EXPECT_EQ(drag_controller()->state(),
             WaylandDataDragController::State::kIdle);
+}
+
+// Cursor position should be updated during a (outgoing) drag with mouse.
+TEST_P(WaylandDataDragControllerTest,
+       CursorPositionShouldBeUpdatedDuringMouseDrag) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Post an asynchronously task that runs once the drag session gets started.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_position = connection()->wayland_cursor_position();
+    ASSERT_TRUE(cursor_position);
+
+    // Forcibly update the cursor position before sending motion event.
+    cursor_position->OnCursorPositionChanged(gfx::Point(1, 2));
+
+    // Send a drag motion and see if cursor position is updated.
+    SendDndMotion(gfx::Point(10, 11));
+    WaitForDragDropTasks();
+    // Cursor position should be updated.
+    EXPECT_EQ(gfx::Point(10, 11), cursor_position->GetCursorSurfacePoint());
+
+    SendDndLeave();
+    SendDndCancelled();
+  }));
+
+  RunMouseDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
+}
+
+// Cursor position should not be updated during a (outgoing) drag with touch.
+TEST_P(WaylandDataDragControllerTest,
+       CursorPositionShouldNotBeUpdatedDuringTouchDrag) {
+  SendTouchDown(window_.get(), &delegate_, 1, gfx::Point(0, 0));
+
+  // Post an asynchronously task that runs once the drag session gets started.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_position = connection()->wayland_cursor_position();
+    ASSERT_TRUE(cursor_position);
+
+    // Forcibly update the cursor position before sending drag motion event.
+    cursor_position->OnCursorPositionChanged(gfx::Point(1, 2));
+
+    // Send a drag motion and see if cursor position is updated.
+    SendDndMotion(gfx::Point(10, 11));
+    WaitForDragDropTasks();
+    // Cursor position should be the same as before.
+    EXPECT_EQ(gfx::Point(1, 2), cursor_position->GetCursorSurfacePoint());
+
+    SendDndLeave();
+    SendDndCancelled();
+  }));
+
+  RunTouchDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

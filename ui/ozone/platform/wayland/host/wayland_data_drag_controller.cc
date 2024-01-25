@@ -26,10 +26,12 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -400,6 +402,26 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
 
   if (!window_) {
     return;
+  }
+
+  // TODO(crbug.com/1519772): we should update the cursor position when some
+  // data is dragged from another client. Currently `drag_source_` may be
+  // nullopt in that case.
+  if (drag_source_.has_value()) {
+    // Update the cursor position only for drag with mouse.
+    if (*drag_source_ == mojom::DragEventSource::kMouse) {
+      auto* cursor_position = connection_->wayland_cursor_position();
+      if (cursor_position) {
+        CHECK(window_);
+        // TODO(crbug.com/1521286): Once we enable the input region for
+        // subsurfaces, we need to update this part since the location will no
+        // longer be relative to the window.
+        auto location_in_screen =
+            gfx::ToRoundedPoint(location) +
+            window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+        cursor_position->OnCursorPositionChanged(location_in_screen);
+      }
+    }
   }
 
   DCHECK(data_offer_);
