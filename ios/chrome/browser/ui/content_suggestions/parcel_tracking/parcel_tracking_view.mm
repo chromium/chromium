@@ -246,9 +246,8 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
                        constant:-kStatusBarMarginFromBottom],
     [rightVerticalStackView.topAnchor
         constraintLessThanOrEqualToAnchor:_imageContainer.topAnchor],
-    [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [horizontalStackView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
+    [horizontalStackView.centerYAnchor
+        constraintEqualToAnchor:self.centerYAnchor],
     [horizontalStackView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor],
     [horizontalStackView.trailingAnchor
