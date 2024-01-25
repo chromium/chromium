@@ -635,10 +635,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
   window_observation_.Reset();
 }
 
-void ChromeNativeAppWindowViewsAuraAsh::OnWidgetInitialized() {
-  GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
-}
-
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {
   tablet_mode_enabled_ = enabled;
   UpdateImmersiveMode();

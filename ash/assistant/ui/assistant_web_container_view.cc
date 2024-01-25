@@ -219,10 +219,6 @@ void AssistantWebContainerView::InitLayout() {
   UpdateBackground();
 }
 
-void AssistantWebContainerView::OnWidgetInitialized() {
-  GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
-}
-
 void AssistantWebContainerView::RemoveContents() {
   if (!web_view_ptr_) {
     return;

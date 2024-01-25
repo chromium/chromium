@@ -501,6 +501,15 @@ void Widget::Init(InitParams params) {
       Minimize();
       saved_show_state_ = ui::SHOW_STATE_MINIMIZED;
     }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In ChromeOS, rounding window can involve rounding its client view and the
+    // contents. Therefore, wait till the contents are set.
+    // Since on ChromeOS, window can be square or rounded based on the window
+    // state, wait till window is maximized or minimized.
+    non_client_view_->frame_view()->UpdateWindowRoundedCorners();
+#endif
+
   } else if (delegate) {
     SetContentsView(delegate->TransferOwnershipOfContentsView());
     if (should_set_initial_bounds) {

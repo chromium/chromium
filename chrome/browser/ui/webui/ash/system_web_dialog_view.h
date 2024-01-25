@@ -36,9 +36,6 @@ class SystemWebDialogView : public views::WebDialogView {
 
   // views::ClientView:
   void UpdateWindowRoundedCorners() override;
-
-  // views::Views:
-  void AddedToWidget() override;
 };
 
 }  // namespace ash

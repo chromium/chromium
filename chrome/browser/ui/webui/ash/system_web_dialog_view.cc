@@ -65,12 +65,4 @@ void SystemWebDialogView::UpdateWindowRoundedCorners() {
   SetWebViewCornersRadii(radii);
 }
 
-void SystemWebDialogView::AddedToWidget() {
-  if (GetWidget()->non_client_view()) {
-    GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
-  } else {
-    WebDialogView::AddedToWidget();
-  }
-}
-
 }  // namespace ash

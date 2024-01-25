@@ -69,7 +69,6 @@ class BrowserNonClientFrameViewChromeOS
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   TabSearchBubbleHost* GetTabSearchBubbleHost() override;
   void UpdateMinimumSize() override;
-  void OnBrowserViewInitViewsComplete() override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;

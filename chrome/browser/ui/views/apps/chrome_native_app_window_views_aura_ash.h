@@ -93,7 +93,6 @@ class ChromeNativeAppWindowViewsAuraAsh
       views::Widget* widget) override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   ui::ImageModel GetWindowIcon() override;
-  void OnWidgetInitialized() override;
 
   // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;
