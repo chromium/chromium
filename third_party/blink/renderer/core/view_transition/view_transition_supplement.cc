@@ -6,6 +6,7 @@
 
 #include "cc/trees/layer_tree_host.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -256,7 +257,9 @@ ViewTransition* ViewTransitionSupplement::GetTransition() {
 }
 
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)
-    : Supplement<Document>(document) {}
+    : Supplement<Document>(document),
+      cross_document_opt_in_(
+          mojom::blink::ViewTransitionSameOriginOptIn::kDisabled) {}
 
 ViewTransitionSupplement::~ViewTransitionSupplement() = default;
 

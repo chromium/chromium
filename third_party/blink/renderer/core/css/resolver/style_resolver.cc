@@ -1857,6 +1857,10 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   return builder;
 }
 
+const ComputedStyle* StyleResolver::InitialStyleForElement() const {
+  return InitialStyleBuilderForElement().TakeStyle();
+}
+
 const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
   DCHECK(text_node);
   if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*text_node)) {
@@ -2669,6 +2673,13 @@ ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
   builder.SetUnicodeBidi(parent_style.GetUnicodeBidi());
   builder.SetDisplay(display);
   return builder;
+}
+
+const ComputedStyle* StyleResolver::CreateAnonymousStyleWithDisplay(
+    const ComputedStyle& parent_style,
+    EDisplay display) {
+  return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
+      .TakeStyle();
 }
 
 const ComputedStyle* StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(

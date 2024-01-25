@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -106,6 +107,10 @@ bool IsTrivialScript(const String& script) {
 void ScriptController::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(window_proxy_manager_);
+}
+
+LocalWindowProxy* ScriptController::WindowProxy(DOMWrapperWorld& world) {
+  return window_proxy_manager_->WindowProxy(world);
 }
 
 void ScriptController::UpdateSecurityOrigin(
@@ -353,6 +358,10 @@ bool ScriptController::CanExecuteScript(ExecuteScriptPolicy policy) {
     window_->GetFrame()->Loader().DidAccessInitialDocument();
 
   return true;
+}
+
+v8::Isolate* ScriptController::GetIsolate() const {
+  return window_proxy_manager_->GetIsolate();
 }
 
 scoped_refptr<DOMWrapperWorld>
