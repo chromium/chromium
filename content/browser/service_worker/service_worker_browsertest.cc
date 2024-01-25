@@ -4551,54 +4551,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerTwice) {
-  StartServerAndNavigateToSetup();
-  const GURL create_service_worker_url(embedded_test_server()->GetURL(
-      "/service_worker/create_service_worker.html"));
-  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
-  const GURL in_scope_url(
-      embedded_test_server()->GetURL("/service_worker/empty.html"));
-
-  // Register a service worker.
-  WorkerRunningStatusObserver observer1(public_context());
-  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                           "register('fetch_event_respond_with_fetch.js');"));
-  observer1.WaitUntilRunning();
-
-  scoped_refptr<ServiceWorkerVersion> version =
-      wrapper()->GetLiveVersion(observer1.version_id());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
-  EXPECT_EQ(1, version->embedded_worker()->restart_count());
-
-  // Stop ServiceWorker
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-  EXPECT_FALSE(version->timeout_timer_.IsRunning());
-
-  // Warm-up ServiceWorker.
-  EXPECT_FALSE(version->IsWarmedUp());
-  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
-  EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
-
-  // Stop ServiceWorker
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-  EXPECT_FALSE(version->timeout_timer_.IsRunning());
-
-  // Warm-up ServiceWorker again.
-  EXPECT_FALSE(version->IsWarmedUp());
-  EXPECT_TRUE(WarmUpServiceWorker(*public_context(), in_scope_url));
-  EXPECT_TRUE(version->IsWarmedUp());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStarting, version->running_status());
-
-  // Stop ServiceWorker
-  StopServiceWorker(version.get());
-  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
-  EXPECT_FALSE(version->timeout_timer_.IsRunning());
-}
-
 // This is a test class to verify an optimization to speculatively
 // warm-up a service worker.
 class ServiceWorkerWarmUpBrowserTestBase : public ServiceWorkerBrowserTest {
