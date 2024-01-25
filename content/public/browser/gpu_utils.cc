@@ -26,6 +26,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -176,6 +177,12 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.force_separate_egl_display_for_webgl_testing =
       command_line->HasSwitch(
           switches::kForceSeparateEGLDisplayForWebGLTesting);
+
+  gpu_preferences.enable_webgpu_experimental_features =
+      command_line->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kWebGPUExperimentalFeatures);
 
   // Some of these preferences are set or adjusted in
   // GpuDataManagerImplPrivate::AppendGpuCommandLine.

@@ -4246,6 +4246,13 @@
       public: true,
     },
     {
+      // WebGPU experimental features are meant for features that would
+      // eventually land in the WebGPU spec.
+      name: "WebGPUExperimentalFeatures",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",

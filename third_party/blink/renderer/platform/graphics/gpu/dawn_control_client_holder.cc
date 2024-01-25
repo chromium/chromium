@@ -161,7 +161,7 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
       switches::kEnableUnsafeWebGPU);
   wgsl_control.enableExperimental =
       wgsl_control.enableUnsafe ||
-      RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled();
+      RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled();
   // This can be changed to true for manual testing with the chromium_testing_*
   // WGSL features.
   wgsl_control.enableTesting = false;

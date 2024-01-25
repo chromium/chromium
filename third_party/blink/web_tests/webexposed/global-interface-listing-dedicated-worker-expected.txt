@@ -637,6 +637,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUAdapter
 [Worker]     attribute @@toStringTag
 [Worker]     getter features
+[Worker]     getter isCompatibilityMode
 [Worker]     getter isFallbackAdapter
 [Worker]     getter limits
 [Worker]     method constructor
@@ -699,6 +700,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method popDebugGroup
 [Worker]     method pushDebugGroup
 [Worker]     method resolveQuerySet
+[Worker]     method writeTimestamp
 [Worker]     setter label
 [Worker] interface GPUCompilationInfo
 [Worker]     attribute @@toStringTag
@@ -906,6 +908,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxStorageBufferBindingSize
 [Worker]     getter maxStorageBuffersPerShaderStage
 [Worker]     getter maxStorageTexturesPerShaderStage
+[Worker]     getter maxSubgroupSize
 [Worker]     getter maxTextureArrayLayers
 [Worker]     getter maxTextureDimension1D
 [Worker]     getter maxTextureDimension2D
@@ -916,6 +919,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxVertexBufferArrayStride
 [Worker]     getter maxVertexBuffers
 [Worker]     getter minStorageBufferOffsetAlignment
+[Worker]     getter minSubgroupSize
 [Worker]     getter minUniformBufferOffsetAlignment
 [Worker]     method constructor
 [Worker] interface GPUTexture

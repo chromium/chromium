@@ -2905,6 +2905,7 @@ interface GPU
 interface GPUAdapter
     attribute @@toStringTag
     getter features
+    getter isCompatibilityMode
     getter isFallbackAdapter
     getter limits
     method constructor
@@ -2967,6 +2968,7 @@ interface GPUCommandEncoder
     method popDebugGroup
     method pushDebugGroup
     method resolveQuerySet
+    method writeTimestamp
     setter label
 interface GPUCompilationInfo
     attribute @@toStringTag
@@ -3174,6 +3176,7 @@ interface GPUSupportedLimits
     getter maxStorageBufferBindingSize
     getter maxStorageBuffersPerShaderStage
     getter maxStorageTexturesPerShaderStage
+    getter maxSubgroupSize
     getter maxTextureArrayLayers
     getter maxTextureDimension1D
     getter maxTextureDimension2D
@@ -3184,6 +3187,7 @@ interface GPUSupportedLimits
     getter maxVertexBufferArrayStride
     getter maxVertexBuffers
     getter minStorageBufferOffsetAlignment
+    getter minSubgroupSize
     getter minUniformBufferOffsetAlignment
     method constructor
 interface GPUTexture

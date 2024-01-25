@@ -1084,7 +1084,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
       wire_serializer_(new DawnServiceSerializer(client)),
       isolation_key_provider_(isolation_key_provider) {
-  if (gpu_preferences.enable_webgpu_developer_features) {
+  if (gpu_preferences.enable_webgpu_experimental_features) {
     safety_level_ = webgpu::SafetyLevel::kSafeExperimental;
   }
   if (gpu_preferences.enable_unsafe_webgpu) {
