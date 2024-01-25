@@ -159,6 +159,28 @@ TEST_F(DevToolsSettingsTest, Remove_ResetsUnderlyingTogglePreference) {
             DevToolsSettings::kSyncDevToolsPreferencesDefault);
 }
 
+TEST_F(DevToolsSettingsTest, Remove_WorksOnBothStorages) {
+  {
+    ScopedDictPrefUpdate synced_update(
+        profile_.GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncDisabled);
+    synced_update->Set("unknown setting", "value");
+
+    DevToolsSettings settings(&profile_);
+    settings.Register("synced setting", {RegisterOptions::SyncMode::kSync});
+    ScopedDictPrefUpdate unsynced_update(profile_.GetPrefs(),
+                                         prefs::kDevToolsPreferences);
+    unsynced_update->Set("synced setting", "value");
+  }
+
+  DevToolsSettings settings(&profile_);
+  base::Value::Dict prefs = settings.Get();
+  EXPECT_EQ(prefs.size(), static_cast<size_t>(3));
+  settings.Remove("unknown setting");
+  settings.Remove("synced setting");
+  prefs = settings.Get();
+  EXPECT_EQ(prefs.size(), static_cast<size_t>(1));
+}
+
 TEST_F(DevToolsSettingsTest, Clear_ResetsUnderlyingTogglePreference) {
   DevToolsSettings settings(&profile_);
   settings.Register(DevToolsSettings::kSyncDevToolsPreferencesFrontendName,

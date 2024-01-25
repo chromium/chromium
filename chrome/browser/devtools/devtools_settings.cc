@@ -112,9 +112,15 @@ void DevToolsSettings::Remove(const std::string& name) {
     return;
   }
 
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                              GetDictionaryNameForSettingsName(name));
-  update->Remove(name);
+  PrefService* prefs = profile_->GetPrefs();
+  for (auto* dict_name :
+       {GetDictionaryNameForSyncedPrefs(), prefs::kDevToolsPreferences}) {
+    const base::Value::Dict& dict = prefs->GetDict(dict_name);
+    if (dict.Find(name)) {
+      ScopedDictPrefUpdate update(profile_->GetPrefs(), dict_name);
+      update->Remove(name);
+    }
+  }
 }
 
 void DevToolsSettings::Clear() {

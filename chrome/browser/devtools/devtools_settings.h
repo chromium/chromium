@@ -50,7 +50,7 @@ class DevToolsSettings {
 
   // Contains the set of synced settings.
   // The DevTools frontend *must* call `Register` for each setting prior to
-  // use, which guarantees that this set must not be persisted.
+  // use, which makes persisting this set unnecessary.
   base::flat_set<std::string> synced_setting_names_;
 
   // Settings pref observer that moves synced settings between their two
