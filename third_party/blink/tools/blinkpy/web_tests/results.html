@@ -235,7 +235,12 @@ a:not([href]) {
 }
 </style>
 <body>
-<h3>Test run summary <span id="builder_name"></span> <span class="flag_name"></span></h3>
+  <h3>
+    Test run summary
+    <span id="builder_name"></span>
+    <span id="suite_name"></span>
+    <span class="flag_name"></span>
+  </h3>
 
 <div id="right-toolbar">
   <a href="javascript:GUI.showTimingStats()">Timing stats</a>
@@ -515,6 +520,7 @@ class Traversal {
 const PathParserGlobals = {
   layout_tests_dir: null,
   chromium_revision: null,
+  flag_name: null,
 };
 
 class PathParser {
@@ -655,76 +661,72 @@ class PathParser {
                  (pageToken || '');
     console.time(timeId);
     console.log('Requesting: ' + timeId);
-    return new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/QueryArtifacts');
-      xhr.setRequestHeader('Accept', 'application/json');
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.onload = () => {
-        try {
-          if (xhr.status == 200) {
-            let response = xhr.responseText;
-            if (response.startsWith(")]}'"))
-              response = response.substring(5);
-            let responseJson = JSON.parse(response);
-            if (responseJson.artifacts) {
-              for (let artifact of responseJson.artifacts) {
-                let match = artifact.name.match(
-                    /\/tests\/ninja:%2F%2F:[^%]*(%2F.*)\/results\//);
-                if (!match) {
-                  continue;
-                }
-                let testPath = decodeURIComponent(match[1]);
-                let cache = PathParser.resultDBArtifacts[testPath];
-                if (!cache) {
-                  cache = PathParser.resultDBArtifacts[testPath] =
-                      { artifacts: {}, expiration: 0 };
-                }
-                PathParser.numCachedArtifacts++;
-                if (cache.expiration == 0) {
-                  PathParser.numCachedTests++;
-                  console.log('Fetched artifacts for: ' + testPath +
-                              ' total tests: ' + PathParser.numCachedTests +
-                              ' total artifacts: ' + PathParser.numCachedArtifacts);
-                }
-                cache.artifacts[artifact.artifactId] = artifact.fetchUrl;
-                cache.expiration = new Date(artifact.fetchUrlExpiration).getTime();
-                delete cache.promise;
-              }
+    let request = {
+      invocations: PathParser.invocations,
+      predicate: {testResultPredicate: testResultPredicate},
+      pageSize: 1000,
+    };
+    if (pageToken)
+      request.pageToken = pageToken;
+    return callResultDB('QueryArtifacts', request)
+      .then((responseJson) => {
+        if (responseJson.artifacts) {
+          for (let artifact of responseJson.artifacts) {
+            let match = artifact.name.match(
+                /\/tests\/ninja:%2F%2F:[^%]*(%2F.*)\/results\//);
+            if (!match) {
+              continue;
             }
-            if (responseJson.nextPageToken) {
-              // TODO: Don't resolve() until continuation is loaded.
-              console.log('Requesting next page');
-              PathParser.queryArtifacts(testResultPredicate,
-                                        responseJson.nextPageToken);
+            let testPath = decodeURIComponent(match[1]);
+            let cache = PathParser.resultDBArtifacts[testPath];
+            if (!cache) {
+              cache = PathParser.resultDBArtifacts[testPath] =
+                  { artifacts: {}, expiration: 0 };
             }
-            resolve();
-          } else {
-            reject(xhr.statusText);
+            PathParser.numCachedArtifacts++;
+            if (cache.expiration == 0) {
+              PathParser.numCachedTests++;
+              console.log('Fetched artifacts for: ' + testPath +
+                          ' total tests: ' + PathParser.numCachedTests +
+                          ' total artifacts: ' + PathParser.numCachedArtifacts);
+            }
+            cache.artifacts[artifact.artifactId] = artifact.fetchUrl;
+            cache.expiration = new Date(artifact.fetchUrlExpiration).getTime();
+            delete cache.promise;
           }
-        } catch (e) {
-          reject(e);
-        } finally {
-          console.timeEnd(timeId);
-          console.log('Fetched total tests: ' + PathParser.numCachedTests +
-                      ' total artifacts: ' + PathParser.numCachedArtifacts);
         }
-      };
-      xhr.onerror = () => {
+        if (responseJson.nextPageToken) {
+          console.log('Requesting next page');
+          return PathParser.queryArtifacts(testResultPredicate,
+                                           responseJson.nextPageToken);
+        }
+      })
+      .finally(() => {
         console.timeEnd(timeId);
-        reject(xhr.statusText);
-      };
-      let request = {
-        invocations: PathParser.invocations,
-        predicate: {testResultPredicate: testResultPredicate},
-        pageSize: 1000,
-      };
-      if (pageToken)
-        request.pageToken = pageToken;
-      xhr.send(JSON.stringify(request));
-    });
+        console.log('Fetched total tests: ' + PathParser.numCachedTests +
+                    ' total artifacts: ' + PathParser.numCachedArtifacts);
+      });
   }
 } // class PathParser
+
+async function callResultDB(method, payload) {
+  let response = await fetch(`https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/${method}`, {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  let text = await response.text();
+  if (text.startsWith(")]}'")) {
+    text = text.substring(5);
+  }
+  return JSON.parse(text);
+}
 
 // Report deals with displaying a single test.
 const Report = {
@@ -1706,6 +1708,19 @@ const GUI = {
       flagged_only.classList.remove("hidden");
     else
       flagged_only.classList.add("hidden");
+  },
+
+  setSuiteName: function(invocation) {
+    // Any test result on any shard will have the correct suite name.
+    callResultDB('QueryTestResults', {
+      invocations: [invocation],
+      pageSize: 1,
+    })
+      .then((responseJson) => {
+        let [result] = responseJson.testResults || [];
+        let suite = result.variant.def.test_suite || "";
+        document.querySelector("#suite_name").innerText = suite;
+      });
   },
 
   printSummary: function (fullResults) {
@@ -2977,6 +2992,13 @@ class AudioResultsViewer {
   };
   window.SET_TASK_IDS = function(taskIds) {
     PathParser.setTaskIds(taskIds);
+    let [invocation] = PathParser.invocations;
+    // Only show the suite name for non-flag-specific suites. The suite name
+    // can't be set in `ADD_FULL_RESULTS()` because that call may precede
+    // `SET_TASK_IDS()` when the invocations become available.
+    if (invocation && !PathParserGlobals.flag_name) {
+      GUI.setSuiteName(invocation);
+    }
   };
 
   let script = document.createElement('script');
