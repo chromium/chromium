@@ -2069,6 +2069,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"manageTopicsHeading", IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING},
       {"manageTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION},
+      {"manageTopicsDialogTitle", IDS_SETTINGS_MANAGE_TOPICS_DIALOG_TITLE},
+      {"manageTopicsDialogBody", IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BODY},
+      {"manageTopicDialogBlockButtonText",
+       IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BLOCK_BUTTON_TEXT},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

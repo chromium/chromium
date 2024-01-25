@@ -251,6 +251,15 @@
 
   <!-- Proactive Topics Blocking -->
   <!-- TODO(crbug.com/1515108) - Finalize and mark translateable. -->
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_TITLE" desc="Title of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." translateable="false">
+    Block <ph name="TOPIC">$1<ex>Movies</ex></ph> and any related topics?
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BODY" desc="Body of Manage Topics Dialog that appears when a user is trying to block a first level topic. This dialog warns the user that the selected topic has child topics that are currently assigned and will be blocked if they choose to continue." translateable="false">
+    Blocking <ph name="TOPIC">$1<ex>Movies</ex></ph> will also block any related topics, even if the topic is active
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_TOPICS_DIALOG_BLOCK_BUTTON_TEXT" desc="A dialog pops up on the manage topics page when a topic is being blocked and that topic has child topics that are currently assigned. This string is for the block button on that dialog" translateable="false">
+    Block
+  </message>
   <message name="IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION" desc="Explanatory text for the Manage Topics settings page" translateable="false">
     Choose which broad categories of topics can be used to help personalize ads. Turning off a broader category will also block its related topics.<ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph> Learn more<ph name="LINK_END1">&lt;/a&gt;</ph>
   </message>

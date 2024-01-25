@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 
 namespace settings {
 
@@ -20,10 +22,14 @@ constexpr char kBlockedSites[] = "blockedSites";
 constexpr char kTopicId[] = "topicId";
 constexpr char kTaxonomyVersion[] = "taxonomyVersion";
 constexpr char kDisplayString[] = "displayString";
+constexpr char kDescription[] = "description";
 
 // Keys of the dictionary returned by getTopicsState.
 constexpr char kTopTopics[] = "topTopics";
 constexpr char kBlockedTopics[] = "blockedTopics";
+
+// Key of the dictionary returned by getFirstLevelTopics
+constexpr char kFirstLevelTopics[] = "firstLevelTopics";
 
 base::Value::Dict ConvertTopicToValue(
     const privacy_sandbox::CanonicalTopic& topic) {
@@ -31,6 +37,7 @@ base::Value::Dict ConvertTopicToValue(
   topic_value.Set(kTopicId, topic.topic_id().value());
   topic_value.Set(kTaxonomyVersion, topic.taxonomy_version());
   topic_value.Set(kDisplayString, topic.GetLocalizedRepresentation());
+  topic_value.Set(kDescription, topic.GetLocalizedDescription());
   return topic_value;
 }
 
@@ -60,6 +67,15 @@ void PrivacySandboxHandler::RegisterMessages() {
       "topicsToggleChanged",
       base::BindRepeating(&PrivacySandboxHandler::HandleTopicsToggleChanged,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getFirstLevelTopics",
+      base::BindRepeating(&PrivacySandboxHandler::HandleGetFirstLevelTopics,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getChildTopicsCurrentlyAssigned",
+      base::BindRepeating(
+          &PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned,
+          base::Unretained(this)));
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
@@ -134,6 +150,42 @@ void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
   fledge_state.Set(kBlockedSites, std::move(blocked_sites_list));
 
   ResolveJavascriptCallback(base::Value(callback_id), std::move(fledge_state));
+}
+
+void PrivacySandboxHandler::HandleGetFirstLevelTopics(
+    const base::Value::List& args) {
+  AllowJavascript();
+  base::Value::List blocked_topics_list;
+  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics()) {
+    blocked_topics_list.Append(ConvertTopicToValue(topic));
+  }
+
+  base::Value::List first_level_topics_list;
+  for (const auto& topic : GetPrivacySandboxService()->GetFirstLevelTopics()) {
+    first_level_topics_list.Append(ConvertTopicToValue(topic));
+  }
+
+  base::Value::Dict first_level_topics_state;
+  first_level_topics_state.Set(kBlockedTopics, std::move(blocked_topics_list));
+  first_level_topics_state.Set(kFirstLevelTopics,
+                               std::move(first_level_topics_list));
+  ResolveJavascriptCallback(args[0], std::move(first_level_topics_state));
+}
+
+void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
+    const base::Value::List& args) {
+  AllowJavascript();
+  base::Value::List child_topics_currently_assigned_list;
+  const int topic_id = args[1].GetInt();
+  const int taxonomy_version = args[2].GetInt();
+  for (const auto& topic :
+       GetPrivacySandboxService()->GetChildTopicsCurrentlyAssigned(
+           privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
+                                           taxonomy_version))) {
+    child_topics_currently_assigned_list.Append(ConvertTopicToValue(topic));
+  }
+  ResolveJavascriptCallback(args[0],
+                            std::move(child_topics_currently_assigned_list));
 }
 
 PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {
