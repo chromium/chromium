@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,8 +31,11 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
@@ -235,12 +239,26 @@ public class WebApkUtils {
     /**
      * Sets the status bar icons to dark or light.
      *
-     * <p>TODO: migrate to WindowInsetsController API for Android R+ (API 30+)
+     * @param window The window used to request updates to the system UI theming.
+     * @param useDarkIcons Whether the status bar icons should be dark.
+     */
+    public static void setStatusBarIconColor(Window window, boolean useDarkIcons, Context context) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            setStatusBarIconColorApiRAndBelow(
+                    window.getDecorView().getRootView(), useDarkIcons, context);
+        } else {
+            setStatusBarIconColorApiSAndAbove(window, useDarkIcons, context);
+        }
+    }
+
+    /**
+     * Sets the status bar icons to dark or light. Note that this is only valid for Android M+.
      *
      * @param rootView The root view used to request updates to the system UI theming.
      * @param useDarkIcons Whether the status bar icons should be dark.
      */
-    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons, Context context) {
+    private static void setStatusBarIconColorApiRAndBelow(
+            View rootView, boolean useDarkIcons, Context context) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         // The status bar should always be black in automotive devices to match the black back
         // button toolbar, so we should not use dark icons.
@@ -250,6 +268,29 @@ public class WebApkUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * Sets the status bar icons to dark or light. Requires API S+.
+     *
+     * @param window The window used to request updates to the system UI theming.
+     * @param useDarkIcons Whether the status bar icons should be dark.
+     */
+    @RequiresApi(Build.VERSION_CODES.S)
+    public static void setStatusBarIconColorApiSAndAbove(
+            Window window, boolean useDarkIcons, Context context) {
+        // The status bar should always be black in automotive devices to match the black back
+        // button toolbar, so we should not use dark icons.
+        if (useDarkIcons && !isAutomotive(context)) {
+            window.getInsetsController()
+                    .setSystemBarsAppearance(
+                            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+        } else {
+            window.getInsetsController()
+                    .setSystemBarsAppearance(
+                            0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+        }
     }
 
     /**

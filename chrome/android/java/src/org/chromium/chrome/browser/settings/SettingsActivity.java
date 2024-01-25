@@ -660,8 +660,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // Set status bar icon color according to background color.
         UiUtils.setStatusBarIconColor(
-                getWindow().getDecorView().getRootView(),
-                getResources().getBoolean(R.bool.window_light_status_bar));
+                getWindow(), getResources().getBoolean(R.bool.window_light_status_bar));
     }
 
     @Override

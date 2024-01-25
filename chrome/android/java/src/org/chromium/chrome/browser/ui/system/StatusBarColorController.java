@@ -519,9 +519,8 @@ public class StatusBarColorController
     public static void setStatusBarColor(Window window, @ColorInt int color) {
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
-        final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        UiUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
+        UiUtils.setStatusBarIconColor(window, needsDarkStatusBarIcons);
         UiUtils.setStatusBarColor(window, color);
     }
 
