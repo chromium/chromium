@@ -163,9 +163,14 @@ void EventAckData::DecrementInflightEvent(
     // or not running at this point.
     case content::ServiceWorkerExternalRequestResult::kWorkerNotFound:
     case content::ServiceWorkerExternalRequestResult::kWorkerNotRunning:
+    // TODO(crbug.com/1521084): Perform more graceful shutdown when
+    // ServiceWorkerContextCore is torn down.
+    // Null context can happen in the rare case if ServiceWorkerContextCore is
+    // torn down when EventRouter + BrowserContext are still alive and an
+    // event happens to be acked here.
+    case content::ServiceWorkerExternalRequestResult::kNullContext:
       break;
     case content::ServiceWorkerExternalRequestResult::kBadRequestId:
-    case content::ServiceWorkerExternalRequestResult::kNullContext:
       LOG(ERROR) << "FinishExternalRequest failed: "
                  << static_cast<int>(result);
       std::move(failure_callback).Run();
