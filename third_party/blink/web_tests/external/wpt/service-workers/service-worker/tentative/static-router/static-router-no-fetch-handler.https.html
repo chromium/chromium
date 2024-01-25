@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Static Router: routers are evaluated when there is no fetch handler.
+</title>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js">
+</script>
+<script src="resources/static-router-helpers.sub.js">
+</script>
+<body>
+<script>
+const RULE_KEY = 'condition-urlpattern-string-source-cache';
+const SW_SRC = 'resources/static-router-no-fetch-handler-sw.js';
+const CACHED_FILE = 'cache.txt';
+
+promise_test(async t => {
+  const worker = await registerAndActivate(t, RULE_KEY, SW_SRC);
+
+  // Matched with the main reosurce load.
+  const {contentWindow} = await createIframe(t, `resources/${CACHED_FILE}`);
+  assert_equals(contentWindow.document.body.innerText, "From cache");
+
+  // TODO: Matched with the subreosurce load.
+}, 'The router rule is evaluated without fetch handlers in service worker');
+</script>
+</body>
