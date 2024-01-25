@@ -334,7 +334,7 @@ BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
 // merging.
 BASE_FEATURE(kAutofillConvergeToExtremeLengthStreetAddress,
              "AutofillConvergeToExtremeLengthStreetAddress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kAutofillConvergeToLonger{
     &kAutofillConvergeToExtremeLengthStreetAddress, "converge_to_longer", true};

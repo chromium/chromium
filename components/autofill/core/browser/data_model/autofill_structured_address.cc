@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
-#include "components/autofill/core/browser/metrics/converge_to_extreme_length_address_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -152,12 +151,8 @@ bool StreetAddressNode::HasNewerValuePrecedenceInMerging(
     }
     // Otherwise, prefer the longer or shorter street address depending on the
     // feature `kAutofillConvergeToExtremeLengthStreetAddress` parameterization.
-    const bool has_newer_value_precedence =
-        features::kAutofillConvergeToLonger.Get() ? old_length < new_length
-                                                  : old_length > new_length;
-    autofill_metrics::LogAddressUpdateLengthConvergenceStatus(
-        has_newer_value_precedence);
-    return has_newer_value_precedence;
+    return features::kAutofillConvergeToLonger.Get() ? old_length < new_length
+                                                     : old_length > new_length;
   }
   return false;
 }
