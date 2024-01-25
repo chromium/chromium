@@ -4,6 +4,7 @@
 
 dictionary StorageAccessTypes {
     boolean all = false;
+    boolean cookies = false;
     boolean sessionStorage = false;
     boolean localStorage = false;
     boolean indexedDB = false;

@@ -11,4 +11,9 @@
         NewObject,
         MeasureAs=StorageAccessAPI_requestStorageAccess_BeyondCookies
     ] Promise<StorageAccessHandle> requestStorageAccess(StorageAccessTypes types);
+    [
+        CallWith=ScriptState,
+        NewObject,
+        MeasureAs=StorageAccessAPI_hasUnpartitionedCookieAccess
+    ] Promise<boolean> hasUnpartitionedCookieAccess();
 };

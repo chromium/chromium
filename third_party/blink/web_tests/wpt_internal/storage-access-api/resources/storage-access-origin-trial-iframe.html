@@ -25,7 +25,12 @@
     const url = handle.createObjectURL(new Blob(["TEST"]));
     handle.revokeObjectURL(url);
     handle.BroadcastChannel("test").close();
-  } catch (_) {
+    let unpartitioned_cookie_access = await document.hasUnpartitionedCookieAccess();
+    if (!unpartitioned_cookie_access) {
+      message = "NoAccess";
+    }
+  } catch (err) {
+    console.error(err);
     message = "NoAccess";
   }
   // Step 4 (wpt_internal/storage-access-api/storage-access-origin-trial.sub.https.html)

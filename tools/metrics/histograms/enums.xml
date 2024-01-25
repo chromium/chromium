@@ -11182,6 +11182,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4787" label="UserFeatureNextThirdPartiesGTM"/>
   <int value="4788" label="UserFeatureNextThirdPartiesYouTubeEmbed"/>
   <int value="4789" label="UserFeatureNextThirdPartiesGoogleMapsEmbed"/>
+  <int value="4790" label="StorageAccessAPI_hasUnpartitionedCookieAccess"/>
+  <int value="4791"
+      label="StorageAccessAPI_requestStorageAccess_BeyondCookies_cookies"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

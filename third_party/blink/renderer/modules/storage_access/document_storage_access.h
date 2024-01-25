@@ -20,11 +20,14 @@ class DocumentStorageAccess final
       public Supplement<Document> {
  public:
   static const char kSupplementName[];
+  static const char kNoAccessRequested[];
   static DocumentStorageAccess& From(Document& document);
   static ScriptPromise requestStorageAccess(
       ScriptState* script_state,
       Document& document,
       const StorageAccessTypes* storage_access_types);
+  static ScriptPromise hasUnpartitionedCookieAccess(ScriptState* script_state,
+                                                    Document& document);
 
   explicit DocumentStorageAccess(Document& document);
   void Trace(Visitor*) const override;
@@ -32,6 +35,7 @@ class DocumentStorageAccess final
   ScriptPromise requestStorageAccess(
       ScriptState* script_state,
       const StorageAccessTypes* storage_access_types);
+  ScriptPromise hasUnpartitionedCookieAccess(ScriptState* script_state);
 };
 
 }  // namespace blink

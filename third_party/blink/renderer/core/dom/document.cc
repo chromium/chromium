@@ -6600,6 +6600,15 @@ ScriptPromise Document::requestStorageAccessFor(ScriptState* script_state,
 }
 
 ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
+  // Requesting storage access via `requestStorageAccess()` idl always requests
+  // unpartitioned cookie access.
+  return RequestStorageAccessImpl(script_state,
+                                  /*request_unpartitioned_cookie_access=*/true);
+}
+
+ScriptPromise Document::RequestStorageAccessImpl(
+    ScriptState* script_state,
+    bool request_unpartitioned_cookie_access) {
   if (!GetFrame()) {
     FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
 
@@ -6704,13 +6713,15 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
           std::move(descriptor),
           LocalFrame::HasTransientUserActivation(GetFrame()),
           WTF::BindOnce(&Document::ProcessStorageAccessPermissionState,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+                        WrapPersistent(this), WrapPersistent(resolver),
+                        request_unpartitioned_cookie_access));
 
   return promise;
 }
 
 void Document::ProcessStorageAccessPermissionState(
     ScriptPromiseResolver* resolver,
+    bool request_unpartitioned_cookie_access,
     mojom::blink::PermissionStatus status) {
   DCHECK(resolver);
 
@@ -6718,11 +6729,18 @@ void Document::ProcessStorageAccessPermissionState(
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
 
+  // document could be no longer alive.
+  if (!dom_window_) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "document shutdown"));
+    return;
+  }
+
   if (status == mojom::blink::PermissionStatus::GRANTED) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_NEW_OR_EXISTING_GRANT);
-    // document could be no longer alive.
-    if (dom_window_) {
+    if (request_unpartitioned_cookie_access) {
       dom_window_->SetHasStorageAccess();
     }
     resolver->Resolve();
