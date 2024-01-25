@@ -171,8 +171,11 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
 }
 
 void SaveCardBubbleControllerImpl::HideIconAndBubbleAfterUpload() {
-  current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
-  HideBubble();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    current_bubble_type_ = BubbleType::UPLOAD_COMPLETED;
+    HideBubble();
+  }
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {

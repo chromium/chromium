@@ -65,6 +65,15 @@ class MockAutofillSaveCardBottomSheetBridge
                std::unique_ptr<AutofillSaveCardDelegateAndroid>),
               (override));
 };
+#else
+class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
+ public:
+  explicit MockSaveCardBubbleController(content::WebContents* web_contents)
+      : SaveCardBubbleControllerImpl(web_contents) {}
+  ~MockSaveCardBubbleController() override = default;
+
+  MOCK_METHOD(void, HideIconAndBubbleAfterUpload, (), (override));
+};
 #endif
 
 // Exposes the protected constructor.
@@ -100,6 +109,15 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     PreparePersonalDataManager();
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
+
+#if !BUILDFLAG(IS_ANDROID)
+    SecurityStateTabHelper::CreateForWebContents(web_contents());
+
+    auto save_card_bubble_controller =
+        std::make_unique<MockSaveCardBubbleController>(web_contents());
+    web_contents()->SetUserData(save_card_bubble_controller->UserDataKey(),
+                                std::move(save_card_bubble_controller));
+#endif
   }
 
   void TearDown() override {
@@ -124,6 +142,13 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   TestBrowserAutofillManager* autofill_manager() {
     return test_autofill_manager_injector_[web_contents()];
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  MockSaveCardBubbleController& save_card_bubble_controller() {
+    return static_cast<MockSaveCardBubbleController&>(
+        *SaveCardBubbleControllerImpl::FromWebContents(web_contents()));
+  }
+#endif
 
  private:
   void PreparePersonalDataManager() {
@@ -238,6 +263,12 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
                   expected_bits, Ref(field_filling_stats_data), _, _, _, _, _));
 
   client()->TriggerUserPerceptionOfAutofillSurvey(field_filling_stats_data);
+}
+
+TEST_F(ChromeAutofillClientTest,
+       CreditCardUploadCompleted_HidesSaveCardBubbleAndIcon) {
+  EXPECT_CALL(save_card_bubble_controller(), HideIconAndBubbleAfterUpload);
+  client()->CreditCardUploadCompleted(true);
 }
 #endif
 
@@ -402,57 +433,5 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       base::DoNothing()));
 }
 #endif
-
-#if !BUILDFLAG(IS_ANDROID)
-class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
- public:
-  explicit MockSaveCardBubbleController(content::WebContents* web_contents)
-      : SaveCardBubbleControllerImpl(web_contents) {}
-  ~MockSaveCardBubbleController() override = default;
-
-  MOCK_METHOD(void, HideIconAndBubbleAfterUpload, (), (override));
-};
-
-class ChromeAutofillClientTestWithSaveCardLoadingAndConfirmation
-    : public ChromeAutofillClientTest {
- public:
-  ChromeAutofillClientTestWithSaveCardLoadingAndConfirmation() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableSaveCardLoadingAndConfirmation);
-  }
-
-  void SetUp() override {
-    ChromeAutofillClientTest::SetUp();
-
-    SecurityStateTabHelper::CreateForWebContents(web_contents());
-
-    auto save_card_bubble_controller =
-        std::make_unique<MockSaveCardBubbleController>(web_contents());
-    save_card_bubble_controller_ = save_card_bubble_controller.get();
-    web_contents()->SetUserData(save_card_bubble_controller_->UserDataKey(),
-                                std::move(save_card_bubble_controller));
-  }
-
-  void TearDown() override {
-    save_card_bubble_controller_ = nullptr;
-    ChromeAutofillClientTest::TearDown();
-  }
-
-  MockSaveCardBubbleController& save_card_bubble_controller() {
-    return *save_card_bubble_controller_;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockSaveCardBubbleController> save_card_bubble_controller_ = nullptr;
-};
-
-TEST_F(ChromeAutofillClientTestWithSaveCardLoadingAndConfirmation,
-       CreditCardUploadCompleted_HidesSaveCardBubbleAndIcon) {
-  EXPECT_CALL(save_card_bubble_controller(), HideIconAndBubbleAfterUpload);
-  client()->CreditCardUploadCompleted(true);
-}
-#endif
-
 }  // namespace
 }  // namespace autofill

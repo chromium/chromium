@@ -888,12 +888,9 @@ void ChromeAutofillClient::ConfirmUploadIbanToCloud(
 
 void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (SaveCardBubbleControllerImpl* controller =
-            SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-      controller->HideIconAndBubbleAfterUpload();
-    }
+  if (SaveCardBubbleControllerImpl* controller =
+          SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
+    controller->HideIconAndBubbleAfterUpload();
   }
 #endif
 }

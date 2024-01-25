@@ -821,6 +821,13 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveBubbleType) {
   controller()->OnSaveButton({});
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
 
+  // HideIconAndBubbleAfterUpload() should not change the bubble type or hide
+  // the bubble view if the AutofillEnableSaveCardLoadingAndConfirmation feature
+  // flag is not enabled.
+  controller()->HideIconAndBubbleAfterUpload();
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
   CloseBubble(PaymentsBubbleClosedReason::kAccepted);
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
   EXPECT_FALSE(controller()->IsIconVisible());
