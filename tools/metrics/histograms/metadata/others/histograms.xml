@@ -1415,6 +1415,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.Request.NumGroups"
+    units="count" expires_after="M126">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of interest groups included in a request constructed using the
+    Bidding and Auction Services API. Recorded when the request is created.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize"
+    units="%" expires_after="M126">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The compressed size as a percentage of the uncompressed size when
+    compressing a request constructed using the Bidding and Auction API.
+    Recorded when the request is created.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Update.AuctionExecutionMode"
     enum="InterestGroupAdAuctionExecutionMode" expires_after="2024-06-20">
   <owner>behamilton@google.com</owner>
