@@ -616,6 +616,10 @@ class BookmarkManagerMediator
     }
 
     public boolean isReorderable(BookmarkListEntry entry) {
+        if (!mCurrentPowerFilter.isEmpty()) {
+            return false;
+        }
+
         return entry != null
                 && entry.getBookmarkItem() != null
                 && entry.getBookmarkItem().isReorderable();
@@ -1336,7 +1340,7 @@ class BookmarkManagerMediator
         listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
         listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
 
-        boolean canReorder = bookmarkItem != null && bookmarkItem.isReorderable();
+        boolean canReorder = isReorderable(entry);
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
         } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
