@@ -2511,12 +2511,12 @@
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
-    "owners": [ "laurila@google.com", "desktop-pwas-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "desktop-pwas-team@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-borderless",
-    "owners": [ "laurila@google.com", "desktop-pwas-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "desktop-pwas-team@google.com" ],
     "expiry_milestone": 150
   },
   {
