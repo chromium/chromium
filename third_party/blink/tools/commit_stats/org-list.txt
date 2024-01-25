@@ -53,3 +53,4 @@ TensorFlow,tensorflow.org
 GNU,gnu.org
 Netflix,netflix.com
 Shopify,shopify.com
+Individuals,kzar.co.uk

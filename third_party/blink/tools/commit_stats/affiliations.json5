@@ -47,9 +47,14 @@
       { start: "2020-07-10", domain: "tencent.com" },
     ]
   },
-  zenye@chromium.org: {
+  "zenye@chromium.org": {
     affiliations: [
       { start: "2019-09-26", domain: "microsoft.com" },
+    ]
+  },
+  "kzar@chromium.org": {
+    affiliations: [
+      { start: "2021-11-29", domain: "kzar.co.uk" },
     ]
   },
 }
