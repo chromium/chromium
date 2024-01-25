@@ -964,6 +964,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="81" label="trackContextMenu"/>
   <int value="82" label="autofillView"/>
   <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
+  <int value="84" label="heapSnapshotTreatBackingStoreAsContainingObject"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
