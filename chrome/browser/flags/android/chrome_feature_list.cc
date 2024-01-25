@@ -275,7 +275,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
     &kTabStripStartupRefactoring,
-    &kTabWindowManagerReportIndicesMismatch,
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -861,10 +860,6 @@ BASE_FEATURE(kTabStripStartupRefactoring,
 // low-end device behavior where this animation is disabled.
 BASE_FEATURE(kTabToGTSAnimation,
              "TabToGTSAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabWindowManagerReportIndicesMismatch,
-             "TabWindowManagerReportIndicesMismatch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTestDefaultDisabled,

@@ -154,7 +154,6 @@ BASE_DECLARE_FEATURE(kTabStripGroupIndicatorsAndroid);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabletToolbarReordering);
 BASE_DECLARE_FEATURE(kTabStripStartupRefactoring);
-BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);

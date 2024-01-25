@@ -22,7 +22,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -156,13 +155,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     private void assertIndicesMatch(
             int requestedIndex, int returnedIndex, String type, Activity newActivity) {
         if (requestedIndex == returnedIndex
+                || !BuildConfig.ENABLE_ASSERTS
+                || BuildConfig.IS_FOR_TEST
                 // Needed for ActivityManager.RecentTaskInfo.taskId
                 || VERSION.SDK_INT < VERSION_CODES.Q) {
-            return;
-        }
-
-        if (!ChromeFeatureList.sTabWindowManagerReportIndicesMismatch.isEnabled()
-                && !BuildConfig.ENABLE_ASSERTS) {
             return;
         }
 
@@ -226,9 +222,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                     activityAtRequestedIndex);
         }
 
-        if (!BuildConfig.IS_FOR_TEST) {
-            assert requestedIndex == returnedIndex : message;
-        }
+        assert requestedIndex == returnedIndex : message;
         Log.i(TAG_MULTI_INSTANCE, message);
     }
 
