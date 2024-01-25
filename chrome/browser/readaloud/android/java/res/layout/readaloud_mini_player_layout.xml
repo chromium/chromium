@@ -15,8 +15,7 @@ found in the LICENSE file.
     android:layout_gravity="start|bottom"
     android:orientation="vertical"
     android:animateLayoutChanges="true"
-    android:visibility="gone"
-    android:contentDescription="@string/readaloud_player_name">
+    android:visibility="gone">
 
     <!-- Shadow -->
     <ImageView
