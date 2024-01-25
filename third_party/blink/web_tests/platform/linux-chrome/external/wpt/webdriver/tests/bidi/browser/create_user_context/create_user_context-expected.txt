@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_unique_id
+  AttributeError: 'Browser' object has no attribute 'create_user_context'
+Harness: the test ran to completion.

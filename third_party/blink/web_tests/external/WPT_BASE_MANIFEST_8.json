@@ -297210,6 +297210,10 @@
        "3c31bf5077d73ac258f4a96bb6b4f5e95802f184",
        []
       ],
+      "continue_on.py": [
+       "42b4f3f8fdcbf6bcd436806aada2e6d3c09d2c6d",
+       []
+      ],
       "disconnect-iframe.html": [
        "f65763932b8c742debdbabbefc310613fe83f0e5",
        []
@@ -297270,6 +297274,10 @@
        "591c927153b9a78695ded0663fed600cbae5bcb6",
        []
       ],
+      "manifest_with_continue_on.json": [
+       "3f5a954b875475e78a522734202fe7d779ba073f",
+       []
+      ],
       "manifest_with_cross_origin_disconnect.sub.json": [
        "a1ad5c71ac3d2395c97d4aa387a6ec1de2b84b3e",
        []
@@ -297304,6 +297312,10 @@
       ],
       "request-params-check.py": [
        "daf91aad8f154af610d299c0de249bbc76db53c8",
+       []
+      ],
+      "resolve.html": [
+       "87f5112cfd1358422eef5ddb606cf5f348d24fcd",
        []
       ],
       "select_manifest_in_root_manifest.py": [
@@ -376192,10 +376204,6 @@
      "get_named_cookie.sub.https.html.headers": [
       "3dc39a56736614f1d864bda185f368e3adba7419",
       []
-     ],
-     "set_get_window_rect-expected.txt": [
-      "33d33e9dbf52550031030eb8ec95ed6a96c53457",
-      []
      ]
     },
     "testharness": {
@@ -396032,6 +396040,14 @@
        "98b670f89f1500ae10b039d1a9cb99f075aa8031",
        []
       ],
+      "browser": {
+       "create_user_context": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       }
+      },
       "browsing_context": {
        "__init__.py": [
         "e74de268093e1c39ae683dfe0eb08ad6ba2eceb3",
@@ -437889,6 +437905,17 @@
       }
      ]
     ],
+    "fedcm-authz": {
+     "fedcm-continue-on.https.html": [
+      "3ce1f51e370535791961bf984d1f6ffc77b3ffbf",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
     "fedcm-auto-reauthn-without-approved-clients.https.html": [
      "fb93cb632db09dfd3332ac6008f1f40253361ea6",
      [
@@ -584296,8 +584323,17 @@
          {}
         ]
        ],
-       "event-handler-onmove.html": [
+       "event-handler-onmove-01.tentative.html": [
         "e4454a20a15fa2ae20d4caf1574f0b97be7dbc45",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "event-handler-onmove-02.tentative.html": [
+        "a751f39d3091f96e85114d28798b83229bf22959",
         [
          null,
          {
@@ -590575,7 +590611,7 @@
       ]
      ],
      "loaf-source-location-redirect.html": [
-      "ba2478e6224501fbc9488365783e47e014914bda",
+      "a6bfd68f809af6bfeaf16a4c8feb86388ebfab09",
       [
        null,
        {
@@ -628367,8 +628403,15 @@
        {}
       ]
      ],
+     "gethtml.tentative.html": [
+      "5b517ba9f5cadd84b25d53ec2fc155e640c6d266",
+      [
+       null,
+       {}
+      ]
+     ],
      "getinnerhtml.tentative.html": [
-      "ad7734d51e692f839627804d779190bdd85b244d",
+      "139cba2a517f666e444f891a46f5426944bad68a",
       [
        null,
        {}
@@ -644841,6 +644884,23 @@
        null,
        {
         "testdriver": true
+       }
+      ]
+     ],
+     "mouseover-at-removing-mousedown-target.html": [
+      "959dcef6812ac5ed01857bf18d6db09054898b44",
+      [
+       "uievents/mouse/mouseover-at-removing-mousedown-target.html?duration=16",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "uievents/mouse/mouseover-at-removing-mousedown-target.html?duration=42",
+       {
+        "testdriver": true,
+        "timeout": "long"
        }
       ]
      ],
@@ -706948,6 +707008,17 @@
    "webdriver": {
     "tests": {
      "bidi": {
+      "browser": {
+       "create_user_context": {
+        "create_user_context.py": [
+         "92d90e50569eb76dd54c86f86d0421394ca48433",
+         [
+          null,
+          {}
+         ]
+        ]
+       }
+      },
       "browsing_context": {
        "activate": {
         "activate.py": [
@@ -707893,14 +707964,14 @@
          ]
         ],
         "contexts.py": [
-         "97d00669d17136d9c724fef4dade0214ac584c49",
+         "135cfb6016df304e2a5c190e18a62478af67fe15",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "58f1ba02e5fc10ab82ab90e616f7ce3801dc060d",
+         "46afcfbc8ac37a3536befbba9cae34ba19d27d7d",
          [
           null,
           {}
@@ -708268,7 +708339,7 @@
          ]
         ],
         "remove_preload_script.py": [
-         "b92fb31af0418755ada7b9bd516150744dfacdb4",
+         "2cf35fb9bb802f61cf97a38628d406e9a75c1e1b",
          [
           null,
           {}
