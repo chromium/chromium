@@ -20,10 +20,8 @@ namespace blink {
 TextPainterBase::TextPainterBase(GraphicsContext& context,
                                  const Font& font,
                                  const LineRelativeOffset& text_origin,
-                                 InlinePaintContext* inline_context,
                                  bool horizontal)
-    : inline_context_(inline_context),
-      graphics_context_(context),
+    : graphics_context_(context),
       font_(font),
       text_origin_(text_origin),
       horizontal_(horizontal) {}

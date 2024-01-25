@@ -69,12 +69,9 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
               const Font& font,
               const gfx::Rect& visual_rect,
               const LineRelativeOffset& text_origin,
-              InlinePaintContext* inline_context,
               bool horizontal)
-      : TextPainterBase(context, font, text_origin, inline_context, horizontal),
-        visual_rect_(visual_rect) {
-    DCHECK(inline_context_);
-  }
+      : TextPainterBase(context, font, text_origin, horizontal),
+        visual_rect_(visual_rect) {}
   ~TextPainter() = default;
 
   void Paint(const TextFragmentPaintInfo& fragment_paint_info,

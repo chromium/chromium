@@ -22,7 +22,6 @@ TextCombinePainter::TextCombinePainter(GraphicsContext& context,
     : TextPainterBase(context,
                       style.GetFont(),
                       text_origin,
-                      /* inline_context */ nullptr,
                       /* horizontal */ false),
       style_(style) {}
 

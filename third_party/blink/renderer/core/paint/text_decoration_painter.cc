@@ -15,6 +15,7 @@ namespace blink {
 
 TextDecorationPainter::TextDecorationPainter(
     TextPainter& text_painter,
+    const InlinePaintContext* inline_context,
     const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
@@ -22,6 +23,7 @@ TextDecorationPainter::TextDecorationPainter(
     const LineRelativeRect& decoration_rect,
     HighlightPainter::SelectionPaintState* selection)
     : text_painter_(text_painter),
+      inline_context_(inline_context),
       text_item_(text_item),
       paint_info_(paint_info),
       style_(style),
@@ -74,17 +76,15 @@ void TextDecorationPainter::UpdateDecorationInfo(
     top *= scaling_factor / text_item_.SvgScalingFactor();
     top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
     result.emplace(LineRelativeOffset{decoration_rect_.offset.line_left, top},
-                   decoration_rect_.InlineSize(), style,
-                   text_painter_.InlineContext(),
+                   decoration_rect_.InlineSize(), style, inline_context_,
                    effective_selection_decoration, decoration_override,
                    &scaled_font, MinimumThickness1(false), scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
         decoration_rect_override.value_or(decoration_rect_);
     result.emplace(decoration_rect.offset, decoration_rect.InlineSize(), style,
-                   text_painter_.InlineContext(),
-                   effective_selection_decoration, decoration_override,
-                   &text_item_.ScaledFont(),
+                   inline_context_, effective_selection_decoration,
+                   decoration_override, &text_item_.ScaledFont(),
                    MinimumThickness1(!text_item_.IsSvgText()));
   }
 }

@@ -1314,9 +1314,9 @@ void HighlightPainter::PaintDecoratedText(const StringView& text,
       fragment_item_, text, paint_start_offset, paint_end_offset);
   decoration_rect.Move(LineRelativeOffset::CreateFromBoxOrigin(box_origin_));
   TextDecorationPainter decoration_painter(
-      text_painter_, fragment_item_, paint_info_,
-      pseudo_style ? *pseudo_style : originating_style_, text_style,
-      decoration_rect, selection_);
+      text_painter_, decoration_painter_.InlineContext(), fragment_item_,
+      paint_info_, pseudo_style ? *pseudo_style : originating_style_,
+      text_style, decoration_rect, selection_);
 
   decoration_painter.Begin(TextDecorationPainter::kOriginating);
   decoration_painter.PaintExceptLineThrough(
