@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ModuleType">
+  <variant name="PriceChange"/>
+  <variant name="SingleTab"/>
+</variants>
+
 <histogram name="MagicStack.Clank.NewTabPage.ContextMenu.OpenCustomizeSettings"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
@@ -63,6 +68,68 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MagicStack.Clank.NewTabPage.Module.FetchDataDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a successful fetching data response. The histogram is logged when
+    showing the magic stack on NewTabPage, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.NewTabPage.Module.FetchDataFailedDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a response of no data to show. The histogram is logged when showing
+    the magic stack on NewTabPage, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when it returns a
+    response after timeout. The histogram is logged when showing the magic stack
+    on NewTabPage, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutType"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the types of modules which didn't respond before the timer timeout.
+    The histogram is logged when showing the magic stack on NewTabPage,
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="MagicStack.Clank.NewTabPage.Module.FirstModuleShownDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building the first module to the time when the
+    recyclerview becomes visible, i.e., the first highest ranking module returns
+    valid data. The histogram is logged when showing the magic stack on
+    NewTabPage, Android-only.
+  </summary>
+</histogram>
+
 <histogram name="MagicStack.Clank.NewTabPage.Module.TopImpression"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
@@ -70,6 +137,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the total count of times that a module is shown on the magic stack of
     a NewTabPage. The histogram is logged on Android-only.
+  </summary>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.NewTabPage.Segmentation.FetchRankingResultsDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from calling the segmentation API to fetch a ranking to
+    the time when a response returns. The histogram is logged when showing the
+    magic stack on NewTabPage, Android-only.
   </summary>
 </histogram>
 
@@ -117,6 +196,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MagicStack.Clank.StartSurface.Module.FetchDataDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a successful fetching data response. The histogram is logged when
+    showing the magic stack on Start surface, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.StartSurface.Module.FetchDataFailedDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when the module
+    returns a response of no data to show. The histogram is logged when showing
+    the magic stack on Start surface, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.StartSurface.Module.FetchDataTimeoutDurationMs.{ModuleType}"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building a module to the time when it returns a
+    response after timeout. The histogram is logged when showing the magic stack
+    on Start surface, Android-only.
+  </summary>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.StartSurface.Module.FetchDataTimeoutType"
+    enum="ModuleType" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the types of modules which didn't respond before the timer timeout.
+    The histogram is logged when showing the magic stack on Start surface,
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.StartSurface.Module.FirstModuleShownDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from building the first module to the time when the
+    recyclerview becomes visible, i.e., the first highest ranking module returns
+    valid data. The histogram is logged when showing the magic stack on Start
+    surface, Android-only.
+  </summary>
+</histogram>
+
 <histogram name="MagicStack.Clank.StartSurface.Module.TopImpression"
     enum="ModuleType" expires_after="2024-06-20">
   <owner>hanxi@chromium.org</owner>
@@ -124,6 +266,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record the total count of times that a module is shown on the magic stack of
     the Start surface. The histogram is logged on Android-only.
+  </summary>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.StartSurface.Segmentation.FetchRankingResultsDurationMs"
+    units="ms" expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the duration from calling the segmentation API to fetch a ranking to
+    the time when a response returns. The histogram is logged when showing the
+    magic stack on Start surface, Android-only.
   </summary>
 </histogram>
 

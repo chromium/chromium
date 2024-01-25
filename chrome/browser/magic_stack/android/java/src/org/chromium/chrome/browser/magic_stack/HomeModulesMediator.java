@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import android.os.Handler;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -60,6 +62,9 @@ public class HomeModulesMediator {
 
     private boolean mIsShown;
     private Callback<Boolean> mSetVisibilityCallback;
+    private long[] mShowModuleStartTimeMs;
+    private List<Integer> mModuleListToShow;
+    private @HostSurface int mHostSurface;
 
     /**
      * @param model The instance of {@link ModelList} of the RecyclerView.
@@ -85,14 +90,18 @@ public class HomeModulesMediator {
         assert mModel.size() == 0;
         mIsFetchingModules = true;
         mIsShown = true;
-        cacheRanking(moduleList);
+        mHostSurface = moduleDelegate.getHostSurfaceType();
+        mModuleListToShow = moduleList;
+        cacheRanking(mModuleListToShow);
 
         mModuleResultsWaitingIndex = 0;
-        mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[moduleList.size()];
-        mModuleFetchResultsIndicator = new Boolean[moduleList.size()];
+        mModuleFetchResultsCache = new SimpleRecyclerViewAdapter.ListItem[mModuleListToShow.size()];
+        mModuleFetchResultsIndicator = new Boolean[mModuleListToShow.size()];
+        mShowModuleStartTimeMs = new long[mModuleListToShow.size()];
 
-        for (int i = 0; i < moduleList.size(); i++) {
-            int moduleType = moduleList.get(i);
+        for (int i = 0; i < mModuleListToShow.size(); i++) {
+            int moduleType = mModuleListToShow.get(i);
+            mShowModuleStartTimeMs[i] = SystemClock.elapsedRealtime();
             if (!mModuleRegistry.build(
                     moduleType,
                     moduleDelegate,
@@ -151,9 +160,14 @@ public class HomeModulesMediator {
     @VisibleForTesting
     void addToRecyclerViewOrCache(
             @ModuleType int moduleType, @Nullable PropertyModel propertyModel) {
-        if (!mIsFetchingModules) return;
-
         int index = mModuleTypeToRankingIndexMap.get(moduleType);
+        long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[index];
+        if (!mIsFetchingModules) {
+            HomeModulesMetricsUtils.recordFetchDataTimeOutDuration(
+                    mHostSurface, moduleType, duration);
+            return;
+        }
+
         // If this module has responded before, update its data on the RecyclerView.
         if (index < mModuleResultsWaitingIndex) {
             if (propertyModel != null) {
@@ -161,10 +175,7 @@ public class HomeModulesMediator {
             } else {
                 remove(moduleType, index);
             }
-            return;
-        }
-
-        if (index == mModuleResultsWaitingIndex) {
+        } else if (index == mModuleResultsWaitingIndex) {
             if (propertyModel != null) {
                 // This module is the highest ranking one that we are waiting for, adds its data to
                 // the RecyclerView.
@@ -184,6 +195,13 @@ public class HomeModulesMediator {
                     propertyModel != null
                             ? new SimpleRecyclerViewAdapter.ListItem(moduleType, propertyModel)
                             : null;
+        }
+
+        if (propertyModel == null) {
+            HomeModulesMetricsUtils.recordFetchDataFailedDuration(
+                    mHostSurface, moduleType, duration);
+        } else {
+            HomeModulesMetricsUtils.recordFetchDataDuration(mHostSurface, moduleType, duration);
         }
     }
 
@@ -232,9 +250,12 @@ public class HomeModulesMediator {
         // Will reject any late responses from modules.
         mIsFetchingModules = false;
 
-        mModuleResultsWaitingIndex++;
         while (mModuleResultsWaitingIndex < mModuleFetchResultsIndicator.length) {
-            if (Boolean.TRUE.equals(mModuleFetchResultsIndicator[mModuleResultsWaitingIndex])) {
+            var hasResult = mModuleFetchResultsIndicator[mModuleResultsWaitingIndex];
+            if (hasResult == null) {
+                HomeModulesMetricsUtils.recordFetchDataTimeOutType(
+                        mHostSurface, mModuleListToShow.get(mModuleResultsWaitingIndex));
+            } else if (hasResult) {
                 var cachedResponse = mModuleFetchResultsCache[mModuleResultsWaitingIndex];
                 assert cachedResponse != null;
                 // append() will change the visibility of the recyclerview if there isn't any module
@@ -256,6 +277,10 @@ public class HomeModulesMediator {
         mModel.add(item);
         if (mModel.size() == 1) {
             mSetVisibilityCallback.onResult(true);
+
+            // We use the build time of the first module as the starting time.
+            long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[0];
+            HomeModulesMetricsUtils.recordFirstModuleShownDuration(mHostSurface, duration);
         }
     }
 
@@ -310,9 +335,11 @@ public class HomeModulesMediator {
         mModuleResultsWaitingIndex = 0;
         mModuleFetchResultsIndicator = null;
         mModuleFetchResultsCache = null;
+        mShowModuleStartTimeMs = null;
 
         mModuleTypeToModuleProviderMap.clear();
         mModuleTypeToRankingIndexMap.clear();
+        mModuleListToShow = null;
 
         mModel.clear();
         mSetVisibilityCallback.onResult(false);

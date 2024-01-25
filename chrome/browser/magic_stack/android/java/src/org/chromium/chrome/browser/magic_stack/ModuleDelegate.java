@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -31,19 +29,6 @@ public interface ModuleDelegate {
         int SINGLE_TAB = 0;
         int PRICE_CHANGE = 1;
         int NUM_ENTRIES = 2;
-    }
-
-    /** Returns a string name of a module. */
-    static String getModuleName(@ModuleType int moduleType) {
-        switch (moduleType) {
-            case SINGLE_TAB:
-                return "SingleTabModule";
-            case (PRICE_CHANGE):
-                return "PriceChange";
-            default:
-                assert false : "Module type not supported!";
-                return null;
-        }
     }
 
     /**
