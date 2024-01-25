@@ -14,11 +14,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/manta/features.h"
@@ -47,6 +50,8 @@ using std::literals::string_view_literals::operator""sv;
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
+constexpr char kFakeTestEmail2[] = "anotherfakeemail@personalization";
+constexpr char kTestGaiaId2[] = "9876543210";
 
 // Repeat `string_view` until the output is size `target_size` or as close as
 // possible to `target_size` without being longer.
@@ -64,6 +69,10 @@ std::string RepeatToSize(std::string_view repeat,
 
 AccountId GetTestAccountId() {
   return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+}
+
+AccountId GetTestAccountId2() {
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, kTestGaiaId2);
 }
 
 void AddAndLoginUser(const AccountId& account_id) {
@@ -128,9 +137,16 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     testing::Test::SetUp();
 
     ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
+    SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  }
 
-    AddAndLoginUser(GetTestAccountId());
+  // Set up the profile for an account. This can be used to set up the profile
+  // again with the new account when switching between accounts.
+  void SetUpProfileForTesting(const std::string& name,
+                              const AccountId& account_id) {
+    profile_ = profile_manager_.CreateTestingProfile(name);
+
+    AddAndLoginUser(account_id);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -139,6 +155,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     sea_pen_provider_ = std::make_unique<PersonalizationAppSeaPenProviderImpl>(
         &web_ui_,
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+    sea_pen_provider_remote_.reset();
     sea_pen_provider_->BindInterface(
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
   }
@@ -289,6 +306,56 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_EQ(1, test_wallpaper_controller()->get_sea_pen_wallpaper_count());
   EXPECT_EQ(WallpaperType::kSeaPen,
             test_wallpaper_controller()->wallpaper_info()->type);
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImages) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  auto chromeos_wallpaper_dir_override_ =
+      std::make_unique<base::ScopedPathOverride>(
+          chrome::DIR_CHROMEOS_WALLPAPERS, scoped_temp_dir.GetPath());
+
+  base::FilePath sea_pen_dir1 =
+      scoped_temp_dir.GetPath().Append("sea_pen").Append(
+          GetTestAccountId().GetAccountIdKey());
+  ASSERT_TRUE(base::CreateDirectory(sea_pen_dir1));
+  base::FilePath sea_pen_file_path1 = sea_pen_dir1.Append("111.jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path1, "test image 1"));
+  base::FilePath sea_pen_file_path2 = sea_pen_dir1.Append("222.jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path2, "test image 2"));
+
+  base::test::TestFuture<const std::vector<base::FilePath>&>
+      recent_images_future;
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+
+  std::vector<base::FilePath> recent_images = recent_images_future.Take();
+  ASSERT_EQ(2u, recent_images.size());
+  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path1));
+  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path2));
+
+  // Log in the second user, get the list of recent images.
+  SetUpProfileForTesting(kFakeTestEmail2, GetTestAccountId2());
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+  ASSERT_EQ(0u, recent_images_future.Take().size());
+  ASSERT_TRUE(base::PathExists(sea_pen_file_path1));
+  ASSERT_TRUE(base::PathExists(sea_pen_file_path2));
+
+  // Create an image in the Sea Pen directory for second user, then get the list
+  // of recent images again.
+  base::FilePath sea_pen_dir2 =
+      scoped_temp_dir.GetPath().Append("sea_pen").Append(
+          GetTestAccountId2().GetAccountIdKey());
+  ASSERT_TRUE(base::CreateDirectory(sea_pen_dir2));
+  base::FilePath sea_pen_file_path3 = sea_pen_dir2.Append("111.jpg");
+  ASSERT_TRUE(base::WriteFile(sea_pen_file_path3, "test image 3"));
+
+  sea_pen_provider_remote()->GetRecentSeaPenImages(
+      recent_images_future.GetCallback());
+  recent_images = recent_images_future.Take();
+  ASSERT_EQ(1u, recent_images.size());
+  EXPECT_TRUE(base::Contains(recent_images, sea_pen_file_path3));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
