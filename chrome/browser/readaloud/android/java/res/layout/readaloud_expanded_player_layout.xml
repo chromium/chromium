@@ -123,13 +123,11 @@ found in the LICENSE file.
                         android:id="@+id/readaloud_expanded_player_publisher"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/readaloud_expanded_player_publisher_margin_left"
+                        android:layout_marginStart="@dimen/readaloud_expanded_player_publisher_margin_left"
                         android:layout_marginVertical="@dimen/readaloud_expanded_player_publisher_margin_vertical"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                         android:ellipsize="end"
-                        android:maxLines="1"
-                        tools:ignore="RtlHardcoded"/>
-                        <!-- RtlHardcoded: The chevron always is drawn on the right, so we use marginLeft instead of marginStart. -->
+                        android:maxLines="1"/>
                     <ImageView
                         android:layout_width="@dimen/readaloud_expanded_player_publisher_chevron_width"
                         android:layout_height="@dimen/readaloud_expanded_player_publisher_chevron_height"
