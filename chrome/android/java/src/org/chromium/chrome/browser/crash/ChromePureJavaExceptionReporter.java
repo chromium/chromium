@@ -55,7 +55,7 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
      * @param exception The exception to report.
      */
     public static void reportJavaException(Throwable exception) {
-        reportJavaException(exception, /* withLogWarning= */ false);
+        reportJavaException(exception, /* withLogWarning= */ true);
     }
 
     /**

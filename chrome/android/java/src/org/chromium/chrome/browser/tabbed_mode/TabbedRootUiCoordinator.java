@@ -1040,8 +1040,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             + toolbarHeight
                             + " statusIndicatorHeight= "
                             + mStatusIndicatorHeight;
-            ChromePureJavaExceptionReporter.reportJavaException(
-                    new Throwable(msg), /* withLogWarning= */ true);
+            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(msg));
         }
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
