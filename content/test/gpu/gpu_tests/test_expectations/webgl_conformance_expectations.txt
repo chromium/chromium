@@ -528,7 +528,7 @@ crbug.com/1435021 [ amd-0x67ef angle-metal mac no-clang-coverage release graphit
 ## SkiaGraphite ##
 
 crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
-crbug.com/1513193 [ amd angle-metal graphite-enabled mac release ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1513193 [ amd angle-metal graphite-enabled mac no-clang-coverage release ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
 crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
 
 ## Mac Intel ##
