@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
@@ -335,8 +336,11 @@ public class TabContentManager {
         // launch:
         // * GridTabSwitcherAndroidAnimations
         // * Start Surface Refactor
-        if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
-                && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext)) {
+        // OR
+        // * Hub
+        if (HubFieldTrial.isHubEnabled()
+                || (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
+                        && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mContext))) {
             getTabThumbnailFromDisk(tabId, thumbnailSize, callback);
             return;
         }
