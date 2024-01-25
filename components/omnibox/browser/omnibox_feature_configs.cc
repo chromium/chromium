@@ -90,4 +90,15 @@ ShortcutBoosting::ShortcutBoosting() {
           .Get();
 }
 
+// static
+BASE_FEATURE(VitalizeAutocompletedKeywords::kVitalizeAutocompletedKeywords,
+             "OmniboxVitalizeAutocompletedKeywords",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+VitalizeAutocompletedKeywords::VitalizeAutocompletedKeywords() {
+  enabled = base::FeatureList::IsEnabled(kVitalizeAutocompletedKeywords);
+  score = base::FeatureParam<int>(&kVitalizeAutocompletedKeywords,
+                                  "VitalizeAutocompletedKeywordsScore", 450)
+              .Get();
+}
+
 }  // namespace omnibox_feature_configs
