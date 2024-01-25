@@ -21,7 +21,7 @@ ScreenTimeHistoryDeleter::ScreenTimeHistoryDeleter(
     history::HistoryService* history_service)
     : history_service_(history_service) {
   DCHECK(history_service_);
-  history_service_observation_.Observe(history_service_);
+  history_service_observation_.Observe(history_service_.get());
   screen_time_history_ = [[STWebHistory alloc] init];
 }
 

@@ -10,6 +10,7 @@
 
 #import "base/callback_list.h"
 #import "base/check_is_test.h"
+#import "base/memory/raw_ptr.h"
 #import "base/containers/flat_map.h"
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
@@ -218,7 +219,7 @@ class ClearBrowsingDataAction : public Action,
 
   base::TimeTicks deletion_start_time_;
   base::flat_set<ActionType> action_types_;
-  BrowserList* browser_list_;
+  raw_ptr<BrowserList> browser_list_;
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>
       main_scoped_observer_{this};
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>

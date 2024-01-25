@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "components/prefs/pref_service.h"
+#import "base/memory/raw_ptr.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_url_usage_consumer.h"
@@ -14,7 +15,7 @@
 @end
 
 @implementation PrivacyGuideURLUsageMediator {
-  PrefService* _userPrefService;
+  raw_ptr<PrefService> _userPrefService;
   PrefBackedBoolean* _URLUsagePreference;
 }
 
