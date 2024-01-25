@@ -151,7 +151,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   // Initializes HangWatcher. Must be called once on the main thread during
   // startup while single-threaded.
   static void InitializeOnMainThread(ProcessType process_type,
-                                     bool is_zygote_child);
+                                     bool is_zygote_child,
+                                     bool emit_crashes);
 
   // Returns the values that were set through InitializeOnMainThread() to their
   // default value. Used for testing since in prod initialization should happen

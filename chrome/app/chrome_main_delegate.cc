@@ -1132,8 +1132,19 @@ void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
                          return invoked_in_child.is_zygote_child;
                        }},
       invoked_in);
-  base::HangWatcher::InitializeOnMainThread(
-      hang_watcher_process_type, /*is_zygote_child=*/is_zygote_child);
+
+  const bool emit_crashes =
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+      chrome::GetChannel() == version_info::Channel::CANARY ||
+      chrome::GetChannel() == version_info::Channel::DEV;
+#else
+      false;
+#endif
+
+  base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
+                                            /*is_zygote_child=*/is_zygote_child,
+                                            emit_crashes);
 
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
