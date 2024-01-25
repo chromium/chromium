@@ -364,8 +364,11 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #if BUILDFLAG(IS_ANDROID)
     BootloaderOverride bootloader_override = GetBootloaderOverride();
     partition_alloc::TagViolationReportingMode reporting_mode =
-        allocator_shim::internal::PartitionAllocMalloc::Allocator()
-            ->memory_tagging_reporting_mode();
+        partition_alloc::TagViolationReportingMode::kUndefined;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    reporting_mode = allocator_shim::internal::PartitionAllocMalloc::Allocator()
+                         ->memory_tagging_reporting_mode();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     switch (bootloader_override) {
       case BootloaderOverride::kDefault:
         trials.emplace("MemoryTaggingBootloaderOverride", "Default");
