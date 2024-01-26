@@ -7,6 +7,7 @@
     grid-template-areas: "dialog";
     grid-auto-columns: 100%;
     align-items: start;
+    user-select: none;
   }
 
   a {
@@ -308,6 +309,7 @@
   .result-text {
     white-space: pre-wrap;
     word-wrap: break-word;
+    user-select: text;
   }
 
   #resultOptions {
@@ -391,6 +393,10 @@
 
   .footer cr-button {
     margin-inline-start: 8px;
+  }
+
+  #errorFooter {
+    user-select: text;
   }
 
   :host-context([is-editing-submitted-input_]) #body,
