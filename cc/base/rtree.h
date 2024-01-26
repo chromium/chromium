@@ -66,7 +66,6 @@ class RTree {
              const PayloadFunctor& payload_getter);
 
   // If false, this rtree does not have valid bounds and:
-  //  - GetBoundsOrDie will CHECK.
   //  - Search* will have degraded performance.
   bool has_valid_bounds() const { return has_valid_bounds_; }
 
