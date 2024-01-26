@@ -22,18 +22,6 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-std::string GetExperimentArmString() {
-  if (features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
-    return "Counterfactual";
-  }
-
-  if (features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
-    return "WithDropToPin";
-  }
-
-  return "WithoutDropToPin";
-}
-
 PrefService* GetLastActiveUserPrefService() {
   return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
@@ -54,9 +42,8 @@ void RecordFirstPin() {
       holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs);
 
   base::UmaHistogramExactLinear(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".ShownBeforeFirstPin"}),
-      nudge_shown_count, 4u);
+      "Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin", nudge_shown_count,
+      /*exclusive_max=*/4u);
 }
 
 void RecordInteraction(Interaction interaction) {
@@ -75,11 +62,8 @@ void RecordInteraction(Interaction interaction) {
     return;
   }
 
-  const auto experiment_arm_string = GetExperimentArmString();
   base::UmaHistogramEnumeration(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", experiment_arm_string,
-                    ".Interaction.Count"}),
-      interaction);
+      "Ash.HoldingSpaceWallpaperNudge.Interaction.Count", interaction);
 
   // TODO(http://b/311411775): Add `TimeBucket` metrics.
   if (holding_space_wallpaper_nudge_prefs::MarkTimeOfFirstInteraction(
@@ -88,8 +72,8 @@ void RecordInteraction(Interaction interaction) {
     const auto time_delta = now - first_session_time.value();
 
     base::UmaHistogramCustomTimes(
-        base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", experiment_arm_string,
-                      ".Interaction.FirstTime.", ToString(interaction)}),
+        base::StrCat({"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.",
+                      ToString(interaction)}),
         time_delta, /*min=*/base::Seconds(1), /*max=*/base::Days(3),
         /*buckets=*/100);
   }
@@ -98,10 +82,9 @@ void RecordInteraction(Interaction interaction) {
 void RecordNudgeDuration(base::TimeDelta duration) {
   CHECK(features::IsHoldingSpaceWallpaperNudgeEnabled());
 
-  base::UmaHistogramCustomTimes(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Duration"}),
-      duration, base::Milliseconds(100), base::Seconds(10), 50);
+  base::UmaHistogramCustomTimes("Ash.HoldingSpaceWallpaperNudge.Duration",
+                                duration, /*min=*/base::Milliseconds(100),
+                                /*max=*/base::Seconds(10), /*buckets=*/50);
 }
 
 void RecordNudgeShown() {
@@ -115,34 +98,26 @@ void RecordNudgeShown() {
   auto nudge_shown_count =
       holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs);
 
-  base::UmaHistogramExactLinear(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Shown"}),
-      nudge_shown_count, 4u);
+  base::UmaHistogramExactLinear("Ash.HoldingSpaceWallpaperNudge.Shown",
+                                nudge_shown_count, /*exclusive_max=*/4u);
 }
 
 void RecordNudgeSuppressed(SuppressedReason reason) {
   CHECK(features::IsHoldingSpaceWallpaperNudgeEnabled());
 
   base::UmaHistogramEnumeration(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".SuppressedReason"}),
-      reason);
+      "Ash.HoldingSpaceWallpaperNudge.SuppressedReason", reason);
 }
 
 void RecordUserEligibility(std::optional<IneligibleReason> reason) {
   CHECK(features::IsHoldingSpaceWallpaperNudgeEnabled());
 
-  base::UmaHistogramBoolean(
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Eligible"}),
-      !reason.has_value());
+  base::UmaHistogramBoolean("Ash.HoldingSpaceWallpaperNudge.Eligible",
+                            !reason.has_value());
 
   if (reason.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({"Ash.HoldingSpaceWallpaperNudge.",
-                      GetExperimentArmString(), ".IneligibleReason"}),
-        reason.value());
+        "Ash.HoldingSpaceWallpaperNudge.IneligibleReason", reason.value());
   }
 }
 

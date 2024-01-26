@@ -20,11 +20,9 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-std::string GetInteractionFirstTimeMetricName(
-    Interaction interaction,
-    const std::string& experiment_arm_string) {
-  return base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", experiment_arm_string,
-                       ".Interaction.FirstTime.", ToString(interaction)});
+std::string GetInteractionFirstTimeMetricName(Interaction interaction) {
+  return base::StrCat({"Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.",
+                       ToString(interaction)});
 }
 
 PrefService* GetLastActiveUserPrefService() {
@@ -73,56 +71,19 @@ TEST_F(HoldingSpaceWallpaperNudgeMetricsEnumTest, AllInteractions) {
 
 // Base class for tests that verify Holding Space wallpaper nudge metrics are
 // properly submitted.
-class HoldingSpaceWallpaperNudgeMetricsTest
-    : public UserEducationAshTestBase,
-      public testing::WithParamInterface<std::tuple<
-          /*is-counterfactual=*/bool,
-          /*is-drop-to-pin-enabled=*/bool>> {
- public:
-  HoldingSpaceWallpaperNudgeMetricsTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kHoldingSpaceWallpaperNudge,
-                               {{"drop-to-pin",
-                                 IsDropToPinEnabled() ? "true" : "false"},
-                                {"is-counterfactual",
-                                 IsCounterfactual() ? "true" : "false"}}}},
-        /*disabled_features=*/{});
-  }
-
-  std::string GetExperimentArmString() const {
-    if (IsCounterfactual()) {
-      return "Counterfactual";
-    }
-
-    if (IsDropToPinEnabled()) {
-      return "WithDropToPin";
-    }
-
-    return "WithoutDropToPin";
-  }
-
-  bool IsCounterfactual() const { return std::get<0>(GetParam()); }
-
-  bool IsDropToPinEnabled() const { return std::get<1>(GetParam()); }
-
+class HoldingSpaceWallpaperNudgeMetricsTest : public UserEducationAshTestBase {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kHoldingSpaceWallpaperNudge};
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HoldingSpaceWallpaperNudgeMetricsTest,
-    testing::Combine(/*is-counterfactual=*/testing::Bool(),
-                     /*is-drop-to-pin-enabled=*/testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
 // Confirms that `RecordFirstPin()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordFirstPin) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordFirstPin) {
   // Cache metric name.
-  const auto metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".ShownBeforeFirstPin"});
+  constexpr char kMetricName[] =
+      "Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin";
 
   // Login and get the prefs service since these metrics depend on nudge prefs.
   SimulateNewUserFirstLogin("user@test");
@@ -134,17 +95,16 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordFirstPin) {
     holding_space_wallpaper_nudge_prefs::MarkNudgeShown(prefs);
 
     RecordFirstPin();
-    histogram_tester.ExpectTotalCount(metric_name, i);
-    histogram_tester.ExpectBucketCount(metric_name, i, 1u);
+    histogram_tester.ExpectTotalCount(kMetricName, i);
+    histogram_tester.ExpectBucketCount(kMetricName, i, 1u);
   }
 }
 
 // Confirms that `RecordInteraction()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
   // Cache metric name.
-  auto count_metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Interaction.Count"});
+  constexpr char kCountMetricName[] =
+      "Ash.HoldingSpaceWallpaperNudge.Interaction.Count";
 
   // Login and get the prefs service since these metrics depend on nudge prefs.
   SimulateNewUserFirstLogin("user@test");
@@ -160,13 +120,11 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
 
     // FirstTime metrics.
     histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeMetricName(interaction,
-                                          GetExperimentArmString()),
-        0u);
+        GetInteractionFirstTimeMetricName(interaction), 0u);
 
     // Count metrics.
-    histogram_tester.ExpectBucketCount(count_metric_name, interaction, 0u);
-    histogram_tester.ExpectTotalCount(count_metric_name, 0u);
+    histogram_tester.ExpectBucketCount(kCountMetricName, interaction, 0u);
+    histogram_tester.ExpectTotalCount(kCountMetricName, 0u);
   }
 
   // Mark the user as eligible so that metrics have a point to measure from.
@@ -181,13 +139,11 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
 
     // FirstTime metrics.
     histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeMetricName(interaction,
-                                          GetExperimentArmString()),
-        1u);
+        GetInteractionFirstTimeMetricName(interaction), 1u);
 
     // Count metrics.
-    histogram_tester.ExpectBucketCount(count_metric_name, interaction, 1u);
-    histogram_tester.ExpectTotalCount(count_metric_name,
+    histogram_tester.ExpectBucketCount(kCountMetricName, interaction, 1u);
+    histogram_tester.ExpectTotalCount(kCountMetricName,
                                       total_count_metrics_emitted);
   }
 
@@ -198,38 +154,33 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordInteraction) {
 
     // FirstTime metrics.
     histogram_tester.ExpectTotalCount(
-        GetInteractionFirstTimeMetricName(interaction,
-                                          GetExperimentArmString()),
-        1u);
+        GetInteractionFirstTimeMetricName(interaction), 1u);
 
     // Count metrics.
-    histogram_tester.ExpectBucketCount(count_metric_name, interaction, 2u);
-    histogram_tester.ExpectTotalCount(count_metric_name,
+    histogram_tester.ExpectBucketCount(kCountMetricName, interaction, 2u);
+    histogram_tester.ExpectTotalCount(kCountMetricName,
                                       total_count_metrics_emitted);
   }
 }
 
 // Confirms that `RecordNudgeDuration()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeDuration) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeDuration) {
   // Cache metric name.
-  const auto metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Duration"});
+  constexpr char kMetricName[] = "Ash.HoldingSpaceWallpaperNudge.Duration";
 
   base::HistogramTester histogram_tester;
 
   // Expect the duration metrics to be emitted.
   const auto time_delta = base::Seconds(5);
   RecordNudgeDuration(time_delta);
-  histogram_tester.ExpectTotalCount(metric_name, 1u);
-  histogram_tester.ExpectTimeBucketCount(metric_name, time_delta, 1u);
+  histogram_tester.ExpectTotalCount(kMetricName, 1u);
+  histogram_tester.ExpectTimeBucketCount(kMetricName, time_delta, 1u);
 }
 
 // Confirms that `RecordNudgeShown()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeShown) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeShown) {
   // Cache metric name.
-  const auto metric_name = base::StrCat(
-      {"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(), ".Shown"});
+  constexpr char kMetricName[] = "Ash.HoldingSpaceWallpaperNudge.Shown";
 
   // Login and get the prefs service since these metrics depend on nudge prefs.
   SimulateNewUserFirstLogin("user@test");
@@ -241,21 +192,20 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeShown) {
     holding_space_wallpaper_nudge_prefs::MarkNudgeShown(prefs);
 
     RecordNudgeShown();
-    histogram_tester.ExpectTotalCount(metric_name, i);
-    histogram_tester.ExpectBucketCount(metric_name, i, 1u);
+    histogram_tester.ExpectTotalCount(kMetricName, i);
+    histogram_tester.ExpectBucketCount(kMetricName, i, 1u);
   }
 }
 
 // Confirms that `RecordNudgeSuppressed()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeSuppressed) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeSuppressed) {
   using AllSuppressedReasonsSet =
       base::EnumSet<SuppressedReason, SuppressedReason::kMinValue,
                     SuppressedReason::kMaxValue>;
 
   // Cache metric name.
-  auto metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".SuppressedReason"});
+  constexpr char kMetricName[] =
+      "Ash.HoldingSpaceWallpaperNudge.SuppressedReason";
 
   base::HistogramTester histogram_tester;
 
@@ -263,24 +213,22 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordNudgeSuppressed) {
   size_t total_count = 0u;
   for (auto reason : AllSuppressedReasonsSet::All()) {
     RecordNudgeSuppressed(reason);
-    histogram_tester.ExpectTotalCount(metric_name, ++total_count);
-    histogram_tester.ExpectBucketCount(metric_name, reason, 1u);
+    histogram_tester.ExpectTotalCount(kMetricName, ++total_count);
+    histogram_tester.ExpectBucketCount(kMetricName, reason, 1u);
   }
 }
 
 // Confirms that `RecordUserEligibility()` submits the proper metrics.
-TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordUserEligibility) {
+TEST_F(HoldingSpaceWallpaperNudgeMetricsTest, RecordUserEligibility) {
   using AllIneligibleReasonsSet =
       base::EnumSet<IneligibleReason, IneligibleReason::kMinValue,
                     IneligibleReason::kMaxValue>;
 
   // Cache metric names.
-  const auto eligible_metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".Eligible"});
-  const auto reason_metric_name =
-      base::StrCat({"Ash.HoldingSpaceWallpaperNudge.", GetExperimentArmString(),
-                    ".IneligibleReason"});
+  constexpr char kEligibleMetricName[] =
+      "Ash.HoldingSpaceWallpaperNudge.Eligible";
+  constexpr char kReasonMetricName[] =
+      "Ash.HoldingSpaceWallpaperNudge.IneligibleReason";
 
   // Track the total number of eligibility metrics and ineligible reason metrics
   // that should have been submitted.
@@ -293,9 +241,9 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordUserEligibility) {
   // is eligible.
   RecordUserEligibility(std::nullopt);
   ++total_eligibility_count;
-  histogram_tester.ExpectTotalCount(eligible_metric_name,
+  histogram_tester.ExpectTotalCount(kEligibleMetricName,
                                     total_eligibility_count);
-  histogram_tester.ExpectBucketCount(eligible_metric_name, true, 1u);
+  histogram_tester.ExpectBucketCount(kEligibleMetricName, true, 1u);
 
   // Recording with an `IneligibleReason` given should log metrics indicating
   // the user is ineligible and metrics containing that reason.
@@ -305,14 +253,14 @@ TEST_P(HoldingSpaceWallpaperNudgeMetricsTest, RecordUserEligibility) {
     ++total_eligibility_count;
 
     // Pure eligibility metrics.
-    histogram_tester.ExpectTotalCount(eligible_metric_name,
+    histogram_tester.ExpectTotalCount(kEligibleMetricName,
                                       total_eligibility_count);
-    histogram_tester.ExpectBucketCount(eligible_metric_name, false,
+    histogram_tester.ExpectBucketCount(kEligibleMetricName, false,
                                        total_reason_count);
 
     // `IneligibleReason` reason metrics.
-    histogram_tester.ExpectTotalCount(reason_metric_name, total_reason_count);
-    histogram_tester.ExpectBucketCount(reason_metric_name, reason, 1u);
+    histogram_tester.ExpectTotalCount(kReasonMetricName, total_reason_count);
+    histogram_tester.ExpectBucketCount(kReasonMetricName, reason, 1u);
   }
 }
 

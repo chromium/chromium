@@ -28,13 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Counterfactual" summary="prevented counterfactually"/>
 </variants>
 
-<variants name="ExperimentArm">
-  <variant name="Counterfactual" summary="counterfactual"/>
-  <variant name="WithDropToPin" summary="with drop-to-pin"/>
-  <variant name="WithoutDropToPin" summary="without drop-to-pin"/>
-</variants>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Duration" units="ms"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.Duration" units="ms"
     expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
@@ -42,10 +36,9 @@ chromium-metrics-reviews@google.com.
     Records the duration the Holding Space wallpaper nudge was shown after the
     nudge closes.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Eligible" enum="Boolean"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.Eligible" enum="Boolean"
     expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
@@ -53,10 +46,9 @@ chromium-metrics-reviews@google.com.
     Records whether a user was deemed eligible to see the Holding Space
     wallpaper nudge at first session start.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.IneligibleReason"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.IneligibleReason"
     enum="HoldingSpaceWallpaperNudgeIneligibleReason"
     expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
@@ -65,21 +57,19 @@ chromium-metrics-reviews@google.com.
     Records the reason a user was deemed ineligible to see the Holding Space
     wallpaper nudge at first session start.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Interaction.Count"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.Interaction.Count"
     enum="HoldingSpaceWallpaperNudgeInteraction" expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
     Recorded each time the user performed the given interaction.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
 <histogram
-    name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Interaction.FirstTime.{Interaction}"
+    name="Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.{Interaction}"
     units="seconds" expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
@@ -87,7 +77,6 @@ chromium-metrics-reviews@google.com.
     Records how long after the start of the first eligible session the user
     first {Interaction}.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
   <token key="Interaction">
     <variant name="DraggedFileOverWallpaper"
         summary="dragged a file over the wallpper"/>
@@ -116,7 +105,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.Shown" units="count"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.Shown" units="count"
     expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
@@ -124,10 +113,9 @@ chromium-metrics-reviews@google.com.
     Records the number of times the Holding Space wallpaper nudge was shown so
     far, each time it is shown.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.ShownBeforeFirstPin"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin"
     units="count" expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
@@ -135,10 +123,9 @@ chromium-metrics-reviews@google.com.
     Records the number of times the Holding Space wallpaper nudge was shown
     before the user pinned a file to the holding space for the first time.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
-<histogram name="Ash.HoldingSpaceWallpaperNudge.{Arm}.SuppressedReason"
+<histogram name="Ash.HoldingSpaceWallpaperNudge.SuppressedReason"
     enum="HoldingSpaceWallpaperNudgeSuppressedReason"
     expires_after="2024-06-01">
   <owner>angusmclean@google.com</owner>
@@ -147,7 +134,6 @@ chromium-metrics-reviews@google.com.
     Records the reason the Holding Space wallpaper nudge was suppressed when it
     could have been shown.
   </summary>
-  <token key="Arm" variants="ExperimentArm"/>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
