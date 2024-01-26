@@ -877,11 +877,6 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              "video-blit-color-accuracy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// A client (e.g. cast mirroring) can allow a video encoder to drop a frame.
-BASE_FEATURE(kVideoEncoderFrameDrop,
-             "VideoEncoderFrameDrop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_APPLE)
 // Use VideoToolbox for AV1 hardware decoding.
 // Owner: dalecurtis@chromium.org, sandersd@chromium.org
@@ -897,6 +892,16 @@ BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
+
+// A video encoder is enabled to drop a frame in cast mirroring.
+BASE_FEATURE(kCastVideoEncoderFrameDrop,
+             "CastVideoEncoderFrameDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A hardware video encoder is enabled to drop a frame in WebRTC.
+BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
+             "WebRTCHardwareVideoEncoderFrameDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Inform webrtc with correct video color space information whenever
 // possible.

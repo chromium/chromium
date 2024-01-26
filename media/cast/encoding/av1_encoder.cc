@@ -11,6 +11,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/encoding/encoding_util.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 
@@ -146,7 +147,7 @@ void Av1Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
   config_.g_lag_in_frames = 0;  // Immediate data output for each frame.
 
   // Rate control settings.
-  config_.rc_dropframe_thresh = 0;  // The encoder may not drop any frames.
+  config_.rc_dropframe_thresh = GetEncoderDropFrameThreshold();
   config_.rc_resize_mode = 0;
   config_.rc_end_usage = AOM_CBR;
   config_.rc_target_bitrate = bitrate_kbit_;
@@ -264,7 +265,7 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   }
 
   // Pull data from the encoder, populating a new EncodedFrame.
-  encoded_frame->frame_id = next_frame_id_++;
+  encoded_frame->frame_id = next_frame_id_;
   const aom_codec_cx_pkt_t* pkt = nullptr;
   aom_codec_iter_t iter = nullptr;
   while ((pkt = aom_codec_get_cx_data(&encoder_, &iter)) != nullptr) {
@@ -291,8 +292,12 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
         static_cast<const uint8_t*>(pkt->data.frame.buf) + pkt->data.frame.sz);
     break;  // Done, since all data is provided in one CX_FRAME_PKT packet.
   }
-  DCHECK(!encoded_frame->data.empty())
-      << "BUG: Encoder must provide data since lagged encoding is disabled.";
+  if (encoded_frame->data.empty()) {
+    // Drop frame.
+    return;
+  }
+  // Increment frame id only if the frame is encoded.
+  next_frame_id_++;
   metrics_provider_->IncrementEncodedFrameCount();
 
   // Compute encoder utilization as the real-world time elapsed divided by the

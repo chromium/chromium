@@ -166,11 +166,11 @@ void SizeAdaptableVideoEncoderBase::OnEncodedVideoFrame(
   --frames_in_encoder_;
   DCHECK_GE(frames_in_encoder_, 0);
 
-  if (encoded_frame) {
+  if (encoded_frame && !encoded_frame->data.empty()) {
     next_frame_id_ = encoded_frame->frame_id + 1;
+    metrics_provider_->IncrementEncodedFrameCount();
   }
 
-  metrics_provider_->IncrementEncodedFrameCount();
   std::move(frame_encoded_callback).Run(std::move(encoded_frame));
 }
 

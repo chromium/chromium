@@ -137,6 +137,8 @@ source_set("encoding") {
     "encoding/audio_encoder.h",
     "encoding/encoding_support.cc",
     "encoding/encoding_support.h",
+    "encoding/encoding_util.cc",
+    "encoding/encoding_util.h",
     "encoding/external_video_encoder.cc",
     "encoding/external_video_encoder.h",
     "encoding/fake_software_video_encoder.cc",

@@ -262,7 +262,8 @@ uint8_t GetDropFrameThreshold(const webrtc::VideoCodec& codec_settings) {
   // This drop frame threshold is same as WebRTC.
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp9/libvpx_vp9_encoder.cc
   if (codec_settings.GetFrameDropEnabled() &&
-      base::FeatureList::IsEnabled(media::kVideoEncoderFrameDrop)) {
+      base::FeatureList::IsEnabled(
+          media::kWebRTCHardwareVideoEncoderFrameDrop)) {
     return 30;
   }
   return 0;

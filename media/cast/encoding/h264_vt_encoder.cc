@@ -558,7 +558,7 @@ void H264VideoToolboxEncoder::CompressionCallbackTask(
 
   // Grab the next frame ID and increment |next_frame_id_| for next time.
   // VideoToolbox calls the output callback serially, so this is safe.
-  const FrameId frame_id = next_frame_id_++;
+  const FrameId frame_id = next_frame_id_;
 
   std::unique_ptr<SenderEncodedFrame> encoded_frame(new SenderEncodedFrame());
   encoded_frame->frame_id = frame_id;
@@ -584,6 +584,7 @@ void H264VideoToolboxEncoder::CompressionCallbackTask(
   if (!data.empty()) {
     encoded_frame->data = std::move(data);
     metrics_provider_->IncrementEncodedFrameCount();
+    next_frame_id_++;
   }
 
   encoded_frame->encode_completion_time =

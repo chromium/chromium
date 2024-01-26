@@ -753,7 +753,7 @@ class RTCVideoEncoderEncodeTest
       disabled_features.push_back(
           features::kWebRtcInitializeEncoderOnFirstFrame);
     }
-    enabled_features.push_back(media::kVideoEncoderFrameDrop);
+    enabled_features.push_back(media::kWebRTCHardwareVideoEncoderFrameDrop);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 

@@ -38,6 +38,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
+#include "media/cast/encoding/encoding_util.h"
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/video/h264_parser.h"
@@ -153,6 +154,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
     config.content_type =
         media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+    config.drop_frame_thresh_percentage = GetEncoderDropFrameThreshold();
     encoder_active_ = video_encode_accelerator_->Initialize(
         config, this, std::make_unique<media::NullMediaLog>());
     next_frame_id_ = first_frame_id;
@@ -337,9 +339,30 @@ class ExternalVideoEncoder::VEAClientImpl final
                              base::NumberToString(bitstream_buffer_id)});
       return;
     }
-    const char* output_buffer_memory = output_buffers_[bitstream_buffer_id]
-                                           .second.GetMemoryAsSpan<char>()
-                                           .data();
+
+    if (metadata.payload_size_bytes == 0) {
+      CHECK(key_frame_encountered_);
+      // The encoder drops a frame.
+      InProgressExternalVideoFrameEncode& request =
+          in_progress_frame_encodes_.front();
+      cast_environment_->PostTask(
+          CastEnvironment::MAIN, FROM_HERE,
+          base::BindOnce(std::move(request.frame_encoded_callback), nullptr));
+      in_progress_frame_encodes_.pop_front();
+      if (encoder_active_) {
+        video_encode_accelerator_->UseOutputBitstreamBuffer(
+            media::BitstreamBuffer(
+                bitstream_buffer_id,
+                output_buffers_[bitstream_buffer_id].first.Duplicate(),
+                output_buffers_[bitstream_buffer_id].first.GetSize()));
+      }
+      return;
+    }
+
+    const char* output_buffer_memory =
+        output_buffers_[bitstream_buffer_id]
+            .second.GetMemoryAsSpan<char>(metadata.payload_size_bytes)
+            .data();
     if (metadata.payload_size_bytes >
         output_buffers_[bitstream_buffer_id].second.size()) {
       NotifyErrorStatus(
@@ -387,7 +410,6 @@ class ExternalVideoEncoder::VEAClientImpl final
       }
       encoded_frame->data.append(output_buffer_memory,
                                  metadata.payload_size_bytes);
-      DCHECK(!encoded_frame->data.empty()) << "BUG: Encoder must provide data.";
 
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.

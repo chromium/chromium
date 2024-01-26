@@ -222,9 +222,9 @@ void VideoSender::InsertRawVideoFrame(
        reference_time <= last_enqueued_frame_reference_time_)) {
     VLOG(1) << "Dropping video frame: RTP or reference time did not increase.";
     TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "rtp_timestamp", rtp_timestamp.lower_32_bits(),
-                         "reason", "time did not increase");
+                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
+                         rtp_timestamp.lower_32_bits(), "reason",
+                         "time did not increase");
     return;
   }
 
@@ -327,7 +327,7 @@ void VideoSender::InsertRawVideoFrame(
   if (video_encoder_->EncodeVideoFrame(
           video_frame, reference_time,
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
-                         video_frame))) {
+                         video_frame, reference_time))) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
         "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
         "rtp_timestamp", rtp_timestamp.lower_32_bits());
@@ -370,26 +370,29 @@ base::TimeDelta VideoSender::GetEncoderBacklogDuration() const {
 
 void VideoSender::OnEncodedVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
+    const base::TimeTicks reference_time,
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
   frames_in_encoder_--;
   DCHECK_GE(frames_in_encoder_, 0);
 
-  // Encoding was exited with errors.
-  if (!encoded_frame)
-    return;
-
-  duration_in_encoder_ =
-      last_enqueued_frame_reference_time_ - encoded_frame->reference_time;
-
-  last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
-  last_reported_lossiness_ = encoded_frame->lossiness;
+  // Update |duration_in_encoder_| so that |frame_sender_| doesn't regard the
+  // encoder is really slow.
+  duration_in_encoder_ = last_enqueued_frame_reference_time_ - reference_time;
 
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
       "encoder_utilization", last_reported_encoder_utilization_, "lossiness",
       last_reported_lossiness_);
+  // The encoder drops a frame.
+  if (!encoded_frame || encoded_frame->data.empty()) {
+    DVLOG(3) << "Drop frame";
+    return;
+  }
+
+  last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
+  last_reported_lossiness_ = encoded_frame->lossiness;
 
   // Report the resource utilization for processing this frame.  Take the
   // greater of the two utilization values and attenuate them such that the
