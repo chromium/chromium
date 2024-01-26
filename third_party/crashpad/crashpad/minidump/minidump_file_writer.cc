@@ -18,6 +18,7 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "minidump/minidump_crashpad_info_writer.h"
 #include "minidump/minidump_exception_writer.h"
 #include "minidump/minidump_handle_writer.h"
@@ -115,7 +116,16 @@ void MinidumpFileWriter::InitializeFromSnapshot(
   const ExceptionSnapshot* exception_snapshot = process_snapshot->Exception();
   if (exception_snapshot) {
     auto exception = std::make_unique<MinidumpExceptionWriter>();
-    exception->InitializeFromSnapshot(exception_snapshot, thread_id_map);
+#if BUILDFLAG(IS_IOS)
+    // It's expected that iOS intermediate dumps can be written with missing
+    // information, but it's better to try and report as much as possible
+    // rather than drop the incomplete minidump.
+    constexpr bool allow_missing_thread_id_from_map = true;
+#else
+    constexpr bool allow_missing_thread_id_from_map = false;
+#endif
+    exception->InitializeFromSnapshot(
+        exception_snapshot, thread_id_map, allow_missing_thread_id_from_map);
     add_stream_result = AddStream(std::move(exception));
     DCHECK(add_stream_result);
   }

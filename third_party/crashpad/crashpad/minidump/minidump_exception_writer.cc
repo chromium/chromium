@@ -34,13 +34,19 @@ MinidumpExceptionWriter::~MinidumpExceptionWriter() {
 
 void MinidumpExceptionWriter::InitializeFromSnapshot(
     const ExceptionSnapshot* exception_snapshot,
-    const MinidumpThreadIDMap& thread_id_map) {
+    const MinidumpThreadIDMap& thread_id_map,
+    bool allow_missing_thread_id_from_map) {
   DCHECK_EQ(state(), kStateMutable);
   DCHECK(!context_);
 
   auto thread_id_it = thread_id_map.find(exception_snapshot->ThreadID());
-  DCHECK(thread_id_it != thread_id_map.end());
-  SetThreadID(thread_id_it->second);
+  bool thread_id_missing = thread_id_it == thread_id_map.end();
+  if (allow_missing_thread_id_from_map && thread_id_missing) {
+    SetThreadID(static_cast<uint32_t>(exception_snapshot->ThreadID()));
+  } else {
+    DCHECK(!thread_id_missing);
+    SetThreadID(thread_id_it->second);
+  }
 
   SetExceptionCode(exception_snapshot->Exception());
   SetExceptionFlags(exception_snapshot->ExceptionInfo());
