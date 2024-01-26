@@ -3591,8 +3591,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ;
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
