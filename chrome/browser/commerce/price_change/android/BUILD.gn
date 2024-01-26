@@ -17,6 +17,8 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:base_shared_preferences_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -24,6 +26,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/util/android:java",
+    "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/image_fetcher:java",
@@ -57,6 +60,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/price_change/PriceChangeModuleMediatorUnitTest.java",
   ]
 
@@ -66,6 +70,8 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/preferences:java",
@@ -74,6 +80,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:util_java",
     "//components/image_fetcher:java",
     "//content/public/android:content_full_java",
