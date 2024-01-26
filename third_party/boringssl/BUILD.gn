@@ -5,9 +5,9 @@
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("BUILD.generated.gni")
 import("BUILD.generated_tests.gni")
 
@@ -176,6 +176,8 @@ component("boringssl") {
 }
 
 if (build_with_chromium) {
+  import("//testing/libfuzzer/fuzzer_test.gni")
+
   # These targets are named "_tests" rather than "_test" to avoid colliding with
   # a historical "boringssl_ssl_test" target. This works around a bug with the
   # iOS build rules.
