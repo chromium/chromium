@@ -27,6 +27,12 @@ BASE_FEATURE(kEnableNearbyBluetoothClassicAdvertising,
              "EnableNearbyBluetoothClassicAdvertising",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the use of Bluetooth Classic advertising from within the
+// implementation of Nearby Connections, for incremental testing purposes.
+BASE_FEATURE(kEnableNearbyBluetoothClassicScanning,
+             "EnableNearbyBluetoothClassicScanning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsNearbyBleV2Enabled() {
   return base::FeatureList::IsEnabled(kEnableNearbyBleV2);
 }
@@ -37,6 +43,10 @@ bool IsNearbyBleV2ExtendedAdvertisingEnabled() {
 
 bool IsNearbyBluetoothClassicAdvertisingEnabled() {
   return base::FeatureList::IsEnabled(kEnableNearbyBluetoothClassicAdvertising);
+}
+
+bool IsNearbyBluetoothClassicScanningEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNearbyBluetoothClassicScanning);
 }
 
 }  // namespace features
