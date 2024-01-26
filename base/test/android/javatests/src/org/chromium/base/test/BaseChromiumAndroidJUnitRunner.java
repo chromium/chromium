@@ -44,7 +44,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CallbackHelper;
@@ -129,6 +128,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        Context targetContext = super.getTargetContext();
+
         // Wrap |context| here so that calls to getSharedPreferences() from within
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
         sInMemorySharedPreferencesContext = new InMemorySharedPreferencesContext(context);
@@ -147,7 +148,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         // Replace the application with our wrapper here for any code that runs between
         // Application.attachBaseContext() and our BaseJUnit4TestRule (e.g. Application.onCreate()).
-        ContextUtils.initApplicationContextForTests(sInMemorySharedPreferencesContext);
+        ContextUtils.initApplicationContextNoResetForTests(sInMemorySharedPreferencesContext);
         return ret;
     }
 
@@ -179,7 +180,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
-        ResettersForTesting.enable();
         if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
