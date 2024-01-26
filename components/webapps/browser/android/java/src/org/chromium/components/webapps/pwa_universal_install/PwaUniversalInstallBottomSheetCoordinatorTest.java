@@ -42,14 +42,36 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
     public void testShowing() {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         PwaUniversalInstallBottomSheetCoordinator coordinator =
-                new PwaUniversalInstallBottomSheetCoordinator(activity, mBottomSheetControllerMock);
+                new PwaUniversalInstallBottomSheetCoordinator(
+                        activity, mBottomSheetControllerMock, 0);
 
-        View bottomSheetView = coordinator.getBottomSheetViewForTesting();
+        View view = coordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TextView title = bottomSheetView.findViewById(R.id.title);
-                    String expected = "Add to home screen";
-                    Assert.assertEquals(expected, title.getText());
+                    Assert.assertEquals(
+                            "Add to home screen",
+                            ((TextView) view.findViewById(R.id.title)).getText());
+                    Assert.assertEquals(
+                            "Install",
+                            ((TextView) view.findViewById(R.id.option_text_install)).getText());
+                    Assert.assertEquals(
+                            "Create shortcut",
+                            ((TextView) view.findViewById(R.id.option_text_shortcut)).getText());
+                    Assert.assertEquals(
+                            "Shortcuts open in Chrome",
+                            ((TextView) view.findViewById(R.id.option_text_shortcut_explanation))
+                                    .getText());
+
+                    Assert.assertTrue(
+                            view.findViewById(R.id.app_icon_install).getVisibility()
+                                    == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.app_icon_shortcut).getVisibility()
+                                    == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.arrow_install).getVisibility() == View.VISIBLE);
+                    Assert.assertTrue(
+                            view.findViewById(R.id.arrow_shortcut).getVisibility() == View.VISIBLE);
                 });
     }
 }

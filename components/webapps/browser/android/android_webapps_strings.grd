@@ -211,6 +211,15 @@
       <message name="IDS_PWA_UNI_INSTALL_TITLE" desc="The title for the Universal Install sheet.">
          Add to home screen
       </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL" desc="The label for the Install option in the Universal Install sheet.">
+         Install
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT" desc="The label for adding a shortcut in the Universal Install sheet.">
+         Create shortcut
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT_EXPLANATION" desc="The label describing how shortcuts, created in the Universal Install sheet, open.">
+         Shortcuts open in Chrome
+      </message>
 
       <message name="IDS_PWA_UNI_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
          Choose how to add the app to the home screen
