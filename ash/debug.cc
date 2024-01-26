@@ -8,14 +8,12 @@
 #include <string>
 
 #include "ash/public/cpp/debug_utils.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/wm/window_properties.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/debug/layer_tree_debug_state.h"
+#include "chromeos/ui/wm/debug_util.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tree_host.h"
@@ -69,63 +67,16 @@ void PrintViewHierarchy(std::ostringstream* out) {
   views::PrintViewHierarchy(widget->GetRootView(), out);
 }
 
-void PrintWindowHierarchy(const aura::Window* active_window,
-                          const aura::Window* focused_window,
-                          const aura::Window* capture_window,
-                          aura::Window* window,
-                          int indent,
-                          bool scrub_data,
-                          std::vector<std::string>* out_window_titles,
-                          std::ostringstream* out) {
-  *out << std::string(indent, ' ');
-  *out << " [window]";
-  window->GetDebugInfo(active_window, focused_window, capture_window, out);
-  if (window->GetProperty(kWindowStateKey))
-    *out << " state=" << WindowState::Get(window)->GetStateType();
-
-  std::u16string title(window->GetTitle());
-  if (!title.empty()) {
-    if (!scrub_data) {
-      *out << " title=\"" << title << "\"";
-    }
-    out_window_titles->push_back(base::UTF16ToUTF8(title));
-  }
-
-  std::string* tree_id = window->GetProperty(ui::kChildAXTreeID);
-  if (tree_id) {
-    *out << " ax_tree_id=" << *tree_id;
-  }
-
-  *out << std::endl;
-  views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-  if (widget) {
-    *out << std::string(indent + 3, ' ');
-    *out << " [widget]";
-    views::PrintWidgetInformation(*widget, /*detailed*/ false, out);
-  }
-
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> children =
-      instance ? instance->GetAdjustedWindowChildren(window)
-               : window->children();
-  for (aura::Window* child : children) {
-    PrintWindowHierarchy(active_window, focused_window, capture_window, child,
-                         indent + 3, scrub_data, out_window_titles, out);
-  }
-}
-
 std::vector<std::string> PrintWindowHierarchy(std::ostringstream* out,
                                               bool scrub_data) {
-  aura::Window* active_window = window_util::GetActiveWindow();
-  aura::Window* focused_window = window_util::GetFocusedWindow();
-  aura::Window* capture_window = window_util::GetCaptureWindow();
-  aura::Window::Windows roots = Shell::Get()->GetAllRootWindows();
-  std::vector<std::string> window_titles;
-  for (size_t i = 0; i < roots.size(); ++i) {
-    *out << "RootWindow " << i << ":\n";
-    PrintWindowHierarchy(active_window, focused_window, capture_window,
-                         roots[i], 0, scrub_data, &window_titles, out);
-  }
-  return window_titles;
+  auto children_callback = base::BindRepeating(
+      [](aura::Window* window)
+          -> std::vector<raw_ptr<aura::Window, VectorExperimental>> {
+        return instance ? instance->GetAdjustedWindowChildren(window)
+                        : window->children();
+      });
+  return chromeos::wm::PrintWindowHierarchy(Shell::Get()->GetAllRootWindows(),
+                                            scrub_data, out, children_callback);
 }
 
 void ToggleShowDebugBorders() {
