@@ -531,7 +531,7 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
                     confirm_installation_dialog.learn_more_callback));
             ShowChildDialog(
                 IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
-                CreateImageModelFromVector(kSecurityIcon, ui::kColorAccent),
+                CreateImageModelFromVector(kPrivacyTipIcon, ui::kColorAccent),
                 IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
           },
           [this](

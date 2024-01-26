@@ -167,6 +167,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "picture_in_picture_alt.icon",
     "picture_in_picture_control_background.icon",
     "print_menu.icon",
+    "privacy_tip.icon",
     "qr_code_chrome_refresh.icon",
     "qrcode_generator.icon",
     "quick_commands.icon",
