@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -583,8 +584,6 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
 
   // Wrap the shadowroot into a declarative Shadow DOM <template shadowrootmode>
   // element.
-  // TODO(crbug.com/1517959): Add the `serializable` attribute to this template
-  // once declarative shadow roots support `serializable`.
   HTMLTemplateElement* template_element =
       MakeGarbageCollected<HTMLTemplateElement>(element.GetDocument());
   template_element->setAttribute(html_names::kShadowrootmodeAttr,
@@ -594,6 +593,10 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
   if (shadow_root->delegatesFocus()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootdelegatesfocusAttr, true);
+  }
+  if (shadow_root->serializable() &&
+      RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled()) {
+    template_element->SetBooleanAttribute(html_names::kSerializableAttr, true);
   }
   return std::pair<ShadowRoot*, HTMLTemplateElement*>(shadow_root,
                                                       template_element);

@@ -1223,6 +1223,13 @@
       status: "stable",
     },
     {
+      // This is a killswitch for the `serializable` attribute on declarative
+      // shadow roots. It should be removed in M125 (March 18, 2024) assuming
+      // no issues are encountered.
+      name: "DeclarativeShadowDOMSerializable",
+      status: "stable",
+    },
+    {
       // This is a killswitch (enabled by *enabling* the feature) for the
       // removal of the IDL reflection of the old 'shadowroot' attribute.
       // This should be removed in M124 (Feb 20, 2024) assuming no issues.

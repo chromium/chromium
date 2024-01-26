@@ -732,7 +732,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool AttachDeclarativeShadowRoot(HTMLTemplateElement&,
                                    ShadowRootType,
                                    FocusDelegation,
-                                   SlotAssignmentMode);
+                                   SlotAssignmentMode,
+                                   bool serializable);
 
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(ShadowRootType,
