@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.h"
 
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -21,11 +22,13 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
@@ -38,6 +41,8 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
+#include "components/segmentation_platform/public/database_client.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/strings/grit/components_strings.h"
 
 namespace {
@@ -100,10 +105,31 @@ void HistoryClustersPageHandlerV2::CallbackWithClusterData(
   ranking_metrics_logger_->AddSignals(std::move(ranking_signals));
 
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
+  std::set<int64_t> cluster_ids;
   for (const auto& cluster : clusters) {
+    cluster_ids.insert(cluster.cluster_id);
     clusters_mojom.push_back(history_clusters::ClusterToMojom(
         TemplateURLServiceFactory::GetForProfile(profile_), cluster));
   }
+
+  segmentation_platform::SegmentationPlatformService* service =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile_);
+  segmentation_platform::DatabaseClient* client = service->GetDatabaseClient();
+  // The client will be null until `IsPlatformInitialized()` is true.
+  base::UmaHistogramBoolean(
+      "NewTabPage.Modules.SegmentationPlatformClientReady", client != nullptr);
+  if (client != nullptr) {
+    std::map<std::string, uint64_t> cluster_id_counts;
+    std::transform(cluster_ids.cbegin(), cluster_ids.cend(),
+                   std::inserter(cluster_id_counts, begin(cluster_id_counts)),
+                   [](const int64_t cluster_id) {
+                     return std::make_pair(base::NumberToString(cluster_id), 1);
+                   });
+    client->AddEvent(
+        {kHistoryClusterSeenEventName, std::move(cluster_id_counts)});
+  }
+
   std::move(callback).Run(std::move(clusters_mojom));
 }
 
@@ -133,13 +159,11 @@ void HistoryClustersPageHandlerV2::GetClusters(GetClustersCallback callback) {
       return;
     }
 
-    std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
+    std::vector<history::Cluster> clusters;
     for (int i = 0; i < num_clusters; i++) {
-      clusters_mojom.push_back(history_clusters::ClusterToMojom(
-          TemplateURLServiceFactory::GetForProfile(profile_),
-          GenerateSampleCluster(i, num_visits, num_images)));
+      clusters.push_back(GenerateSampleCluster(i, num_visits, num_images));
     }
-    std::move(callback).Run(std::move(clusters_mojom));
+    CallbackWithClusterData(std::move(callback), std::move(clusters), {});
     return;
   }
 
@@ -193,6 +217,18 @@ void HistoryClustersPageHandlerV2::ShowJourneysSidePanel(
 
 void HistoryClustersPageHandlerV2::RecordClick(int64_t cluster_id) {
   ranking_metrics_logger_->SetClicked(cluster_id);
+
+  segmentation_platform::SegmentationPlatformService* service =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile_);
+  segmentation_platform::DatabaseClient* client = service->GetDatabaseClient();
+  // The client will be null until `IsPlatformInitialized()` is true.
+  base::UmaHistogramBoolean(
+      "NewTabPage.Modules.SegmentationPlatformClientReady", client != nullptr);
+  if (client != nullptr) {
+    client->AddEvent({kHistoryClusterUsedEventName,
+                      {{base::NumberToString(cluster_id), 1}}});
+  }
 }
 
 void HistoryClustersPageHandlerV2::RecordDisabled(int64_t cluster_id) {

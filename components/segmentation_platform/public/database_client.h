@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_DATABASE_CLIENT_H_
 
 #include <cstdint>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
@@ -48,7 +49,7 @@ class DatabaseClient {
   struct StructuredEvent {
     StructuredEvent();
     StructuredEvent(base::StringPiece event_name,
-                    const std::map<base::StringPiece, uint64_t> values);
+                    const std::map<std::string, uint64_t> values);
     ~StructuredEvent();
 
     StructuredEvent(const StructuredEvent&) = delete;

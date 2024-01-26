@@ -22,6 +22,9 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler.h"
 #endif
 
+const char kHistoryClusterSeenEventName[] = "NewTabPage.HistoryClusters.Seen";
+const char kHistoryClusterUsedEventName[] = "NewTabPage.HistoryClusters.Used";
+
 HistoryClustersModuleRanker::HistoryClustersModuleRanker(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     CartService* cart_service,

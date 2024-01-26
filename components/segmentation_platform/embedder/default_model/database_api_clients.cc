@@ -92,6 +92,7 @@ void DatabaseApiClients::AddSumGroupQuery(
     std::string_view event_name,
     const std::set<std::string>& metric_names,
     int days) {
+  DCHECK(!metric_names.empty());
   std::string event_names_sql_criteria;
   for (const auto& metric_name : metric_names) {
     event_names_sql_criteria.append(base::StringPrintf(
