@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
@@ -75,6 +74,10 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #endif
 
 namespace autofill {
