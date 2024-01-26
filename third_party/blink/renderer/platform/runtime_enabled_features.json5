@@ -4132,7 +4132,7 @@
     // as the 'publickey-credentials-create' permissions policy is set).
     {
       name: "WebAuthAllowCreateInCrossOriginFrame",
-      status: "experimental",
+      status: "stable",
       // This feature is controlled from the Blink side, unless there is a
       // Finch override of it for a kill-switch.
       base_feature_status: "enabled",
