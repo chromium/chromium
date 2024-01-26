@@ -46,8 +46,9 @@ public class CredManSupportProvider {
             }
         }
 
-        if (ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
-                == null) {
+        if (!sOverrideVersionCheckForTesting
+                && ContextUtils.getApplicationContext().getSystemService(Context.CREDENTIAL_SERVICE)
+                        == null) {
             sCredManSupport = CredManSupport.DISABLED;
             recordCredManAvailability(/*available*/ false);
             return sCredManSupport;
