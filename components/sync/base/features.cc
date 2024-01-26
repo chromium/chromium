@@ -217,4 +217,8 @@ BASE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+BASE_FEATURE(kSyncRememberCustomPassphraseAfterSignout,
+             "SyncRememberCustomPassphraseAfterSignout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

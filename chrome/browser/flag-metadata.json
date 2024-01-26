@@ -6995,6 +6995,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "remember-custom-passphrase-after-signout",
+    "owners": [ "treib@chromium.org", "mastiz@chromium.org", "jood@google.com", "bling-flags@google.com", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "remote-playback-backend",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
     "expiry_milestone": 130

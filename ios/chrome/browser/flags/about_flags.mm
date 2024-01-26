@@ -1613,6 +1613,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableiPadFeedGhostCards)},
+    {"remember-custom-passphrase-after-signout",
+     flag_descriptions::kSyncRememberCustomPassphraseAfterSignoutName,
+     flag_descriptions::kSyncRememberCustomPassphraseAfterSignoutDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncRememberCustomPassphraseAfterSignout)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
