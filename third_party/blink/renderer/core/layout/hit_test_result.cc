@@ -555,6 +555,8 @@ HitTestResult::AddNodeToListBasedTestResultInternal(
   if (GetHitTestRequest().PenetratingList()) {
     ListBasedHitTestBehavior behavior = kContinueHitTesting;
     if (GetHitTestRequest().UseHitNodeCb()) {
+      LocalFrameView::InvalidationDisallowedScope invalidation_disallowed(
+          *node->GetDocument().View());
       behavior = GetHitTestRequest().RunHitNodeCb(*node);
     }
     return std::make_tuple(false, behavior);

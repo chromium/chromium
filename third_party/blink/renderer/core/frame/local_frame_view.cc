@@ -247,6 +247,10 @@ constexpr int kCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
 // returning.
 static const unsigned kMaxUpdatePluginsIterations = 2;
 
+// The number of |InvalidationDisallowedScope| class instances. Used to ensure
+// that no more than one instance of this class exists at any given time.
+int LocalFrameView::InvalidationDisallowedScope::instance_count_ = 0;
+
 LocalFrameView::LocalFrameView(LocalFrame& frame)
     : LocalFrameView(frame, gfx::Rect()) {
   Show();
@@ -962,13 +966,12 @@ DocumentLifecycle& LocalFrameView::Lifecycle() const {
   return frame_->GetDocument()->Lifecycle();
 }
 
-bool LocalFrameView::InPostLifecycleSteps() const {
-  return GetFrame().LocalFrameRoot().View()->in_post_lifecycle_steps_;
+bool LocalFrameView::InvalidationDisallowed() const {
+  return GetFrame().LocalFrameRoot().View()->invalidation_disallowed_;
 }
 
 void LocalFrameView::RunPostLifecycleSteps() {
-  base::AutoReset<bool> in_post_lifecycle_steps(&in_post_lifecycle_steps_,
-                                                true);
+  InvalidationDisallowedScope invalidation_disallowed(*this);
   AllowThrottlingScope allow_throttling(*this);
   RunAccessibilitySteps();
   RunIntersectionObserverSteps();
@@ -1966,6 +1969,21 @@ void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
 bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kLayoutClean, reason);
+}
+
+LocalFrameView::InvalidationDisallowedScope::InvalidationDisallowedScope(
+    const LocalFrameView& frame_view)
+    : resetter_(&frame_view.GetFrame()
+                     .LocalFrameRoot()
+                     .View()
+                     ->invalidation_disallowed_,
+                true) {
+  DCHECK_EQ(instance_count_, 0);
+  ++instance_count_;
+}
+
+LocalFrameView::InvalidationDisallowedScope::~InvalidationDisallowedScope() {
+  --instance_count_;
 }
 
 void LocalFrameView::ScheduleVisualUpdateForVisualOverflowIfNeeded() {

@@ -4774,8 +4774,8 @@ CSSStyleSheet& Document::ElementSheet() {
   return *elem_sheet_;
 }
 
-bool Document::InPostLifecycleSteps() const {
-  return View() && View()->InPostLifecycleSteps();
+bool Document::InvalidationDisallowed() const {
+  return View() && View()->InvalidationDisallowed();
 }
 
 void Document::MaybeHandleHttpRefresh(const String& content,
