@@ -3822,7 +3822,8 @@ test("base_unittests") {
 
     bundle_deps = [ ":base_test_proto_bundle_data" ]
     if (use_blink) {
-      bundle_deps += [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
+      bundle_deps +=
+          [ "//testing/buildbot/filters:base_unittests_filters_bundle_data" ]
     }
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
