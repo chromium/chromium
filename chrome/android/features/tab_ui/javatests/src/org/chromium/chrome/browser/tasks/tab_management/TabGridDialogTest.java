@@ -1272,6 +1272,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.INSTANT_START})
+    @DisabledTest(message = "crbug.com/1522195")
     public void testSetup_WithInstantStart() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 2, 0, "about:blank");
