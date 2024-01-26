@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -1212,9 +1213,13 @@ void ChromeAutofillClient::ShowAutofillErrorDialog(
 void ChromeAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
     base::OnceClosure cancel_callback) {
-  DCHECK(autofill_progress_dialog_controller_);
   autofill_progress_dialog_controller_->ShowDialog(
-      autofill_progress_dialog_type, std::move(cancel_callback));
+      autofill_progress_dialog_type,
+      base::BindOnce(
+          &CreateAndShowProgressDialog,
+          base::Unretained(autofill_progress_dialog_controller_.get()),
+          base::Unretained(web_contents())),
+      std::move(cancel_callback));
 }
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
@@ -1349,8 +1354,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       unmask_controller_(std::make_unique<CardUnmaskPromptControllerImpl>(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()))),
       autofill_progress_dialog_controller_(
-          std::make_unique<AutofillProgressDialogControllerImpl>(
-              web_contents)) {
+          std::make_unique<AutofillProgressDialogControllerImpl>()) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();

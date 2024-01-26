@@ -5,19 +5,22 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_PROGRESS_DIALOG_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_PROGRESS_DIALOG_VIEW_ANDROID_H_
 
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
+
 #include <jni.h>
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 
-// Android implementation of the AutofillProgressDialogView. This view is owned
-// by the `AutofillProgressDialogControllerImpl` which lives for the duration of
-// the tab.
+class AutofillProgressDialogController;
+
+// Android implementation of the AutofillProgressDialogView. This class
+// must delete itself when the view is dismissed to avoid memory leak as
+// it is not owned by other autofill components.
 class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
  public:
   explicit AutofillProgressDialogViewAndroid(
@@ -33,7 +36,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   void OnDismissed(JNIEnv* env);
 
   // Show the dialog view.
-  void ShowDialog();
+  void ShowDialog(content::WebContents* web_contents);
 
   // Show the confirmation icon and text.
   void ShowConfirmation(std::u16string confirmation_message);

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
 
 #include <string>
-
-namespace content {
-class WebContents;
-}
 
 namespace autofill {
 
@@ -38,12 +34,10 @@ class AutofillProgressDialogController {
   virtual std::u16string GetLoadingMessage() const = 0;
   virtual std::u16string GetConfirmationMessage() const = 0;
 
-  virtual content::WebContents* GetWebContents() = 0;
-
  protected:
   virtual ~AutofillProgressDialogController() = default;
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_H_

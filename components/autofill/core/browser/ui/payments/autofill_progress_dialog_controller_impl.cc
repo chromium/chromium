@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
-AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl() =
+    default;
 
 AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
   // This if-statement is entered in the case where the tab is closed. When the
@@ -29,23 +27,27 @@ AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
 
 void AutofillProgressDialogControllerImpl::ShowDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceCallback<AutofillProgressDialogView*()>
+        create_and_show_view_callback,
     base::OnceClosure cancel_callback) {
   DCHECK(!autofill_progress_dialog_view_);
 
   autofill_progress_dialog_type_ = autofill_progress_dialog_type;
   cancel_callback_ = std::move(cancel_callback);
   autofill_progress_dialog_view_ =
-      AutofillProgressDialogView::CreateAndShow(this);
+      std::move(create_and_show_view_callback).Run();
 
-  if (autofill_progress_dialog_view_)
+  if (autofill_progress_dialog_view_) {
     AutofillMetrics::LogProgressDialogShown(autofill_progress_dialog_type);
+  }
 }
 
 void AutofillProgressDialogControllerImpl::DismissDialog(
     bool show_confirmation_before_closing,
     base::OnceClosure no_interactive_authentication_callback) {
-  if (!autofill_progress_dialog_view_)
+  if (!autofill_progress_dialog_view_) {
     return;
+  }
 
   no_interactive_authentication_callback_ =
       std::move(no_interactive_authentication_callback);
@@ -158,10 +160,6 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
       NOTREACHED();
       return std::u16string();
   }
-}
-
-content::WebContents* AutofillProgressDialogControllerImpl::GetWebContents() {
-  return web_contents_;
 }
 
 }  // namespace autofill

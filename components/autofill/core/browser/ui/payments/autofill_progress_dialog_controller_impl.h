@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
 
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller.h"
-#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
-#include "content/public/browser/web_contents.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
 
 namespace autofill {
 
@@ -24,8 +23,7 @@ enum class AutofillProgressDialogType;
 class AutofillProgressDialogControllerImpl
     : public AutofillProgressDialogController {
  public:
-  explicit AutofillProgressDialogControllerImpl(
-      content::WebContents* web_contents);
+  AutofillProgressDialogControllerImpl();
 
   AutofillProgressDialogControllerImpl(
       const AutofillProgressDialogControllerImpl&) = delete;
@@ -35,10 +33,13 @@ class AutofillProgressDialogControllerImpl
   ~AutofillProgressDialogControllerImpl() override;
 
   // Show a progress dialog for underlying authorization processes. The
-  // `autofill_progress_dialog_type` determines the type of the progress dialog
-  // and `cancel_callback` is the function to invoke when the cancel button is
-  // clicked.
+  // `create_and_show_view_callback` will be invoked immediately to create a
+  // view implementation. The `autofill_progress_dialog_type` determines the
+  // type of the progress dialog and `cancel_callback` is the function to invoke
+  // when the cancel button is clicked.
   void ShowDialog(AutofillProgressDialogType autofill_progress_dialog_type,
+                  base::OnceCallback<AutofillProgressDialogView*()>
+                      create_and_show_view_callback,
                   base::OnceClosure cancel_callback);
 
   // Dismisses the progress dialog after the underlying authorization processes
@@ -64,15 +65,11 @@ class AutofillProgressDialogControllerImpl
   std::u16string GetLoadingMessage() const override;
   std::u16string GetConfirmationMessage() const override;
 
-  content::WebContents* GetWebContents() override;
-
   AutofillProgressDialogView* autofill_progress_dialog_view() {
     return autofill_progress_dialog_view_;
   }
 
  private:
-  const raw_ptr<content::WebContents> web_contents_;
-
   // View that displays the error dialog.
   raw_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_ = nullptr;
 
@@ -88,4 +85,4 @@ class AutofillProgressDialogControllerImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_CONTROLLER_IMPL_H_
