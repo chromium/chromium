@@ -10228,13 +10228,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnablePaymentsMandatoryReauth)},
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-email-otp-for-vcn-yellow-path",
-     flag_descriptions::kAutofillEnableEmailOtpForVcnYellowPathName,
-     flag_descriptions::kAutofillEnableEmailOtpForVcnYellowPathDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableEmailOtpForVcnYellowPath)},
-
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,

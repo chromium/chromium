@@ -495,15 +495,6 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments Autofill UI.";
 
-const char kAutofillEnableEmailOtpForVcnYellowPathName[] =
-    "Enable email OTP authentication in the yellow path of the VCN retrieval "
-    "flow";
-const char kAutofillEnableEmailOtpForVcnYellowPathDescription[] =
-    "When enabled, if the user encounters the yellow path (challenge path) in "
-    "the VCN retrieval flow and the server denotes that the card is eligible "
-    "for email OTP authentication, email OTP authentication will be offered as "
-    "one of the challenge options.";
-
 const char kAutofillEnableIbanAndroidBottomSheetName[] =
     "Enable Autofill save IBAN bottom sheet";
 const char kAutofillEnableIbanAndroidBottomSheetDescription[] =

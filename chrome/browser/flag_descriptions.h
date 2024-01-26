@@ -296,9 +296,6 @@ extern const char kAutofillEnableCardBenefitsDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
-extern const char kAutofillEnableEmailOtpForVcnYellowPathName[];
-extern const char kAutofillEnableEmailOtpForVcnYellowPathDescription[];
-
 extern const char kAutofillEnableIbanAndroidBottomSheetName[];
 extern const char kAutofillEnableIbanAndroidBottomSheetDescription[];
 
