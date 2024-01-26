@@ -2315,4 +2315,7 @@ crbug.com/1488371 external/wpt/html/webappapis/dynamic-markup-insertion/opening-
 # Pagehide is not appropriate as the test checks if PiP window is functional until the very end of the page's lifecycle:
 crbug.com/1488371 external/wpt/document-picture-in-picture/clears-session-on-close.https.html [ Skip ]
 
+# Skip the test for this currently unreleased feature on Mac where it times out the most.
+crbug.com/1430215 [ Mac ] external/wpt/dom/events/scrolling/overscroll-deltas.html [ Skip ]
+
 ######## End Unload Deprecation
