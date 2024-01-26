@@ -11,9 +11,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:paddingVertical="12dp"
     android:orientation="horizontal"
-    android:background="@drawable/rounded_ripple"
-    android:clickable="true"
-    android:focusable="true">
+    android:background="@drawable/rounded_ripple">
     <ImageView
         android:id="@+id/icon"
         android:layout_width="wrap_content"
