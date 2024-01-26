@@ -91,6 +91,7 @@
     "build-perf-linux-siso": "build/build-perf-linux-siso/gn-args.json",
     "build-perf-windows": "build/build-perf-windows/gn-args.json",
     "build-perf-windows-siso": "build/build-perf-windows-siso/gn-args.json",
+    "ios-build-perf-developer": "build/ios-build-perf-developer/gn-args.json",
     "linux-build-perf-developer": "build/linux-build-perf-developer/gn-args.json",
     "linux-chromeos-build-perf": "build/linux-chromeos-build-perf/gn-args.json",
     "linux-chromeos-build-perf-siso": "build/linux-chromeos-build-perf-siso/gn-args.json",
