@@ -190,7 +190,7 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   }
   void RenameIndex(int64_t index_id, const String& new_name);
 
-  IDBDatabase* db() const;
+  IDBDatabase& db() const;
 
  private:
   using IDBIndexMap = HeapHashMap<String, Member<IDBIndex>>;

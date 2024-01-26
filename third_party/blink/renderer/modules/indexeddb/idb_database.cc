@@ -543,6 +543,10 @@ void IDBDatabase::ContextEnteredBackForwardCache() {
   }
 }
 
+bool IDBDatabase::IsConnectionOpen() const {
+  return database_remote_.is_bound();
+}
+
 const AtomicString& IDBDatabase::InterfaceName() const {
   return event_target_names::kIDBDatabase;
 }

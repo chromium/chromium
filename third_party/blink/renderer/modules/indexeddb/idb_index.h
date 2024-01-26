@@ -119,7 +119,7 @@ class IDBIndex final : public ScriptWrappable {
       mojom::IDBCursorDirection,
       IDBRequest::AsyncTraceState = IDBRequest::AsyncTraceState());
 
-  IDBDatabase* db() const;
+  IDBDatabase& db();
 
  private:
   const IDBIndexMetadata& Metadata() const { return *metadata_; }

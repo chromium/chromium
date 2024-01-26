@@ -493,7 +493,7 @@ void IDBTransaction::StartAborting(DOMException* error, bool from_frontend) {
   // due to a constraint error), we're already asynchronous.
   AbortOutstandingRequests(/*queue_tasks=*/from_frontend);
 
-  if (from_frontend && database_) {
+  if (from_frontend && database_->IsConnectionOpen()) {
     database_->Abort(id_);
   }
 }
